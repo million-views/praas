@@ -6,7 +6,9 @@ Web Services that provide a REST API for custom flow integration on the customer
 
 The most common means to consume the REST API is via an access token submitted by the client application (WebApp) as a bearer token. This approach works without regard to security if the endpoint for integration is within a protected perimeter of the customer's integration.  If the endpoint is public then embedding such an access token in the client poses a security risk.
 
-Embedding this access token in the client code is a bad idea and all REST API service providers advise developers to avoid. This is the problem that PraaS aims to resolve. 
+Embedding this access token in the client code is a bad idea and all REST API service providers advise developers to avoid. 
+
+This is the problem that PraaS aims to resolve. 
 
 The common strategy to mitigate that risk is to setup a proxy server to which the client makes the REST call, which then forwards the request to the actual REST API endpoint after inserting the access token (which was obtained by the developer and stored on the proxy server, often in an unsecure way).
 
