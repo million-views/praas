@@ -2,7 +2,7 @@
 PraaS is a web application proxy server that lets *developers* to use non-traditional storage in their applications. Google spreadsheet, AirTable, SmartSheet are some examples that fit the category of non-traditional storage in contrast to filesystems and traditional databases.
 
 # Problem Statement
-Web Services that provide a REST API for custom flow integration on the customer end present an interesting space for a class of applications that developers can target for modern web applications (a.k.a WebApps). Such apps can be pushed to servers managed by yet another service provider (such as zeit and netlify and AWS S3).
+Web Services that provide a REST API for custom flow integration on the customer end present an interesting space for a class of applications that developers can target for modern web applications (a.k.a WebApps). Such apps can be pushed to servers managed by yet another service provider (such as Zeit, Netlify, AWS S3 and many others out there), allowing for an almost serverless architecture. The serverless here implies that the organization building the WebApp is not the one responsible for baby sitting the servers. The code has to be run and served by someone somewhere and there is a price to pay eventually!
 
 The most common means to consume the REST API is via an access token submitted by the client application (WebApp) as a bearer token. This approach works without regard to security if the endpoint for integration is within a protected perimeter of the customer's integration.  If the endpoint is public then embedding such an access token in the client poses a security risk.
 
