@@ -8,13 +8,14 @@
 
 ## Add contact
 ```shell
-curl -v -XPOST https://api.airtable.com/v0/appgYyVces4B669Ma/Contacts -H "Authorization: Bearer <API-KEY>" -H "Content-Type: application/json" --data @./airtable/contact-add.json
+curl -v -XPOST https://api.airtable.com/v0/appgYyVces4B669Ma/Contacts -H "Authorization: Bearer <YOUR_API_KEY>" -H "Content-Type: application/json" --data @./airtable/contact-add.json
 ```
 
 ## List contact
 ```shell
-curl https://api.airtable.com/v0/appgYyVces4B669Ma/Contacts?api_key=<API-KEY>
+curl https://api.airtable.com/v0/appgYyVces4B669Ma/Contacts?api_key=<YOUR_API_KEY>
 ```
 
 ## Remove contact
-TBD
+curl -v -XDELETE "https://api.airtable.com/v0/appgYyVces4B669Ma/Contacts/recvWfARzbshAwa3q" \
+-H "Authorization: Bearer YOUR_API_KEY"
