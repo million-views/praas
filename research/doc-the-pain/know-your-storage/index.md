@@ -1,8 +1,8 @@
 # Know your storage:
-- [] create if needed an AirTable account
-- [] create a custom base (e.g first-name, email)
-- [] access the token
-- [] use curl to write and read back test data
+- [x] create if needed an AirTable account
+- [x] create a custom base (e.g first-name, email)
+- [x] access the token
+- [ ] use curl to write and read back test data
 
 # Activity log
 
