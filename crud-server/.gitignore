@@ -1,0 +1,6 @@
+# Sqlite database used in development only
+sqlite-praas-crud.db
+
+# We remain on the bleeding edge until we get closer 
+# to beta ready
+package-lock.json
