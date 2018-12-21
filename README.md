@@ -45,7 +45,7 @@ We created this project for our own internal experiments. Once completed and sta
 - Request Access Control Map (configurable CORS?)
 - Request Throttling
 - IP Address Whitelist
-- Hidden Field Form
+- Hidden Form Field
 
 # Contribution
 We are still in the design stage. When the project gets to a point where it is actually functional, we'll be happy to receive your pull request. Until then stay tuned!
