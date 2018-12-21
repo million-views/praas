@@ -8,10 +8,10 @@ PraaS provides a means to manage REST API access tokens and forward requests to 
 
 3. As an open source developer following new fangled UI frameworks sprouting everyday, I spend time writing code and publish them to github.io (instead of hosting the sample code on my own server). This works until one day I get to the part where I need to store some data persistently. I have a free gmail account that gives me access to google spreadsheet. I start thinking if it is possible to use that as a storage medium for my sample app.
 
-4. As a marketer I don't want to expose my NTS access token to a third party developer. I want to instead provide a unique URI that acts as a conduit to my NTS and give me additional controls.
+4. As a marketer I don't want to expose my NTS access token to a third party developer. I want to instead provide a unique URI that acts as a **conduit** to my NTS and give me additional controls.
 
 ## Why don't we simply use the "forms" feature provided by AirTable, Smartsheet and Spreadsheets?
-We are looking for an excuse to build "something" as a service so we don't really have any compelling reasons to not choose the the in-built features offered by these services. However here a few reasons that may resonate with you:
+We are looking for an excuse to build "something" as a service so we don't really have any compelling reasons to not choose the  in-built features offered by these services. However here a few reasons that may resonate with you:
 - The look Look & Feel may not be what you want
 - You don't like the ugly URLs
 - You need to add additional validation/processing on the client end not offered natively
@@ -32,7 +32,7 @@ Simple WebApps (that consume data or those that use only local storage) can be p
 The moment a WebApp has to store data persistently and survive a cache refresh, things get a bit more complicated. This is when the app starts needing a *backend*, introducing friction in having to deploy a server and deal with the operational aspects of that server. For small *widgets* and *gadgets* this process violates the DRY principle and negates the whole concept of serverless WebApps where the idea is that you build a rich single page app and delegate the responsibility of serving that app to a third party service provider.
 
 # Solution
-PraaS allows users to create conduits to their **NTS** without having to rely on DevOps in order to deploy simple WebApps that require a place to store data persistently. 
+PraaS allows users to create conduits to their NTS without having to rely on DevOps in order to deploy simple WebApps that require a place to store data persistently. 
 
 We created this project for our own internal experiments. Once completed and stable, we intend to deploy it and make it available as a service for public consumption. Until then you will have to deploy it on your server instance once. Reach out if you need help.
 
