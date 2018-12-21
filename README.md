@@ -11,7 +11,9 @@ PraaS provides a means to manage REST API access tokens and forward requests to 
 4. As a marketer I don't want to expose my NTS access token to a third party developer. I want to instead provide a unique URI that acts as a **conduit** to my NTS and give me additional controls.
 
 ## Why don't we simply use the "forms" feature provided by AirTable, Smartsheet and Spreadsheets?
-We are looking for an excuse to build "something" as a service, so we don't really have any compelling reasons to not choose the  in-built features offered by these services. However here a few reasons that may resonate with you:
+We are looking for an excuse to build "something" as a service, so we don't really have any compelling reasons to not choose the  in-built features offered by these services. If that works for you, use it.
+
+However here a few reasons that may resonate with you:
 - The look Look & Feel may not be what you want
 - You don't like the ugly URLs
 - You need to add additional validation/processing on the client end not offered natively
