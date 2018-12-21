@@ -116,21 +116,30 @@ describe('PraaS Model', () => {
   });
 
   context('Conduit model', () => {
-    const fep = helpers.fakeEndPoint();
+    const fct = helpers.fakeConduit();
+    let user = undefined;
+
+    before(async () => {
+      const fup = helpers.fakeUserProfile();
+      user = models.User.build({ ...fup });
+      user.setPassword(fup.password);
+      user = await user.save();
+      await models.Conduit.sync();
+    });
 
     afterEach(async () => {
       await models.Conduit.sync();
     });
 
     it('should store conduit', async () => {
-      const ep = models.Conduit.build({ ...fep });
-
-      const nep = await ep.save();
+      const ct = models.Conduit.build({ ...fct });
+      ct.userId = user.id;
+      const nep = await ct.save();
 
       expect(nep).to.be.an('object');
       expect(nep).to.have.property('apiKey');
-      // expect(nep).to.have.property('email');
-      // expect(newUser.firstName).to.equal(fup.firstName);
+      expect(nep).to.have.property('type');
+      expect(nep.type).to.equal(ct.type);
     });
   });
 });

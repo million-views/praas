@@ -12,7 +12,6 @@ const fakeUserProfile = (overrides = {}) => {
     firstName,
     lastName,
     email: email.toLowerCase(),
-    _id: faker.random.uuid(),
     ...overrides,
   };
 
@@ -23,12 +22,12 @@ const fakeUserProfile = (overrides = {}) => {
   };
 };
 
-const fakeEndPoint = (overrides = {}) => {
+const fakeConduit = (overrides = {}) => {
   const typesArr = ['Google Sheets', 'Airtable', 'Smart Sheet'];
   const ipstatArr = ['active', 'inactive'];
   // const accessArr = ['GET', 'POST', 'DELETE', 'PUT'];
 
-  const endPoint = {
+  const conduit = {
     apiKey: faker.random.uuid(),
     type: typesArr[Math.floor(Math.random() * typesArr.length)],
     objectKey: faker.lorem.word(),
@@ -47,9 +46,9 @@ const fakeEndPoint = (overrides = {}) => {
   };
 
   // hiddenFormField: this.hiddenFormField
-  return endPoint;
+  return conduit;
 };
 
 module.exports = {
-  fakeUserProfile, fakeEndPoint
+  fakeUserProfile, fakeConduit
 };
