@@ -1,18 +1,51 @@
 # Proxy as a Service (PraaS)
-PraaS is a web application proxy server that lets *developers* to use non-traditional storage in their applications. Google spreadsheet, AirTable, SmartSheet are some examples that fit the category of non-traditional storage in contrast to filesystems and traditional databases.
+PraaS provides a means to manage REST API access tokens and forward requests to preconfigured non-traditional storage (**NTS**) end points. AirTable and SmartSheet are a couple of examples that fit the NTS category in contrast to filesystems and traditional databases.
 
-# Problem Statement
-Web Services that provide a REST API for custom flow integration on the customer end present an interesting space for a class of applications that developers can target for modern web applications (a.k.a WebApps). Such apps can be pushed to servers managed by yet another service provider (such as Zeit, Netlify, AWS S3 and many others out there), allowing for an almost serverless architecture. The serverless here implies that the organization building the WebApp is not the one responsible for baby sitting the servers. The code has to be run and served by someone somewhere and there is a price to pay eventually!
+# Use cases
+1. As a tech savvy digital marketer I want to experiment with several landing pages for a time bound campaign to capture interest list. I already have an AirTable account. Rather than look for yet another service or fire up a server instance and a database, I decide to capture this information and store it in an AirTable base.
 
-The most common means to consume the REST API is via an access token submitted by the client application (WebApp) as a bearer token. This approach works without regard to security if the endpoint for integration is within a protected perimeter of the customer's integration.  If the endpoint is public then embedding such an access token in the client poses a security risk.
+2. As a techie blogger I want to be able to capture reactions (thumbs-up, thumbs-down) from my readers. I have a Smartsheet account already. Rather than look for yet another service or fire up a server instance and a database I decide to collect these reactions in a smartsheet.
 
-Embedding this access token in the client code is a bad idea and all REST API service providers advise developers to avoid. 
+3. As an open source developer following new fangled UI frameworks sprouting everyday, I spend time writing code and publish them to github.io (instead of hosting the sample code on my own server). This works until one day I get to the part where I need to store some data persistently. I have a free gmail account that gives me access to google spreadsheet. I start thinking if it is possible to use that as a storage medium for my sample app.
 
-This is the problem that PraaS aims to resolve. 
+4. As a marketer I don't want to expose my NTS access token to a third party developer. I want to instead provide a unique URI that acts as a conduit to my NTS and give me additional controls.
 
-The common strategy to mitigate that risk is to setup a proxy server to which the client makes the REST call, which then forwards the request to the actual REST API endpoint after inserting the access token (which was obtained by the developer and stored on the proxy server, often in an unsecure way).
+## Why don't we simply use the "forms" feature provided by AirTable, Smartsheet and Spreadsheets?
+We are looking for an excuse to build "something" as a service so we don't really have any compelling reasons to not choose the the in-built features offered by these services. However here a few reasons that may resonate with you:
+- The look Look & Feel may not be what you want
+- You don't like the ugly URLs
+- You need to add additional validation/processing on the client end not offered natively
 
-For developers this introduces unnecessary friction in having to deploy a server and deal with the operational aspects of that server. It violates the DRY principle and negates the whole concept of serverless WebApps where the idea is that you build a rich single page app and delegate the responsibility of serving that app to a third party service provider.
+## What about security and bots?
+Unfortunately we don't have a good answer. The fact is any *storage endpoint* that is *public* will be subjected to bot attacks and abused. That is the price to pay for being open to public feedback.
+
+Note that you can still use this service within an enterprise where there is a firewall at the perimeter and therefore it can be made as secure as the rest of your infrastructure is.
+
+We have features that can mitigate such attacks but be advised that we have no intention of solving this problem completely because it cannot be solved. Please remember that this service is for those use cases that do not require authentication.
+
+> NOTE: the service management will of course have an authentication. Aside, if you can think of a use case where
+> this service can be used but requires authenticated access to the conduits, let us know. 
+
+# WebApps and the serverless paradigm
+Simple WebApps (that consume data or those that use only local storage) can be pushed Zeit, Netlify, AWS S3, GitHub.IO, ... allowing for an *almost* serverless architecture. The serverless here implies that the organization building the WebApp is not the one responsible for baby sitting the servers. The code has to be run and served by someone somewhere and there is a price to pay for that eventually!
+
+The moment a WebApp has to store data persistently and survive a cache refresh, things get a bit more complicated. This is when the app starts needing a *backend*, introducing friction in having to deploy a server and deal with the operational aspects of that server. For small *widgets* and *gadgets* this process violates the DRY principle and negates the whole concept of serverless WebApps where the idea is that you build a rich single page app and delegate the responsibility of serving that app to a third party service provider.
 
 # Solution
-PraaS allows developers to manage API endpoint proxies so that they can focus on creating serverless webapps **without** stalling on a DevOps task everytime a webapp needs to store data remotely. Deploy the code once and start creating your API proxy using a simple web interface. We created this project for our own internal experiments. Once completed and stable, we intend to deploy it and make it available as a service for public consumption.
+PraaS allows users to create conduits to their **NTS** without having to rely on DevOps in order to deploy simple WebApps that require a place to store data persistently. 
+
+We created this project for our own internal experiments. Once completed and stable, we intend to deploy it and make it available as a service for public consumption. Until then you will have to deploy it on your server instance once. Reach out if you need help.
+
+# Status
+- Inception stage, work in progress
+
+# Features
+- Open source, MIT License
+- Simple web interface to manage conduits
+- Request Access Control Map (configurable CORS?)
+- Request Throttling
+- IP Address Whitelist
+- Hidden Field Form
+
+# Contribution
+We are still in the design stage. When the project gets to a point where it is actually functional, we'll be happy to receive your pull request. Until then stay tuned!
