@@ -1,9 +1,9 @@
 const expect = require('chai').expect;
-// const jwt = require('jsonwebtoken');
-// const config = require('./config');
+const jwt = require('jsonwebtoken');
+const config = require('./config');
 const models = require('./models');
 const helpers = require('./lib/helpers');
-// const snapshot = require('snap-shot-it');
+const snapshot = require('snap-shot-it');
 
 const fakeUsers = async (count = 5) => {
   const fups = [];
@@ -66,6 +66,71 @@ describe('PraaS Model', () => {
           expect(error.path).to.match(/^firstName$|^lastName$|^email$|^hash$/);
         }
       }
+    });
+  });
+
+  context('User model', () => {
+    const fup = helpers.fakeUserProfile();
+
+    afterEach(async () => {
+      await models.User.sync();
+    });
+
+    it('should store new user(s)', async () => {
+      const user = models.User.build({ ...fup });
+
+      user.setPassword(fup.password);
+      expect(user.passwordValid(fup.password)).to.be.true;
+      const newUser = await user.save();
+
+      expect(newUser).to.be.an('object');
+      expect(newUser).to.have.property('firstName');
+      expect(newUser).to.have.property('email');
+      expect(newUser.firstName).to.equal(fup.firstName);
+    });
+
+    it('should validate passwords', async () => {
+      const user = await models.User.findOne({ where: { email: fup.email } });
+      user.setPassword(fup.password);
+      // positive test case
+      expect(user.passwordValid(fup.password)).to.be.true;
+      // negative test case
+      expect(user.passwordValid('bad password')).to.be.false;
+    });
+
+    it('should generate profile JSON', async () => {
+      const user = await models.User.findOne({ where: { email: fup.email } });
+      const profileJSON = user.toProfileJSONFor();
+      snapshot(profileJSON);
+    });
+
+    it('should generate auth JSON', async () => {
+      const user = await models.User.findOne({ where: { email: fup.email } });
+      const authJSON = user.toAuthJSON();
+      expect(authJSON).to.have.property('token');
+
+      const jwtDecoded = jwt.verify(authJSON.token, config.secret);
+      expect(jwtDecoded.email).to.equal(user.email);
+      expect(jwtDecoded.id).to.equal(user.id);
+    });
+  });
+
+  context('Conduit model', () => {
+    const fep = helpers.fakeEndPoint();
+
+    afterEach(async () => {
+      await models.Conduit.sync();
+    });
+
+    it('should store conduit', async () => {
+      const ep = models.Conduit.build({ ...fep });
+
+      const nep = await ep.save();
+
+      expect(nep).to.be.an('object');
+      expect(nep).to.have.property('apiKey');
+      // expect(nep).to.have.property('email');
+      // expect(newUser.firstName).to.equal(fup.firstName);
     });
   });
 });

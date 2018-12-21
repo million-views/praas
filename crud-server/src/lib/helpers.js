@@ -22,6 +22,34 @@ const fakeUserProfile = (overrides = {}) => {
     ...baseUser, password
   };
 };
+
+const fakeEndPoint = (overrides = {}) => {
+  const typesArr = ['Google Sheets', 'Airtable', 'Smart Sheet'];
+  const ipstatArr = ['active', 'inactive'];
+  // const accessArr = ['GET', 'POST', 'DELETE', 'PUT'];
+
+  const endPoint = {
+    apiKey: faker.random.uuid(),
+    type: typesArr[Math.floor(Math.random() * typesArr.length)],
+    objectKey: faker.lorem.word(),
+    ep_uri: faker.internet.url(),
+    proxy_uri: faker.internet.url(),
+    whitelist: [{
+      ip: faker.internet.ip(),
+      status: ipstatArr[Math.floor(Math.random() * ipstatArr.length)],
+      comment: faker.lorem.words()
+    }],
+    racm: ['GET', 'POST', 'DEL'],
+    throttle: faker.random.boolean(),
+    status: ipstatArr[Math.floor(Math.random() * ipstatArr.length)],
+    description: faker.lorem.sentence(),
+    ...overrides,
+  };
+
+  // hiddenFormField: this.hiddenFormField
+  return endPoint;
+};
+
 module.exports = {
-  fakeUserProfile
+  fakeUserProfile, fakeEndPoint
 };

@@ -4,3 +4,6 @@ sqlite-praas-crud.db
 # We remain on the bleeding edge until we get closer 
 # to beta ready
 package-lock.json
+
+# Snaphot directory
+__snapshots__

@@ -68,10 +68,18 @@ module.exports = (db, DataTypes) => {
 
     return {
       id: this.id,
-      firstname: this.firstname,
-      lastname: this.lastname,
+      firstName: this.firstName,
+      lastName: this.lastName,
       email: this.email,
       token: tkn
+    };
+  };
+
+  User.prototype.toProfileJSONFor = function () {
+    return {
+      firstName: this.firstName,
+      lastName: this.lastName,
+      email: this.email,
     };
   };
 
