@@ -1,6 +1,9 @@
 # Proxy as a Service (PraaS)
 PraaS provides a means to manage REST API access tokens and forward requests to preconfigured non-traditional storage (**NTS**) end points. AirTable and SmartSheet are a couple of examples that fit the NTS category in contrast to filesystems and traditional databases.
 
+# Status
+- Inception stage, work in progress
+
 # Use cases
 1. As a tech savvy digital marketer I want to experiment with several landing pages for a time bound campaign to capture interest list. I already have an AirTable account. Rather than look for yet another service or fire up a server instance and a database, I decide to capture this information and store it in an AirTable base.
 
@@ -14,7 +17,7 @@ PraaS provides a means to manage REST API access tokens and forward requests to 
 We are looking for an excuse to build "something" as a service, so we don't really have any compelling reasons to not choose the  in-built features offered by these services. If that works for you, use it.
 
 However, here a few reasons that may resonate with you:
-- The look Look & Feel may not be what you want
+- The Look & Feel may not be what you want
 - You don't like the ugly URLs
 - You need to add additional validation/processing on the client end not offered natively
 
@@ -37,9 +40,6 @@ The moment a WebApp has to store data persistently and survive a cache refresh, 
 PraaS allows users to create conduits to their NTS without having to rely on DevOps in order to deploy simple WebApps that require a place to store data persistently. 
 
 We created this project for our own internal experiments. Once completed and stable, we intend to deploy it and make it available as a service for public consumption. Until then you will have to deploy it on your server instance once. Reach out if you need help.
-
-# Status
-- Inception stage, work in progress
 
 # Features
 - Open source, MIT License
