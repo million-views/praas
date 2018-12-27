@@ -32,7 +32,7 @@ const fakeConduit = (overrides = {}) => {
     type: typesArr[Math.floor(Math.random() * typesArr.length)],
     objectKey: faker.lorem.word(),
     ep_uri: faker.internet.url(),
-    proxy_uri: faker.internet.url(),
+    // proxy_uri: faker.internet.url(),
     whitelist: [{
       ip: faker.internet.ip(),
       status: ipstatArr[Math.floor(Math.random() * ipstatArr.length)],

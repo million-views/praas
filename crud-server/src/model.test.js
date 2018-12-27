@@ -4,6 +4,7 @@ const config = require('./config');
 const models = require('./models');
 const helpers = require('./lib/helpers');
 const snapshot = require('snap-shot-it');
+const generate = require('nanoid/generate');
 
 const fakeUsers = async (count = 5) => {
   const fups = [];
@@ -27,6 +28,13 @@ const fakeUsers = async (count = 5) => {
 describe('PraaS Model', () => {
   before('running tests', async () => {
     await models.db.sync({ force: true });
+    // const sys = models.System.build({
+    //   conf: [{
+    //     alphabet: '123456789abcdefghjkmnopqrstuvwxyz',
+    //     ccount: 5
+    //   }]
+    // });
+    // await sys.save();
   });
 
   after('populate for integration test', async function () {
@@ -79,6 +87,7 @@ describe('PraaS Model', () => {
     it('should store new user(s)', async () => {
       const user = models.User.build({ ...fup });
 
+      console.log('lastname: ', user.lastName);
       user.setPassword(fup.password);
       expect(user.passwordValid(fup.password)).to.be.true;
       const newUser = await user.save();
@@ -124,7 +133,6 @@ describe('PraaS Model', () => {
       user = models.User.build({ ...fup });
       user.setPassword(fup.password);
       user = await user.save();
-      await models.Conduit.sync();
     });
 
     afterEach(async () => {
@@ -134,8 +142,18 @@ describe('PraaS Model', () => {
     it('should store conduit', async () => {
       const ct = models.Conduit.build({ ...fct });
       ct.userId = user.id;
-      const nep = await ct.save();
+      const domain = '.trickle.cc';
+      const alphabet = '123456789abcdefghjkmnopqrstuvwxyz';
+      const randomStr = generate(alphabet, 5); // => "smgfz"
 
+      const initials = user.firstName.slice(0, 1).toLowerCase()
+        .concat(user.lastName.slice(0, 1).toLowerCase());
+
+      const puri = initials.concat('-', randomStr, domain);
+      console.log('puri: ', puri);
+      ct.proxy_uri = puri;
+
+      const nep = await ct.save();
       expect(nep).to.be.an('object');
       expect(nep).to.have.property('apiKey');
       expect(nep).to.have.property('type');
