@@ -16,12 +16,12 @@ module.exports = (db, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true
     },
-    ep_uri: {
+    curi: {
       type: DataTypes.STRING(512),
       allowNull: false,
       isUrl: true,
     },
-    proxy_uri: {
+    puri: {
       type: DataTypes.STRING(512),
       allowNull: false,
       isUrl: true,
@@ -62,8 +62,8 @@ module.exports = (db, DataTypes) => {
       apiKey: this.apiKey,
       type: this.type,
       objectKey: this.objectKey,
-      ep_uri: this.ep_uri,
-      proxy_uri: this.proxy_uri,
+      curi: this.curi,
+      puri: this.puri,
       whitelist: this.whitelist,
       racm: this.racm,
       throttle: this.throttle,

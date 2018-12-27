@@ -151,7 +151,7 @@ describe('PraaS Model', () => {
 
       const puri = initials.concat('-', randomStr, domain);
       console.log('puri: ', puri);
-      ct.proxy_uri = puri;
+      ct.puri = puri;
 
       const nep = await ct.save();
       expect(nep).to.be.an('object');
