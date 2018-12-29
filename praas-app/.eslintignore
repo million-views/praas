@@ -1,0 +1,11 @@
+# NOTE:
+#     /node_modules/*
+#     /bower_components/*
+# in the project root are ignored by default
+
+# Ignore built files except build/index.js
+build/*
+
+# e.g on how to include specific exceptions
+#!build/index.js
+# ^^ renegates and reincludes from the previous rule.

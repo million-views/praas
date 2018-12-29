@@ -1,0 +1,79 @@
+{
+  "name": "react-router-app",
+  "version": "0.1.0",
+  "description": "css modules, local and global scopes",
+  "author": "Hemalatha Manickam",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:vaswadhati/yasos.git"
+  },
+  "keywords": [
+    "ES6",
+    "CSS",
+    "CSS-MODULES"
+  ],
+  "scripts": {
+    "lint": "eslint src --cache",
+    "build": "webpack --colors --progress -p --env.production --config src/cfg/webpack",
+    "watch": "webpack-dev-server --progress --config src/cfg/webpack",
+    "start": "npm run build && live-server build/"
+  },
+  "dependencies": {
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "prop-types": "^15.6.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.0.4",
+    "@babel/preset-env": "^7.2.3",
+    "@babel/plugin-proposal-object-rest-spread": "7.2.0",
+    "@babel/plugin-syntax-dynamic-import": "7.2.0",
+    "@babel/plugin-transform-react-jsx": "7.2.0",
+    "babel-plugin-transform-react-remove-prop-types": "^0.4.21",
+    "@babel/polyfill": "^7.2.5",
+    "clean-webpack-plugin": "^1.0.0",
+    "copy-webpack-plugin": "^4.6.0",
+    "css-loader": "^2.1.0",
+    "eslint": "^5.11.1",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-config-standard-jsx": "^6.0.2",
+    "eslint-config-standard-react": "7.0.2",
+    "eslint-loader": "^2.1.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-react": "^7.12.0",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.5.0",
+    "node-sass": "^4.11.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "sass-loader": "^7.1.0",
+    "sass-resources-loader": "2.0.0",
+    "style-loader": "^0.23.1",
+    "uglifyjs-webpack-plugin": "^2.1.1",
+    "webpack": "^4.28.2",
+    "webpack-bundle-analyzer": "^3.0.3",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.14",
+    "webpack-merge": "^4.1.5"
+  },
+  "browserslist": {
+    "development": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 edge versions",
+      "last 2 safari versions"
+    ],
+    "production": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 edge versions",
+      "last 2 safari versions"
+    ]
+  }
+}
