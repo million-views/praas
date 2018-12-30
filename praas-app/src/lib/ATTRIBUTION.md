@@ -1,19 +1,16 @@
 Use of Open Source Libraries and Components
 ===========================================
-This file contains a list of open source projects that were used in building
-this App.
+This file contains a list of open source projects used in building this App.
 
-In certain cases and where it was deemed appropriate, the source
-code is installed in source form and used directly rather than use it as a
-package as released by the author(s).
+In some cases, rather than use code packages as released by the author(s) we
+use the packages in source form when and where appropriate.
 
 Often we install into 'lib' folder in source form whenever one or more of the
 following are applicable:
 - orginal code is no longer in active maintenance
-- it is too small and we could benefit from webpack optimizations (in the hope
+- code is too small and we could trigger webpack optimizations (in the hope
   that access to source can lead to better optimization)
-- when the original code package is too big and we just need a tiny function
-  from it.
+- when the original code package is too big and we need a small part of it
 
 Regardless of how the libraries and frameworks get used, please list it here
 and provide proper attribution which consists of:
@@ -21,10 +18,10 @@ and provide proper attribution which consists of:
 - the origin of the source
 - author or entity that holds the copyright to the source
 - is it used as a dependency listed in package.json or imported in source form?
-- if imported in source form, is it being used in its original form or modified?
-- the license under which the original source was distributed
+- if imported in source form, is it used in its original form or modified?
+- the license of the original source distribution
 
-CAUTION: Only ISC, MIT, BSD licensed source code is allowed as a dependency.
+CAUTION: use only ISC, MIT, BSD licensed source code as a dependency.
 
 Sample Attribution
 ------------------
@@ -38,9 +35,9 @@ Sample Attribution
 NOTE: if you find any dependency (that was directly utilized via package.json)
 or in source form, please add the missing dependency here and send a PR.
 
-NOTE: you should only list dependencies and code that gets shipped; which
+NOTE: you should list dependencies and code that gets shipped; which
 excludes having the need to list out tools such as webpack, gulp, etc.; unless
-some part of the code base was used as described in the introduction.
+some part of the code base as described in the introduction got used.
 
 Attributions
 ============
