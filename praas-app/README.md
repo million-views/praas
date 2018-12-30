@@ -9,41 +9,25 @@ TBD...
 
 Development
 -----------
-> If using [Yarn](https://yarnpkg.com/), all instances of `npm` can be replaced with `yarn`. :ok_hand:
-
-### install
-```
-$ npm install
-```
+> If using [Yarn](https://yarnpkg.com/), `yarn` can replace all occurences
+> of `npm` in the command line below. :ok_hand:
 
 If live-server is not installed globally do so now.
 ```
-# check if live-server is installed
+# is live-server installed ?
 $ which `live-server`
 
 # if not installed, install it now
 $ npm install --global live-server
 ```
-
-### build
-```
-$ npm run build
-```
-
-Compiles all files. Output is sent to the `build` directory.
-
-### start
-```
-$ npm start
-```
-Runs your application (from the `build` directory) in the browser.
-
-### watch
-```
-$ npm run watch
-```
-
-Like [`start`](#start), but will auto-compile & auto-reload the server after any file changes within the `app` and `web` directory.
+### Tasks
+|  task   | command line       | notes                                         |
+|:--------|:-------------------|:----------------------------------------------|
+| install |```$npm install```  | installs dependencies                         |
+| lint    |```$npm run lint``` | run eslint on `src` folder                    |
+| build   |```$npm run build```| compile to `build` folder                     |
+| start   |```$npm run start```| web serve `build` folder                      |
+| watch   |```$npm run watch```| watch/build changes to `app` and `web` folders|
 
 Code organization
 -----------------
@@ -53,13 +37,13 @@ To that end, we have the following structure at the top level.
 ```console
 project-name
 ├── build          //<- generated and bundled files ready for deployment
-├── LICENSE        //<- for code that is meant to be shared, I recommend ISC, MIT or BSD.
+├── LICENSE        //<- pick one of ISC, MIT or BSD for open source projects
 ├── package.json   //<- metadata relevant to the project
 ├── README.md      //<- high level overview and getting started instructions
 └── src            //<- 'code' including configuration goes here
 ```
 
-All 'code' (including configuration to build the code) is kept under 'src' folder...
+All 'code' (including configuration to build the code) is under 'src' folder...
 
 ```console
 src
@@ -69,13 +53,13 @@ src
 ├── doc            //<- notes, design documents, requirements go here
 ├── lib            //<- [optional] external libraries in source form (see ATTRIBUTION.md)
 ├── store          //<- [optional] contains state of the application
-└── web            //<- web related assets to be bundled along with code in app and lib folders
+└── web            //<- web related assets bundled with code in app and lib folders
 ```
 
 NOTE:
   I have seen some starter kits name the 'api' folder as 'service', probably
   to suggest that the app uses the 'service'. I prefer 'api' because an app
-  may use several different services. Also instructive is to read the differences
+  may use different services. Also instructive is to read the differences
   between  [facade and service](https://stackoverflow.com/questions/15038324/are-the-roles-of-a-service-and-a-fa%c3%a7ade-similar#15079958)
 
 ### Webpack ###
@@ -88,7 +72,7 @@ cfg/
 ├── development.js //<- used in development mode
 ├── eslint.js      //<- lint code
 ├── optimize.js    //<- used in production mode (optimize, minify, ...)
-├── setup.js       //<- tell webpack where things are
+├── setup.js       //<- tell webpack how to bundle code and assets
 ├── styles.js      //<- to process css and sass
 └── webpack.js     //<- kickstart webpack using this arrangement
 ```
