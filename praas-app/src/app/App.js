@@ -4,7 +4,7 @@ import { Router } from '@reach/router';
 const App = () => (
   <Router>
     <Home path="/" />
-    <Test path="/test" />
+    <Test path="test" />
   </Router>
 );
 
