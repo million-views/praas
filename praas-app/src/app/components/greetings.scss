@@ -1,0 +1,32 @@
+
+.link {
+  cursor: pointer;
+  text-decoration: none;
+  color: $secondary;
+  background: rgba(white, 0);
+  will-change: background-color;
+  &:hover, &:active {
+    background: rgba($primary, 0.3);
+  }
+
+  strong, em {
+    display: block;
+  }
+
+  em {
+    font-size: 85%;
+    padding-left: 8px;
+  }
+}
+
+.greeting {
+  display: block;
+  position: relative;
+  background: $background;
+  border-radius: 2px;
+  margin: 0 0 $base-spacing/2;
+  padding: $base-spacing;
+  h2 {
+    margin-bottom: $base-spacing;
+  }
+}

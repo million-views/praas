@@ -1,0 +1,33 @@
+
+/* illustrate the use of creating a global instance of a place holder */
+:global(.shadow) {
+  @extend %shadow;
+}
+
+/*
+See .underline class for an example of creating a global instance of a mixin...
+
+NOTE:
+- within a mixin, no variables are accessible (without importing
+  them);
+- importing partials from within a partial is considered a
+  poor practice.
+- the solution is to make each mixin accept parameters and provide
+  default parameters;
+- since we may or may not be creating a global instance of a style
+  that uses the mixin, start the mixin name with an underscore as
+  a convention, so that user/app level style sheet can 'include'
+  the mixin into a class of their own.
+*/
+:global(.underline) {
+  @include _underline($base-spacing);
+}
+
+.container {
+  padding-top: $header-height + 5px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 20px;
+  grid-template-rows: minmax(100px, auto);
+}
+
