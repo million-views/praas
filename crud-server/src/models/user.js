@@ -8,15 +8,13 @@ module.exports = (db, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        is: /^[a-z]+$/i,
-        notEmpty: true
+        notEmpty: true,
       }
     },
     lastName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        is: /^[a-z]+$/i,
         notEmpty: true
       }
     },
@@ -25,10 +23,12 @@ module.exports = (db, DataTypes) => {
       allowNull: false,
       validate: {
         is: /\S+@\S+\.\S+/,
-        isLowercase: true,
         notEmpty: true
       },
-      unique: true
+      unique: true,
+      set(email) {
+        this.setDataValue('email', email.toString().toLowerCase());
+      }
     },
     hash: {
       type: DataTypes.STRING,

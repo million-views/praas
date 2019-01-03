@@ -1,10 +1,9 @@
 module.exports = (db, DataTypes) => {
   const Conduit = db.define('conduit', {
-    apiKey: {
+    suriApiKey: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        // is: /^[a-z0-9]+$/i,
         notEmpty: true
       }
     },
@@ -16,15 +15,16 @@ module.exports = (db, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true
     },
-    curi: {
+    suri: {
       type: DataTypes.STRING(512),
       allowNull: false,
       isUrl: true,
     },
-    puri: {
+    curi: {
       type: DataTypes.STRING(512),
       allowNull: false,
       isUrl: true,
+      unique: true,
     },
     whitelist: {
       type: DataTypes.JSON,
