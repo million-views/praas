@@ -7,11 +7,11 @@ module.exports = (db, DataTypes) => {
         notEmpty: true
       }
     },
-    type: {
+    suriType: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    objectKey: {
+    suriObjectKey: {
       type: DataTypes.STRING,
       allowNull: true
     },
@@ -59,11 +59,11 @@ module.exports = (db, DataTypes) => {
 
   Conduit.prototype.toProfileJSONFor = function () {
     return {
-      apiKey: this.apiKey,
-      type: this.type,
-      objectKey: this.objectKey,
+      suriApiKey: this.suriApiKey,
+      suriType: this.suriType,
+      suriObjectKey: this.suriObjectKey,
+      suri: this.suri,
       curi: this.curi,
-      puri: this.puri,
       whitelist: this.whitelist,
       racm: this.racm,
       throttle: this.throttle,

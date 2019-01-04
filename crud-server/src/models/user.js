@@ -34,7 +34,10 @@ module.exports = (db, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    salt: DataTypes.STRING
+    salt: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
   });
 
   User.prototype.setPassword = function (password) {
