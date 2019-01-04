@@ -28,9 +28,10 @@ const fakeConduit = (overrides = {}) => {
   // const accessArr = ['GET', 'POST', 'DELETE', 'PUT'];
 
   const conduit = {
-    apiKey: faker.random.uuid(),
-    type: typesArr[Math.floor(Math.random() * typesArr.length)],
-    objectKey: faker.lorem.word(),
+    suriApiKey: faker.random.uuid(),
+    suriType: typesArr[Math.floor(Math.random() * typesArr.length)],
+    suriObjectKey: faker.lorem.word(),
+    suri: faker.internet.url(),
     curi: faker.internet.url(),
     whitelist: [{
       ip: faker.internet.ip(),

@@ -19,13 +19,37 @@ const fakeUsers = async (count = 5) => {
   return fups;
 };
 
+const fakeConduits = async (user, count = 5) => {
+  const fcts = [];
+  for (let i = 0; i < count; i++) {
+    const fct = helpers.fakeConduit();
+    const ct = models.Conduit.build({ ...fct });
+    ct.userId = user.id;
+    const domain = models.System.cconf.settings.domain;
+    const alphabet = models.System.cconf.settings.alphabet;
+    const randomStr = generate(alphabet, models.System.cconf.settings.uccount); // => "smgfz"
+
+    const initials = user.firstName.slice(0, 1).toLowerCase()
+      .concat(user.lastName.slice(0, 1).toLowerCase());
+
+    const curi = initials.concat('-', randomStr, '.', domain);
+    ct.curi = curi;
+
+    await ct.save();
+    fcts.push(fct);
+  }
+  return fcts;
+};
+
 /**
  * Unit tests for the database model
  * - order of tests as written is significant
  * - when adding new tests make sure the sequence of tests
  *   test the lifecycle of the model instances
  */
-describe('PraaS Model', () => {
+describe('PraaS', () => {
+  // let users = undefined;
+
   before('running tests', async () => {
     await models.db.sync({ force: true });
     // const sys = models.System.build({
@@ -35,12 +59,6 @@ describe('PraaS Model', () => {
     //   }]
     // });
     // await sys.save();
-  });
-
-  after('populate for integration test', async function () {
-    this.timeout(10000); // <- needed to prevent timeout exceeded mocha error
-    const fups = await fakeUsers(10);
-    /* const userIds = */ fups.map((fup, _i) => fup.id);
   });
 
   context('Non-functional requirements', () => {
@@ -80,11 +98,6 @@ describe('PraaS Model', () => {
 
   context('User model', () => {
     const fup = helpers.fakeUserProfile();
-    console.log('fup: ', fup);
-
-    afterEach(async () => {
-      await models.User.sync();
-    });
 
     it('should store new user(s)', async () => {
       const user = models.User.build({ ...fup });
@@ -97,6 +110,29 @@ describe('PraaS Model', () => {
       expect(newUser).to.have.property('firstName');
       expect(newUser).to.have.property('email');
       expect(newUser.firstName).to.equal(fup.firstName);
+    });
+
+    it('should validate if email is unique', async () => {
+      const fup1 = helpers.fakeUserProfile();
+      const user1 = models.User.build({ ...fup1 });
+      user1.setPassword(fup.password);
+      await user1.save();
+
+      const fup2 = helpers.fakeUserProfile();
+      const user2 = models.User.build({ ...fup2 });
+      user2.email = user1.email;
+      user2.setPassword(fup.password);
+
+      try {
+        await user2.save();
+      } catch ({ name, errors }) {
+        expect(name).to.equal('SequelizeUniqueConstraintError');
+        for (const error of errors) {
+          expect(error.message).to.match(/email must be unique/);
+          expect(error.type).to.match(/unique violation/);
+          expect(error.path).to.match(/^email$/);
+        }
+      }
     });
 
     it('should validate passwords', async () => {
@@ -127,6 +163,8 @@ describe('PraaS Model', () => {
 
   context('Conduit model', () => {
     const fct = helpers.fakeConduit();
+    const ct = models.Conduit.build({ ...fct });
+
     let user = undefined;
 
     before(async () => {
@@ -134,30 +172,57 @@ describe('PraaS Model', () => {
       user = models.User.build({ ...fup });
       user.setPassword(fup.password);
       user = await user.save();
-    });
-
-    afterEach(async () => {
       await models.Conduit.sync();
     });
 
-    xit('should store conduit', async () => {
-      const ct = models.Conduit.build({ ...fct });
+    after('populate for integration test', async function () {
+      const fups = await fakeUsers(10);
+      const users = fups.map((fup, _i) => {
+        return { id: fup.id, firstName: fup.firstName, lastName: fup.lastName };
+      });
+
+      for (let i = 0; i < users.length; i++) {
+        await fakeConduits(users[i]);
+      }
+    });
+
+    it('should store conduit', async () => {
       ct.userId = user.id;
-      const domain = '.trickle.cc';
-      const alphabet = '123456789abcdefghjkmnopqrstuvwxyz';
-      const randomStr = generate(alphabet, 5); // => "smgfz"
+      const domain = models.System.cconf.settings.domain;
+      const alphabet = models.System.cconf.settings.alphabet;
+      const randomStr = generate(alphabet, models.System.cconf.settings.uccount); // => "smgfz"
 
       const initials = user.firstName.slice(0, 1).toLowerCase()
         .concat(user.lastName.slice(0, 1).toLowerCase());
 
-      const puri = initials.concat('-', randomStr, domain);
-      ct.puri = puri;
+      const curi = initials.concat('-', randomStr, '.', domain);
+      ct.curi = curi;
 
-      const nep = await ct.save();
-      expect(nep).to.be.an('object');
-      expect(nep).to.have.property('apiKey');
-      expect(nep).to.have.property('type');
-      expect(nep.type).to.equal(ct.type);
+      const nct = await ct.save();
+      expect(nct).to.be.an('object');
+      expect(nct).to.have.property('suriApiKey');
+      expect(nct).to.have.property('suriType');
+      expect(nct.suriType).to.equal(ct.suriType);
+    });
+
+    it('should validate if curi is unique', async () => {
+      const fct2 = helpers.fakeConduit();
+      const ct2 = models.Conduit.build({ ...fct2 });
+
+      ct2.curi = ct.curi;
+      ct2.userId = user.id;
+
+      try {
+        const nct = await ct2.save();
+        expect(nct.suriType).to.equal(ct2.suriType);
+      } catch ({ name, errors }) {
+        expect(name).to.equal('SequelizeUniqueConstraintError');
+        for (const error of errors) {
+          expect(error.message).to.match(/curi must be unique/);
+          expect(error.type).to.match(/unique violation/);
+          expect(error.path).to.match(/^curi$/);
+        }
+      }
     });
   });
 });

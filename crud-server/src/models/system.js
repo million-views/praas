@@ -8,7 +8,8 @@ module.exports = {
     description: 'Conduit configuration settings',
     settings: {
       alphabet: '123456789abcdefghjkmnopqrstuvwxyz',
-      uccount: '5'
+      uccount: 5,
+      domain: 'trickle.cc',
     }
   }
 };
