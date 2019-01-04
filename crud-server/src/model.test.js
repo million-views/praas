@@ -6,7 +6,7 @@ const helpers = require('./lib/helpers');
 const snapshot = require('snap-shot-it');
 const generate = require('nanoid/generate');
 
-const fakeUsers = async (count = 5) => {
+const generateUsers = async (count = 5) => {
   const fups = [];
   for (let i = 0; i < count; i++) {
     const fup = helpers.fakeUserProfile();
@@ -19,8 +19,8 @@ const fakeUsers = async (count = 5) => {
   return fups;
 };
 
-const fakeConduits = async (user, count = 5) => {
-  const fcts = [];
+const generateConduits = async (user, count = 5) => {
+  const cts = [];
   for (let i = 0; i < count; i++) {
     const fct = helpers.fakeConduit();
     const ct = models.Conduit.build({ ...fct });
@@ -34,11 +34,13 @@ const fakeConduits = async (user, count = 5) => {
 
     const curi = initials.concat('-', randomStr, '.', domain);
     ct.curi = curi;
-
-    await ct.save();
-    fcts.push(fct);
+    cts.push(await saveConduit(ct));
   }
-  return fcts;
+  return cts;
+};
+
+const saveConduit = (ct) => {
+  return ct.save();
 };
 
 /**
@@ -48,17 +50,8 @@ const fakeConduits = async (user, count = 5) => {
  *   test the lifecycle of the model instances
  */
 describe('PraaS', () => {
-  // let users = undefined;
-
   before('running tests', async () => {
     await models.db.sync({ force: true });
-    // const sys = models.System.build({
-    //   conf: [{
-    //     alphabet: '123456789abcdefghjkmnopqrstuvwxyz',
-    //     ccount: 5
-    //   }]
-    // });
-    // await sys.save();
   });
 
   context('Non-functional requirements', () => {
@@ -168,44 +161,32 @@ describe('PraaS', () => {
     let user = undefined;
 
     before(async () => {
-      const fup = helpers.fakeUserProfile();
-      user = models.User.build({ ...fup });
-      user.setPassword(fup.password);
-      user = await user.save();
+      const gusr = await generateUsers(1);
+      user = gusr[0];
       await models.Conduit.sync();
     });
 
     after('populate for integration test', async function () {
-      const fups = await fakeUsers(10);
+      this.timeout(10000); // <- needed to prevent timeout exceeded mocha error
+      const fups = await generateUsers(10);
       const users = fups.map((fup, _i) => {
         return { id: fup.id, firstName: fup.firstName, lastName: fup.lastName };
       });
 
       for (let i = 0; i < users.length; i++) {
-        await fakeConduits(users[i]);
+        await generateConduits(users[i]);
       }
     });
 
     it('should store conduit', async () => {
-      ct.userId = user.id;
-      const domain = models.System.cconf.settings.domain;
-      const alphabet = models.System.cconf.settings.alphabet;
-      const randomStr = generate(alphabet, models.System.cconf.settings.uccount); // => "smgfz"
+      const nct = await generateConduits(user, 1);
 
-      const initials = user.firstName.slice(0, 1).toLowerCase()
-        .concat(user.lastName.slice(0, 1).toLowerCase());
-
-      const curi = initials.concat('-', randomStr, '.', domain);
-      ct.curi = curi;
-
-      const nct = await ct.save();
-      expect(nct).to.be.an('object');
-      expect(nct).to.have.property('suriApiKey');
-      expect(nct).to.have.property('suriType');
-      expect(nct.suriType).to.equal(ct.suriType);
+      expect(nct[0]).to.be.an('object');
+      expect(nct[0]).to.have.property('suriApiKey');
+      expect(nct[0]).to.have.property('suriType');
     });
 
-    it('should validate if curi is unique', async () => {
+    it.only('should validate if curi is unique', async () => {
       const fct2 = helpers.fakeConduit();
       const ct2 = models.Conduit.build({ ...fct2 });
 
