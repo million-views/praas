@@ -186,7 +186,7 @@ describe('PraaS', () => {
       expect(nct[0]).to.have.property('suriType');
     });
 
-    it.only('should validate if curi is unique', async () => {
+    it('should validate if curi is unique', async () => {
       const fct2 = helpers.fakeConduit();
       const ct2 = models.Conduit.build({ ...fct2 });
 

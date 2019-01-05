@@ -1,3 +1,26 @@
+PraaS Back end
+==============
+Back end REST server to manage *conduits*. A conduit is a handle to a RESTful service endpoint.
+
+Features
+--------
+TBD...
+
+Development
+-----------
+> NOTE:
+> Integration tests require bootstrap data created by the unit tests. So,
+> me sure to run unit tests (test-model) first before running the 
+> integration tests (test-rest).
+
+### Tasks
+|  task     | command line                              | notes                               |
+|:----------|:------------------------------------------|:------------------------------------|
+| install   |```$npm install```                         | installs dependencies               |
+| lint      |```$npm run lint```                        | run eslint on `src` folder          |
+| test-model|```$SNAPSHOT_UPDATE=1 npm run test-model```| run data layer unit tests           |
+| test-rest |```$SNAPSHOT_UPDATE=1 npm run test-rest``` | run REST endpoint integration tests |
+
 # Praas Data Model
 
 Consists of the three entities: System, User, Conduit
@@ -29,16 +52,16 @@ Conduit stores data related to the service endpoint
 
 ### Fields
 
-|  name           | description                                       | constraints                      |
-|:----------------|:--------------------------------------------------|:---------------------------------|
-| suriApiKey      |Service URI API Key                                |not null                         |
-| suriType        |The type of conduit (AirTable, Google Sheets)      |not null                         |
-| suriObjectKey   |Key to identify the object                         |null                             |
-| suri            |Service URI (AirTable URI)                         |not null                         |
-| curi            |System generated conduit URI                       |not null, unique                 |
-| whitelist       |Allowed ip list                                    |not null                         |
-| racm            |(Request Access Control Map - GET/POST/DEL/PUT...) |not null                         | 
-| throttle        |Limit requests to 5/sec to avoid DOS attack        |not null, defaults to 'true'     |
-| status          |Active/Inactive                                    |not null, defaults to 'Inactive' |
-| description     |Notes about the conduit                            |null                              |
-| hiddenFormField |To avoid bot spamming                              |null                              |
+|  name           | description                                       | constraints                    |
+|:----------------|:--------------------------------------------------|:-------------------------------|
+| suriApiKey      |Service URI API Key                                |not null                        |
+| suriType        |The type of conduit (AirTable, Google Sheets)      |not null                        |
+| suriObjectKey   |Key to identify the object                         |null                            |
+| suri            |Service URI (AirTable URI)                         |not null                        |
+| curi            |System generated conduit URI                       |not null, unique                |
+| whitelist       |Allowed ip list                                    |not null                        |
+| racm            |(Request Access Control Map - GET/POST/DEL/PUT...) |not null                        | 
+| throttle        |Limit requests to 5/sec to avoid DOS attack        |not null, defaults to 'true'    |
+| status          |Active/Inactive                                    |not null, defaults to 'Inactive'|
+| description     |Notes about the conduit                            |null                            |
+| hiddenFormField |To avoid bot spamming                              |null                            |

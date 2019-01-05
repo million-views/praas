@@ -13,6 +13,7 @@
     "test-model": "mocha --exit src/model.test.js"
   },
   "dependencies": {
+    "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "errorhandler": "^1.5.0",
     "express": "^4.16.4",
