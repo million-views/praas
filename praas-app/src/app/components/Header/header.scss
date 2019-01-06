@@ -6,7 +6,6 @@
   left: 0;
   top: 0;
   background: $primary;
-
   z-index: 50;
 
   h1 {
@@ -34,7 +33,9 @@
       will-change: background-color;
       text-decoration: none;
       color: $secondary;
-      &:hover, &:active {
+
+      &:hover,
+      &:active {
         background: rgba(white, 0.3);
       }
     }
