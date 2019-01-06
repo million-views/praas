@@ -19,6 +19,17 @@
     "watch": "webpack-dev-server --progress --config src/cfg/webpack",
     "start": "npm run build && live-server build/"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
   "dependencies": {
     "@reach/router": "^1.2.1",
     "prop-types": "^15.6.2",
