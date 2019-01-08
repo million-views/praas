@@ -22,10 +22,6 @@ NOTE:
   @include _underline($base-spacing);
 }
 
-.container {
-  padding-top: $header-height + 5px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-gap: 20px;
-  grid-template-rows: minmax(100px, auto);
+body {
+  font-family: sans-serif;
 }

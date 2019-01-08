@@ -1,3 +1,5 @@
+import { Link } from '@reach/router';
+
 import style from './header.scss';
 
 import React from 'react';
@@ -9,6 +11,10 @@ export default function Header({ title, ...rest }) {
   return (
     <header className={cx([style.header, 'shadow'])}>
       <h1>{title}</h1>
+      <nav>
+        <Link to="/">Home</Link>
+        <Link to="/signup">Signup</Link>
+      </nav>
     </header>
   );
 };
