@@ -65,3 +65,22 @@ Conduit stores data related to the service endpoint
 | status          |Active/Inactive                                    |not null, defaults to 'Inactive'|
 | description     |Notes about the conduit                            |null                            |
 | hiddenFormField |To avoid bot spamming                              |null                            |
+
+\* whitelist is an object with the following properties:
+
+| Property  | Description        |
+|:----------|:-------------------|
+| ipAddress | ipAddress          |
+| comment   | comment            |
+| status    | `Active` or `Inactive` |
+
+\* racm is an array of allowed methods
+
+\* hiddenFormField is an object with the following properties:
+
+| Property  | Description                     |
+|:----------|:--------------------------------|
+| fieldName | name of the field               |
+| policy    | `drop-if-filled` or `pass-if-match` |
+| include   | boolean indicating if the field should be sent to the suri |
+| value     | Value to be matched against the field in case of `pass-if-match` |
