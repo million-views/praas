@@ -16,6 +16,46 @@ const jake = {
   }
 };
 
+let curi, curiId;
+
+const addConduit = {
+  suriApiKey: 'keyy97SC6NQE0uXJ8',
+  suriType: 'AirTable',
+  suriObjectKey: 'appjAkYNPsqQYs20n',
+  suri: 'https://api.airtable.com/v0/appjAkYNPsqQYs20n/Schedule?maxRecords=3&view=Entire%20Schedule',
+  whitelist: [
+    {
+      ipAddress: '73.70.215.82/32',
+      comment: 'hm',
+      status: 'Active',
+    },
+    {
+      ipAddress: '73.223.158.246/32',
+      comment: 'vj',
+      status: 'Active',
+    },
+    {
+      ipAddress: '165.227.22.202/32',
+      comment: 'va',
+      status: 'Active',
+    },
+  ],
+  racm: ['POST', 'PATCH'],
+  throttle: true,
+  status: 'Active',
+  description: 'Reunion event plan',
+  hiddenFormField: {
+    fieldName: 'campaign',
+    policy: 'pass-if-match',
+    include: true,
+    value: 'ZM-DIWALI-25OFF',
+  },
+};
+
+const updConduit = {
+  status: 'Inactive',
+};
+
 const User = (res) => res.body.user;
 
 const apiServer = server.app.listen(server.port);
@@ -109,6 +149,56 @@ describe('Praas REST API', () => {
         .get('/user')
         .set('Authorization', `Token ${jakeUser.token}`);
       expect(User(res).email).to.equal(jake.user.email);
+    });
+
+    it('should allow user to add new service endpoint', async () => {
+      const res = await Api()
+        .post('/conduits')
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send(addConduit);
+      expect(res.status).to.equal(201);
+      expect(res.body).to.have.property('curi');
+      curi = res.body.curi;
+      curiId = curi.match(/(?:(?!\/).(?!\/))+$/);
+    });
+
+    it('should allow user to fetch a service endpoint', async () => {
+      const res = await Api()
+        .get(`/conduits/${curiId}`)
+        .set('Authorization', `Token ${jakeUser.token}`);
+      expect(res.status).to.equal(200);
+      expect(res.body.curi).to.equal(curi);
+      expect(res.body).to.have.property('suriApiKey');
+      expect(res.body).to.have.property('suriType');
+      expect(res.body).to.have.property('suri');
+      expect(res.body).to.have.property('whitelist');
+      expect(res.body).to.have.property('racm');
+      expect(res.body).to.have.property('throttle');
+      expect(res.body).to.have.property('status');
+    });
+
+    it('should allow user to remove service endpoint', async () => {
+      const res = await Api()
+        .delete(`/conduits/${curiId}`)
+        .set('Authorization', `Token ${jakeUser.token}`);
+      expect(res.status).to.equal(200);
+      expect(res.body).to.be.null;
+    });
+
+    it('should allow user to update service endpoint', async () => {
+      const res = await Api()
+        .patch(`/conduits/${curiId}`)
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send(updConduit);
+      expect(res.status).to.equal(200);
+      expect(res.body.status).to.equal('Inactive');
+      expect(res.body).to.have.property('suriApiKey');
+      expect(res.body).to.have.property('suriType');
+      expect(res.body).to.have.property('suri');
+      expect(res.body).to.have.property('whitelist');
+      expect(res.body).to.have.property('racm');
+      expect(res.body).to.have.property('throttle');
+      expect(res.body).to.have.property('status');
     });
   });
 });
