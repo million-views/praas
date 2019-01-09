@@ -6,5 +6,6 @@
  * directly.
  */
 import Header from './header';
+import Signup from './signup';
 
-export { Header };
+export { Header, Signup };

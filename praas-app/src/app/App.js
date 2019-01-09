@@ -1,7 +1,7 @@
 import React from 'react';
 import { Router } from '@reach/router';
 import { Header } from 'components';
-import Signup from './routes/signup';
+import Signup from './pages/signup';
 
 const App = () => (
   <div>
