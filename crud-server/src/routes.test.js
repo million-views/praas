@@ -3,6 +3,7 @@ const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
 // const snapshot = require('snap-shot-it');
 const server = require('./server');
+const helpers = require('./lib/helpers');
 
 const expect = chai.expect;
 chai.use(chaiHttp);
@@ -18,40 +19,7 @@ const jake = {
 
 let curi, curiId;
 
-const addConduit = {
-  suriApiKey: 'keyy97SC6NQE0uXJ8',
-  suriType: 'AirTable',
-  suriObjectKey: 'appjAkYNPsqQYs20n',
-  suri: 'https://api.airtable.com/v0/appjAkYNPsqQYs20n/Schedule?maxRecords=3&view=Entire%20Schedule',
-  whitelist: [
-    {
-      ipAddress: '73.70.215.82/32',
-      comment: 'hm',
-      status: 'Active',
-    },
-    {
-      ipAddress: '73.223.158.246/32',
-      comment: 'vj',
-      status: 'Active',
-    },
-    {
-      ipAddress: '165.227.22.202/32',
-      comment: 'va',
-      status: 'Active',
-    },
-  ],
-  racm: ['POST', 'PATCH'],
-  throttle: true,
-  status: 'Active',
-  description: 'Reunion event plan',
-  hiddenFormField: {
-    fieldName: 'campaign',
-    policy: 'pass-if-match',
-    include: true,
-    value: 'ZM-DIWALI-25OFF',
-  },
-};
-
+const addConduit = helpers.fakeConduit();
 const updConduit = {
   status: 'Inactive',
 };

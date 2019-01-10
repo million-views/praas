@@ -25,7 +25,14 @@ const fakeUserProfile = (overrides = {}) => {
 const fakeConduit = (overrides = {}) => {
   const typesArr = ['Google Sheets', 'Airtable', 'Smart Sheet'];
   const ipstatArr = ['active', 'inactive'];
-  // const accessArr = ['GET', 'POST', 'DELETE', 'PUT'];
+  const accessArr = ['GET', 'POST', 'DELETE', 'PUT'];
+  const hfffieldArr = ['partner', 'campaign', 'userName', 'department', 'accountName'];
+  const hffPolicyArr = ['drop-if-filled', 'pass-if-match'];
+
+  // Remove random array element random number of times (keep 1 min)
+  for (let i = 0, len = accessArr.length, j = Math.floor(Math.random() * len); i < j; i++) {
+    accessArr.splice(Math.floor(Math.random() * (len - i)), 1);
+  }
 
   const conduit = {
     suriApiKey: faker.random.uuid(),
@@ -38,14 +45,19 @@ const fakeConduit = (overrides = {}) => {
       status: ipstatArr[Math.floor(Math.random() * ipstatArr.length)],
       comment: faker.lorem.words()
     }],
-    racm: ['GET', 'POST', 'DEL'],
+    racm: accessArr,
     throttle: faker.random.boolean(),
     status: ipstatArr[Math.floor(Math.random() * ipstatArr.length)],
     description: faker.lorem.sentence(),
+    hiddenFormField: [{
+      fieldName: hfffieldArr[Math.floor(Math.random() * hfffieldArr.length)],
+      policy: hffPolicyArr[Math.floor(Math.random() * hffPolicyArr.length)],
+      include: faker.random.boolean(),
+      value: faker.lorem.word(),
+    }],
     ...overrides,
   };
 
-  // hiddenFormField: this.hiddenFormField
   return conduit;
 };
 
