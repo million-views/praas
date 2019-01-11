@@ -25,7 +25,7 @@ const fakeUserProfile = (overrides = {}) => {
 const fakeConduit = (overrides = {}) => {
   const typesArr = ['Google Sheets', 'Airtable', 'Smart Sheet'];
   const ipstatArr = ['active', 'inactive'];
-  const accessArr = ['GET', 'POST', 'DELETE', 'PUT'];
+  const accessArr = ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'];
   const hfffieldArr = ['partner', 'campaign', 'userName', 'department', 'accountName'];
   const hffPolicyArr = ['drop-if-filled', 'pass-if-match'];
 
