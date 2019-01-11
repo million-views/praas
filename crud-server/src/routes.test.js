@@ -75,6 +75,18 @@ describe('Praas REST API', () => {
       expect(User(res).email).to.equal(email.toLowerCase());
     });
 
+    it('should disallow user registration with e-mail that is already in use', async () => {
+      const { firstName, lastName, email, password } = jake.user;
+      const res = await Api()
+        .post('/users')
+        .send({ user: { firstName, lastName, email: email.toLowerCase(), password } });
+      expect(res.status).to.equal(422);
+      const errors = res.body.errors;
+      for (const error of Object.keys(errors)) {
+        expect(errors[error]).to.match(/^email.*$|^unknown.*$/);
+      }
+    });
+
     it('should return errors for bad registration data of user', async () => {
       // TODO:
       // - add a test case for empty body submission

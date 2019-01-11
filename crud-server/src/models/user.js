@@ -13,10 +13,7 @@ module.exports = (db, DataTypes) => {
     },
     lastName: {
       type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
+      allowNull: true,
     },
     email: {
       type: DataTypes.STRING,
