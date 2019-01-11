@@ -15,38 +15,48 @@ router.get('/user', auth.required, async (req, res, next) => {
 });
 
 // Registration
-router.post('/users', function (req, res, next) {
+router.post('/users', async (req, res, next) => {
   const user = new User();
   const errors = {};
 
   if (typeof req.body.user.firstName !== 'undefined') {
     user.firstName = req.body.user.firstName;
   } else {
-    errors.firstName = ['can\'t be blank'];
+    errors.firstName = "can't be blank";
   }
 
   if (typeof req.body.user.lastName !== 'undefined') {
     user.lastName = req.body.user.lastName;
-  } else {
-    errors.lastName = ['can\'t be blank'];
   }
 
   if (typeof req.body.user.password !== 'undefined') {
     user.setPassword(req.body.user.password);
   } else {
-    errors.password = ['password can\'t be blank'];
+    errors.password = "password can't be blank";
   }
 
   if (typeof req.body.user.email !== 'undefined') {
     user.email = req.body.user.email.toLowerCase();
   } else {
-    errors.email = ['email can\'t be blank'];
+    errors.email = "email can't be blank";
   }
 
   if (Object.keys(errors).length === 0) {
-    user.save().then(function () {
-      return res.json({ user: user.toAuthJSON() });
-    }).catch(next);
+    try {
+      const result = await user.save();
+      return res.json({ user: result.toAuthJSON() });
+    } catch ({ name, errors: dberrors, fields }) {
+      // console.log(name, errors, fields);
+      if (name === 'SequelizeUniqueConstraintError') {
+        for (let i = 0; i < fields.length; i++) {
+          errors[fields[i]] = [dberrors[i].message];
+        }
+        return res.status(422).json({ errors });
+      } else {
+        errors.unknown = 'unknown error, please contact support';
+        next(errors);
+      }
+    }
   } else {
     return res.status(422).json({ errors });
   }
