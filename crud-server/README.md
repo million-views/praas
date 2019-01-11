@@ -66,7 +66,7 @@ Conduit stores data related to the service endpoint
 | description     |Notes about the conduit                            |null                            |
 | hiddenFormField |To avoid bot spamming                              |null                            |
 
-\* whitelist is an object with the following properties:
+\* whitelist is an array of objects with the following properties:
 
 | Property  | Description        |
 |:----------|:-------------------|
@@ -76,7 +76,7 @@ Conduit stores data related to the service endpoint
 
 \* racm is an array of allowed methods
 
-\* hiddenFormField is an object with the following properties:
+\* hiddenFormField is an array of objects with the following properties:
 
 | Property  | Description                     |
 |:----------|:--------------------------------|
