@@ -1,22 +1,21 @@
 import React from 'react';
 import { Router } from '@reach/router';
+import { Header } from 'components';
+import Signup from './pages/signup';
 
 const App = () => (
-  <Router>
-    <Home path="/" />
-    <Test path="test" />
-  </Router>
+  <div>
+    <Router>
+      <Home path="/" />
+      <Signup path="signup" />
+    </Router>
+  </div>
 );
 
 const Home = () => (
   <div>
-    <h2> Welcome </h2>
-  </div>
-);
-
-const Test = () => (
-  <div>
-    <h2> Welcome test </h2>
+    <Header title="Conduits - pipe data to your storage" />
+    <h2>A conduit is a handle to a RESTful service endpoint</h2>
   </div>
 );
 

@@ -1,0 +1,14 @@
+.signup {
+  display: grid;
+  grid-row-gap: 1em;
+  margin: 0 auto;
+  width: 50%;
+}
+
+.signup-button {
+  background-color: $primary;
+  border-radius: 3px;
+  border-style: none;
+  color: $secondary;
+  padding: 8px 0;
+}

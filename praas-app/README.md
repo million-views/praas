@@ -83,7 +83,7 @@ point and contains the 'shell' of a PWA.
 
 ```console
 app
-├── components     //<- used by the app
+├── components     //<- reusable widgets within the app
 ├── main.js        //<- app shell
 ├── routes         //<- are pages or containers in a flow
 └── style          //<- app wide look and feel *may* go here
