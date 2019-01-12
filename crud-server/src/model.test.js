@@ -4,7 +4,6 @@ const config = require('./config');
 const models = require('./models');
 const helpers = require('./lib/helpers');
 const snapshot = require('snap-shot-it');
-const generate = require('nanoid/generate');
 
 const generateUsers = async (count = 5) => {
   const fups = [];
@@ -25,22 +24,9 @@ const generateConduits = async (user, count = 5) => {
     const fct = helpers.fakeConduit();
     const ct = models.Conduit.build({ ...fct });
     ct.userId = user.id;
-    const domain = models.System.cconf.settings.domain;
-    const alphabet = models.System.cconf.settings.alphabet;
-    const randomStr = generate(alphabet, models.System.cconf.settings.uccount); // => "smgfz"
-
-    const initials = user.firstName.slice(0, 1).toLowerCase()
-      .concat(user.lastName.slice(0, 1).toLowerCase());
-
-    const curi = initials.concat('-', randomStr, '.', domain);
-    ct.curi = curi;
-    cts.push(await saveConduit(ct));
+    cts.push(await ct.save());
   }
   return cts;
-};
-
-const saveConduit = (ct) => {
-  return ct.save();
 };
 
 /**

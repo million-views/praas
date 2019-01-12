@@ -39,7 +39,6 @@ const fakeConduit = (overrides = {}) => {
     suriType: typesArr[Math.floor(Math.random() * typesArr.length)],
     suriObjectKey: faker.lorem.word(),
     suri: faker.internet.url(),
-    curi: faker.internet.url(),
     whitelist: [{
       ip: faker.internet.ip(),
       status: ipstatArr[Math.floor(Math.random() * ipstatArr.length)],

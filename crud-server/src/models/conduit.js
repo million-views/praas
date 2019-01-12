@@ -1,3 +1,6 @@
+const generate = require('nanoid/generate');
+const System = require('./system');
+
 module.exports = (db, DataTypes) => {
   const Conduit = db.define('conduit', {
     suriApiKey: {
@@ -72,6 +75,22 @@ module.exports = (db, DataTypes) => {
       hiddenFormField: this.hiddenFormField
     };
   };
+
+  Conduit.prototype.generateCuri = async function () {
+    const domain = System.cconf.settings.domain;
+    const alphabet = System.cconf.settings.alphabet;
+    const randomStr = generate(alphabet, System.cconf.settings.uccount); // => "smgfz"
+    const user = await User.findByPk(this.userId);
+
+    const initials = user.firstName.slice(0, 1).toLowerCase()
+      .concat(user.lastName.slice(0, 1).toLowerCase());
+
+    this.curi = initials.concat('-', randomStr, '.', domain);
+  };
+
+  Conduit.beforeValidate(async conduit => {
+    await conduit.generateCuri();
+  });
 
   const User = require('./user')(db, DataTypes);
 
