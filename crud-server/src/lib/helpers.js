@@ -15,7 +15,8 @@ const fakeUserProfile = (overrides = {}) => {
     ...overrides,
   };
 
-  const password = baseUser.password || faker.internet.password();
+  // const password = baseUser.password || faker.internet.password();
+  const password = baseUser.password || firstName + '123';
 
   return {
     ...baseUser, password
