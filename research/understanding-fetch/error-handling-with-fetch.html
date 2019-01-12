@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Understanding Fetch</title>
+</head>
+
+
+<body>
+  <script>
+    // Gist to understand promise chaining and fetch behaviors
+    //
+    // Explain what 'kujma10' was alluding to...
+    // See https://gist.github.com/odewahn/5a5eeb23279eed6a80d7798fdb47fe91#gistcomment-2220443
+
+    const url = 'http://httpstat.us';
+    function testFetch1(code) {
+      // try this with network enabled first and then disabled
+      // On firefox, when network is enabled there will be no errors
+      // On chrome, we get Type error in both cases... first reason
+      // is because response is not json, second reason is because of
+      // of network error. Both cases illustrate why 'kujma10' says
+      // the code is not optimal. Is it possible that 'kujma10'
+      // is probably a chrome user and 'johnlim' is a firefox user?
+      fetch(`${url}/${code}?sleep=1000`)
+        .then(response => {
+          if (!response.ok) { throw response }
+          return response.json()  //we only get here if there is no error
+        })
+        .then(json => {
+          // note: this can throw error
+          console.log('response', json);
+          // document.getElementById('normal').innerHTML = json;
+          // this.props.dispatch(doSomethingWithResult(json))
+        })
+        .catch(err => {
+          console.error('in first catch, error', err);
+
+          // NOTE: chrome throws a TypeError since text is not a function
+          //       available in err; whereas Firefox doesn't complain.
+          //       Does that mean Firefox has a bug?
+          try {
+            err.text().then(errorMessage => {
+              console.log('in first catch, caught', errorMessage);
+              // this.props.dispatch(displayTheError(errorMessage))
+            });
+          } catch (again) {
+            // postscript: firefox also throws an error but is not
+            // caught in the console and displayed whereas chrome
+            // catches it.
+            console.error('in first catch, now what?', again);
+          }
+        });
+    }
+
+    async function testFetch2(code) {
+      const finalAnalysis = await fetch(`${url}/${code}?sleep=1000`)
+        .then(response => {
+          if (!response.ok) { throw response };
+          return "will this terminate the promise chain?";
+          //return response.json()  //we only get here if there is no error
+        })
+        .catch(err => {
+          try {
+            err.text().then(errorMessage => {
+              console.log('in first catch, caught:', errorMessage);
+            });
+            return "This will flow the subsequent then";
+          } catch (again) {
+            console.error('in first catch, now what?', again);
+            throw "Catch me in the second catch";
+          }
+        })
+        .then(json => {
+          // note: this can throw error
+          console.log('response', json);
+          return "From second then, will second catch catch me?";
+        })
+        .catch(err => {
+          console.error('in 2nd catch, error', err);
+          try {
+            err.text().then(errorMessage => {
+              console.log('in 2nd catch, caught', errorMessage);
+            });
+          } catch (again) {
+            // postscript: firefox also throws an error but is not
+            // caught in the console and displayed whereas chrome
+            // catches it.
+            console.error('in 2nd catch, now what?', again);
+          }
+          return "promises can bite you big time!";
+        })
+        .then(what => {
+          console.log("the final then is ", what);
+          return what;
+        });
+
+      console.log("final analysis is ", finalAnalysis);
+    }
+
+    async function testFetch3(code) {
+      const finalAnalysis = await fetch(`${url}/${code}?sleep=1000`)
+        .then(
+          (response) => {
+            // this handles server response (including non 2xx)
+            // we can dispatch both success and non-success action creators
+            // from here...
+            if (response.ok) {
+              return response;
+            } else {
+              return Promise.reject({
+                statusText: response.statusText,
+                status: response.status,
+                error: { data: ['foo', 'bar', 'fubar'] } // replace with response.json() here
+              });
+            };
+          },
+          (error) => {
+            // this path is for network errors
+            console.error("did I catch the network error?", error)
+            return Promise.reject({
+              statusText: "I'm a teapot",
+              status: 418, // Unable to contact server, can't make coffee,
+              error: { errors: { offline: "check your network connection" } }
+            });
+          }
+        )
+        .catch(err => {
+          // we only should come here due to body parsing errors
+          // because we should have caught the network error in the
+          // first then
+          try {
+            err.text().then(errorMessage => {
+              console.log('in first catch, caught:', errorMessage);
+            });
+            return "This will flow the subsequent then";
+          } catch (again) {
+            console.error('in first catch, now what?', again);
+            console.error(err);
+          }
+        });
+
+      console.log("final analysis is ", finalAnalysis);
+    }
+
+
+  </script>
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr">
+    <div style="display: flex; flex-direction: column">
+      <button onclick="testFetch1(200)">Test(200): Fetch, Then, Then, Catch</button>
+      <button onclick="testFetch1(500)">Test(500): Fetch, Then, Then, Catch</button>
+      <button onclick="testFetch2(200)">Test(200): Fetch, Catch, Then, Catch</button>
+      <button onclick="testFetch2(500)">Test(500): Fetch, Catch, Then, Catch</button>
+      <button onclick="testFetch3(200)">Test(200): Fetch, (resolve, reject), Catch, Then</button>
+      <button onclick="testFetch3(500)">Test(500): Fetch, (resolve, reject), Catch, Then</button>
+    </div>
+    <div id="normal-log">
+    </div>
+    <div id="error-log">
+    </div>
+  </div>
+  <script>
+    console.log = (function (old_function, div_log) {
+      return function () {
+        const logMessage = Array.prototype.slice.call(JSON.stringify(arguments)).join('');
+        div_log.innerHTML += (`<p> ${logMessage} </p>`);
+        old_function(logMessage);
+      };
+    }(console.log.bind(console), document.getElementById("normal-log")));
+    console.error = (function (old_function, div_log) {
+      return function () {
+        const logMessage = Array.prototype.slice.call(JSON.stringify(arguments)).join('');
+        div_log.innerHTML += (`<p> ${logMessage} </p>`);
+        old_function(logMessage);
+      };
+    }(console.error.bind(console), document.getElementById("error-log")));
+  </script>
+</body>
+
+</html>
