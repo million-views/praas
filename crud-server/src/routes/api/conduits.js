@@ -2,33 +2,21 @@ const router = require('express').Router();
 const Conduit = require('../../models').Conduit;
 const auth = require('../auth');
 
-// Get all conduits
-router.get('/conduits', auth.required, async (req, res, next) => {
-  try {
-    const conduits = await Conduit.findAll({ where: { userId: req.payload.id } });
-    if (!conduits) { return res.sendStatus(401); }
-
-    return res.json({ conduit: conduits.map(i => i.toProfileJSONFor()) });
-  } catch (error) {
-    next(error);
-  }
-});
-
 // add conduit
-router.post('/conduits/', function (req, res, next) {
+router.post('/conduits/', auth.required, function (req, res, next) {
   const conduit = new Conduit();
   const errors = {};
 
   if (typeof req.body.conduit.suriApiKey !== 'undefined') {
     conduit.suriApiKey = req.body.conduit.suriApiKey;
   } else {
-    errors.suriApiKey = ['can\'t be blank'];
+    errors.suriApiKey = "can't be blank";
   }
 
   if (typeof req.body.conduit.suriType !== 'undefined') {
     conduit.suriType = req.body.conduit.suriType;
   } else {
-    errors.suriType = ['can\'t be blank'];
+    errors.suriType = "can't be blank";
   }
 
   if (typeof req.body.conduit.suriObjectKey !== 'undefined') {
@@ -38,19 +26,19 @@ router.post('/conduits/', function (req, res, next) {
   if (typeof req.body.conduit.suri !== 'undefined') {
     conduit.suri = req.body.conduit.suri;
   } else {
-    errors.suri = ['can\'t be blank'];
+    errors.suri = "can't be blank";
   }
 
   if (typeof req.body.conduit.whitelist !== 'undefined') {
     conduit.whitelist = req.body.conduit.whitelist;
   } else {
-    errors.whitelist = ['can\'t be blank'];
+    errors.whitelist = "can't be blank";
   }
 
   if (typeof req.body.conduit.racm !== 'undefined') {
     conduit.racm = req.body.conduit.racm;
   } else {
-    errors.racm = ['can\'t be blank'];
+    errors.racm = "can't be blank";
   }
 
   if (typeof req.body.conduit.throttle !== 'undefined') {
@@ -75,10 +63,44 @@ router.post('/conduits/', function (req, res, next) {
 
   if (Object.keys(errors).length === 0) {
     conduit.save().then(function () {
-      return res.json({ conduit: conduit.toAuthJSON() });
+      return res.status(201).json({ conduit: { id: conduit.id } });
     }).catch(next);
   } else {
     return res.status(422).json({ errors });
+  }
+});
+
+// Get conduit
+router.get('/conduits/:conduitId', auth.required, async (req, res, next) => {
+  try {
+    const conduit = await Conduit.findOne({ where: { id: req.params.conduitId, userId: req.payload.id } });
+    if (!conduit) { return res.sendStatus(404); }
+
+    return res.json({ conduit: conduit.toProfileJSONFor() });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Get all conduits
+router.get('/conduits', auth.required, async (req, res, next) => {
+  try {
+    const conduits = await Conduit.findAll({ where: { userId: req.payload.id } });
+    if (!conduits) { return res.sendStatus(404); }
+
+    return res.json({ conduit: conduits.map(i => i.toProfileJSONFor()) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Delete conduit
+router.delete('/conduits/:conduitId', auth.required, async (req, res, next) => {
+  try {
+    const count = await Conduit.destroy({ where: { id: req.params.conduitId, userId: req.payload.id } });
+    return count ? res.sendStatus(200) : res.sendStatus(404);
+  } catch (error) {
+    next(error);
   }
 });
 
