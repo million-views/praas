@@ -1,15 +1,21 @@
 import React from 'react';
 import { Router } from '@reach/router';
+import { Provider } from 'react-redux';
+
+import store from 'store';
 import { Header } from 'components';
+
 import Signup from './pages/signup';
 
 const App = () => (
-  <div>
-    <Router>
-      <Home path="/" />
-      <Signup path="signup" />
-    </Router>
-  </div>
+  <Provider store={store}>
+    <div>
+      <Router>
+        <Home path="/" />
+        <Signup path="signup" />
+      </Router>
+    </div>
+  </Provider>
 );
 
 const Home = () => (
