@@ -2,6 +2,7 @@
 
 // const slugify = require('slugify');
 const faker = require('faker');
+const config = require('../config');
 
 const fakeUserProfile = (overrides = {}) => {
   const firstName = faker.name.firstName();
@@ -15,8 +16,7 @@ const fakeUserProfile = (overrides = {}) => {
     ...overrides,
   };
 
-  // const password = baseUser.password || faker.internet.password();
-  const password = baseUser.password || firstName + '123';
+  const password = baseUser.password || firstName + config.testPwdSuffix;
 
   return {
     ...baseUser, password
