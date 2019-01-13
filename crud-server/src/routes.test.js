@@ -17,13 +17,6 @@ const jake = {
   }
 };
 
-let curi, curiId;
-
-const addConduit = helpers.fakeConduit();
-const updConduit = {
-  status: 'Inactive',
-};
-
 const User = (res) => res.body.user;
 
 const apiServer = server.app.listen(server.port);
@@ -131,54 +124,71 @@ describe('Praas REST API', () => {
       expect(User(res).email).to.equal(jake.user.email);
     });
 
+    let ctId1, ctId2;
+
     it('should allow user to add new service endpoint', async () => {
-      const res = await Api()
+      // Create two conduits, one for update and one for delete
+      // as tests are running async, update fails if record is deleted ahead
+      const ct1 = helpers.fakeConduit();
+      const res1 = await Api()
         .post('/conduits')
         .set('Authorization', `Token ${jakeUser.token}`)
-        .send(addConduit);
-      expect(res.status).to.equal(201);
-      expect(res.body).to.have.property('curi');
-      curi = res.body.curi;
-      curiId = curi.match(/(?:(?!\/).(?!\/))+$/);
+        .send({ conduit: ct1 });
+      expect(res1.status).to.equal(201);
+      expect(res1.body.conduit).to.have.property('id');
+      ctId1 = res1.body.conduit.id;
+      expect(ctId1).to.be.not.null;
+
+      const ct2 = helpers.fakeConduit();
+      const res2 = await Api()
+        .post('/conduits')
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ conduit: ct2 });
+      expect(res2.status).to.equal(201);
+      expect(res2.body.conduit).to.have.property('id');
+      ctId2 = res2.body.conduit.id;
+      expect(ctId2).to.be.not.null;
     });
 
     it('should allow user to fetch a service endpoint', async () => {
       const res = await Api()
-        .get(`/conduits/${curiId}`)
+        .get(`/conduits/${ctId1}`)
         .set('Authorization', `Token ${jakeUser.token}`);
       expect(res.status).to.equal(200);
-      expect(res.body.curi).to.equal(curi);
-      expect(res.body).to.have.property('suriApiKey');
-      expect(res.body).to.have.property('suriType');
-      expect(res.body).to.have.property('suri');
-      expect(res.body).to.have.property('whitelist');
-      expect(res.body).to.have.property('racm');
-      expect(res.body).to.have.property('throttle');
-      expect(res.body).to.have.property('status');
+      expect(res.body.conduit).to.have.property('suriApiKey');
+      expect(res.body.conduit).to.have.property('suriType');
+      expect(res.body.conduit).to.have.property('suri');
+      expect(res.body.conduit).to.have.property('whitelist');
+      expect(res.body.conduit).to.have.property('racm');
+      expect(res.body.conduit).to.have.property('throttle');
+      expect(res.body.conduit).to.have.property('status');
+    });
+
+    it('should allow user to update service endpoint', async () => {
+      const ct = { update: { status: 'Inactive' } };
+      const res = await Api()
+        .patch(`/conduits/${ctId1}`)
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send(ct);
+      expect(res.status).to.equal(200);
+
+      const res2 = await Api()
+        .get(`/conduits/${ctId1}`)
+        .set('Authorization', `Token ${jakeUser.token}`);
+      expect(res2.status).to.equal(200);
+      expect(res2.body.conduit.status).to.equal('Inactive');
     });
 
     it('should allow user to remove service endpoint', async () => {
       const res = await Api()
-        .delete(`/conduits/${curiId}`)
+        .delete(`/conduits/${ctId2}`)
         .set('Authorization', `Token ${jakeUser.token}`);
       expect(res.status).to.equal(200);
-      expect(res.body).to.be.null;
-    });
 
-    it('should allow user to update service endpoint', async () => {
-      const res = await Api()
-        .patch(`/conduits/${curiId}`)
-        .set('Authorization', `Token ${jakeUser.token}`)
-        .send(updConduit);
-      expect(res.status).to.equal(200);
-      expect(res.body.status).to.equal('Inactive');
-      expect(res.body).to.have.property('suriApiKey');
-      expect(res.body).to.have.property('suriType');
-      expect(res.body).to.have.property('suri');
-      expect(res.body).to.have.property('whitelist');
-      expect(res.body).to.have.property('racm');
-      expect(res.body).to.have.property('throttle');
-      expect(res.body).to.have.property('status');
+      const res2 = await Api()
+        .get(`/conduits/${ctId2}`)
+        .set('Authorization', `Token ${jakeUser.token}`);
+      expect(res2.status).to.equal(404);
     });
   });
 });
