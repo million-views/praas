@@ -60,7 +60,7 @@ module.exports = (db, DataTypes) => {
     }
   });
 
-  Conduit.prototype.toProfileJSONFor = function () {
+  Conduit.prototype.toJSON = function () {
     return {
       suriApiKey: this.suriApiKey,
       suriType: this.suriType,
@@ -88,8 +88,12 @@ module.exports = (db, DataTypes) => {
     this.curi = initials.concat('-', randomStr, '.', domain);
   };
 
-  Conduit.beforeValidate(async conduit => {
-    await conduit.generateCuri();
+  Conduit.beforeValidate(async function (conduit) {
+    // isNewRecord is always true even for update
+    // createdAt is set only for new record
+    if (conduit.createdAt && !conduit.curi) {
+      await conduit.generateCuri();
+    }
   });
 
   const User = require('./user')(db, DataTypes);
