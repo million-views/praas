@@ -6,6 +6,7 @@ import store from 'store';
 import { Header } from 'components';
 
 import Signup from './pages/signup';
+import Login from './pages/login';
 
 const App = () => (
   <Provider store={store}>
@@ -13,6 +14,7 @@ const App = () => (
       <Router>
         <Home path="/" />
         <Signup path="signup" />
+        <Login path="login" />
       </Router>
     </div>
   </Provider>
