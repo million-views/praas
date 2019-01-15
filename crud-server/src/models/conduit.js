@@ -28,6 +28,12 @@ module.exports = (db, DataTypes) => {
       allowNull: false,
       isUrl: true,
       unique: true,
+      set(val) {
+        const domain = System.cconf.settings.domain;
+        const alphabet = System.cconf.settings.alphabet;
+        const randomStr = generate(alphabet, System.cconf.settings.uccount);
+        this.setDataValue('curi', val.concat('-', randomStr, '.', domain));
+      }
     },
     whitelist: {
       type: DataTypes.JSON,
@@ -75,26 +81,6 @@ module.exports = (db, DataTypes) => {
       hiddenFormField: this.hiddenFormField
     };
   };
-
-  Conduit.prototype.generateCuri = async function () {
-    const domain = System.cconf.settings.domain;
-    const alphabet = System.cconf.settings.alphabet;
-    const randomStr = generate(alphabet, System.cconf.settings.uccount); // => "smgfz"
-    const user = await User.findByPk(this.userId);
-
-    const initials = user.firstName.slice(0, 1).toLowerCase()
-      .concat(user.lastName.slice(0, 1).toLowerCase());
-
-    this.curi = initials.concat('-', randomStr, '.', domain);
-  };
-
-  Conduit.beforeValidate(async function (conduit) {
-    // isNewRecord is always true even for update
-    // createdAt is set only for new record
-    if (conduit.createdAt && !conduit.curi) {
-      await conduit.generateCuri();
-    }
-  });
 
   const User = require('./user')(db, DataTypes);
 
