@@ -32,7 +32,8 @@ NOTE:
 
 :global(.submit) {
   background-color: $primary;
-  border-radius: 3px;
+  // border-radius: 3px;
+  border-radius: 1em;
   border-style: none;
   color: $secondary;
   padding: 0.5em 0;
