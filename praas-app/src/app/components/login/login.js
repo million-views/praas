@@ -43,8 +43,8 @@ class Login extends React.Component {
     const classes = cx(['submit', { 'spinner': inflight }]);
     return (
       <div>
-        <h2>Login</h2>
         <form onSubmit={this.handleSubmit} className={style.login}>
+          <h2 className={style.header}>Login to Conduit</h2>
           <input onChange={this.handleChange}
             type="text" name="email"
             placeholder="email" required />

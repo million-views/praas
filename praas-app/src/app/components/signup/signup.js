@@ -46,8 +46,8 @@ class Signup extends React.Component {
     const classes = cx(['submit', { 'spinner': inflight }]);
     return (
       <div>
-        <h2>Sign up</h2>
         <form onSubmit={this.handleSubmit} className={style.signup}>
+          <h2 className={style.header}>Create your account</h2>
           <input onChange={this.handleChange}
             type="text" name="firstName"
             placeholder="first name" required />
