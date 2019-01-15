@@ -10,16 +10,16 @@ Development
 -----------
 > NOTE:
 > Integration tests require bootstrap data created by the unit tests. So,
-> me sure to run unit tests (test-model) first before running the 
+> me sure to run unit tests (test-model) first before running the
 > integration tests (test-rest).
 
 ### Tasks
-|  task     | command line                              | notes                               |
-|:----------|:------------------------------------------|:------------------------------------|
-| install   |```$npm install```                         | installs dependencies               |
-| lint      |```$npm run lint```                        | run eslint on `src` folder          |
-| test-model|```$SNAPSHOT_UPDATE=1 npm run test-model```| run data layer unit tests           |
-| test-rest |```$SNAPSHOT_UPDATE=1 npm run test-rest``` | run REST endpoint integration tests |
+|  task     | command line                             | notes                               |
+|:----------|:-----------------------------------------|:------------------------------------|
+| install   |```npm install```                         | installs dependencies               |
+| lint      |```npm run lint```                        | run eslint on `src` folder          |
+| test-model|```SNAPSHOT_UPDATE=1 npm run test-model```| run data layer unit tests           |
+| test-rest |```SNAPSHOT_UPDATE=1 npm run test-rest``` | run REST endpoint integration tests |
 
 # Praas Data Model
 
@@ -27,7 +27,7 @@ Consists of the three entities: System, User, Conduit
 
 ## System Table
 
-System stores all configuration related settings and their values. 
+System stores all configuration related settings and their values.
 For now storing the config in json format as there are
 only few values. Will store as database entity when more values need
 to be stored.
@@ -48,7 +48,7 @@ User stores registered user(s) info. an user can have one or more conduits.
 
 ## Conduit Table
 
-Conduit stores data related to the service endpoint 
+Conduit stores data related to the service endpoint
 
 ### Fields
 
@@ -60,7 +60,7 @@ Conduit stores data related to the service endpoint
 | suri            |Service URI (AirTable URI)                         |not null                        |
 | curi            |System generated conduit URI                       |not null, unique                |
 | whitelist       |Allowed ip list                                    |not null                        |
-| racm            |(Request Access Control Map - GET/POST/DEL/PUT...) |not null                        | 
+| racm            |(Request Access Control Map - GET/POST/DEL/PUT...) |not null                        |
 | throttle        |Limit requests to 5/sec to avoid DOS attack        |not null, defaults to 'true'    |
 | status          |Active/Inactive                                    |not null, defaults to 'Inactive'|
 | description     |Notes about the conduit                            |null                            |

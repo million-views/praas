@@ -31,6 +31,7 @@ export function cx(classes) {
       }
     } else {
       for (const [key, value] of Object.entries(classes)) {
+        console.log(key, '->', value);
         if (value) {
           out += (out && ' ') + key;
         }

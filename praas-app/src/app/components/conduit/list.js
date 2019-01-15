@@ -1,6 +1,20 @@
 import React from 'react';
 
 import style from './list.scss';
+// import { navigate } from '@reach/router/lib/history';
+
+// const dummyConduits = [
+//   { description: 'foo', type: 'bar', status: 'Inactive' },
+//   { description: 'foo', type: 'bar', status: 'Inactive' },
+//   { description: 'foo', type: 'bar', status: 'Inactive' },
+//   { description: 'foo', type: 'bar', status: 'Inactive' },
+//   { description: 'foo', type: 'bar', status: 'Inactive' },
+//   { description: 'foo', type: 'bar', status: 'Inactive' },
+//   { description: 'foo', type: 'bar', status: 'Inactive' },
+//   { description: 'foo', type: 'bar', status: 'Inactive' },
+//   { description: 'foo', type: 'bar', status: 'Inactive' },
+//   { description: 'foo', type: 'bar', status: 'Inactive' },
+// ];
 
 const list = () => {
   return (
@@ -17,7 +31,8 @@ const list = () => {
         <span>Google</span>
         <span>Active</span>
         <div className={style.actionPad}>
-          <button onClick="/edit-conduit">Edit</button>
+          {/* <button onClick={navigate('/conduit/edit')}>Edit</button> */}
+          <button >Edit</button>
           <button><i className="fa fa-trash" /></button>
         </div>
         <span>Air Table Conduit</span>

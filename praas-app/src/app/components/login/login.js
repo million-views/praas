@@ -1,42 +1,38 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-// import { navigate } from '@reach/router';
 
 import { cx } from 'tiny';
 
-import style from './signup.scss';
+import style from './login.scss';
 
-class Signup extends React.Component {
+class Login extends React.Component {
   constructor(props) {
     super(props);
+
+    // clear any previous state related to login
+    this.props.logoutUser();
+
     this.state = {
       submitted: false,
-      user: {
-        firstName: '', email: '', password: ''
-      }
+      email: '', password: ''
     };
+
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   };
 
   handleChange(event) {
     const { name, value } = event.target;
-    const { user } = this.state;
-    this.setState({
-      user: {
-        ...user,
-        [name]: value
-      }
-    });
+    this.setState({ [name]: value });
   };
 
   handleSubmit(event) {
     event.preventDefault();
     this.setState({ submitted: true });
-    const { user } = this.state;
+    const { email, password } = this.state;
 
-    if (user.firstName && user.password) {
-      this.props.onSubmit({ user });
+    if (email && password) {
+      this.props.onSubmit(email, password);
     }
   }
 
@@ -46,27 +42,25 @@ class Signup extends React.Component {
     const classes = cx(['submit', { 'spinner': inflight }]);
     return (
       <div>
-        <h2>Sign up</h2>
-        <form onSubmit={this.handleSubmit} className={style.signup}>
-          <input onChange={this.handleChange}
-            type="text" name="firstName"
-            placeholder="first name" required />
+        <h2>Login</h2>
+        <form onSubmit={this.handleSubmit} className={style.login}>
           <input onChange={this.handleChange}
             type="text" name="email"
             placeholder="email" required />
           <input onChange={this.handleChange}
             type="password" name="password"
             placeholder="password" required />
-          <button type="submit" className={classes} >Sign up</button>
+          <button type="submit" className={classes}>Login</button>
         </form>
       </div>
     );
   };
 };
 
-Signup.propTypes = {
+Login.propTypes = {
+  logoutUser: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   inflight: PropTypes.bool.isRequired
 };
 
-export default Signup;
+export default Login;

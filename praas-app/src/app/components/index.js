@@ -7,5 +7,6 @@
  */
 import Header from './header';
 import Signup from './signup';
+import Login from './login';
 
-export { Header, Signup };
+export { Header, Signup, Login };

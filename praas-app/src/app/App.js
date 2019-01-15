@@ -1,31 +1,52 @@
 import React from 'react';
-import { Router } from '@reach/router';
-import { Provider } from 'react-redux';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { Router, globalHistory } from '@reach/router';
 
-import store from 'store';
-import { Header } from 'components';
-
-import Signup from './pages/signup';
+import Home from './pages/home';
 import Login from './pages/login';
-import List from 'components/conduit';
+import Signup from './pages/signup';
 
-const App = () => (
-  <Provider store={store}>
-    <div>
-      <Router>
-        <Home path="/" />
-        <Signup path="signup" />
-        <Login path="login" />
-      </Router>
-    </div>
-  </Provider>
-);
+import * as alertActions from 'store/alert';
 
-const Home = () => (
-  <div>
-    <Header title="Conduits - pipe data to your storage" />
-    <List />
-  </div>
-);
+class App extends React.Component {
+  constructor(props) {
+    super(props);
 
-export default App;
+    const { dispatch } = this.props;
+    globalHistory.listen(({ location, action }) => {
+      // TODO: clear alert on location change
+      console.log({ location, action });
+      dispatch(alertActions.clear());
+    });
+  }
+
+  render() {
+    const { alert } = this.props;
+    const flash = alert.message
+      ? <div className={`${alert.klass}`}>{alert.message}</div>
+      : <div />;
+
+    return (
+      <React.Fragment>
+        {flash}
+        <Router>
+          <Home path="/" />
+          <Login path="login" />
+          <Signup path="signup" />
+        </Router >
+      </React.Fragment>
+    );
+  }
+}
+
+App.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  alert: PropTypes.object.isRequired
+};
+
+const mapStateToProps = (state, _ownProps) => ({
+  alert: state.alert
+});
+
+export default connect(mapStateToProps)(App);
