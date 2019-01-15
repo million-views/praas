@@ -1,8 +1,4 @@
 const API_URL = 'http://localhost:4000';
-const API_HEADERS = {
-  'Content-Type': 'application/json',
-  Authorization: 'yeehaw'
-};
 
 // throws type error if parameters is not iterable and that is by design...
 // don't call this function when there are no query parameters.
@@ -28,20 +24,25 @@ const urlize = (service, params = undefined) => {
   return service;
 };
 
-// const rejectErrors = (res) => {
-//   const { status } = res;
+const authorization = () => {
+  // we store jwt token in localStorage; there are healthy debates
+  // on the Internet on whether it should be stored as a cookie or
+  // in localStorage. Until we understand in depth about the pros
+  // and cons of either approach, we are going with localStorage
+  // (which results in less code, faster development and eliminates
+  // a few test cases.
+  const user = JSON.parse(localStorage.getItem('user'));
+  const header = {};
+  if (user && user.token) {
+    header['Authorization'] = `Bearer ${user.token}`;
+  }
 
-//   if (status >= 200 && status < 300) {
-//     return res;
-//   }
-//   // return ({ status: res.status, error: res.json() });
+  return header;
+};
 
-//   return Promise.reject({
-//     statusText: res.statusText,
-//     status: res.status,
-//     error: res.json()
-//   });
-// };
+const invalidateSession = () => {
+  localStorage.removeItem('user');
+};
 
 // This is a custom fetch that is coded to work with the specification
 // of the backend REST api server. In simple terms it expects all responses
@@ -51,6 +52,7 @@ const urlize = (service, params = undefined) => {
 const afetch = async (url, { headers, parameters, ...rest }) => {
   headers = {
     ...headers,
+    ...authorization(),
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   };
@@ -68,6 +70,12 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
       if (response.ok) {
         return response.json();
       } else {
+        if (response.status === 401) {
+          // token expired? clear our view of logged in status
+          invalidateSession();
+          // reload current page to kickstart a new session
+          location.reload(true);
+        }
         const errors = await response.json();
         // eslint-disable-next-line prefer-promise-reject-errors
         return Promise.reject({
@@ -90,13 +98,23 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
 };
 
 const praas = {
-  registerUser(data) {
-    return afetch('/users', {
-      method: 'POST',
-      headers: API_HEADERS,
-      body: JSON.stringify(data),
-      // parameters: { start: 10, count: 20 }
-    });
+  user: {
+    register(data) {
+      return afetch('/users', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        // parameters: { start: 10, count: 20 }
+      });
+    },
+    login(email, password) {
+      return afetch('users/login', {
+        method: 'POST',
+        body: JSON.stringify({ user: { email, password } })
+      });
+    },
+    logout() {
+      invalidateSession();
+    }
   }
 };
 

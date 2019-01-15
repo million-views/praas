@@ -2,10 +2,12 @@ import { combineReducers, createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 
 // import ducks (feature state containers)
-import { user } from './user';
+import user from './user';
+import alert from './alert';
 
 // root reducer
 const reducers = combineReducers({
+  alert,
   user
 });
 
@@ -18,7 +20,23 @@ const logger = (_store) => (next) => (action) => {
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-export default createStore(
-  reducers,
-  composeEnhancers(applyMiddleware(logger, thunk))
-);
+/**
+ * redux state shape (tree):
+ * for each node in the tree there should be a reducer that knows
+ * what do with an action; there is no requirement for a 1:1 action
+ * to reducer map requirement! Only that all actions return
+ * a new state given an action.type and payload.
+ *
+ * {
+ *    restInProgress: true,
+ *    errors: [array of error messages]
+ *    auth: {accessToken, refreshToken}
+ *    user: {firstName, lastName, email, passPhrase}
+ *    conduits [array of conduits]
+ * }
+ */
+export default function configureStore(preloadedState) {
+  return createStore(
+    reducers, preloadedState, composeEnhancers(applyMiddleware(logger, thunk))
+  );
+}
