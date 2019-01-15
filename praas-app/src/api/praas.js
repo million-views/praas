@@ -70,13 +70,15 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
       if (response.ok) {
         return response.json();
       } else {
+        const errors = await response.json();
+
         if (response.status === 401) {
           // token expired? clear our view of logged in status
           invalidateSession();
           // reload current page to kickstart a new session
           location.reload(true);
         }
-        const errors = await response.json();
+
         // eslint-disable-next-line prefer-promise-reject-errors
         return Promise.reject({
           statusText: response.statusText,
@@ -86,7 +88,7 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
       };
     },
     (error) => {
-      // this path is for network errors
+      // this path is for network or internal programming errors
       // eslint-disable-next-line prefer-promise-reject-errors
       return Promise.reject({
         statusText: "I'm a teapot",
@@ -107,7 +109,7 @@ const praas = {
       });
     },
     login(email, password) {
-      return afetch('users/login', {
+      return afetch('/users/login', {
         method: 'POST',
         body: JSON.stringify({ user: { email, password } })
       });
@@ -115,7 +117,7 @@ const praas = {
     logout() {
       invalidateSession();
     }
-  }
+  },
 };
 
 export default praas;

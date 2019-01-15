@@ -1,18 +1,28 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
-import { Header } from 'components';
+import PropTypes from 'prop-types';
+import { Header, Login } from 'components';
+import { loginUser, logoutUser } from 'store/user/login';
 import { connect } from 'react-redux';
 
-function login() {
+function login({ inflight, dispatch }) {
   return (
     <React.Fragment>
       <Header title="Conduits - Login" />
-      <h1>Login Page will be displayed here</h1>
+      <Login
+        logoutUser={logoutUser}
+        inflight={inflight}
+        onSubmit={(email, password) => dispatch(loginUser(email, password))} />
     </React.Fragment>
   );
 };
 
-// login.propTypes = {
-//   dispatch: PropTypes.func.isRequired
-// };
-export default connect()(login);
+login.propTypes = {
+  inflight: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired
+};
+
+const mapStateToProps = (state, _ownProps) => ({
+  inflight: state.user.login.inflight
+});
+
+export default connect(mapStateToProps)(login);

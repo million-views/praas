@@ -9,22 +9,6 @@ import Signup from './pages/signup';
 
 import * as alertActions from 'store/alert';
 
-// const App = ({ alertdispatch }) => {
-//   console.log('dispatch: ', dispatch);
-//   globalHistory.listen(({ location, action }) => {
-//     // TODO: clear alert on location change
-//     console.log({ location, action });
-//     dispatch(alertActions.clear());
-//   });
-
-//   return (
-//     <Router>
-//       <Home path="/" />
-//       <Signup path="signup" />
-//     </Router>
-//   );
-// };
-
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -39,13 +23,13 @@ class App extends React.Component {
 
   render() {
     const { alert } = this.props;
-    const Flash = alert.message
+    const flash = alert.message
       ? <div className={`${alert.klass}`}>{alert.message}</div>
       : <div />;
 
     return (
       <React.Fragment>
-        <Flash />
+        {flash}
         <Router>
           <Home path="/" />
           <Login path="login" />

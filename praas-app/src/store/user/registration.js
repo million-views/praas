@@ -40,9 +40,9 @@ export default function registration(state = { inflight: false }, { type, payloa
       };
     case REGISTER_SUCCESS:
       return {
-        ...state,
+        // ...state,
         inflight: false,
-        ...payload.user,
+        // ...payload.user,
       };
     case REGISTER_FAILURE:
       console.log('Deal with this:', payload);

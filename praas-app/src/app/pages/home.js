@@ -4,21 +4,19 @@ import { connect } from 'react-redux';
 import { Redirect } from '@reach/router';
 
 import { Header } from 'components';
+import ConduitList from 'components/conduit';
 
-function home({ user, dispatch }) {
+function home({ user }) {
   // TODO: check login state and render the right component
-  console.log('home.user: ', user);
-  console.log('dispatch: ', dispatch);
-
-  if (user) {
+  if (user.loggedIn) {
     return (
       <React.Fragment>
         <Header title="Conduits - pipe data to your storage" />
-        <h2>A conduit is a handle to a RESTful service endpoint</h2>
+        <ConduitList />
       </React.Fragment>
     );
   } else {
-    return <Redirect to="/login" />;
+    return <Redirect to="login" noThrow />;
   }
 };
 

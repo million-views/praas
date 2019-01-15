@@ -28,11 +28,12 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
  * a new state given an action.type and payload.
  *
  * {
- *    restInProgress: true,
- *    errors: [array of error messages]
- *    auth: {accessToken, refreshToken}
- *    user: {firstName, lastName, email, passPhrase}
- *    conduits [array of conduits]
+ *    user: {
+ *      login: {inflight, loggedIn, firstName, lastName, email, token},
+ *      registration: {inflight, firstName, lastName, email, passPhrase}
+ *    },
+ *    conduits: [array of conduits],
+ *    ui: {alert: {klass, message}, ...}
  * }
  */
 export default function configureStore(preloadedState) {
