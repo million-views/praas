@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { navigate } from '@reach/router';
 
 import style from './signup.scss';
 
@@ -12,6 +13,9 @@ class Signup extends React.Component {
       const email = e.target.email.value;
       const password = e.target.password.value;
       this.props.onSubmit({ user: { firstName, email, password } });
+      // this.props.history.push('/login');
+      console.log('before redirect');
+      navigate('/login');
     };
   }
 
@@ -31,7 +35,7 @@ class Signup extends React.Component {
 };
 
 Signup.propTypes = {
-  onSubmit: PropTypes.func.isRequired
+  onSubmit: PropTypes.func.isRequired,
 };
 
 export default Signup;
