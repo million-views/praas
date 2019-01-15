@@ -1,3 +1,6 @@
+const generate = require('nanoid/generate');
+const System = require('./system');
+
 module.exports = (db, DataTypes) => {
   const Conduit = db.define('conduit', {
     suriApiKey: {
@@ -25,6 +28,12 @@ module.exports = (db, DataTypes) => {
       allowNull: false,
       isUrl: true,
       unique: true,
+      set(val) {
+        const domain = System.cconf.settings.domain;
+        const alphabet = System.cconf.settings.alphabet;
+        const randomStr = generate(alphabet, System.cconf.settings.uccount);
+        this.setDataValue('curi', val.concat('-', randomStr, '.', domain));
+      }
     },
     whitelist: {
       type: DataTypes.JSON,
@@ -57,7 +66,7 @@ module.exports = (db, DataTypes) => {
     }
   });
 
-  Conduit.prototype.toProfileJSONFor = function () {
+  Conduit.prototype.toJSON = function () {
     return {
       suriApiKey: this.suriApiKey,
       suriType: this.suriType,
