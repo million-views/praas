@@ -7,3 +7,6 @@ package-lock.json
 
 # Snaphot directory
 __snapshots__
+
+# VSCode IDE settings
+.vscode
