@@ -7,6 +7,7 @@ import { Header } from 'components';
 
 import Signup from './pages/signup';
 import Login from './pages/login';
+import List from 'components/conduit';
 
 const App = () => (
   <Provider store={store}>
@@ -23,7 +24,7 @@ const App = () => (
 const Home = () => (
   <div>
     <Header title="Conduits - pipe data to your storage" />
-    <h2>A conduit is a handle to a RESTful service endpoint</h2>
+    <List />
   </div>
 );
 
