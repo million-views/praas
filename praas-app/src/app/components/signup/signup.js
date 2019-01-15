@@ -1,6 +1,6 @@
 import React from 'react';
+import { Link } from '@reach/router';
 import PropTypes from 'prop-types';
-// import { navigate } from '@reach/router';
 
 import { cx } from 'tiny';
 
@@ -58,6 +58,7 @@ class Signup extends React.Component {
             type="password" name="password"
             placeholder="password" required />
           <button type="submit" className={classes} >Sign up</button>
+          <Link to="/login" className={style.cancelBtn}>Cancel</Link>
         </form>
       </div>
     );
