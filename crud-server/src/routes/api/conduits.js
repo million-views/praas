@@ -3,11 +3,12 @@ const Conduit = require('../../models').Conduit;
 const auth = require('../auth');
 
 // add conduit
-router.post('/conduits/', auth.required, function (req, res, next) {
+router.post('/conduits/', auth.required, async function (req, res, next) {
   const conduit = new Conduit();
   const errors = {};
 
   conduit.userId = req.payload.id;
+  conduit.curi = 'td'; // for now the prefix is hardcoded, to be updated
 
   if (typeof req.body.conduit.suriApiKey !== 'undefined') {
     conduit.suriApiKey = req.body.conduit.suriApiKey;
@@ -63,17 +64,13 @@ router.post('/conduits/', auth.required, function (req, res, next) {
     conduit.hiddenFormField = req.body.conduit.hiddenFormField;
   }
 
-  try {
-    if (Object.keys(errors).length === 0) {
-      conduit.save().then(function () {
-        return res.status(201).json({ conduit: { id: conduit.id } });
-      }).catch(next);
-    } else {
-      return res.status(422).json({ errors });
-    }
-  } catch (error) {
-    next(error);
-  }
+  if (Object.keys(errors).length) return res.status(422).json({ errors });
+
+  try { await conduit.save(); } catch (error) {
+    return res.status(500).json({ error });
+  };
+
+  return res.status(201).json({ conduit: { id: conduit.id } });
 });
 
 // Get conduit
