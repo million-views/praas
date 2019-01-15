@@ -21,13 +21,13 @@ $ which `live-server`
 $ npm install --global live-server
 ```
 ### Tasks
-|  task   | command line       | notes                                         |
-|:--------|:-------------------|:----------------------------------------------|
-| install |```$npm install```  | installs dependencies                         |
-| lint    |```$npm run lint``` | run eslint on `src` folder                    |
-| build   |```$npm run build```| compile to `build` folder                     |
-| start   |```$npm run start```| web serve `build` folder                      |
-| watch   |```$npm run watch```| watch/build changes to `app` and `web` folders|
+|  task   | command line      | notes                                         |
+|:--------|:------------------|:----------------------------------------------|
+| install |```npm install```  | installs dependencies                         |
+| lint    |```npm run lint``` | run eslint on `src` folder                    |
+| build   |```npm run build```| compile to `build` folder                     |
+| start   |```npm run start```| web serve `build` folder                      |
+| watch   |```npm run watch```| watch/build changes to `app` and `web` folders|
 
 Code organization
 -----------------
