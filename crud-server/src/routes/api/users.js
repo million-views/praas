@@ -49,7 +49,7 @@ router.post('/users', async (req, res, next) => {
       // console.log(name, errors, fields);
       if (name === 'SequelizeUniqueConstraintError') {
         for (let i = 0; i < fields.length; i++) {
-          errors[fields[i]] = [dberrors[i].message];
+          errors[fields[i]] = dberrors[i].message;
         }
         return res.status(422).json({ errors });
       } else {
@@ -92,13 +92,19 @@ router.put('/user', auth.required, function (req, res, next) {
 
 // Authentication
 router.post('/users/login', function (req, res, next) {
-  if (!req.body.user.email) {
-    return res.status(422).json({ errors: { email: "can't be blank" } });
-  }
+  // const errors = {};
 
-  if (!req.body.user.password) {
-    return res.status(422).json({ errors: { password: "can't be blank" } });
-  }
+  // if (!req.body.user.email) {
+  //   errors.email = 'email is invalid';
+  // }
+
+  // if (!req.body.user.password) {
+  //   errors.password = 'password is invalid';
+  // }
+
+  // if (Object.keys(errors).length === 0) {
+  //   return res.status(422).json({ errors });
+  // }
 
   passport.authenticate('local', { session: false }, function (err, user, info) {
     if (err) {
