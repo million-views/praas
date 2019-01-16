@@ -83,7 +83,7 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
         return Promise.reject({
           statusText: response.statusText,
           status: response.status,
-          errors
+          ...errors
         });
       };
     },

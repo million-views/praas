@@ -25,12 +25,12 @@ export default function alert(state = {}, { type, payload }) {
     case ALERT_SUCCESS:
       return {
         klass: 'alert-success',
-        message: payload
+        message: payload.errors
       };
     case ALERT_ERROR:
       return {
         klass: 'alert-danger',
-        message: payload
+        message: payload.errors
       };
     default:
       return state;

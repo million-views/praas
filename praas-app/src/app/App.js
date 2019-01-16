@@ -22,14 +22,8 @@ class App extends React.Component {
   }
 
   render() {
-    const { alert } = this.props;
-    const flash = alert.message
-      ? <div className={`${alert.klass}`}>{alert.message}</div>
-      : <div />;
-
     return (
       <React.Fragment>
-        {flash}
         <Router>
           <Home path="/" />
           <Login path="login" />
@@ -42,7 +36,7 @@ class App extends React.Component {
 
 App.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  alert: PropTypes.object.isRequired
+  //  alert: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state, _ownProps) => ({

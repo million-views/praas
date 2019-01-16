@@ -1,10 +1,12 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Link } from '@reach/router';
 import PropTypes from 'prop-types';
 
 import { cx } from 'tiny';
 
 import style from './signup.scss';
+import Alert from 'components/alert';
 
 class Signup extends React.Component {
   constructor(props) {
@@ -41,13 +43,15 @@ class Signup extends React.Component {
   }
 
   render() {
-    const { inflight } = this.props;
+    const { alert, inflight } = this.props;
+
     // const { user, submitted } = this.state;
     const classes = cx(['submit', { 'spinner': inflight }]);
     return (
       <div>
         <form onSubmit={this.handleSubmit} className={style.signup}>
           <h2 className={style.header}>Create your account</h2>
+          <Alert klass={alert.klass} message={alert.message} />
           <input onChange={this.handleChange}
             type="text" name="firstName"
             placeholder="first name" required />
@@ -65,9 +69,14 @@ class Signup extends React.Component {
   };
 };
 
+const mapStateToProps = (state, _ownProps) => ({
+  alert: state.alert
+});
+
 Signup.propTypes = {
+  alert: PropTypes.object.isRequired,
   onSubmit: PropTypes.func.isRequired,
   inflight: PropTypes.bool.isRequired
 };
 
-export default Signup;
+export default connect(mapStateToProps)(Signup);
