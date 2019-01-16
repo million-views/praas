@@ -1,10 +1,13 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Link } from '@reach/router';
 import PropTypes from 'prop-types';
 
 import { cx } from 'tiny';
 
 import style from './login.scss';
+
+import Alert from 'components/alert';
 
 class Login extends React.Component {
   constructor(props) {
@@ -38,31 +41,40 @@ class Login extends React.Component {
   }
 
   render() {
-    const { inflight } = this.props;
-    // const { user, submitted } = this.state;
+    const { alert, inflight } = this.props;
+    const { submitted, email, password } = this.state;
     const classes = cx(['submit', { 'spinner': inflight }]);
     return (
       <div>
-        <form onSubmit={this.handleSubmit} className={style.login}>
+        <form noValidate onSubmit={this.handleSubmit} className={style.login}>
           <h2 className={style.header}>Login to Conduit</h2>
+          <Alert klass={alert.klass} message={alert.message} />
+
           <input onChange={this.handleChange}
             type="text" name="email"
             placeholder="email" required />
+          {submitted && !email && <div className="error">Email is required</div>}
           <input onChange={this.handleChange}
             type="password" name="password"
             placeholder="password" required />
+          {submitted && !password && <div className="error">Password is required</div>}
           <button type="submit" className={classes}>Login</button>
-          <Link to="/signup" className={style.cancelBtn}>Sign up</Link>
+          <Link to="/signup" className="cancel">Sign up</Link>
         </form>
       </div>
     );
   };
 };
 
+const mapStateToProps = (state, _ownProps) => ({
+  alert: state.alert
+});
+
 Login.propTypes = {
+  alert: PropTypes.object.isRequired,
   logoutUser: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   inflight: PropTypes.bool.isRequired
 };
 
-export default Login;
+export default connect(mapStateToProps)(Login);

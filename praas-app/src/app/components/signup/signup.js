@@ -15,7 +15,8 @@ class Signup extends React.Component {
       submitted: false,
       user: {
         firstName: '', email: '', password: ''
-      }
+      },
+      errors: [],
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -37,7 +38,7 @@ class Signup extends React.Component {
     this.setState({ submitted: true });
     const { user } = this.state;
 
-    if (user.firstName && user.password) {
+    if (user.firstName && user.email && user.password) {
       this.props.onSubmit({ user });
     }
   }
@@ -45,24 +46,28 @@ class Signup extends React.Component {
   render() {
     const { alert, inflight } = this.props;
 
-    // const { user, submitted } = this.state;
+    const { submitted, user } = this.state;
+    const { firstName, email, password } = user;
     const classes = cx(['submit', { 'spinner': inflight }]);
     return (
       <div>
-        <form onSubmit={this.handleSubmit} className={style.signup}>
+        <form noValidate onSubmit={this.handleSubmit} className={style.signup}>
           <h2 className={style.header}>Create your account</h2>
           <Alert klass={alert.klass} message={alert.message} />
           <input onChange={this.handleChange}
             type="text" name="firstName"
             placeholder="first name" required />
+          {submitted && !firstName && <div className="error">First name is required</div>}
           <input onChange={this.handleChange}
             type="text" name="email"
             placeholder="email" required />
+          {submitted && !email && <div className="error">Email is required</div>}
           <input onChange={this.handleChange}
             type="password" name="password"
             placeholder="password" required />
+          {submitted && !password && <div className="error">Password is required</div>}
           <button type="submit" className={classes} >Sign up</button>
-          <Link to="/login" className={style.cancelBtn}>Cancel</Link>
+          <Link to="/login" className="cancel">Cancel</Link>
         </form>
       </div>
     );

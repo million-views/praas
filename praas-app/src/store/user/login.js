@@ -1,5 +1,6 @@
 import { navigate } from '@reach/router';
 import PraasAPI from 'api/praas';
+import * as alertActions from 'store/alert';
 
 // This is a user-authentication duck. A duck is a feature state container.
 
@@ -33,7 +34,10 @@ export const loginUser = (email, password) => {
         dispatch(loginUserSuccess(user));
         navigate('/');
       },
-      (error) => dispatch(loginUserFailure(error))
+      (error) => {
+        dispatch(loginUserFailure(error));
+        dispatch(alertActions.error(error));
+      }
     );
   };
 };
