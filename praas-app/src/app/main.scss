@@ -53,6 +53,12 @@ NOTE:
   &:focus {
     outline: none;
   }
+
+  /*
+  &:disabled {
+    background: lighten( $primary, 20% );
+  }
+*/
 }
 
 body {
@@ -65,4 +71,20 @@ input {
   border-style: solid;
   border-color: $bordercolor;
   padding: 0.5em;
+
+  /**
+  TODO...
+  &:invalid {
+    background-color: #ffdddd;
+    border: 1px dashed red;
+  }
+
+  &:valid {
+    background-color: #ddffdd;
+  }
+
+  &:require {
+    background-color: #800000;
+  }
+*/
 }

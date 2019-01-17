@@ -1,10 +1,8 @@
 import { navigate } from '@reach/router';
 
 import PraasAPI from 'api/praas';
-import * as alertActions from 'store/alert';
 
 // This is a user-registration duck. A duck is a feature state container.
-
 const REGISTER_REQUEST = 'user/REGISTER_REQUEST';
 const REGISTER_SUCCESS = 'user/REGISTER_SUCCESS';
 const REGISTER_FAILURE = 'user/REGISTER_FAILURE';
@@ -19,19 +17,20 @@ export const registerFailure = (error) => ({
 });
 
 // Async action creators
-export const registerUser = (user) => {
+export const registerUser = (user, actions) => {
   return (dispatch) => {
     dispatch({ type: REGISTER_REQUEST, user });
     PraasAPI.user.register(user).then(
       (user) => {
         dispatch(registerSuccess(user));
+        actions.setSubmitting(false);
         navigate('/login');
       },
       (error) => {
-        console.log('error: ', error);
+        // console.log('error: ', error);
+        actions.setSubmitting(false);
+        actions.setStatus({ errors: { ...error.errors } });
         dispatch(registerFailure(error));
-        dispatch(alertActions.error(error));
-        // dispatch(alertActions.error('Some error happened'));
       }
     );
   };
