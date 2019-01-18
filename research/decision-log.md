@@ -17,8 +17,20 @@
     since doing so opens a new browser/tab which leads to confusion
     on where the flow should pick up.
 
-# Code cleanliness
+# Forms, forms, forms
+[17JAN2019]
+- Decided to go with Formik for the following reasons:
+  - Stick to "just React" philosophy (as much as possible) so that:
+    - Easy to understand
+    - Easy to debug
+    - Easy to optimize
+    - Easy to delete
+  - Make it easy to adopt/delete
+  - Solve for the 80% use case; trying to solve for the remaining
+    can lead to significant bloat
+  - No magic
 
+# Code cleanliness
 ## Fat arrow vs bind in components
 [14JAN2019]
 ### Discussion
@@ -40,4 +52,5 @@ It's a 50/50 call on this one. Favoring minimal code size, we recommend
 avoiding class properties feature until it is available natively. So,
 avoid fat arrow methods in classes. But don't let this stop you from
 using them when code comprehension and context dictate their use.
+
 
