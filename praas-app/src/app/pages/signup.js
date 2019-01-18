@@ -4,12 +4,22 @@ import { connect } from 'react-redux';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
-import { cx } from 'tiny';
-
-import { registerUser } from 'store/user/registration';
 import { Header } from 'components';
 import Alert from 'components/alert';
+
+import { registerUser } from 'store/user/registration';
+import { logoutUser } from 'store/user/login';
+
+import { cx } from 'tiny';
 import style from './signup.scss';
+
+const initialValues = {
+  user: {
+    email: '',
+    firstName: '',
+    password: '',
+  }
+};
 
 /* eslint react/prop-types: 0 */
 const signupSchema = Yup.object({
@@ -27,26 +37,22 @@ const signupSchema = Yup.object({
   })
 });
 
-const initialValues = {
-  user: {
-    email: '',
-    firstName: '',
-    password: '',
-  }
-};
-
-const Signup = ({ dispatch }) => {
+const Signup = ({ user, dispatch }) => {
   return (
     <React.Fragment>
-      <Header title="Conduits - Sign up" />
+      <Header
+        loggedIn={user.loggedIn}
+        logout={() => dispatch(logoutUser())}
+        title="Conduits - Sign up"
+      />
       <Formik
         initialValues={initialValues}
         validationSchema={signupSchema}
+        render={SignupForm}
         onSubmit={(values, actions) => {
           const user = values.user;
           dispatch(registerUser({ user }, actions));
         }}
-        render={SignupForm}
       />
     </React.Fragment>
   );
@@ -56,11 +62,16 @@ Signup.propTypes = {
   dispatch: PropTypes.func.isRequired
 };
 
-export default connect()(Signup);
+const mapStateToProps = (state, _ownProps) => {
+  return {
+    user: state.user.login
+  };
+};
+
+export default connect(mapStateToProps)(Signup);
 
 function SignupForm(props) {
   const { isSubmitting, status } = props;
-  console.log('status here is:', status ? status.errors : 'nada');
   const classes = cx(['submit', { 'spinner': isSubmitting }]);
   return (
     <Form className={style.signup}>

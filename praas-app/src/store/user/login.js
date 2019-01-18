@@ -1,6 +1,6 @@
 import { navigate } from '@reach/router';
 import PraasAPI from 'api/praas';
-import * as alertActions from 'store/alert';
+// import * as alertActions from 'store/alert';
 
 // This is a user-authentication duck. A duck is a feature state container.
 
@@ -19,16 +19,32 @@ export const loginUserFailure = (error) => ({
 });
 
 // odd man out :-(
-export const logoutUser = () => {
-  PraasAPI.user.logout();
+export const logoutSuccess = () => {
   return { type: LOGOUT };
 };
 
 // Async action creators
-export const loginUser = (email, password) => {
+export const logoutUser = () => {
   return (dispatch) => {
-    dispatch({ type: LOGIN_REQUEST, payload: { email, password } });
-    PraasAPI.user.login(email, password).then(
+    PraasAPI.user.logout().then(
+      (success) => {
+        console.log('logout: ', success);
+        navigate('/');
+      },
+      (error) => {
+        console.log('logout: ', error);
+        navigate('/');
+      }
+    ).then(() => {
+      dispatch(logoutSuccess());
+    });
+  };
+};
+
+export const loginUser = (user, actions) => {
+  return (dispatch) => {
+    dispatch({ type: LOGIN_REQUEST, payload: user });
+    PraasAPI.user.login(user).then(
       (user) => {
         localStorage.setItem('user', JSON.stringify(user));
         dispatch(loginUserSuccess(user));
@@ -36,7 +52,8 @@ export const loginUser = (email, password) => {
       },
       (error) => {
         dispatch(loginUserFailure(error));
-        dispatch(alertActions.error(error));
+        actions.setSubmitting(false);
+        actions.setStatus({ errors: { ...error.errors } });
       }
     );
   };
@@ -51,8 +68,9 @@ export default function login(state = initialState, { type, payload }) {
   switch (type) {
     case LOGIN_REQUEST:
       return {
+        ...state,
         inflight: true,
-        ...payload
+        ...payload.user
       };
     case LOGIN_SUCCESS:
       return {
@@ -63,11 +81,15 @@ export default function login(state = initialState, { type, payload }) {
     case LOGIN_FAILURE:
       console.log('Deal with this:', payload);
       return {
-        ...state,
         inflight: false,
+        loggedIn: false,
+        errors: { ...payload.errors }
       };
     case LOGOUT:
-      return {};
+      return {
+        inflight: false,
+        loggedIn: false
+      };
     default:
       return state;
   };

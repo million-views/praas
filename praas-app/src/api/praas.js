@@ -108,14 +108,14 @@ const praas = {
         // parameters: { start: 10, count: 20 }
       });
     },
-    login(email, password) {
+    login(data) {
       return afetch('/users/login', {
         method: 'POST',
-        body: JSON.stringify({ user: { email, password } })
+        body: JSON.stringify(data)
       });
     },
     logout() {
-      invalidateSession();
+      return Promise.resolve('success').then((_success) => invalidateSession());
     }
   },
 };

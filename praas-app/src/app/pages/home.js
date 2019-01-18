@@ -6,12 +6,17 @@ import { Redirect } from '@reach/router';
 import { Header } from 'components';
 import ConduitList from 'components/conduit';
 
-function home({ user }) {
-  // TODO: check login state and render the right component
+import { logoutUser } from 'store/user/login';
+
+function home({ user, dispatch }) {
   if (user.loggedIn) {
     return (
       <React.Fragment>
-        <Header title="Conduits - pipe data to your storage" />
+        <Header
+          loggedIn={user.loggedIn}
+          logout={() => dispatch(logoutUser())}
+          title="Conduits - Pipe data in and out of your storage"
+        />
         <ConduitList />
       </React.Fragment>
     );

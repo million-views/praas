@@ -27,10 +27,9 @@ export const registerUser = (user, actions) => {
         navigate('/login');
       },
       (error) => {
-        // console.log('error: ', error);
+        dispatch(registerFailure(error));
         actions.setSubmitting(false);
         actions.setStatus({ errors: { ...error.errors } });
-        dispatch(registerFailure(error));
       }
     );
   };
@@ -47,13 +46,14 @@ export default function registration(state = { inflight: false }, { type, payloa
       return {
         // ...state,
         inflight: false,
+        errors: {}
         // ...payload.user,
       };
     case REGISTER_FAILURE:
       console.log('Deal with this:', payload);
       return {
-        ...state,
         inflight: false,
+        errors: { ...payload.errors }
       };
 
     default:
