@@ -5,8 +5,8 @@
 const presets = (wpc) => [
   ['@babel/preset-env', {
     loose: true,
-    modules: false,     /* don't transpile ES6 modules */
-    useBuiltIns: false, /* disable polyfills; target the latest and greatest! */
+    modules: false,       /* don't transpile ES6 modules */
+    useBuiltIns: 'usage', /* polyfill based on usage */
     debug: true,
     targets: {
       chrome: 71,
