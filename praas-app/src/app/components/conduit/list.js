@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import style from './list.scss';
 // import { navigate } from '@reach/router/lib/history';
@@ -16,13 +17,13 @@ import style from './list.scss';
 //   { description: 'foo', type: 'bar', status: 'Inactive' },
 // ];
 
-const list = () => {
+const List = (props) => {
   return (
     <React.Fragment>
       <h1>List Conduits</h1>
       <h3>A conduit is a handle to a RESTful service endpoint</h3>
       <div className={style.container}>
-        <button className={style.addBtn}>Add conduit</button>
+        <button className={style.addBtn} onClick={props.changeToAddMode}>Add conduit</button>
         <h4>Description</h4>
         <h4>Type</h4>
         <h4>Status</h4>
@@ -54,4 +55,8 @@ const list = () => {
   );
 };
 
-export default list;
+List.propTypes = {
+  changeToAddMode: PropTypes.func.isRequired,
+};
+
+export default List;

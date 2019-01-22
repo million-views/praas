@@ -4,28 +4,57 @@ import { connect } from 'react-redux';
 import { Redirect } from '@reach/router';
 
 import { Header } from 'components';
-import ConduitList from 'components/conduit';
+import { ConduitList, ConduitForm } from 'components/conduit';
 
 import { logoutUser } from 'store/user/login';
 
-function home({ user, dispatch }) {
-  if (user.loggedIn) {
-    return (
-      <React.Fragment>
-        <Header
-          loggedIn={user.loggedIn}
-          logout={() => dispatch(logoutUser())}
-          title="Conduits - Pipe data in and out of your storage"
-        />
-        <ConduitList />
-      </React.Fragment>
-    );
-  } else {
-    return <Redirect to="login" noThrow />;
+function Content({ mode, changeToAddMode }) {
+  console.log('mode: ', mode);
+  if (mode === 'list') {
+    console.log('inside list');
+    return <ConduitList changeToAddMode={changeToAddMode} />;
+  } else if (mode === 'add') {
+    return <ConduitForm />;
+  }
+}
+
+class Home extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      mode: 'list',
+    };
+    this.changeToAddMode = this.changeToAddMode.bind(this);
+  }
+
+  changeToAddMode() {
+    console.log('add clicked...');
+    this.setState({
+      mode: 'add'
+    });
+  };
+
+  render() {
+    const { user, dispatch } = this.props;
+    if (user.loggedIn) {
+      return (
+        <React.Fragment>
+          <Header
+            loggedIn={user.loggedIn}
+            logout={() => dispatch(logoutUser())}
+            title="Conduits - Pipe data in and out of your storage"
+          />
+          <Content mode={this.state.mode} changeToAddMode={this.changeToAddMode} />
+        </React.Fragment>
+      );
+    } else {
+      return <Redirect to="login" noThrow />;
+    }
   }
 };
 
-home.propTypes = {
+Home.propTypes = {
+  user: PropTypes.object,
   dispatch: PropTypes.func.isRequired
 };
 
@@ -35,4 +64,4 @@ const mapStateToProps = (state, _ownProps) => {
   };
 };
 
-export default connect(mapStateToProps)(home);
+export default connect(mapStateToProps)(Home);
