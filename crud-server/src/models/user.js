@@ -27,6 +27,15 @@ module.exports = (db, DataTypes) => {
         this.setDataValue('email', email.toString().toLowerCase());
       }
     },
+    password: {
+      type: DataTypes.VIRTUAL,
+      set(val) {
+        this.setDataValue('salt', crypto.randomBytes(16).toString('hex'));
+        this.setDataValue('hash', crypto
+          .pbkdf2Sync(val, this.salt, 10000, 512, 'sha512')
+          .toString('hex'));
+      }
+    },
     hash: {
       type: DataTypes.STRING,
       allowNull: false
@@ -36,13 +45,6 @@ module.exports = (db, DataTypes) => {
       allowNull: false
     },
   });
-
-  User.prototype.setPassword = function (password) {
-    this.salt = crypto.randomBytes(16).toString('hex');
-    this.hash = crypto
-      .pbkdf2Sync(password, this.salt, 10000, 512, 'sha512')
-      .toString('hex');
-  };
 
   User.prototype.passwordValid = function (password) {
     const hash = crypto
