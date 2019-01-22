@@ -10,7 +10,7 @@ const generateUsers = async (count = 5) => {
   for (let i = 0; i < count; i++) {
     const fup = helpers.fakeUserProfile();
     let user = models.User.build({ ...fup });
-    user.setPassword(fup.password);
+    user.password = fup.password;
     user = await user.save();
     fups.push(user);
   }
@@ -82,7 +82,7 @@ describe('PraaS', () => {
     it('should store new user(s)', async () => {
       const user = models.User.build({ ...fup });
 
-      user.setPassword(fup.password);
+      user.password = fup.password;
       expect(user.passwordValid(fup.password)).to.be.true;
       const newUser = await user.save();
 
@@ -95,13 +95,13 @@ describe('PraaS', () => {
     it('should validate if email is unique', async () => {
       const fup1 = helpers.fakeUserProfile();
       const user1 = models.User.build({ ...fup1 });
-      user1.setPassword(fup.password);
+      user1.password = fup.password;
       await user1.save();
 
       const fup2 = helpers.fakeUserProfile();
       const user2 = models.User.build({ ...fup2 });
       user2.email = user1.email;
-      user2.setPassword(fup.password);
+      user2.password = fup.password;
 
       try {
         await user2.save();
@@ -117,7 +117,7 @@ describe('PraaS', () => {
 
     it('should validate passwords', async () => {
       const user = await models.User.findOne({ where: { email: fup.email } });
-      user.setPassword(fup.password);
+      user.password = fup.password;
       // positive test case
       expect(user.passwordValid(fup.password)).to.be.true;
       // negative test case

@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const Conduit = require('../../models').Conduit;
 const auth = require('../auth');
+const helpers = require('../../lib/helpers');
 
 // add conduit
 router.post('/conduits/', auth.required, async function (req, res, next) {
@@ -9,61 +10,12 @@ router.post('/conduits/', auth.required, async function (req, res, next) {
 
   conduit.userId = req.payload.id;
   conduit.curi = 'td'; // for now the prefix is hardcoded, to be updated
+  conduit.throttle = true;
+  conduit.status = 'Inactive';
 
-  if (typeof req.body.conduit.suriApiKey !== 'undefined') {
-    conduit.suriApiKey = req.body.conduit.suriApiKey;
-  } else {
-    errors.suriApiKey = "can't be blank";
-  }
-
-  if (typeof req.body.conduit.suriType !== 'undefined') {
-    conduit.suriType = req.body.conduit.suriType;
-  } else {
-    errors.suriType = "can't be blank";
-  }
-
-  if (typeof req.body.conduit.suriObjectKey !== 'undefined') {
-    conduit.suriObjectKey = req.body.conduit.suriObjectKey;
-  }
-
-  if (typeof req.body.conduit.suri !== 'undefined') {
-    conduit.suri = req.body.conduit.suri;
-  } else {
-    errors.suri = "can't be blank";
-  }
-
-  if (typeof req.body.conduit.whitelist !== 'undefined') {
-    conduit.whitelist = req.body.conduit.whitelist;
-  } else {
-    errors.whitelist = "can't be blank";
-  }
-
-  if (typeof req.body.conduit.racm !== 'undefined') {
-    conduit.racm = req.body.conduit.racm;
-  } else {
-    errors.racm = "can't be blank";
-  }
-
-  if (typeof req.body.conduit.throttle !== 'undefined') {
-    conduit.throttle = req.body.conduit.throttle;
-  } else {
-    conduit.throttle = true;
-  }
-
-  if (typeof req.body.conduit.status !== 'undefined') {
-    conduit.status = req.body.conduit.status;
-  } else {
-    conduit.status = 'Inactive';
-  }
-
-  if (typeof req.body.conduit.description !== 'undefined') {
-    conduit.description = req.body.conduit.description;
-  }
-
-  if (typeof req.body.conduit.hiddenFormField !== 'undefined') {
-    conduit.hiddenFormField = req.body.conduit.hiddenFormField;
-  }
-
+  const conduitReqdFields = ['suriApiKey', 'suriType', 'suri', 'whitelist', 'racm', 'throttle', 'status'];
+  const conduitOptFields = ['suriObjectKey', 'throttle', 'status', 'description', 'hiddenFormField'];
+  helpers.processInput(req.body.conduit, conduitReqdFields, conduitOptFields, conduit, errors);
   if (Object.keys(errors).length) return res.status(422).json({ errors });
 
   try { await conduit.save(); } catch (error) {

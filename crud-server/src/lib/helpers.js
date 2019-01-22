@@ -61,6 +61,21 @@ const fakeConduit = (overrides = {}) => {
   return conduit;
 };
 
+const processInput = (inp, req, opt, out, err) => {
+  for (let i = 0; i < req.length; i++) {
+    if (typeof inp[req[i]] === 'undefined') {
+      err[req[i]] = `${req[i]} can't be blank`;
+    } else {
+      out[req[i]] = inp[req[i]];
+    };
+  };
+  for (let i = 0; i < opt.length; i++) {
+    if (typeof inp[opt[i]] !== 'undefined') {
+      out[opt[i]] = inp[opt[i]];
+    };
+  };
+};
+
 module.exports = {
-  fakeUserProfile, fakeConduit
+  fakeUserProfile, fakeConduit, processInput
 };
