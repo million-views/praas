@@ -2,57 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from '@reach/router';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
 
 import { Header } from 'components';
-import { ConduitList, ConduitForm } from 'components/conduit';
+import { ConduitList, Conduit } from 'components/conduit';
 
+import { listConduits } from 'store/conduit/list';
 import { logoutUser } from 'store/user/login';
-
-function Content({ mode, changeToAddMode }) {
-  const initialValues = {
-    conduit: {
-      suriApiKey: '',
-      suriType: '',
-      suri: '',
-      whitelist: '',
-      racm: '',
-      desciption: '',
-    }
-  };
-  const conduitSchema = Yup.object({
-    conduit: Yup.object({
-      suriApiKey: Yup.string()
-        .required('Service endpoint API key is required'),
-      suriType: Yup.string()
-        .required('Service endpoint type is required'),
-      suri: Yup.string()
-        .required('Service endpoint uri is required'),
-      whitelist: Yup.string()
-        .required('Whitelist (ip addresses) is required'),
-      racm: Yup.string()
-        .required('Request access control is required'),
-      description: Yup.string(),
-    })
-  });
-  console.log('mode: ', mode);
-  if (mode === 'list') {
-    console.log('inside list');
-    return <ConduitList changeToAddMode={changeToAddMode} />;
-  } else if (mode === 'add') {
-    return (
-      <Formik
-        initialValues={initialValues}
-        validationSchema={conduitSchema}
-        render={ConduitForm}
-        onSubmit={(values, _actions) => {
-          alert('Form Submitted', values);
-        }}
-      />
-    );
-  }
-}
 
 class Home extends React.Component {
   constructor(props) {
@@ -60,19 +15,38 @@ class Home extends React.Component {
     this.state = {
       mode: 'list',
     };
-    this.changeToAddMode = this.changeToAddMode.bind(this);
+    this.changeMode = this.changeMode.bind(this);
   }
 
-  changeToAddMode() {
-    console.log('add clicked...');
+  _fetchConduits() {
+    const uid = this.props.user.id;
+    this.props.listConduits(uid);
+  }
+
+  componentDidMount() {
+    console.log('in component did mount');
+    this._fetchConduits();
+  }
+
+  changeMode(mode = 'list') {
+    console.log('changed mode invoked with: ', mode);
     this.setState({
-      mode: 'add'
+      mode
     });
+
+    if (mode === 'list') {
+      this._fetchConduits();
+    }
   };
 
   render() {
+    console.log('in rendering home', this.props);
     const { user, dispatch } = this.props;
     if (user.loggedIn) {
+      if (!this.props.conduits) {
+        return (<div>Loading...</div>);
+      }
+      console.log('inside else');
       return (
         <React.Fragment>
           <Header
@@ -80,7 +54,15 @@ class Home extends React.Component {
             logout={() => dispatch(logoutUser())}
             title="Conduits - Pipe data in and out of your storage"
           />
-          <Content mode={this.state.mode} changeToAddMode={this.changeToAddMode} />
+          {this.state.mode === 'list' &&
+            <ConduitList
+              changeMode={(mode) => this.changeMode(mode)}
+              conduits={this.props.conduits} />
+          }
+          {this.state.mode === 'add' &&
+            <Conduit
+              changeMode={(mode) => this.changeMode(mode)}
+              dispatch={dispatch} />}
         </React.Fragment>
       );
     } else {
@@ -91,13 +73,23 @@ class Home extends React.Component {
 
 Home.propTypes = {
   user: PropTypes.object,
-  dispatch: PropTypes.func.isRequired
+  dispatch: PropTypes.func.isRequired,
+  listConduits: PropTypes.func.isRequired,
+  conduits: PropTypes.arrayOf(PropTypes.object),
 };
 
 const mapStateToProps = (state, _ownProps) => {
   return {
-    user: state.user.login
+    user: state.user.login,
+    conduits: state.conduit.list.conduits,
   };
 };
 
-export default connect(mapStateToProps)(Home);
+const mapDispatchToProps = (dispatch) => (
+  {
+    dispatch,
+    listConduits: () => dispatch(listConduits()),
+  }
+);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

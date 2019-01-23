@@ -1,6 +1,6 @@
 .container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   grid-row-gap: 1em;
   margin: 1em;
   padding: 1em;
@@ -19,7 +19,7 @@ h3 {
   border-radius: 3px;
   border-style: none;
   color: $secondary;
-  grid-column-start: 4;
+  grid-column-start: 5;
   justify-self: flex-start;
   padding: 0.5em;
 }

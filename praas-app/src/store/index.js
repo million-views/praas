@@ -3,12 +3,14 @@ import thunk from 'redux-thunk';
 
 // import ducks (feature state containers)
 import user from './user';
+import conduit from './conduit';
 import alert from './alert';
 
 // root reducer
 const reducers = combineReducers({
   alert,
-  user
+  user,
+  conduit,
 });
 
 const logger = (_store) => (next) => (action) => {

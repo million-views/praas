@@ -48,6 +48,7 @@ export const loginUser = (user, actions) => {
       (user) => {
         localStorage.setItem('user', JSON.stringify(user));
         dispatch(loginUserSuccess(user));
+        actions.setSubmitting(false);
         navigate('/');
       },
       (error) => {

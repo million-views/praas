@@ -33,7 +33,8 @@ const authorization = () => {
   // a few test cases.
   const user = JSON.parse(localStorage.getItem('user'));
   const header = {};
-  if (user && user.token) {
+
+  if (user && user.hasOwnProperty('token')) {
     header['Authorization'] = `Bearer ${user.token}`;
   }
 
@@ -68,15 +69,17 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
       // we can dispatch both success and non-success action creators
       // from here...
       if (response.ok) {
+        console.log('server response is ok *************');
         return response.json();
       } else {
         const errors = await response.json();
 
+        console.log('error: ', errors);
         if (response.status === 401) {
           // token expired? clear our view of logged in status
           invalidateSession();
           // reload current page to kickstart a new session
-          location.reload(true);
+          // location.reload(true);
         }
 
         // eslint-disable-next-line prefer-promise-reject-errors
@@ -116,6 +119,21 @@ const praas = {
     },
     logout() {
       return Promise.resolve('success').then((_success) => invalidateSession());
+    }
+  },
+  conduit: {
+    add(data) {
+      console.log('in api, data: ', data);
+      return afetch('/conduits', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    },
+    list(id) {
+      return afetch('/conduits', {
+        method: 'GET',
+        body: JSON.stringify(id),
+      });
     }
   },
 };
