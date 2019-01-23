@@ -80,8 +80,8 @@ router.post('/users/login', function (req, res, next) {
     }
 
     if (user) {
-      user.token = user.generateJWT();
-      return res.json({ user: user.toAuthJSON() });
+      // user.token = user.generateJWT();
+      return res.json({ ...user.toAuthJSON() });
     } else {
       return res.status(422).json(info);
     }
