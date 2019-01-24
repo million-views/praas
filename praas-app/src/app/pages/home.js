@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Redirect } from '@reach/router';
 
 import { Header } from 'components';
-import { ConduitList, Conduit } from 'components/conduit';
+import { ConduitList, NewConduitForm } from 'components/conduit';
 
 import { listConduits } from 'store/conduit/list';
 import { logoutUser } from 'store/user/login';
@@ -41,7 +41,7 @@ class Home extends React.Component {
 
   render() {
     console.log('in rendering home', this.props);
-    const { user, dispatch } = this.props;
+    const { user, logout } = this.props;
     if (user.loggedIn) {
       if (!this.props.conduits) {
         return (<div>Loading...</div>);
@@ -51,7 +51,7 @@ class Home extends React.Component {
         <React.Fragment>
           <Header
             loggedIn={user.loggedIn}
-            logout={() => dispatch(logoutUser())}
+            logout={logout}
             title="Conduits - Pipe data in and out of your storage"
           />
           {this.state.mode === 'list' &&
@@ -60,9 +60,9 @@ class Home extends React.Component {
               conduits={this.props.conduits} />
           }
           {this.state.mode === 'add' &&
-            <Conduit
+            <NewConduitForm
               changeMode={(mode) => this.changeMode(mode)}
-              dispatch={dispatch} />}
+            />}
         </React.Fragment>
       );
     } else {
@@ -73,7 +73,7 @@ class Home extends React.Component {
 
 Home.propTypes = {
   user: PropTypes.object,
-  dispatch: PropTypes.func.isRequired,
+  logout: PropTypes.func.isRequired,
   listConduits: PropTypes.func.isRequired,
   conduits: PropTypes.arrayOf(PropTypes.object),
 };
@@ -87,7 +87,7 @@ const mapStateToProps = (state, _ownProps) => {
 
 const mapDispatchToProps = (dispatch) => (
   {
-    dispatch,
+    logout: () => dispatch(logoutUser()),
     listConduits: () => dispatch(listConduits()),
   }
 );

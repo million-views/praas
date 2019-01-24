@@ -1,60 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import * as Yup from 'yup';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { Field, Form, ErrorMessage } from 'formik';
 
 import Alert from 'components/alert';
 
-import { addConduit } from 'store/conduit/create';
-
 import style from './form.scss';
 import { cx } from 'tiny';
-
-function conduit(props) {
-  const { changeMode, dispatch } = props;
-  const initialValues = {
-    conduit: {
-      suriApiKey: '',
-      suriType: '',
-      suri: '',
-      whitelist: '',
-      racm: '',
-      desciption: '',
-    }
-  };
-  const conduitSchema = Yup.object({
-    conduit: Yup.object({
-      suriApiKey: Yup.string()
-        .required('Service endpoint API key is required'),
-      suriType: Yup.string()
-        .required('Service endpoint type is required'),
-      suri: Yup.string()
-        .required('Service endpoint uri is required'),
-      whitelist: Yup.string()
-        .required('Whitelist (ip addresses) is required'),
-      racm: Yup.string()
-        .required('Request access control is required'),
-      description: Yup.string(),
-    })
-  });
-
-  return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={conduitSchema}
-      render={ConduitForm}
-      onSubmit={(values, actions) => {
-        const conduit = values.conduit;
-        dispatch(addConduit({ conduit }, actions, changeMode));
-      }}
-    />
-  );
-}
-
-conduit.propTypes = {
-  changeMode: PropTypes.func.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
 
 function ConduitForm(props) {
   const { isSubmitting, status } = props;
@@ -103,4 +54,4 @@ ConduitForm.propTypes = {
   status: PropTypes.string.isRequired,
 };
 
-export default conduit;
+export default ConduitForm;
