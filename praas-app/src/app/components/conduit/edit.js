@@ -60,7 +60,8 @@ class EditConduitForm extends Component {
             status={''}
             buttonLabel="Edit Conduit"
             handleFieldUpdates={this.handleFieldUpdates}
-            draftConduit={draftConduit} />}
+            draftConduit={draftConduit}
+            changeMode={changeMode} />}
         onSubmit={(_values, actions) => {
           // const conduit = values.conduit;
           dispatch(updateConduit({ conduit: draftConduit }, actions, changeMode));

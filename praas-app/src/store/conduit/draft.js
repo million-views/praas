@@ -43,3 +43,15 @@ export default function create(state = defaultDraftConduit(), { type, payload })
       return state;
   };
 };
+
+// export const createDraft = (conduit) => {
+//   if (conduit) {
+//     return ({
+//       type: CREATE_DRAFT, payload: { ...conduit }
+//     });
+//   } else {
+//     return ({
+//       type: CREATE_DRAFT
+//     });
+//   }
+// };

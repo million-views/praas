@@ -59,7 +59,8 @@ class CreateConduitForm extends Component {
             status={''}
             buttonLabel="Create Conduit"
             handleFieldUpdates={this.handleFieldUpdates}
-            draftConduit={draftConduit} />}
+            draftConduit={draftConduit}
+            changeMode={changeMode} />}
         onSubmit={(_values, actions) => {
           // const conduit = values.conduit;
           dispatch(addConduit({ conduit: draftConduit }, actions, changeMode));

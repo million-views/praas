@@ -14,13 +14,13 @@ function ConduitForm(props) {
     status,
     draftConduit,
     handleChange,
-    handleFieldUpdates } = props;
+    handleFieldUpdates,
+    changeMode } = props;
   const classes = cx(['submit', { 'spinner': isSubmitting }]);
 
-  console.log('draftConduit: ', draftConduit);
   return (
     <Form className={style.createConduit}>
-      <h2 className={style.header}>Create a new conduit</h2>
+      <h2 className={style.header}>{buttonLabel}</h2>
       {
         status && <Alert klass="alert-danger" message={status.errors} />
       }
@@ -88,7 +88,12 @@ function ConduitForm(props) {
         onChange={(e) => { handleChange(e); handleFieldUpdates(e); }} />
       <ErrorMessage name="description" component="div" className="error" />
 
-      <button type="submit" disabled={isSubmitting === true} className={classes}>{buttonLabel}</button>
+      <button type="submit" disabled={isSubmitting === true} className={classes}>
+        {buttonLabel}
+      </button>
+      <button type="button" onClick={() => changeMode('list')} className={classes}>
+        Cancel
+      </button>
     </Form>
   );
 };
@@ -100,6 +105,7 @@ ConduitForm.propTypes = {
   draftConduit: PropTypes.object,
   handleChange: PropTypes.func.isRequired,
   handleFieldUpdates: PropTypes.func.isRequired,
+  changeMode: PropTypes.func,
 };
 
 export default ConduitForm;
