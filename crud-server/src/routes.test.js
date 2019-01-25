@@ -105,6 +105,7 @@ describe('Praas REST API', () => {
           }
         });
       jakeUser = User(res);
+      // console.log('jakeUser: ', jakeUser);
       // WARN: this is only for debugging, real code should use
       // jwt.verify(...) in order to validate the signature with
       // a known secret.
@@ -165,7 +166,7 @@ describe('Praas REST API', () => {
     });
 
     it('should allow user to update service endpoint', async () => {
-      const ct = { update: { status: 'Inactive' } };
+      const ct = { conduit: { status: 'Inactive' } };
       const res = await Api()
         .patch(`/conduits/${ctId1}`)
         .set('Authorization', `Token ${jakeUser.token}`)

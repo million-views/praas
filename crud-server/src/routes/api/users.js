@@ -60,28 +60,16 @@ router.put('/user', auth.required, function (req, res, next) {
 
 // Authentication
 router.post('/users/login', function (req, res, next) {
-  // const errors = {};
-
-  // if (!req.body.user.email) {
-  //   errors.email = 'email is invalid';
-  // }
-
-  // if (!req.body.user.password) {
-  //   errors.password = 'password is invalid';
-  // }
-
-  // if (Object.keys(errors).length === 0) {
-  //   return res.status(422).json({ errors });
-  // }
-
   passport.authenticate('local', { session: false }, function (err, user, info) {
     if (err) {
+      console.log('err: ', err);
       return next(err);
     }
 
     if (user) {
-      // user.token = user.generateJWT();
-      return res.json({ ...user.toAuthJSON() });
+      const userWithJwt = user.toAuthJSON();
+      // console.log('user.with.jwt; ', userWithJwt);
+      return res.json({ user: userWithJwt });
     } else {
       return res.status(422).json(info);
     }

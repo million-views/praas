@@ -5,13 +5,19 @@ const User = require('./models').User;
 passport.use(new LocalStrategy({
   usernameField: 'user[email]',
   passwordField: 'user[password]'
-}, function (email, password, done) {
-  User.findOne({ where: { email: email } }).then(function (user) {
-    // console.log('in findOne', user);
+}, async function (email, password, done) {
+  let error = null;
+  try {
+    const user = await User.findOne({ where: { email: email } });
     if (!user || !user.passwordValid(password)) {
       return done(null, false, { errors: { credentials: 'email or password is invalid' } });
+    } else {
+      return done(null, user);
     }
+  } catch (e) {
+    console.log('caught ', e);
+    error = e;
+  }
 
-    return done(null, user);
-  }).catch(done);
+  return done(error);
 }));

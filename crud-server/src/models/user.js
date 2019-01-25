@@ -67,7 +67,6 @@ module.exports = (db, DataTypes) => {
 
   User.prototype.toAuthJSON = function () {
     const tkn = this.generateJWT();
-
     return {
       id: this.id,
       firstName: this.firstName,

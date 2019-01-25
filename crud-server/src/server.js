@@ -30,11 +30,21 @@ app.use(session({
 app.use(require('./routes'));
 
 /// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  const err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+// v.a: temp disabled since it is catching 404...
+// ... which is debatable whether a REST API
+// should prefer 404 over another response code
+// to indicate a not found entity.
+//
+// see:
+//  - https://stackoverflow.com/questions/9930695/rest-api-404-bad-uri-or-missing-resource
+//  - https://stackoverflow.com/questions/26845631/is-it-correct-to-return-404-when-a-rest-resource-is-not-found/26845858
+// ---
+// app.use(function (req, res, next) {
+//   console.log(req);
+//   const err = new Error('Not Found: ' + JSON.stringify(req.route));
+//   err.status = 404;
+//   next(err);
+// });
 
 /// error handling...
 if (conf.production) {
