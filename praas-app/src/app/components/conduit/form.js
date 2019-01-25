@@ -8,10 +8,12 @@ import style from './form.scss';
 import { cx } from 'tiny';
 
 function ConduitForm(props) {
+  console.log('props in editform: ', props);
   const {
     buttonLabel,
     isSubmitting,
     status,
+    // touched,
     draftConduit,
     handleChange,
     handleFieldUpdates,
@@ -102,6 +104,7 @@ ConduitForm.propTypes = {
   buttonLabel: PropTypes.string.isRequired,
   isSubmitting: PropTypes.bool.isRequired,
   status: PropTypes.string.isRequired,
+  // touched: PropTypes.object,
   draftConduit: PropTypes.object,
   handleChange: PropTypes.func.isRequired,
   handleFieldUpdates: PropTypes.func.isRequired,

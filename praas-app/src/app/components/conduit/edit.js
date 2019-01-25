@@ -29,12 +29,12 @@ class EditConduitForm extends Component {
   render() {
     const { changeMode, dispatch, draftConduit } = this.props;
     const initialValues = {
-      suriApiKey: '',
-      suriType: '',
-      suri: '',
-      whitelist: '',
-      racm: '',
-      description: '',
+      suriApiKey: draftConduit.suriApiKey,
+      suriType: draftConduit.suriType,
+      suri: draftConduit.suri,
+      whitelist: draftConduit.whitelist,
+      racm: draftConduit.racm,
+      description: draftConduit.description,
     };
     const conduitSchema = Yup.object({
       suriApiKey: Yup.string()
@@ -55,6 +55,7 @@ class EditConduitForm extends Component {
       <Formik
         initialValues={initialValues}
         validationSchema={conduitSchema}
+        enableReinitialize
         render={props =>
           <ConduitForm {...props}
             status={''}
