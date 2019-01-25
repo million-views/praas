@@ -2,13 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import style from './list.scss';
-// import { navigate } from '@reach/router/lib/history';
 
 const List = (props) => {
-  console.log('props.conduits: ', props.conduits);
-
   const conduits = props.conduits.map((conduit, index) => {
-    console.log('conduit: ', conduit);
     return (
       <React.Fragment key={index}>
         <span>{conduit.description}</span>
@@ -16,11 +12,10 @@ const List = (props) => {
         <span>{conduit.suri}</span>
         <span>{conduit.status}</span>
         <div className={style.actionPad}>
-          {/* <button onClick={navigate('/conduit/edit')}>Edit</button> */}
-          <button >Edit</button>
+          <button onClick={() => { props.changeMode('edit'); props.setConduitId(conduit.id); }}>Edit</button>
           <button><i className="fa fa-trash" /></button>
         </div>
-      </React.Fragment>
+      </React.Fragment >
     );
   });
 
@@ -42,6 +37,7 @@ const List = (props) => {
 };
 
 List.propTypes = {
+  setConduitId: PropTypes.func.isRequired,
   changeMode: PropTypes.func.isRequired,
   conduits: PropTypes.arrayOf(PropTypes.object),
 };

@@ -123,9 +123,15 @@ const praas = {
   },
   conduit: {
     add(data) {
-      console.log('in api, data: ', data);
       return afetch('/conduits', {
         method: 'POST',
+        body: JSON.stringify(data)
+      });
+    },
+    update(data) {
+      const cid = data.conduit.id;
+      return afetch(`/conduits/${cid}`, {
+        method: 'PATCH',
         body: JSON.stringify(data)
       });
     },
@@ -134,7 +140,7 @@ const praas = {
         method: 'GET',
         body: JSON.stringify(id),
       });
-    }
+    },
   },
 };
 

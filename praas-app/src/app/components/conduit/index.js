@@ -1,5 +1,5 @@
 import ConduitList from './list';
-import NewConduitForm from './new';
+import CreateConduitForm from './create';
+import EditConduitForm from './edit';
 
-// export default List;
-export { ConduitList, NewConduitForm };
+export { ConduitList, CreateConduitForm, EditConduitForm };

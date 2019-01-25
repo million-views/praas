@@ -1,15 +1,14 @@
-// import { navigate } from '@reach/router';
 import PraasAPI from 'api/praas';
 
-// This is a create-conduit duck. A duck is a feature state container.
+// This is a list-conduit duck. A duck is a feature state container.
 
 const LIST_CONDUIT_REQUEST = 'conduit/LIST_CONDUIT_REQUEST';
 const LIST_CONDUIT_SUCCESS = 'conduit/LIST_CONDUIT_SUCCESS';
 const LIST_CONDUIT_FAILURE = 'conduit/LIST_CONDUIT_FAILURE';
 
 // Sync action creators
-export const listConduitSuccess = (conduit) => ({
-  type: LIST_CONDUIT_SUCCESS, payload: conduit
+export const listConduitSuccess = (conduits) => ({
+  type: LIST_CONDUIT_SUCCESS, payload: conduits
 });
 
 export const listConduitFailure = (error) => ({
@@ -17,13 +16,11 @@ export const listConduitFailure = (error) => ({
 });
 
 export const listConduits = (userId) => {
-  console.log('in list Conduit');
   return (dispatch) => {
     dispatch({ type: LIST_CONDUIT_REQUEST, payload: userId });
     PraasAPI.conduit.list(userId).then(
-      (conduit) => {
-        // changeMode('list');
-        dispatch(listConduitSuccess(conduit));
+      (conduits) => {
+        dispatch(listConduitSuccess(conduits));
         // actions.setSubmitting(false);
       },
       (error) => {
@@ -46,10 +43,9 @@ export default function list(state = initialState, { type, payload }) {
     case LIST_CONDUIT_SUCCESS:
       return {
         inflight: false,
-        conduits: payload.conduit,
+        conduits: payload.conduits,
       };
     case LIST_CONDUIT_FAILURE:
-      console.log('Deal with this:', payload);
       return {
         inflight: false,
         errors: { ...payload.errors }

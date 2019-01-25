@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Redirect } from '@reach/router';
 
 import { Header } from 'components';
-import { ConduitList, NewConduitForm } from 'components/conduit';
+import { ConduitList, CreateConduitForm, EditConduitForm } from 'components/conduit';
 
 import { listConduits } from 'store/conduit/list';
 import { logoutUser } from 'store/user/login';
@@ -14,8 +14,15 @@ class Home extends React.Component {
     super(props);
     this.state = {
       mode: 'list',
+      cid: undefined,
     };
     this.changeMode = this.changeMode.bind(this);
+  }
+
+  setConduitId(cid) {
+    this.setState({
+      cid
+    });
   }
 
   _fetchConduits() {
@@ -24,12 +31,10 @@ class Home extends React.Component {
   }
 
   componentDidMount() {
-    console.log('in component did mount');
     this._fetchConduits();
   }
 
   changeMode(mode = 'list') {
-    console.log('changed mode invoked with: ', mode);
     this.setState({
       mode
     });
@@ -40,13 +45,11 @@ class Home extends React.Component {
   };
 
   render() {
-    console.log('in rendering home', this.props);
     const { user, logout } = this.props;
     if (user.loggedIn) {
       if (!this.props.conduits) {
         return (<div>Loading...</div>);
       }
-      console.log('inside else');
       return (
         <React.Fragment>
           <Header
@@ -56,11 +59,17 @@ class Home extends React.Component {
           />
           {this.state.mode === 'list' &&
             <ConduitList
+              setConduitId={(cid) => this.setConduitId(cid)}
               changeMode={(mode) => this.changeMode(mode)}
               conduits={this.props.conduits} />
           }
           {this.state.mode === 'add' &&
-            <NewConduitForm
+            <CreateConduitForm
+              changeMode={(mode) => this.changeMode(mode)}
+            />}
+          {this.state.mode === 'edit' &&
+            <EditConduitForm
+              cid={this.state.cid}
               changeMode={(mode) => this.changeMode(mode)}
             />}
         </React.Fragment>
