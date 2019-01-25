@@ -45,9 +45,9 @@ export const loginUser = (user, actions) => {
   return (dispatch) => {
     dispatch({ type: LOGIN_REQUEST, payload: user });
     PraasAPI.user.login(user).then(
-      (user) => {
-        localStorage.setItem('user', JSON.stringify(user));
-        dispatch(loginUserSuccess(user));
+      (data) => {
+        localStorage.setItem('user', JSON.stringify({ ...data.user }));
+        dispatch(loginUserSuccess(data.user));
         actions.setSubmitting(false);
         navigate('/');
       },
