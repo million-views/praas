@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Redirect } from '@reach/router';
+import { Redirect, navigate } from '@reach/router';
 
 import { Header } from 'components';
 import { ConduitList, CreateConduitForm, EditConduitForm } from 'components/conduit';
@@ -27,11 +27,16 @@ class Home extends React.Component {
 
   _fetchConduits() {
     const uid = this.props.user.id;
+    console.log('uid in fetchConduits: ', uid);
     this.props.listConduits(uid);
   }
 
   componentDidMount() {
-    this._fetchConduits();
+    if (this.props.user.loggedIn) {
+      this._fetchConduits();
+    } else {
+      navigate('/login');
+    }
   }
 
   changeMode(mode = 'list') {
