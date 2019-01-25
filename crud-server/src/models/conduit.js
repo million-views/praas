@@ -68,6 +68,7 @@ module.exports = (db, DataTypes) => {
 
   Conduit.prototype.toJSON = function () {
     return {
+      id: this.id,
       suriApiKey: this.suriApiKey,
       suriType: this.suriType,
       suriObjectKey: this.suriObjectKey,
@@ -78,7 +79,8 @@ module.exports = (db, DataTypes) => {
       throttle: this.throttle,
       status: this.status,
       description: this.description,
-      hiddenFormField: this.hiddenFormField
+      hiddenFormField: this.hiddenFormField,
+      userId: this.userId,
     };
   };
 
