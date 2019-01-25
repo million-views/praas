@@ -13,7 +13,7 @@ router.post('/', auth.required, async function (req, res, next) {
   conduit.throttle = true;
   conduit.status = 'Inactive';
 
-  const conduitReqdFields = ['suriApiKey', 'suriType', 'suri', 'whitelist', 'racm', 'throttle', 'status'];
+  const conduitReqdFields = ['suriApiKey', 'suriType', 'suri', 'whitelist', 'racm'];
   const conduitOptFields = ['suriObjectKey', 'throttle', 'status', 'description', 'hiddenFormField'];
   helpers.processInput(req.body.conduit, conduitReqdFields, conduitOptFields, conduit, errors);
   if (Object.keys(errors).length) return res.status(422).json({ errors });
