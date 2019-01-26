@@ -16,7 +16,7 @@ class CreateConduitForm extends Component {
       suriType: '',
       suri: '',
       whitelist: '',
-      racm: '',
+      racm: [],
       description: '',
     };
     const conduitSchema = Yup.object({
@@ -28,8 +28,8 @@ class CreateConduitForm extends Component {
         .required('Service endpoint uri is required'),
       whitelist: Yup.string()
         .required('Whitelist (ip addresses) is required'),
-      racm: Yup.string()
-        // racm: Yup.array().of(Yup.string())
+      // racm: Yup.string()
+      racm: Yup.array().of(Yup.string())
         .required('Request access control is required'),
       description: Yup.string()
         .required('Description is required'),
@@ -46,7 +46,7 @@ class CreateConduitForm extends Component {
             status={''}
           />}
         onSubmit={(values, actions) => {
-          console.log('in create form, values: ', values);
+          // console.log('in create form, values: ', values);
           dispatch(addConduit({ conduit: { ...values } }, actions, changeMode));
         }
         }

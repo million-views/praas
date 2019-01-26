@@ -29,8 +29,8 @@ class EditConduitForm extends Component {
         .required('Service endpoint uri is required'),
       whitelist: Yup.string()
         .required('Whitelist (ip addresses) is required'),
-      racm: Yup.string()
-        // racm: Yup.array().of(Yup.string())
+      // racm: Yup.string()
+      racm: Yup.array().of(Yup.string())
         .required('Request access control is required'),
       description: Yup.string()
         .required('Description is required'),
@@ -50,7 +50,6 @@ class EditConduitForm extends Component {
             status={''} />}
         onSubmit={(values, actions) => {
           console.log('in edit form, values: ', values);
-
           dispatch(updateConduit({ conduit: { ...values, id: conduit.id } }, actions, changeMode));
         }
         }

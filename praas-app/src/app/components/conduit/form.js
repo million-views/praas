@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Field, Form, ErrorMessage } from 'formik';
+import { Field, FieldArray, Form, ErrorMessage } from 'formik';
 
 import Alert from 'components/alert';
 
@@ -14,13 +14,14 @@ function ConduitForm(props) {
     changeMode,
     isSubmitting,
     status,
+    values
   } = props;
-  // const categories = [
-  //   { id: 'GET', name: 'GET' },
-  //   { id: 'POST', name: 'POST' },
-  //   { id: 'DELETE', name: 'DELETE' },
-  //   { id: 'PATCH', name: 'PATCH' },
-  // ];
+  const categories = [
+    { id: 'GET', name: 'GET' },
+    { id: 'POST', name: 'POST' },
+    { id: 'DELETE', name: 'DELETE' },
+    { id: 'PATCH', name: 'PATCH' },
+  ];
   const classes = cx(['submit', { 'spinner': isSubmitting }]);
 
   return (
@@ -65,18 +66,32 @@ function ConduitForm(props) {
       />
       <ErrorMessage name="whitelist" component="div" className="error" />
 
-      <Field
+      <FieldArray
         name="racm"
-        placeholder="Select Type"
-        component="select"
-        required
-      >
-        <option value="get">GET</option>
-        <option value="post">POST</option>
-        <option value="delete">DELETE</option>
-        <option value="update">UPDATE</option>
-      </Field>
-      <ErrorMessage name="racm" component="div" className="error" />
+        render={arrayHelpers => (
+          <div>
+            {categories.map(category => (
+              <div key={category.id}>
+                <label>
+                  <input
+                    name="racm"
+                    type="checkbox"
+                    value={category.id}
+                    checked={values.racm.includes(category.id)}
+                    onChange={e => {
+                      if (e.target.checked) arrayHelpers.push(category.id);
+                      else {
+                        const idx = values.racm.indexOf(category.id);
+                        arrayHelpers.remove(idx);
+                      }
+                    }}
+                  />{''}
+                  {category.name}
+                </label>
+              </div>
+            ))}
+          </div>
+        )} />
 
       <Field
         name="description"
@@ -101,6 +116,7 @@ ConduitForm.propTypes = {
   changeMode: PropTypes.func,
   isSubmitting: PropTypes.bool.isRequired,
   status: PropTypes.string.isRequired,
+  values: PropTypes.object,
 };
 
 export default ConduitForm;
