@@ -7,34 +7,18 @@ import { Formik } from 'formik';
 import ConduitForm from './form';
 
 import { updateConduit, getConduit } from 'store/conduit/edit';
-import { createDraft, updateDraft } from 'store/conduit/draft';
 
 class EditConduitForm extends Component {
-  constructor(props) {
-    super(props);
-    this.handleFieldUpdates = this.handleFieldUpdates.bind(this);
-  }
-
-  componentDidMount() {
-    const { conduit } = this.props;
-    this.props.createDraft(conduit);
-  }
-
-  handleFieldUpdates(e) {
-    const field = e.target.name;
-    const value = e.target.value;
-    this.props.updateDraft(field, value);
-  }
-
   render() {
-    const { changeMode, dispatch, draftConduit } = this.props;
+    const { changeMode, dispatch, conduit } = this.props;
+    console.log('conduit in render-editform: ', conduit);
     const initialValues = {
-      suriApiKey: draftConduit.suriApiKey,
-      suriType: draftConduit.suriType,
-      suri: draftConduit.suri,
-      whitelist: draftConduit.whitelist,
-      racm: draftConduit.racm,
-      description: draftConduit.description,
+      suriApiKey: conduit.suriApiKey,
+      suriType: conduit.suriType,
+      suri: conduit.suri,
+      whitelist: conduit.whitelist,
+      racm: conduit.racm,
+      description: conduit.description,
     };
     const conduitSchema = Yup.object({
       suriApiKey: Yup.string()
@@ -46,6 +30,7 @@ class EditConduitForm extends Component {
       whitelist: Yup.string()
         .required('Whitelist (ip addresses) is required'),
       racm: Yup.string()
+        // racm: Yup.array().of(Yup.string())
         .required('Request access control is required'),
       description: Yup.string()
         .required('Description is required'),
@@ -58,14 +43,15 @@ class EditConduitForm extends Component {
         enableReinitialize
         render={props =>
           <ConduitForm {...props}
-            status={''}
             buttonLabel="Edit Conduit"
+            changeMode={changeMode}
+            conduit={conduit}
             handleFieldUpdates={this.handleFieldUpdates}
-            draftConduit={draftConduit}
-            changeMode={changeMode} />}
-        onSubmit={(_values, actions) => {
-          // const conduit = values.conduit;
-          dispatch(updateConduit({ conduit: draftConduit }, actions, changeMode));
+            status={''} />}
+        onSubmit={(values, actions) => {
+          console.log('in edit form, values: ', values);
+
+          dispatch(updateConduit({ conduit: { ...values, id: conduit.id } }, actions, changeMode));
         }
         }
       />
@@ -75,16 +61,12 @@ class EditConduitForm extends Component {
 
 EditConduitForm.propTypes = {
   conduit: PropTypes.object,
-  draftConduit: PropTypes.object,
   changeMode: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
-  createDraft: PropTypes.func.isRequired,
-  updateDraft: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    draftConduit: state.conduit.draft,
     conduit: getConduit(state, ownProps.cid)
   };
 };
@@ -92,8 +74,6 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => (
   {
     dispatch,
-    createDraft: (conduit) => dispatch(createDraft(conduit)),
-    updateDraft: (field, value) => dispatch(updateDraft(field, value)),
   }
 );
 

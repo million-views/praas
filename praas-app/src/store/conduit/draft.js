@@ -18,7 +18,7 @@ const defaultDraftConduit = () => {
     suriType: '',
     suri: '',
     whitelist: '',
-    racm: '',
+    racm: [],
     description: '',
   };
 };

@@ -27,7 +27,6 @@ class Home extends React.Component {
 
   _fetchConduits() {
     const uid = this.props.user.id;
-    console.log('uid in fetchConduits: ', uid);
     this.props.listConduits(uid);
   }
 
