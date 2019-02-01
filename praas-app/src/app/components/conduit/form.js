@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Field, FieldArray, Form, ErrorMessage } from 'formik';
 
 import Alert from 'components/alert';
+import Checkbox from './checkbox';
 
 import style from './form.scss';
 import { cx } from 'tiny';
@@ -14,7 +15,6 @@ function ConduitForm(props) {
     changeMode,
     isSubmitting,
     status,
-    values
   } = props;
   const categories = [
     { id: 'GET', name: 'GET' },
@@ -68,30 +68,11 @@ function ConduitForm(props) {
 
       <FieldArray
         name="racm"
-        render={arrayHelpers => (
-          <div>
-            {categories.map(category => (
-              <div key={category.id}>
-                <label>
-                  <input
-                    name="racm"
-                    type="checkbox"
-                    value={category.id}
-                    checked={values.racm.includes(category.id)}
-                    onChange={e => {
-                      if (e.target.checked) arrayHelpers.push(category.id);
-                      else {
-                        const idx = values.racm.indexOf(category.id);
-                        arrayHelpers.remove(idx);
-                      }
-                    }}
-                  />{''}
-                  {category.name}
-                </label>
-              </div>
-            ))}
-          </div>
-        )} />
+        render={(arrayHelpers) =>
+          <Checkbox {...props}
+            arrayHelpers={arrayHelpers}
+            categories={categories} />
+        } />
 
       <Field
         name="description"
