@@ -29,7 +29,6 @@ class EditConduitForm extends Component {
         .required('Service endpoint uri is required'),
       whitelist: Yup.string()
         .required('Whitelist (ip addresses) is required'),
-      // racm: Yup.string()
       racm: Yup.array().of(Yup.string())
         .required('Request access control is required'),
       description: Yup.string()
