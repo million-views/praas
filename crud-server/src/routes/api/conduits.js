@@ -68,8 +68,11 @@ router.patch('/:id', auth.required, async (req, res, next) => {
 // Delete conduit
 router.delete('/:id', auth.required, async (req, res, next) => {
   try {
-    const count = await Conduit.destroy({ where: { id: req.params.id, userId: req.payload.id } });
-    return count ? res.sendStatus(200) : res.sendStatus(404);
+    // const count = await Conduit.destroy({ where: { id: req.params.id, userId: req.payload.id } });
+    const count = await Conduit.destroy({ where: { id: req.params.id } });
+    console.log('count: ', count);
+    // return count ? res.sendStatus(200) : res.sendStatus(404);
+    return count ? res.status(200).json({ conduitId: req.params.id }) : res.sendStatus(404);
   } catch (error) {
     next(error);
   }
