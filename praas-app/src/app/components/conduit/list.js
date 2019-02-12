@@ -13,7 +13,7 @@ const List = (props) => {
         <span>{conduit.status}</span>
         <div className={style.actionPad}>
           <button onClick={() => { props.changeMode('edit'); props.setConduitId(conduit.id); }}>Edit</button>
-          <button><i className="fa fa-trash" /></button>
+          <button onClick={() => { props.deleteConduit(conduit.id); }}><i className="fa fa-trash" /></button>
         </div>
       </React.Fragment >
     );
@@ -39,7 +39,10 @@ const List = (props) => {
 List.propTypes = {
   setConduitId: PropTypes.func.isRequired,
   changeMode: PropTypes.func.isRequired,
+  deleteConduit: PropTypes.func,
   conduits: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default List;
+
+// <button onClick={() => { props.deleteConduit(conduit.id); }}><i className="fa fa-trash" /></button>

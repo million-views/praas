@@ -7,6 +7,7 @@ import { Header } from 'components';
 import { ConduitList, CreateConduitForm, EditConduitForm } from 'components/conduit';
 
 import { listConduits } from 'store/conduit/list';
+import { deleteConduit } from 'store/conduit/del';
 import { logoutUser } from 'store/user/login';
 
 class Home extends React.Component {
@@ -26,8 +27,14 @@ class Home extends React.Component {
   }
 
   _fetchConduits() {
+    console.log('fetching conduits....');
     const uid = this.props.user.id;
     this.props.listConduits(uid);
+  }
+
+  deleteConduit(cid) {
+    this.props.deleteConduit(cid);
+    this._fetchConduits();
   }
 
   componentDidMount() {
@@ -65,6 +72,7 @@ class Home extends React.Component {
             <ConduitList
               setConduitId={(cid) => this.setConduitId(cid)}
               changeMode={(mode) => this.changeMode(mode)}
+              deleteConduit={(cid) => this.deleteConduit(cid)}
               conduits={this.props.conduits} />
           }
           {this.state.mode === 'add' &&
@@ -88,6 +96,7 @@ Home.propTypes = {
   user: PropTypes.object,
   logout: PropTypes.func.isRequired,
   listConduits: PropTypes.func.isRequired,
+  deleteConduit: PropTypes.func,
   conduits: PropTypes.arrayOf(PropTypes.object),
 };
 
@@ -102,6 +111,7 @@ const mapDispatchToProps = (dispatch) => (
   {
     logout: () => dispatch(logoutUser()),
     listConduits: () => dispatch(listConduits()),
+    deleteConduit: (cid) => dispatch(deleteConduit(cid)),
   }
 );
 

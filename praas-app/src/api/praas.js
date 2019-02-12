@@ -70,6 +70,7 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
       // from here...
       if (response.ok) {
         console.log('server response is ok *************');
+        console.log('response.json: ', response);
         return response.json();
       } else {
         const errors = await response.json();
@@ -91,6 +92,7 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
       };
     },
     (error) => {
+      console.log('Got into an error situation');
       // this path is for network or internal programming errors
       // eslint-disable-next-line prefer-promise-reject-errors
       return Promise.reject({
@@ -139,6 +141,13 @@ const praas = {
       return afetch('/conduits', {
         method: 'GET',
         body: JSON.stringify(id),
+      });
+    },
+    delete(data) {
+      console.log('data: ', data);
+      const cid = data;
+      return afetch(`/conduits/${cid}`, {
+        method: 'DELETE',
       });
     },
   },
