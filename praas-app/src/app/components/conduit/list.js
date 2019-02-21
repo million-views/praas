@@ -13,7 +13,12 @@ const List = (props) => {
         <span>{conduit.status}</span>
         <div className={style.actionPad}>
           <button onClick={() => { props.changeMode('edit'); props.setConduitId(conduit.id); }}>Edit</button>
-          <button onClick={() => { props.deleteConduit(conduit.id); }}><i className="fa fa-trash" /></button>
+          <button
+            onClick={() => {
+              if (window.confirm('Delete Conduit?', 'Conduit App')) {
+                props.deleteConduit(conduit.id);
+              }
+            }}><i className="fa fa-trash" /></button>
         </div>
       </React.Fragment >
     );
