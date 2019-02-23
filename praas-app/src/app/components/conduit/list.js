@@ -1,9 +1,28 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 
+import Modal from 'modal/Modal';
 import style from './list.scss';
 
 const List = (props) => {
+  const modal = useRef();
+  const onClose = () => {
+    modal.current.onClose();
+  };
+
+  const modalContent = (id, deleteConduit) => {
+    return (
+      <div>
+        <p>Confirm to delete</p>
+        <button type="button" onClick={() => { deleteConduit(id); }}>Yes</button>
+        <button type="button" onClick={onClose}>No</button>
+      </div>
+    );
+  };
+  const modalProps = {
+    ariaLabel: 'Delete Conduit',
+    triggerText: 'This is a button to trigger the Modal'
+  };
   const conduits = props.conduits.map((conduit, index) => {
     return (
       <React.Fragment key={index}>
@@ -13,12 +32,9 @@ const List = (props) => {
         <span>{conduit.status}</span>
         <div className={style.actionPad}>
           <button onClick={() => { props.changeMode('edit'); props.setConduitId(conduit.id); }}>Edit</button>
-          <button
-            onClick={() => {
-              if (window.confirm('Delete Conduit?', 'Conduit App')) {
-                props.deleteConduit(conduit.id);
-              }
-            }}><i className="fa fa-trash" /></button>
+          <Modal {...modalProps} ref={modal}>
+            {modalContent(conduit.id, props.deleteConduit)}
+          </Modal>
         </div>
       </React.Fragment >
     );
@@ -49,5 +65,3 @@ List.propTypes = {
 };
 
 export default List;
-
-// <button onClick={() => { props.deleteConduit(conduit.id); }}><i className="fa fa-trash" /></button>

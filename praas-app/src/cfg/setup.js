@@ -55,8 +55,10 @@ module.exports = (wpc) => {
     web: wpc.web,
     // we keep site wide css/scss frameworks here
     'site-css': `${wpc.lib}/site-css`,
-    // we keep external or internal widgets and 3rd party libs here
-    tiny: `${wpc.lib}/tiny`
+    // we keep internal widgets and 3rd party libs here
+    tiny: `${wpc.lib}/tiny`,
+    // modal component
+    modal: `${wpc.lib}/modal`,
   };
 
   const extensions = ['.jsx', '.js', '.json', '.scss', '.css', '.html'];
