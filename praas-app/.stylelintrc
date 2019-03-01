@@ -1,5 +1,6 @@
 {
   "extends": "stylelint-config-standard",
+  "ignoreFiles": "./src/lib/site-css/mini/**.scss",
   "plugins": [
     "stylelint-scss"
   ],
