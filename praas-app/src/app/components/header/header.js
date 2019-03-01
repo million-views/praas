@@ -1,16 +1,17 @@
 import { Link } from '@reach/router';
 
-import style from './header.scss';
+// import style from './header.scss';
+// import './header.scss';
 
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { cx } from 'tiny';
+// import { cx } from 'tiny';
 
 const Header = ({ title, loggedIn, logout, ...rest }) => {
   if (loggedIn) {
     return (
-      <header className={cx([style.header, 'shadow'])}>
+      <header >
         <h1>{title}</h1>
         <nav>
           <Link to="logout" onClick={logout}>Logout</Link>
@@ -19,7 +20,7 @@ const Header = ({ title, loggedIn, logout, ...rest }) => {
     );
   } else {
     return (
-      <header className={cx([style.header, 'shadow'])}>
+      <header >
         <h1>{title}</h1>
         <nav>
           {loggedIn && <Link to="/">Home</Link>}

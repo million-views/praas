@@ -7,7 +7,7 @@ const presets = (wpc) => [
     loose: true,
     modules: false,       /* don't transpile ES6 modules */
     useBuiltIns: 'usage', /* polyfill based on usage */
-    debug: true,
+    debug: false,
     targets: {
       chrome: 71,
       esmodules: true
