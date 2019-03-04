@@ -35,6 +35,17 @@ const HtmlOptions = {
 
 // see https://webpack.js.org/configuration/ for bail
 // see https://webpack.js.org/configuration/stats/ for stats
+// see https://webpack.js.org/plugins/mini-css-extract-plugin/#extracting-css-based-on-entry
+
+// function recursiveIssuer(m) {
+//   if (m.issuer) {
+//     return recursiveIssuer(m.issuer);
+//   } else if (m.name) {
+//     return m.name;
+//   } else {
+//     return false;
+//   }
+// }
 
 /**
  *
@@ -71,6 +82,8 @@ module.exports = (wpc) => {
     },
     entry: {
       app: `${wpc.app}/main.js`,
+      // local: `${wpc.app}`,
+      // global: `${wpc.web}`,
     },
     output: {
       path: wpc.build,
@@ -89,8 +102,28 @@ module.exports = (wpc) => {
             test: /[\\/]node_modules[\\/]/,
             priority: -10
           },
+          // globalStyle: {
+          //   test: (m, c, entry) => {
+          //     ({ name, type, context, buildInfo, ...rest } = (c && c[0]) ? c[0] : {});
+          //     console.log('global', m.constructor.name, typeof (c), name, rest);
+          //     return (m.constructor.name !== 'CssModule' && recursiveIssuer(m) === entry);
+          //   },
+          //   name: 'site',
+          //   chunks: 'all',
+          //   enforce: false
+          // },
+          // extractAppStyle: {
+          //   test: (m, c, entry) => {
+          //     ({ name, type, context, buildInfo, ...rest } = (c && c[0]) ? c[0] : {});
+          //     console.log('local', m.constructor.name, typeof (c), name, rest);
+          //     return (m.constructor.name === 'CssModule' && recursiveIssuer(m) === entry);
+          //   },
+          //   name: 'app',
+          //   chunks: 'all',
+          //   enforce: false
+          // },
           default: {
-            minChunks: 2,
+            minChunks: 20,
             priority: -20,
             reuseExistingChunk: true
           }
@@ -101,7 +134,7 @@ module.exports = (wpc) => {
       new webpack.ProvidePlugin({ React: 'react' }),
       new Clean([wpc.build], { root: wpc.root, verbose: true, allowExternal: true }),
       new HTML({ template: `${wpc.web}/index.html`, ...HtmlOptions }),
-      new Copy([{ context: wpc.web, from: '**/*.*', ignore: ['*.ejs', '*.html', '*.css'] }]),
+      new Copy([{ context: wpc.web, from: '**/*.*', ignore: ['*.ejs', '*.html', '*.scss'] }]),
       new Analyze(AnalyzerOptions),
     ]
   };

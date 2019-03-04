@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Field, FieldArray, Form, ErrorMessage } from 'formik';
 
 import Alert from 'components/alert';
-import style from './form.scss';
 import { cx } from 'tiny';
 
 const categories = [
@@ -122,8 +121,8 @@ function ConduitForm(props) {
   const classes = cx(['submit', { 'spinner': isSubmitting }]);
 
   return (
-    <Form className={style.createConduit}>
-      <h2 className={style.header}>{buttonLabel}</h2>
+    <Form >
+      <h2 >{buttonLabel}</h2>
       {
         status && <Alert klass="alert-danger" message={status.errors} />
       }

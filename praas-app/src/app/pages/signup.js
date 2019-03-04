@@ -11,7 +11,6 @@ import { registerUser } from 'store/user/registration';
 import { logoutUser } from 'store/user/login';
 
 import { cx } from 'tiny';
-import style from './signup.scss';
 
 const initialValues = {
   user: {
@@ -74,8 +73,8 @@ function SignupForm(props) {
   const { isSubmitting, status } = props;
   const classes = cx(['submit', { 'spinner': isSubmitting }]);
   return (
-    <Form className={style.signup}>
-      <h2 className={style.header}>Create your account</h2>
+    <Form>
+      <h2>Create your account</h2>
       {
         status && <Alert klass="alert-danger" message={status.errors} />
       }

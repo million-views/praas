@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import style from './alert.scss';
-
-const flash = ({ klass, message }) => {
+const flash = ({ _klass, message }) => {
   let items;
   console.log('flash: ', message);
   if (message) {
@@ -23,7 +21,7 @@ const flash = ({ klass, message }) => {
 
   if (items) {
     return (
-      <div className={style[klass]}>
+      <div>
         <ul>
           {items}
         </ul>

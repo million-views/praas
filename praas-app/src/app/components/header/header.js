@@ -20,13 +20,15 @@ const Header = ({ title, loggedIn, logout, ...rest }) => {
     );
   } else {
     return (
-      <header >
-        <h1>{title}</h1>
-        <nav>
-          {loggedIn && <Link to="/">Home</Link>}
-          <Link to="/signup">Signup</Link>
-          <Link to="/login">Login</Link>
-        </nav>
+      <header>
+        <label htmlFor="drawer-control" className="drawer-toggle" />
+
+        <input type="checkbox" id="drawer-control" className="drawer" />
+        <div>
+          <label htmlFor="drawer-control" className="drawer-close" />
+          <a href="#">Home</a>
+          <a href="#">Sign in</a>
+        </div>
       </header>
     );
   }

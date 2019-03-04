@@ -10,7 +10,6 @@ import Alert from 'components/alert';
 import { loginUser, logoutUser } from 'store/user/login';
 
 import { cx } from 'tiny';
-import style from './login.scss';
 
 const initialValues = {
   user: {
@@ -74,8 +73,8 @@ function LoginForm(props) {
   // console.log('status here is:', status ? status.errors : 'nada');
   const classes = cx(['submit', { 'spinner': isSubmitting }]);
   return (
-    <Form className={style.login}>
-      <h2 className={style.header}>Login to your account</h2>
+    <Form>
+      <h2>Login to your account</h2>
       {
         status && <Alert klass="alert-danger" message={status.errors} />
       }
