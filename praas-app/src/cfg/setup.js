@@ -35,7 +35,6 @@ const HtmlOptions = {
 
 // see https://webpack.js.org/configuration/ for bail
 // see https://webpack.js.org/configuration/stats/ for stats
-// see https://webpack.js.org/plugins/mini-css-extract-plugin/#extracting-css-based-on-entry
 
 // function recursiveIssuer(m) {
 //   if (m.issuer) {

@@ -105,7 +105,7 @@ module.exports = (wpc) => {
   globalCss.push(sassLoader([wpc.web, wpc.lib]));
 
   // add sass resource loader as the first step in the pipeline
-  localCss.push(sassResourceLoader(wpc.lib));
+  // localCss.push(sassResourceLoader(wpc.lib));
   globalCss.push(sassResourceLoader(wpc.lib));
 
   return {

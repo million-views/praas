@@ -20,15 +20,10 @@ const Header = ({ title, loggedIn, logout, ...rest }) => {
     );
   } else {
     return (
-      <header>
-        <label htmlFor="drawer-control" className="drawer-toggle" />
-
-        <input type="checkbox" id="drawer-control" className="drawer" />
-        <div>
-          <label htmlFor="drawer-control" className="drawer-close" />
-          <a href="#">Home</a>
-          <a href="#">Sign in</a>
-        </div>
+      <header class="sticky">
+        <a href="#" class="logo">Conduit</a>
+        <a href="#" class="button">Home</a>
+        <button>Download</button>
       </header>
     );
   }
