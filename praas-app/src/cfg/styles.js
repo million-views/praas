@@ -105,27 +105,28 @@ module.exports = (wpc) => {
   globalCss.push(sassLoader([wpc.web, wpc.lib]));
 
   // add sass resource loader as the first step in the pipeline
-  // localCss.push(sassResourceLoader(wpc.lib));
-  globalCss.push(sassResourceLoader(wpc.lib));
+  localCss.push(sassResourceLoader(wpc.lib));
+  // global css comes from material web components, so we don't
+  // need sass resource loader to resolve local mixins, vars and
+  // extends
+  // globalCss.push(sassResourceLoader(wpc.lib));
 
   return {
     module: {
       rules: [
         {
-          oneOf: [
-            {
-              test,
-              include: [wpc.web, wpc.lib],
-              exclude: /node_modules/,
-              use: globalCss
-            },
-            {
-              test,
-              include: [wpc.app],
-              exclude: /node_modules/,
-              use: localCss
-            },
-          ]
+          test,
+          include: [wpc.app],
+          exclude: /node_modules/,
+          use: localCss
+        },
+        {
+          test,
+          include: [
+            path.resolve('./node_modules/material-components-web'),
+            path.resolve('./node_modules/@material'),
+          ],
+          use: globalCss
         },
       ]
     },

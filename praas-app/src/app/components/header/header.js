@@ -20,10 +20,13 @@ const Header = ({ title, loggedIn, logout, ...rest }) => {
     );
   } else {
     return (
-      <header class="sticky">
-        <a href="#" class="logo">Conduit</a>
-        <a href="#" class="button">Home</a>
-        <button>Download</button>
+      <header >
+        <h1>{title}</h1>
+        <nav>
+          {loggedIn && <Link to="/">Home</Link>}
+          <Link to="/signup">Signup</Link>
+          <Link to="/login">Login</Link>
+        </nav>
       </header>
     );
   }

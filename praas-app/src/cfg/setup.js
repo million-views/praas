@@ -81,8 +81,6 @@ module.exports = (wpc) => {
     },
     entry: {
       app: `${wpc.app}/main.js`,
-      // local: `${wpc.app}`,
-      // global: `${wpc.web}`,
     },
     output: {
       path: wpc.build,
@@ -101,26 +99,6 @@ module.exports = (wpc) => {
             test: /[\\/]node_modules[\\/]/,
             priority: -10
           },
-          // globalStyle: {
-          //   test: (m, c, entry) => {
-          //     ({ name, type, context, buildInfo, ...rest } = (c && c[0]) ? c[0] : {});
-          //     console.log('global', m.constructor.name, typeof (c), name, rest);
-          //     return (m.constructor.name !== 'CssModule' && recursiveIssuer(m) === entry);
-          //   },
-          //   name: 'site',
-          //   chunks: 'all',
-          //   enforce: false
-          // },
-          // extractAppStyle: {
-          //   test: (m, c, entry) => {
-          //     ({ name, type, context, buildInfo, ...rest } = (c && c[0]) ? c[0] : {});
-          //     console.log('local', m.constructor.name, typeof (c), name, rest);
-          //     return (m.constructor.name === 'CssModule' && recursiveIssuer(m) === entry);
-          //   },
-          //   name: 'app',
-          //   chunks: 'all',
-          //   enforce: false
-          // },
           default: {
             minChunks: 20,
             priority: -20,

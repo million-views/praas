@@ -4,20 +4,13 @@
 
 const path = require('path');
 
+const theme = 'default';
+
 const resources = [
-  'mini/_core.scss',
-  'mini/_layout_mixins.scss',
-  'mini/_layout.scss',
-  'mini/_input_control_mixins.scss',
-  'mini/_input_control.scss',
-  'mini/_navigation.scss',
-  'mini/_table.scss',
-  'mini/_contextual_mixins.scss',
-  'mini/_contextual.scss',
-  'mini/_progress_mixins.scss',
-  'mini/_progress.scss',
-  'mini/_icon.scss',
-  'mini/_utility.scss',
+  '_extensions.scss',
+  '_vars.scss',
+  '_mixins.scss',
+  '_colors.scss',
 ];
 
-module.exports = resources.map(file => path.resolve(__dirname, file));
+module.exports = resources.map(file => path.resolve(__dirname, theme, file));
