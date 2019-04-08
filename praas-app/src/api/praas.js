@@ -98,7 +98,7 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
       return Promise.reject({
         statusText: "I'm a teapot",
         status: 418, // Unable to contact server, can't make coffee,
-        error: { errors: { offline: 'check your network connection', network: error } }
+        errors: { offline: 'Check your network connection', network: error.message }
       });
     }
   );
