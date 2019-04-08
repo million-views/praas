@@ -4,13 +4,16 @@ import { connect } from 'react-redux';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
+import { FormField } from '@rmwc/formfield';
+import { Button } from '@rmwc/button';
+import { CircularProgress } from '@rmwc/circular-progress';
+import '@material/button/dist/mdc.button.css';
+
 import { Header } from 'components';
 import Alert from 'components/alert';
 
 import { registerUser } from 'store/user/registration';
 import { logoutUser } from 'store/user/login';
-
-import { cx } from 'tiny';
 
 const initialValues = {
   user: {
@@ -75,23 +78,34 @@ const formStyle = {
 
 function SignupForm(props) {
   const { isSubmitting, status } = props;
-  const classes = cx(['submit', { 'spinner': isSubmitting }]);
   return (
     <Form style={formStyle}>
       <h2>Create your account</h2>
       {
         status && <Alert klass="alert-danger" message={status.errors} />
       }
-      <Field name="user.firstName" placeholder="First name" type="text" required />
-      <ErrorMessage name="user.firstName" component="div" className="error" />
+      <FormField>
+        <Field name="user.firstName" placeholder="First name" type="text" required />
+        <ErrorMessage name="user.firstName" component="div" className="error" />
+      </FormField>
 
-      <Field name="user.email" placeholder="Email - jane@test.com" type="email" required />
-      <ErrorMessage name="user.email" component="div" className="error" />
+      <FormField>
+        <Field name="user.email" placeholder="Email - jane@test.com" type="email" required />
+        <ErrorMessage name="user.email" component="div" className="error" />
+      </FormField>
 
-      <Field name="user.password" placeholder="Password" type="password" required />
-      <ErrorMessage name="user.password" component="div" className="error" />
+      <FormField>
+        <Field name="user.password" placeholder="Password" type="password" required />
+        <ErrorMessage name="user.password" component="div" className="error" />
+      </FormField>
 
-      <button type="submit" disabled={isSubmitting === true} className={classes}>Submit</button>
+      <Button
+        type="submit"
+        disabled={isSubmitting === true}
+        icon={isSubmitting ? <CircularProgress /> : undefined}
+        label="Submit"
+        outlined
+      />
     </Form>
   );
 };
