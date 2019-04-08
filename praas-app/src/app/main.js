@@ -4,16 +4,14 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 
 // import main css file to get processed by sass and webpack
-import style from './main.scss';
+import './main.scss';
 
 import configureStore from 'store';
 import App from './App.js';
 
 const Root = ({ store }) => (
   <Provider store={store}>
-    <div className={style.app} >
-      <App />
-    </div>
+    <App />
   </Provider>
 );
 

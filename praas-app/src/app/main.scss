@@ -2,6 +2,16 @@
 // refer to https://github.com/million-views/praas/tree/17ced8ca36557e9e4f90c0c064927ca3e4543d84/praas-app
 // on how to import scss mixins and extends, and create a global
 // css class declaration
-.app {
-  background-color: $primary;
+html,
+body {
+  padding: 0;
+  margin: 0;
 }
+
+html {
+  max-width: 100vw;
+}
+
+// div[role="group"][tabindex] {
+//   height: 100%;
+// }

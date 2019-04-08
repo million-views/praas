@@ -1,35 +1,36 @@
-import { Link } from '@reach/router';
-
-// import style from './header.scss';
-// import './header.scss';
-
 import React from 'react';
 import PropTypes from 'prop-types';
 
-// import { cx } from 'tiny';
+import { navigate } from '@reach/router';
+
+import { SimpleTopAppBar } from '@rmwc/top-app-bar';
+import '@material/top-app-bar/dist/mdc.top-app-bar.css';
+
+import style from './header.scss';
 
 const Header = ({ title, loggedIn, logout, ...rest }) => {
+  const actions = [];
   if (loggedIn) {
-    return (
-      <header >
-        <h1>{title}</h1>
-        <nav>
-          <Link to="logout" onClick={logout}>Logout</Link>
-        </nav>
-      </header>
-    );
+    actions.push({
+      onClick: logout, icon: 'power_settings_new'
+    });
   } else {
-    return (
-      <header >
-        <h1>{title}</h1>
-        <nav>
-          {loggedIn && <Link to="/">Home</Link>}
-          <Link to="/signup">Signup</Link>
-          <Link to="/login">Login</Link>
-        </nav>
-      </header>
-    );
+    actions.push({
+      onClick: () => navigate('/signup'), icon: 'person_add'
+    });
+    actions.push({
+      onClick: () => navigate('/login'), icon: 'exit_to_app'
+    });
   }
+
+  return (
+    <SimpleTopAppBar
+      className={style.header}
+      fixed
+      title={title}
+      actionItems={actions}
+    />
+  );
 };
 
 Header.propTypes = {

@@ -64,6 +64,10 @@ const mapStateToProps = (state, _ownProps) => {
 
 export default connect(mapStateToProps)(Login);
 
+const formStyle = {
+  padding: '50px',
+};
+
 function LoginForm(props) {
   const { isSubmitting, status } = props;
 
@@ -73,7 +77,7 @@ function LoginForm(props) {
   // console.log('status here is:', status ? status.errors : 'nada');
   const classes = cx(['submit', { 'spinner': isSubmitting }]);
   return (
-    <Form>
+    <Form style={formStyle}>
       <h2>Login to your account</h2>
       {
         status && <Alert klass="alert-danger" message={status.errors} />
