@@ -96,12 +96,7 @@ function SignupForm(props) {
         <ErrorMessage name="user.password" component="div" className="error" />
       </div>
 
-      <button
-        type="submit"
-        disabled={isSubmitting === true}
-        label="Submit"
-        outlined
-      />
+      <button disabled={isSubmitting === true}>Submit</button>
     </Form>
   );
 };

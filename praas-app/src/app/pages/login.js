@@ -92,13 +92,7 @@ function LoginForm(props) {
         <Field name="user.password" placeholder="Password" type="password" required />
         <ErrorMessage name="user.password" component="div" className="error" />
       </div>
-
-      <button
-        type="submit"
-        disabled={isSubmitting === true}
-        label="Submit"
-        outlined
-      />
+      <button disabled={isSubmitting === true}>Submit</button>
     </Form>
   );
 };
