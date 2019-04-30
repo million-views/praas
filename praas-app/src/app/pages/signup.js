@@ -39,6 +39,10 @@ const signupSchema = Yup.object({
   })
 });
 
+const mainStyle = {
+  padding: '50px',
+};
+
 const Signup = ({ user, dispatch }) => {
   return (
     <React.Fragment>
@@ -47,15 +51,17 @@ const Signup = ({ user, dispatch }) => {
         logout={() => dispatch(logoutUser())}
         title="Conduits - Sign up"
       />
-      <Formik
-        initialValues={initialValues}
-        validationSchema={signupSchema}
-        render={SignupForm}
-        onSubmit={(values, actions) => {
-          const user = values.user;
-          dispatch(registerUser({ user }, actions));
-        }}
-      />
+      <main style={mainStyle}>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={signupSchema}
+          render={SignupForm}
+          onSubmit={(values, actions) => {
+            const user = values.user;
+            dispatch(registerUser({ user }, actions));
+          }}
+        />
+      </main>
     </React.Fragment>
   );
 };
@@ -72,14 +78,10 @@ const mapStateToProps = (state, _ownProps) => {
 
 export default connect(mapStateToProps)(Signup);
 
-const formStyle = {
-  padding: '50px',
-};
-
 function SignupForm(props) {
   const { isSubmitting, status } = props;
   return (
-    <Form style={formStyle}>
+    <Form>
       <h2>Create your account</h2>
       {
         status && <Alert klass="alert-danger" message={status.errors} />

@@ -123,8 +123,7 @@ module.exports = (wpc) => {
         {
           test,
           include: [
-            path.resolve('./node_modules/material-components-web'),
-            path.resolve('./node_modules/@material'),
+            path.resolve('./node_modules/picnic/'),
           ],
           use: globalCss
         },

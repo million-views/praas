@@ -24,7 +24,7 @@ module.exports = (env, argv) => {
 
   // webpack based project configuration
   const wpc = { isProd, argv, mode, root, app, cfg, web, lib, build };
-  console.table(wpc);
+  // console.table(wpc);
 
   // bring in the parts of the build pipeline
   const Base = require('./setup')(wpc);

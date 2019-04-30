@@ -34,6 +34,10 @@ const loginSchema = Yup.object({
   })
 });
 
+const mainStyle = {
+  padding: '50px',
+};
+
 const Login = ({ user, dispatch }) => {
   console.log('user: ', user);
   return (
@@ -43,15 +47,18 @@ const Login = ({ user, dispatch }) => {
         logout={() => dispatch(logoutUser())}
         title="Conduits - Login"
       />
-      <Formik
-        initialValues={initialValues}
-        validationSchema={loginSchema}
-        render={LoginForm}
-        onSubmit={(values, actions) => {
-          const user = values.user;
-          dispatch(loginUser({ user }, actions));
-        }}
-      />
+      <main style={mainStyle}>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={loginSchema}
+          render={LoginForm}
+          onSubmit={(values, actions) => {
+            const user = values.user;
+            dispatch(loginUser({ user }, actions));
+          }}
+        />
+      </main>
+
     </React.Fragment>
   );
 };
@@ -68,10 +75,6 @@ const mapStateToProps = (state, _ownProps) => {
 
 export default connect(mapStateToProps)(Login);
 
-const formStyle = {
-  padding: '50px',
-};
-
 function LoginForm(props) {
   const { isSubmitting, status } = props;
 
@@ -80,7 +83,7 @@ function LoginForm(props) {
 
   console.log('status here is:', status ? status.errors : 'nada');
   return (
-    <Form style={formStyle}>
+    <Form>
       <h2>Login to your account</h2>
       {
         status && <Alert klass="alert-danger" message={status.errors} />

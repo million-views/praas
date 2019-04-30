@@ -42,7 +42,7 @@ class EditConduitForm extends Component {
         enableReinitialize
         render={props =>
           <ConduitForm {...props}
-            buttonLabel="Edit Conduit"
+            buttonLabel="Save Conduit"
             changeMode={changeMode}
             conduit={conduit}
             handleFieldUpdates={this.handleFieldUpdates}

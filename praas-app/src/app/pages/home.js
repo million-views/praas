@@ -10,6 +10,10 @@ import { listConduits } from 'store/conduit/list';
 import { deleteConduit } from 'store/conduit/del';
 import { logoutUser } from 'store/user/login';
 
+const mainStyle = {
+  padding: '50px',
+};
+
 class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -68,22 +72,24 @@ class Home extends React.Component {
             logout={logout}
             title="Conduits - Pipe data in and out of your storage"
           />
-          {this.state.mode === 'list' &&
-            <ConduitList
-              setConduitId={(cid) => this.setConduitId(cid)}
-              changeMode={(mode) => this.changeMode(mode)}
-              deleteConduit={(cid) => this.deleteConduit(cid)}
-              conduits={this.props.conduits} />
-          }
-          {this.state.mode === 'add' &&
-            <CreateConduitForm
-              changeMode={(mode) => this.changeMode(mode)}
-            />}
-          {this.state.mode === 'edit' &&
-            <EditConduitForm
-              cid={this.state.cid}
-              changeMode={(mode) => this.changeMode(mode)}
-            />}
+          <main style={mainStyle}>
+            {this.state.mode === 'list' &&
+              <ConduitList
+                setConduitId={(cid) => this.setConduitId(cid)}
+                changeMode={(mode) => this.changeMode(mode)}
+                deleteConduit={(cid) => this.deleteConduit(cid)}
+                conduits={this.props.conduits} />
+            }
+            {this.state.mode === 'add' &&
+              <CreateConduitForm
+                changeMode={(mode) => this.changeMode(mode)}
+              />}
+            {this.state.mode === 'edit' &&
+              <EditConduitForm
+                cid={this.state.cid}
+                changeMode={(mode) => this.changeMode(mode)}
+              />}
+          </main>
         </React.Fragment>
       );
     } else {

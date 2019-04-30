@@ -25,34 +25,40 @@ const List = (props) => {
   };
   const conduits = props.conduits.map((conduit, index) => {
     return (
-      <React.Fragment key={index}>
-        <span>{conduit.description}</span>
-        <span>{conduit.suriType}</span>
-        <span>{conduit.suri}</span>
-        <span>{conduit.status}</span>
-        <div>
+      <tr key={index}>
+        <td>{conduit.description}</td>
+        <td>{conduit.suriType}</td>
+        <td>{conduit.suri}</td>
+        <td>{conduit.status}</td>
+        <td>
           <button onClick={() => { props.changeMode('edit'); props.setConduitId(conduit.id); }}>Edit</button>
           <Modal {...modalProps} ref={modal}>
             {modalContent(conduit.id, props.deleteConduit)}
           </Modal>
-        </div>
-      </React.Fragment >
+        </td>
+      </tr>
     );
   });
 
   return (
     <React.Fragment>
       <h1>List Conduits</h1>
-      <h3>A conduit is a handle to a RESTful service endpoint</h3>
-      <div>
-        <button onClick={() => props.changeMode('add')}>Add conduit</button>
-        <h4>Description</h4>
-        <h4>Type</h4>
-        <h4>Service Endpoint</h4>
-        <h4>Status</h4>
-        <h4>Action</h4>
-        {conduits}
-      </div>
+      <h2>A conduit is a handle to a RESTful service endpoint</h2>
+      <button onClick={() => props.changeMode('add')}>Add conduit</button>
+      <table className="primary">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Type</th>
+            <th>Service Endpoint</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {conduits}
+        </tbody>
+      </table>
     </React.Fragment>
   );
 };

@@ -14,7 +14,6 @@ const categories = [
 
 /* eslint react/prop-types: 0 */
 const Checkbox = (props) => {
-  console.log('checkbox props: ', props);
   const { push, remove, form } = props;
   return (
     <div>
@@ -34,7 +33,7 @@ const Checkbox = (props) => {
               }
             }}
           />
-          {category.name}
+          <span className="checkable">{category.name}</span>
         </label>
       ))}
     </div>
@@ -69,17 +68,30 @@ const Comment = ({
 
 const IpState = ({
   field, form: { touched, errors }, ...props
-}) =>
-  (
-    <div className="col">
-      <input {...field} type="radio" value="Active" />Active
-      <input {...field} checked type="radio" value="Inactive" />Inactive
+}) => {
+  const details = props.details;
+  console.log('ip-details: ', details);
+  return (
+    <span>
+      <label>
+        <input {...field} type="radio"
+          defaultChecked={details.state === 'Active'}
+          value={details.state} />
+        <span className="checkable">Active</span>
+      </label>
+      <label>
+        <input {...field} type="radio"
+          defaultChecked={details.state === 'Inactive'}
+          value={details.state} />
+        <span className="checkable">Inactive</span>
+      </label>
       {
         touched[field.name] && errors[field.name] &&
         <div className="field-error">{errors[field.name]}</div>
       }
-    </div>
+    </span>
   );
+};
 
 const Whitelist = (props) => {
   const { push, remove, form } = props;
@@ -87,18 +99,23 @@ const Whitelist = (props) => {
     <React.Fragment>
       {form.values.whitelist &&
         form.values.whitelist.length > 0 &&
-        form.values.whitelist.map((address, index) => (
-          <div key={index} className="row">
-            <Field name={`whitelist[${index}].address`} component={IpAddress} />
-            <Field name={`whitelist[${index}].comment`} component={Comment} />
-            <Field name={`whitelist[${index}].state`} component={IpState} />
-            <div className="col">
-              <button type="button" onClick={() => remove(index)}>
-                X
-              </button>
+        form.values.whitelist.map((address, index) => {
+          return (
+            <div className="flex four" key={index}>
+              <Field name={`whitelist[${index}].address`} component={IpAddress} />
+              <Field name={`whitelist[${index}].comment`} component={Comment} />
+              <Field name={`whitelist[${index}].state`}
+                details={address}
+                component={IpState} />
+              <div className="col">
+                <button type="button" onClick={() => remove(index)}>
+                  X
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        }
+        )}
       <button
         type="button"
         onClick={() => push({ address: '', comment: '', state: '' })}
