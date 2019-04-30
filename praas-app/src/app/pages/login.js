@@ -5,11 +5,6 @@ import { connect } from 'react-redux';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
-import { FormField } from '@rmwc/formfield';
-import { Button } from '@rmwc/button';
-import { CircularProgress } from '@rmwc/circular-progress';
-import '@material/button/dist/mdc.button.css';
-
 import { Header } from 'components';
 import Alert from 'components/alert';
 
@@ -89,19 +84,18 @@ function LoginForm(props) {
         status && <Alert klass="alert-danger" message={status.errors} />
       }
 
-      <FormField>
+      <div>
         <Field name="user.email" placeholder="Email - jane@test.com" type="email" required />
         <ErrorMessage name="user.email" component="div" className="error" />
-      </FormField>
-      <FormField>
+      </div>
+      <div>
         <Field name="user.password" placeholder="Password" type="password" required />
         <ErrorMessage name="user.password" component="div" className="error" />
-      </FormField>
+      </div>
 
-      <Button
+      <button
         type="submit"
         disabled={isSubmitting === true}
-        icon={isSubmitting ? <CircularProgress /> : undefined}
         label="Submit"
         outlined
       />
