@@ -39,12 +39,11 @@
     "formik": "^1.5.1",
     "picnic": "^6.5.0",
     "prop-types": "^15.7.2",
-    "react": "^16.8.3",
-    "react-dom": "^16.8.3",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "react-redux": "^6.0.1",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
-    "rmwc": "^5.2.2",
     "yup": "^0.26.10"
   },
   "devDependencies": {
