@@ -13,7 +13,7 @@ const categories = [
 ];
 
 /* eslint react/prop-types: 0 */
-const Checkbox = (props) => {
+const Racm = (props) => {
   const { push, remove, form } = props;
   return (
     <div>
@@ -36,6 +36,10 @@ const Checkbox = (props) => {
           <span className="checkable">{category.name}</span>
         </label>
       ))}
+      {
+        form.touched.racm && form.errors['racm'] &&
+        <div className="field-error">{form.errors.racm}</div>
+      }
     </div>
   );
 };
@@ -67,36 +71,23 @@ const Comment = ({
   );
 
 const IpState = ({
-  field, ipId, form: { touched, errors, values }, ...props
+  field, form: { touched, errors }, ...props
 }) => {
-  const changeState = (e) => {
-    values.whitelist[ipId].state = e.target.value;
-  };
-  // onChange={e => {
-  //   if (e.target.checked) {
-  //     push(category.id);
-  //   } else {
-  //     const idx = form.values.racm.indexOf(category.id);
-  //     remove(idx);
-  //   }
-  // }}
-
   const details = props.details;
-  console.log('ip-details: ', details);
   return (
     <span>
       <label>
         <input {...field} type="radio"
           defaultChecked={details.state === 'Active'}
           value="Active"
-          onChange={changeState} />
+        />
         <span className="checkable">Active</span>
       </label>
       <label>
         <input {...field} type="radio"
           defaultChecked={details.state === 'Inactive'}
           value="Inactive"
-          onChange={changeState} />
+        />
         <span className="checkable">Inactive</span>
       </label>
       {
@@ -119,7 +110,6 @@ const Whitelist = (props) => {
               <Field name={`whitelist[${index}].address`} component={IpAddress} />
               <Field name={`whitelist[${index}].comment`} component={Comment} />
               <Field name={`whitelist[${index}].state`}
-                ipId={index}
                 details={address}
                 component={IpState} />
               <div className="col">
@@ -186,7 +176,7 @@ function ConduitForm(props) {
       <ErrorMessage name="suri" component="div" className="error" />
 
       <FieldArray name="whitelist" component={Whitelist} />
-      <FieldArray name="racm" component={Checkbox} />
+      <FieldArray name="racm" component={Racm} />
 
       <Field
         name="description"
