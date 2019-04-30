@@ -67,8 +67,20 @@ const Comment = ({
   );
 
 const IpState = ({
-  field, form: { touched, errors }, ...props
+  field, ipId, form: { touched, errors, values }, ...props
 }) => {
+  const changeState = (e) => {
+    values.whitelist[ipId].state = e.target.value;
+  };
+  // onChange={e => {
+  //   if (e.target.checked) {
+  //     push(category.id);
+  //   } else {
+  //     const idx = form.values.racm.indexOf(category.id);
+  //     remove(idx);
+  //   }
+  // }}
+
   const details = props.details;
   console.log('ip-details: ', details);
   return (
@@ -76,13 +88,15 @@ const IpState = ({
       <label>
         <input {...field} type="radio"
           defaultChecked={details.state === 'Active'}
-          value={details.state} />
+          value="Active"
+          onChange={changeState} />
         <span className="checkable">Active</span>
       </label>
       <label>
         <input {...field} type="radio"
           defaultChecked={details.state === 'Inactive'}
-          value={details.state} />
+          value="Inactive"
+          onChange={changeState} />
         <span className="checkable">Inactive</span>
       </label>
       {
@@ -105,6 +119,7 @@ const Whitelist = (props) => {
               <Field name={`whitelist[${index}].address`} component={IpAddress} />
               <Field name={`whitelist[${index}].comment`} component={Comment} />
               <Field name={`whitelist[${index}].state`}
+                ipId={index}
                 details={address}
                 component={IpState} />
               <div className="col">
@@ -117,7 +132,6 @@ const Whitelist = (props) => {
         }
         )}
       <button
-        type="button"
         onClick={() => push({ address: '', comment: '', state: '' })}
         className="secondary"
       >
