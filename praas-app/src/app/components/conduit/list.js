@@ -1,28 +1,9 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
-import Modal from 'modal/Modal';
 // import style from './list.scss';
 
 const List = (props) => {
-  const modal = useRef();
-  const onClose = () => {
-    modal.current.onClose();
-  };
-
-  const modalContent = (id, deleteConduit) => {
-    return (
-      <div>
-        <p>Confirm to delete</p>
-        <button type="button" onClick={() => { deleteConduit(id); }}>Yes</button>
-        <button type="button" onClick={onClose}>No</button>
-      </div>
-    );
-  };
-  const modalProps = {
-    ariaLabel: 'Delete Conduit',
-    triggerText: 'This is a button to trigger the Modal'
-  };
   const conduits = props.conduits.map((conduit, index) => {
     return (
       <tr key={index}>
@@ -32,9 +13,7 @@ const List = (props) => {
         <td>{conduit.status}</td>
         <td>
           <button onClick={() => { props.changeMode('edit'); props.setConduitId(conduit.id); }}>Edit</button>
-          <Modal {...modalProps} ref={modal}>
-            {modalContent(conduit.id, props.deleteConduit)}
-          </Modal>
+          <button onClick={() => { props.deleteConduit(conduit.id); }}>Delete</button>
         </td>
       </tr>
     );
