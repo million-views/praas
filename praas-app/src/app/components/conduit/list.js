@@ -1,10 +1,39 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-// import style from './list.scss';
+const Modal = ({ deleteConduit }) => {
+  return (
+    <div className="modal">
+      <input id="modal_1" type="checkbox" />
+      <label htmlFor="modal_1" className="overlay" />
+      <article>
+        <header>
+          <h3>Delete Confirmation Dialog</h3>
+          <label htmlFor="modal_1" className="close">×</label>
+        </header>
+        <section className="content">
+          Are you sure you want to delete?
+        </section>
+        <footer>
+          <label htmlFor="modal_1" className="button">
+            No
+          </label>
+          <label htmlFor="modal_1" onClick={deleteConduit} className="button dangerous">
+            Yes
+          </label>
+        </footer>
+      </article>
+    </div>
+  );
+};
+
+Modal.propTypes = {
+  deleteConduit: PropTypes.func,
+};
 
 const List = (props) => {
   const conduits = props.conduits.map((conduit, index) => {
+    const deleteConduit = () => props.deleteConduit(conduit.id);
     return (
       <tr key={index}>
         <td>{conduit.description}</td>
@@ -13,7 +42,8 @@ const List = (props) => {
         <td>{conduit.status}</td>
         <td>
           <button onClick={() => { props.changeMode('edit'); props.setConduitId(conduit.id); }}>Edit</button>
-          <button onClick={() => { props.deleteConduit(conduit.id); }}>Delete</button>
+          <label htmlFor="modal_1" className="button">Delete</label>
+          <Modal deleteConduit={deleteConduit} />
         </td>
       </tr>
     );
