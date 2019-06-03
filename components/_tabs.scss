@@ -1,0 +1,32 @@
+// See https://css-tricks.com/tabs-its-complicated/
+// Don't use tab interface in mobile if you can avoid it
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  // be explicit here since parent can have auto-size
+  // (i.e flex: none)
+  align-self: flex-start;
+
+  > .tab {
+    width: 100%;
+    display: none;
+    // order makes it possible to make the tab always
+    // appear below the label
+    order: 99;
+  }
+
+  > input {
+    display: none;
+
+    &:checked + label {
+      + .tab {
+        display: block;
+
+        img {
+          margin: 0;
+          width: 100%;
+        }
+      }
+    }
+  }
+}

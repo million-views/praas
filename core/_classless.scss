@@ -1,0 +1,421 @@
+/*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
+
+/*! kis.css | MIT License */
+
+// TODO:
+// - Adopt goodness from formalize.css if any
+// - Adopt goodness from HiQ if any
+// - Adopt goodness from solved-by-flexbox (philipwalton)
+// - Adopt goodness from reboot.css (bootstrap)
+//
+// While ensuring to uphold kis.ccs principles!
+
+// Document
+// ==========================================================================
+//
+// 1. Correct the line height in all browsers.
+// 2. Prevent adjustments of font size after orientation changes in iOS.
+// 3. Use websafe fonts as default, font-size for mobile and desktop
+// 4. Set box-sizing to border box to avoid surprises for the developer
+// 5. Set height and width to 100%, this is the most common use case
+// 6. Set margin to 0, this is the most common starting point
+// 7. Improve font legibility
+html,
+body {
+  line-height: 1.24; // 1 [kiscss]
+  -webkit-text-size-adjust: 100%; // 2
+  font-family: Arial, Helvetica, sans-serif; // 3 [kiscss]
+  font-size: 1em; // 3 [kiscss]
+  box-sizing: border-box; // 4 [kiscss]
+  height: 100vh; // 5 [kiscss]
+  width: 100vw;  // 5 [kiscss]
+  margin: 0;     // 6 [kiscss]
+  text-rendering: optimizeLegibility; // 7 [kiscss]
+}
+
+// 1. Let old ways die gently
+// See https://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/
+*,
+*::before,
+*::after {
+  box-sizing: inherit; // 1 [kiscss]
+}
+
+// Sections
+// ==========================================================================
+//
+// 1. Set most common foreground color explicitly
+// 2. Pick a background to prevent snow blindness
+// 3. Set proper scrolling behavior so that we catch layout issues early
+body {
+  color: $black; // 1 [kiscss]
+  background: whitesmoke; // 2 [kiscss]
+  overflow-y: scroll; // 3 [kiscss]
+  -webkit-overflow-scrolling: touch; // 3 [kiscss]
+  overscroll-behavior-y: contain;  // 3 [kiscss]
+  overflow-x: hidden; // 3 [kiscss]
+}
+
+// normalize h1 baseline
+h1 {
+  font-size: 2em;
+}
+
+// [kiscss] No real reason other than for looks
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0 0 ($separation / 2) 0;
+  padding: ($separation / 2) 0 0 0;
+}
+
+// Grouping content
+// ==========================================================================
+//
+// 1. Add the correct box sizing in Firefox.
+// 2. Show the overflow in Edge and IE.
+// 3. limit the width to give a sense of separation
+hr {
+  box-sizing: content-box; // 1
+  height: 0; // 1
+  width: 90%;
+  overflow: visible; // 2
+}
+
+// 1. Correct the inheritance and scaling of font size in all browsers.
+// 2. Correct the odd `em` font sizing in all browsers.
+// 3. Set defaults that look good for kiscss
+// 4. Use pre-wrap for monospace font that is not true 'code'
+//
+//  See https://github.com/necolas/normalize.css/issues/772
+pre,
+code,
+kbd,
+samp {
+  font-family: monospace; // 1
+  font-size: 1em; // 2
+  text-align: left; // 3 [kiscss]
+  background: rgba($dull, 0.1); // 3 [kiscss]
+  border-radius: $radius; // 3 [kiscss]
+  white-space: pre-wrap; // 4 [kiscss]
+}
+
+// avoid having to wrap code in <pre> by setting code to block display
+// which is a more common use case. If you need non-breaking display then
+// use kbd or samp elements
+//
+// 1. preserve line breaks
+code {
+  display: block;
+  overflow-x: auto;
+  white-space: pre; // 1 [kiscss]
+}
+
+p {
+  font-size: 100%;
+
+  code {
+    display: inline;
+  }
+}
+
+// Text-level semantics
+// ==========================================================================
+//
+//
+// 1. Remove the gray background on active links in IE 10.
+// 2. Set defaults that look good for kiscss.
+a {
+  background-color: transparent; // 1
+  color: $black; // 2 [kiscss]
+  text-decoration: none; // 2 [kiscss]
+  box-shadow: none; // 2 [kiscss]
+}
+
+// 1. Remove the bottom border in Chrome 57-
+// 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.
+abbr[title] {
+  border-bottom: none; // 1
+  text-decoration: underline; // 2
+  text-decoration: underline dotted; // 2
+}
+
+// Add the correct font weight in Chrome, Edge, and Safari.
+b,
+strong {
+  font-weight: bolder;
+}
+
+// Style blockquote for kiscss
+blockquote {
+  padding: ($separation / 2) ($separation * 2);
+  margin: ($separation / 2);
+  box-shadow: inset 5px 0 rgba($black, 0.3);
+
+  p,
+  cite {
+    text-align: right;
+  }
+
+  cite {
+    &::before {
+      content: "\2014 \2008"; // emdash followed by punctuation space
+    }
+
+    display: block;
+  }
+}
+
+// Add the correct font size for 'small' in all browsers.
+small {
+  font-size: 80%;
+}
+
+// Prevent `sub` and `sup` elements from affecting the line height in
+// all browsers.
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -($separation);
+}
+
+sup {
+  top: -($separation);
+}
+
+// Embedded content
+// ==========================================================================
+// Remove the border on images inside links in IE 10.
+img {
+  border-style: none;
+}
+
+figure {
+  margin: $separation;
+  padding: ($separation / 2);
+
+  video,
+  img {
+    object-fit: cover;
+    max-width: 100%;
+    max-height: 100%;
+  }
+}
+
+// Forms
+// ==========================================================================
+//
+// 1. Change the font styles in all browsers.
+// 2. Remove the margin in Firefox and Safari.
+// 3. See https://github.com/necolas/normalize.css/issues/778
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit; // 1
+  font-size: inherit; // 1
+  line-height: inherit;
+  margin: 0; // 2
+}
+
+// Remove the inheritance of text transform in Edge, Firefox, and IE.
+// 1. Remove the inheritance of text transform in Firefox.
+button,
+select {
+  text-transform: none; // 1
+}
+
+// Correct the inability to style clickable types in iOS and Safari.
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button;
+}
+
+// Remove the inner border and padding in Firefox.
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
+  border-style: none;
+  padding: 0;
+}
+
+// Restore the focus styles unset by the previous rule.
+button:-moz-focusring,
+[type="button"]:-moz-focusring,
+[type="reset"]:-moz-focusring,
+[type="submit"]:-moz-focusring {
+  outline: 1px dotted ButtonText;
+}
+
+// Correct the padding in Firefox.
+fieldset {
+  padding: ($separation / 2) $separation $separation;
+  border: 1 solid transparent;
+}
+
+// 1. Correct the text wrapping in Edge and IE.
+// 2. Correct the color inheritance from `fieldset` elements in IE.
+// 3. Remove the padding so developers are not caught out when they zero out
+//    `fieldset` elements in all browsers.
+legend {
+  color: inherit; // 2
+  display: table; // 1
+  max-width: 100%; // 1
+  padding: 0; // 3
+  white-space: normal; // 1
+}
+
+// Add the correct vertical alignment in Chrome, Firefox, and Opera.
+progress {
+  vertical-align: baseline;
+}
+
+// Remove the default vertical scrollbar in IE 10+.
+// 1. Allow resize vertically only
+textarea {
+  height: auto;
+  overflow: auto;
+  resize: vertical; // 1 [kiscss]
+}
+
+// Correct the cursor style of increment and decrement buttons in Chrome.
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+// 1. Correct the odd appearance in Chrome and Safari.
+// 2. Correct the outline style in Safari.
+[type="search"] {
+  -webkit-appearance: textfield; // 1
+  outline-offset: -2px; // 2
+}
+
+// Remove the inner padding in Chrome and Safari on macOS.
+[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+// 1. Correct the inability to style clickable types in iOS and Safari.
+// 2. Change font properties to `inherit` in Safari.
+::-webkit-file-upload-button {
+  -webkit-appearance: button; // 1
+  font: inherit; // 2
+}
+
+// Interactive
+// ==========================================================================
+//
+// Add the correct display in Edge, IE 10+, and Firefox.
+details {
+  display: block;
+}
+
+// Add the correct display in all browsers.
+// 1. remove the outline that appears on clicked
+summary {
+  display: list-item;
+  outline: none; // 1 [kiscss]
+}
+
+// Tables
+// ==========================================================================
+//
+// Style to make for decent tables by default
+table {
+  text-align: left;
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+}
+
+td,
+th {
+  padding: ($separation / 2);
+}
+
+th {
+  text-align: left;
+  font-weight: 900;
+  // color: $white;
+  background-color: $primary;
+}
+
+// Okay, the following violates the 'classless' objective but only by
+// a shade. We can move it out when tables become more feature rich.
+.success th {
+  background-color: $success;
+}
+
+.warning th {
+  background-color: $warning;
+}
+
+.error th {
+  background-color: $error;
+}
+
+.dull th {
+  background-color: $dull;
+}
+
+// Zebra stripes
+tr:nth-child(even) {
+  background: rgba($primary, 0.1);
+}
+
+// Form controls
+// ==========================================================================
+//
+// TODO: move to variables/theme
+$control-padding: $separation !default;
+$control-background: #fff !default;
+
+input,
+textarea,
+select {
+  min-height: 2.4rem;
+  padding: $control-padding;
+  border: $border;
+  background-color: $control-background;
+  border-radius: $radius;
+  width: 100%;
+
+  &:focus {
+    border: 1px solid $primary;
+    outline: 0;
+  }
+}
+
+[type=file],
+[type=color] {
+  cursor: pointer;
+}
+
+// Misc
+// ==========================================================================
+//
+//
+// Add the correct display in IE 10+.
+template {
+  display: none;
+}
+
+// Add the correct display in IE 10.
+[hidden] {
+  display: none;
+}

@@ -1,0 +1,54 @@
+// TODO: move to variables/theme
+$button-margin: 0.3rem !default;
+$button-padding: 0.6rem !default;
+
+$button-hover: inset 0 0 0 99rem rgba($white, $transparency) !default;
+$button-click: inset 0 0 0 99rem rgba($black, $transparency) !default;
+$button-pseudo-hover: inset 0 0 0 99rem rgba($black, $transparency / 2) !default;
+
+@mixin button() {
+  cursor: pointer;
+
+  &:hover,
+  &:focus {
+    box-shadow: $button-hover;
+    border: 0;
+  }
+
+  &.pseudo:hover,
+  &.pseudo:focus {
+    box-shadow: $button-pseudo-hover;
+  }
+
+  &.active,
+  &:active,
+  &.pseudo:active {
+    box-shadow: $button-click;
+  }
+
+  &[disabled] {
+    cursor: default;
+    box-shadow: none;
+    background: rgba($dull, 0.6);
+  }
+}
+
+// toggle buttons
+:checked + .toggle,
+:checked + .toggle:hover {
+  box-shadow: $button-click;
+}
+
+button,
+.button,
+[type=submit],
+[type=reset],
+[type=button],
+[role=button] {
+  @include label();
+  @include button();
+
+  min-height: 2.4rem;
+  margin: $button-margin;
+  padding: $button-padding;
+}

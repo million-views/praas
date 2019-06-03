@@ -1,0 +1,179 @@
+// TODO: move to variables/theme
+$flex-gutter: $separation / 2 !default;
+$flex-gutter-vertical: $flex-gutter !default;
+$flex-gutter-horizontal: $flex-gutter !default;
+
+// TODO:
+// Modify break points to support the following ranges
+// tiny   (min-width: 384px);  //-> 24em
+// small  (min-width: 576px);  //-> 36em
+// medium (min-width: 768px);  //-> 48em
+// large  (min-width: 1024px); //-> 64em
+// wide   (min-width: 1280px); //-> 80em
+// high-dppx (-webkit-min-device-pixel-ratio: 1.5),
+//           (min-resolution: 144dpi),
+//           (min-resolution: 1.5dppx);
+//
+// Google css-locks for a good strategy on handling fonts
+//
+
+$flex-sizes: 600 800 1000 1200 !default;
+$flex-children: $flex-sizes !default;
+$flex-off: $flex-sizes !default;
+
+$flex-count: one two three four five six seven eight nine ten eleven twelve !default;
+$flex-count-sizes: (
+  one: 100%,
+  two: 50%,
+  three: 33.33333%,
+  four: 25%,
+  five: 20%,
+  six: 16.66666%,
+  seven: 14.28571%,
+  eight: 12.5%,
+  nine: 11.11111%,
+  ten: 10%,
+  eleven: 9.09091%,
+  twelve: 8.33333%
+);
+
+$flex-part: full half third two-third fourth three-fourth fifth two-fifth three-fifth four-fifth sixth !default;
+$flex-part-sizes: (
+  full: 100%,
+  half: 50%,
+  third: 33.33333%,
+  two-third: 66.66666%,
+  fourth: 25%,
+  three-fourth: 75%,
+  fifth: 20%,
+  two-fifth: 40%,
+  three-fifth: 60%,
+  four-fifth: 80%,
+  sixth: 16.66666%
+);
+
+$flex-offpart: none half third two-third fourth three-fourth fifth two-fifth three-fifth four-fifth sixth !default;
+$flex-offpart-sizes: (
+  half: 50%,
+  third: 33.33333%,
+  two-third: 66.66666%,
+  fourth: 25%,
+  three-fourth: 75%,
+  fifth: 20%,
+  two-fifth: 40%,
+  three-fifth: 60%,
+  four-fifth: 80%,
+  sixth: 16.66666%,
+  none: 0
+);
+
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  &.align-top {
+    align-items: flex-start;
+  }
+
+  &.align-bottom {
+    align-items: flex-end;
+  }
+
+  &.align-center {
+    align-items: center;
+  }
+
+  &.justify-center {
+    justify-content: center;
+  }
+
+  &.auto-size {
+    flex: none;
+  }
+
+  > * {
+    padding-left: $flex-gutter-horizontal;
+    padding-bottom: $flex-gutter-vertical;
+  }
+
+  &[class~="one"],
+  &[class~="two"],
+  &[class~="three"],
+  &[class~="four"],
+  &[class~="five"],
+  &[class~="six"],
+  &[class~="seven"],
+  &[class~="eight"],
+  &[class~="nine"],
+  &[class~="ten"],
+  &[class~="eleven"],
+  &[class~="twelve"] {
+    > * {
+      flex-grow: 0;
+    }
+  }
+}
+
+.flex.grow > * {
+  flex-grow: 1;
+}
+
+@each $count in $flex-count {
+  .#{$count} > * {
+    width: map-get($flex-count-sizes, $count);
+  }
+}
+
+@each $i in $flex-sizes {
+  @media all and (min-width: unquote($i + 'px')) {
+    @each $count in $flex-count {
+      .#{$count}-#{$i} > * {
+        width: map-get($flex-count-sizes, $count);
+      }
+    }
+  }
+}
+
+// Children sizing
+@each $part in $flex-part {
+  .#{$part} {
+    width: map-get($flex-part-sizes, $part);
+  }
+}
+.none { display: none; }
+
+@each $i in $flex-sizes {
+  @media all and (min-width: unquote($i + 'px')) {
+    @each $part in $flex-part {
+      .#{$part}-#{$i} {
+        width: map-get($flex-part-sizes, $part);
+        display: block;
+      }
+    }
+  }
+}
+
+@each $i in $flex-children {
+  @media all and (min-width: unquote($i + 'px')) {
+    .none-#{$i} { display: none; }
+  }
+}
+
+@each $part in $flex-offpart {
+  .off-#{$part} {
+    margin-left: map-get($flex-offpart-sizes, $part);
+  }
+}
+
+@each $i in $flex-sizes {
+  @media all and (min-width: unquote($i + 'px')) {
+    @each $part in $flex-offpart {
+      .off-#{$part}-#{$i} {
+        margin-left: map-get($flex-offpart-sizes, $part);
+      }
+    }
+  }
+}

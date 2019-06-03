@@ -1,0 +1,63 @@
+// TODO: move to variables/theme
+$radio-size: 1rem !default;
+$radio-border: 1px solid #aaa !default;
+$radio-background: #555 !default; //< round dot insided the circle
+
+@mixin radio() {
+  opacity: 0;
+  width: 0;
+  position: absolute;
+  display: inline-block;
+
+  + .checkable {
+    position: relative;
+    cursor: pointer;
+    padding-left: $radio-size * 1.5;
+    margin-right: 0.6rem;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      display: inline-block;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: $radio-size;
+      line-height: $radio-size;
+      color: transparent;
+      // /* stylelint-disable */
+      // font-family: sans;
+      text-align: center;
+      box-sizing: border-box;
+      width: $radio-size;
+      height: $radio-size;
+      border-radius: 50%;
+    }
+
+    &::before {
+      border: $radio-border;
+    }
+  }
+
+  + .checkable:hover::before,
+  &:focus + .checkable::before {
+    border: 1px solid $primary;
+  }
+
+  &:checked + .checkable::after {
+    background: $radio-background;
+    transform: scale(0.5) translateY(-100%);
+  }
+
+  &:disabled + .checkable {
+    background-color: initial;
+    cursor: not-allowed;
+    pointer-events: none;
+    color: $dull;
+  }
+}
+
+[type=radio] {
+  @include radio();
+}
