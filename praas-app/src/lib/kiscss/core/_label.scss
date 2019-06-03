@@ -1,0 +1,52 @@
+// TODO: move to variables/theme
+$label-radius: $radius !default;
+
+@mixin label() {
+  display: inline-block;
+  text-align: center;
+  letter-spacing: inherit;
+  margin: 0;
+  vertical-align: middle;
+  background: $primary;
+  // color: $white;
+  border: 0;
+  border-radius: $label-radius;
+  width: auto;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  // colors
+  &.success {
+    background: $success;
+  }
+
+  &.warning {
+    background: $warning;
+  }
+
+  &.error {
+    background: $error;
+  }
+
+  &.pseudo {
+    background-color: transparent;
+    color: inherit;
+  }
+}
+
+$label-font: 0.6em !default;
+$label-line-height: 1 !default;
+$label-margin-left: $separation !default;
+
+.label {
+  @include label();
+
+  font-size: $label-font;
+  padding: ($separation / 2);
+  line-height: $label-line-height;
+  margin-left: $label-margin-left;
+}

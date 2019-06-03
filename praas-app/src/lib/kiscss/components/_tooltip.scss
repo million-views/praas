@@ -1,0 +1,144 @@
+// TODO: move to variables/theme
+$tooltip-background: $orange !default;
+$tooltip-font-size: 0.8em !default;
+
+@mixin tooltip-baseline {
+  position: relative;
+
+  &::after,
+  &::before {
+    // position
+    position: absolute;
+    z-index: 10;
+
+    // tooltips are hidden initially
+    opacity: 0;
+    border-width: 0;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+
+    // transition
+    transition: opacity 0.6s ease, height 0s ease 0.6s;
+  }
+
+  // label-like element
+  &::after {
+    // style
+    @extend .label;
+
+    margin-left: 0;
+    font-size: $tooltip-font-size;
+    background: $tooltip-background;
+
+    // content
+    content: attr(data-tooltip);
+
+    // behaviour
+    white-space: nowrap;
+  }
+
+  // directional small arrow
+  &::before {
+    content: '';
+    width: 0;
+    height: 0;
+    border-width: 0;
+    border-style: solid;
+  }
+
+  &:hover::after,
+  &:focus::after,
+  &:hover::before,
+  &:focus::before {
+    opacity: 1;
+    border-width: 6px;
+    height: auto;
+  }
+
+  &:hover::after,
+  &:focus::after {
+    padding: $separation * 0.75 $separation * 1.5;
+  }
+
+  @content;
+}
+
+[data-tooltip] {
+  &[data-tooltip-bottom] {
+    @include tooltip-baseline {
+      &::after,
+      &::before {
+        top: calc(100% - 6px);
+        bottom: auto;
+        left: 0;
+        margin-top: 12px;
+      }
+
+      &::before {
+        border-color: transparent transparent $tooltip-background;
+        margin-top: 0;
+        left: 10px;
+      }
+    }
+  }
+
+  &[data-tooltip-top] {
+    @include tooltip-baseline {
+      &::after,
+      &::before {
+        top: auto;
+        bottom: calc(100% - 6px);
+        left: 0;
+        margin-bottom: 12px;
+      }
+
+      &::before {
+        border-color: $tooltip-background transparent transparent;
+        margin-bottom: 0;
+        left: 10px;
+      }
+    }
+  }
+
+  &[data-tooltip-right] {
+    @include tooltip-baseline {
+      &::after,
+      &::before {
+        left: 100%;
+        margin-left: 6px;
+        margin-top: 0;
+        top: 0;
+        bottom: auto;
+      }
+
+      &::before {
+        border-color: transparent $tooltip-background transparent transparent;
+        margin-left: -6px;
+        left: 100%;
+        top: 7px;
+      }
+    }
+  }
+
+  &[data-tooltip-left] {
+    @include tooltip-baseline {
+      &::after,
+      &::before {
+        right: 100%;
+        margin-right: 6px;
+        left: auto;
+        bottom: auto;
+        margin-top: 0;
+        top: 0;
+      }
+
+      &::before {
+        border-color: transparent transparent transparent $tooltip-background;
+        margin-right: -6px;
+        right: 100%;
+        top: 7px;
+      }
+    }
+  }
+}

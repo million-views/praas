@@ -1,0 +1,78 @@
+.modal {
+  text-align: center;
+
+  // control element to show/hide without javascript
+  > input {
+    display: none;
+
+    ~ * {
+      // not visible by default
+      opacity: 0;
+
+      // and not meant for interaction by default
+      max-height: 0;
+      overflow: hidden;
+    }
+  }
+
+  .overlay {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: fixed;
+    margin: 0;
+    border-radius: 0;
+    background: rgba($black, 3 * $transparency);
+    transition: $transition;
+    z-index: 100000;
+
+    &::before,
+    &::after {
+      display: none;
+    }
+
+    // all elements that follow the overlay (the modals)...
+    ~ * {
+      // can be everything included in a .card
+      @include card();
+
+      border: 0;
+
+      // position the contents in the middle and top of everything on the screen
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50%) scale(0.2, 0.2);
+      z-index: 1000000;
+
+      // closing effect
+      transition: $transition;
+    }
+  }
+
+  // show modal when checked
+  > input:checked {
+    ~ * {
+      display: block;
+      opacity: 1;
+      max-height: 10000px;
+      // opening effect
+      transition: $transition;
+    }
+
+    // grab everything in modal that is after the overlay after the input
+    ~ .overlay ~ * {
+      max-height: 90%;
+      overflow: auto;
+      -webkit-transform: translateX(-50%) translateY(-50%) scale(1, 1);
+      transform: translateX(-50%) translateY(-50%) scale(1, 1);
+    }
+  }
+}
+
+@media (max-width: $breakpoint) {
+  .modal .overlay ~ * {
+    min-width: 90%;
+  }
+}

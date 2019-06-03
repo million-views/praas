@@ -1,0 +1,13 @@
+/* container: provides spacing all around */
+
+@mixin container {
+  margin: 0 auto;
+  max-width: 1200px;
+  @content;
+}
+
+.container {
+  @include container {
+    padding: calc(5px + 1vmin);
+  }
+}

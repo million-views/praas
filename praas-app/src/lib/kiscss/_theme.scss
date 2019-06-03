@@ -1,0 +1,22 @@
+@import 'colors';
+
+// color palette for default theme
+$color-variation: 3% !default;
+$primary: darken($torquoise, $color-variation) !default;
+$success: darken($cyan, $color-variation) !default;
+$warning: darken($orange, $color-variation) !default;
+$error: darken($red, $color-variation) !default;
+$dull: darken($gray, $color-variation) !default;
+$transparency: 0.3 !default;
+
+// spaces
+$separation: 0.6rem !default;
+$breakpoint: 600px !default;
+
+// shapes
+$radius: 0.15rem !default;
+$border: 1px solid #ccc !default;
+$shadow: 1px 3px 0.3rem rgba($black, $transparency) !default;
+
+// transitions
+$transition: all 0.3s;

@@ -1,0 +1,134 @@
+// TODO: move to variables/theme
+// $nav-height: 3rem !default;
+$nav-shadow: $shadow !default;
+$nav-position: fixed !default;
+$nav-item-margin: 0.3rem $separation !default;
+$nav-timing: 0.3s !default;
+
+nav {
+  // position it on the top, full width
+  position: $nav-position;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  // make it look like a hovering bar
+  background: $white;
+  // box-shadow: 1px 1px 4px 0 red;
+  box-shadow: $nav-shadow;
+  width: 100%;
+  z-index: 30;
+
+  .brand {
+    font-weight: 700;
+    float: left;
+    padding: 0 ($separation);
+    white-space: nowrap;
+    color: inherit;
+
+    img,
+    span,
+    div {
+      vertical-align: middle;
+    }
+
+    img {
+      object-fit: scale-down;
+    }
+  }
+
+  .logo {
+    height: 3rem;
+    max-width: 6rem;
+    margin-right: 0.3rem;
+  }
+
+  .menu {
+    clear: both;
+    max-height: 0;
+    transition: max-height $nav-timing ease-out;
+  }
+
+  .burger {
+    cursor: pointer;
+    float: right;
+    user-select: none;
+    position: relative;
+    padding: ($separation * (3/2)) $separation;
+    // wierd bug? I am not seeing why the transition
+    // fires only when applied on :before but not when
+    // it is by itself as in the commented line below:
+    //
+    // transition: all $nav-timing ease-out; //<- not working
+    //
+    // TODO: FIXME!
+    &::before {
+      transition: all $nav-timing ease-out;
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow: hidden;
+    background-color: inherit;
+
+    li a {
+      // let 'a' have its own box model for max styling...
+      // in this case we need the background color fill the width
+      display: block;
+      padding: $separation ($separation * 2);
+
+      &:hover {
+        background-color: rgba($primary, 0.3);
+      }
+    }
+  }
+
+  .show {
+    display: none;
+
+    &:checked {
+      & ~ .menu {
+        max-height: 36rem;
+      }
+
+      & ~ .burger {
+        &::before {
+          transform: rotate(-90deg);
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: $breakpoint) {
+  nav,
+  nav ul {
+    // hack
+    height: 3rem;
+  }
+
+  nav {
+    ul {
+      li {
+        float: left;
+
+        a {
+          padding: ($separation * (3/2)) $separation;
+        }
+      }
+    }
+
+    .menu {
+      clear: none;
+      float: right;
+      max-height: none;
+    }
+
+    .burger {
+      display: none;
+    }
+  }
+}

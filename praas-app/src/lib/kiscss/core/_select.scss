@@ -1,0 +1,49 @@
+// TODO: move to variables/theme
+$select-margin: $separation !default;
+$select-padding: $separation ($separation * 0.75) !default;
+
+// if targeting older/buggy browsers such as IE you may need
+// the following fixes:
+// http://stackoverflow.com/a/21417591 method
+// http://stackoverflow.com/a/15933790 version
+
+// arrow.svg using http://dopiaza.org/tools/datauri/index.php
+$select-dropimage: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyIiBoZWlnaHQ9IjMiPjxwYXRoIGQ9Im0gMCwxIDEsMiAxLC0yIHoiLz48L3N2Zz4=' !default;
+
+select {
+  // the drop down arrow background and position
+  background: #fff url(#{ $select-dropimage }) no-repeat scroll 95% center/ 10px 15px;
+  background-position: calc(100% - 15px) center;
+
+  &[multiple] {
+    background: #fff;
+  }
+
+  border: $border;
+  border-radius: $radius;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  padding: $select-padding;
+
+  // hide browser's dropdown arrow
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+
+  &:focus,
+  &:active {
+    border: 1px solid $primary;
+    transition: outline 0s;
+  }
+
+  &:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 $black;
+  }
+
+  option {
+    min-height: 1.5rem;
+    padding: ($separation * 1.25) $separation;
+  }
+}

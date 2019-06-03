@@ -1,0 +1,88 @@
+// TODO: move to variables/theme
+$card-shadow: 0 !default;
+$card-border: $border !default;
+$card-radius: $radius !default;
+$card-top-padding: 0.6rem 0.6rem !default;
+$card-bottom-padding: 0.6rem !default;
+
+// minimal container for a card layout
+@mixin card() {
+  position: relative;
+  box-shadow: $card-shadow;
+  border-radius: $card-radius;
+  border: $card-border;
+  overflow: hidden;
+  text-align: left;
+  background: $white;
+  margin-bottom: $separation;
+  padding: 0;
+
+  // prevent overflows in descendents
+  > * {
+    max-width: 100%;
+    display: block;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  // top of the card
+  header,
+  section,
+  > p {
+    padding: $card-top-padding;
+    font-size: 90%;
+  }
+
+  header {
+    font-weight: bold;
+    position: relative;
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      padding: 0;
+      margin: 0 ($separation * 3) 0 0;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: text-bottom;
+    }
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  // bottom of the card
+  footer {
+    padding: $card-bottom-padding;
+  }
+
+  // special close button used in modal
+  .close {
+    position: absolute;
+    top: ($separation / 2);
+    right: ($separation / 2);
+    font-size: 1.2em;
+    padding: 0 $separation;
+    cursor: pointer;
+    width: auto;
+
+    &:hover {
+      color: $error;
+    }
+  }
+
+  .dangerous {
+    background: $error;
+    float: right;
+  }
+}
+
+.card {
+  @include card();
+}

@@ -1,0 +1,37 @@
+// TODO: move to variables/theme
+$checkbox-character: '\2714' !default;
+$checkbox-radius: $radius !default;
+
+@mixin checkbox {
+  + .checkable::before {
+    border-radius: $checkbox-radius;
+  }
+
+  + .checkable::after {
+    content: $checkbox-character;
+    background: none;
+    transform: scale(2) translateY(-25%);
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  &:checked + .checkable::after {
+    color: $black;
+    background: none;
+    transform: translateY(-50%);
+    visibility: visible;
+    opacity: 1;
+  }
+
+  &:disabled + .checkable {
+    background-color: initial;
+    cursor: not-allowed;
+    pointer-events: none;
+    color: $dull;
+  }
+}
+
+[type=checkbox] {
+  @include radio();
+  @include checkbox();
+}
