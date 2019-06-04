@@ -216,7 +216,7 @@ figure {
 // ==========================================================================
 //
 // 1. Change the font styles in all browsers.
-// 2. Remove the margin in Firefox and Safari.
+// 2. Fix margins to suite our style.
 // 3. See https://github.com/necolas/normalize.css/issues/778
 button,
 input,
@@ -226,7 +226,7 @@ textarea {
   font-family: inherit; // 1
   font-size: inherit; // 1
   line-height: inherit;
-  margin: 0; // 2
+  margin: ($separation / 2); // 2
 }
 
 // Remove the inheritance of text transform in Edge, Firefox, and IE.
@@ -341,6 +341,7 @@ table {
   border-collapse: collapse;
   border-spacing: 0;
   width: 100%;
+  margin: ($separation / 2);
 }
 
 td,
