@@ -3,7 +3,10 @@ import PropTypes from 'prop-types';
 
 import { navigate } from '@reach/router';
 
-const Header = ({ title, loggedIn, logout, ...rest }) => {
+const Header = ({
+  title = 'Conduits - Pipe data in and out of your storage',
+  loggedIn, logout, ...rest
+}) => {
   const Menu = () => {
     if (loggedIn) {
       return (

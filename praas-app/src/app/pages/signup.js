@@ -40,7 +40,6 @@ const Signup = ({ user, dispatch }) => {
       <Header
         loggedIn={user.loggedIn}
         logout={() => dispatch(logoutUser())}
-        title="Conduits - Sign up"
       />
       <main className="content">
         <Formik

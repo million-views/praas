@@ -63,7 +63,6 @@ class Home extends React.Component {
           <Header
             loggedIn={user.loggedIn}
             logout={logout}
-            title="Conduits - Pipe data in and out of your storage"
           />
           <main className="content">
             {this.state.mode === 'list' &&

@@ -85,8 +85,8 @@ point and contains the 'shell' of a PWA.
 app
 ├── components     //<- reusable widgets within the app
 ├── main.js        //<- app shell
+├── main.scss      //<- app wide look and feel *may* go here
 ├── routes         //<- are pages or containers in a flow
-└── style          //<- app wide look and feel *may* go here
 ```
 ### Application State ###
 The global state of an application is under 'store' folder, optionally present
@@ -114,7 +114,7 @@ and in what form.
 ```console
 lib
 ├── ATTRIBUTION.md //<- FOSS packages used by the app listed here
-├── site-css       //<- site or app wide look & feel style could go here
+├── kiscss         //<- keep it simple css
 :
 └── tiny           //<- tiny library that you create to prevent bloat goes here
 ```
