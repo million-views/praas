@@ -1,13 +1,6 @@
 const merge = require('webpack-merge');
 const path = require('path');
 
-// v.a:
-// Entry point for webpack, for more details see:
-//  - https://webpack.js.org/configuration/configuration-types/#exporting-a-function
-//
-// We pack what we get in argv and env variables to an configuration object that
-// is by various plugins and loaders so that they remain location and path
-// agnostic.
 module.exports = (env, argv) => {
   const isProd = env && env.production;
   const mode = isProd ? 'production' : 'development';
@@ -23,17 +16,21 @@ module.exports = (env, argv) => {
   const build = path.join(root, '../', 'build');
 
   // webpack based project configuration
-  const wpc = { isProd, argv, mode, root, app, cfg, web, lib, build };
-  // console.table(wpc);
+  const options = {
+    inlineBelow: 4096 // inline assets whose size is below this many bytes
+  };
+
+  const wpc = { isProd, argv, mode, root, app, cfg, web, lib, build, options };
 
   // bring in the parts of the build pipeline
   const Base = require('./setup')(wpc);
-  const Styles = require('./styles')(wpc);
   const Lint = require('./eslint')(wpc);
   const Babel = require('./babel')(wpc);
+  const Assets = require('./assets')(wpc);
+  const Styles = require('./styles')(wpc);
 
   // NOTE: webpack configuration is code as well, so include Lint early on.
-  let merged = merge(Base, Lint, Babel, Styles, { devtool: 'source-map' });
+  let merged = merge(Base, Lint, Babel, Assets, Styles, { devtool: 'source-map' });
 
   if (isProd) {
     // production

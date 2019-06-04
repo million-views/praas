@@ -1,11 +1,6 @@
 /* eslint: import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
 const webpack = require('webpack');
 
-/**
- *
- * @param {wpc} weppack based project configuration
- *
- */
 module.exports = (wpc) => {
   const plugins = [
     new webpack.HotModuleReplacementPlugin(),

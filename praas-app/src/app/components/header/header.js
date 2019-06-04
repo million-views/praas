@@ -7,16 +7,22 @@ const Header = ({ title, loggedIn, logout, ...rest }) => {
   const Menu = () => {
     if (loggedIn) {
       return (
-        <div className="menu">
-          <a onClick={logout} className="button icon-puzzle">Logout</a>
-        </div>
+        <ul className="menu">
+          <li>
+            <a onClick={logout} className="icon-logout">Logout</a>
+          </li>
+        </ul>
       );
     } else {
       return (
-        <div className="menu">
-          <a onClick={() => navigate('/signup')} className="button icon-puzzle">Signup</a>
-          <a onClick={() => navigate('/login')} className="button icon-puzzle">Login</a>
-        </div>
+        <ul className="menu">
+          <li>
+            <a onClick={() => navigate('/signup')} className="icon-user-add">Signup</a>
+          </li>
+          <li>
+            <a onClick={() => navigate('/login')} className="icon-login">Login</a>
+          </li>
+        </ul>
       );
     }
   };
@@ -27,7 +33,7 @@ const Header = ({ title, loggedIn, logout, ...rest }) => {
         <span>{title}</span>
       </a>
       <input id="responsive-menu" type="checkbox" className="show" />
-      <label htmlFor="responsive-menu" className="burger pseudo button">&#9776;</label>
+      <label htmlFor="responsive-menu" className="burger icon-menu" />
       <Menu />
     </nav>
   );

@@ -1,47 +1,5 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const path = require('path');
 
-// v.a:
-// FIXME: minimize is a deprecated option of CSS-Loader now...
-/*
-const cssMinimizeOptions = {
-  autoprefixer: {
-    add: true,
-    browsers: ['last 2 versions']
-  },
-  discardComments: {
-    removeAll: true
-  },
-  discardUnused: {
-    disable: false
-  },
-  mergeIdents: {
-    disable: false
-  },
-  mergeRules: {
-    disable: false
-  }
-};
-*/
-
-// v.a:
-// - loader transform pipeline is last-in-first-out
-// - the options:
-//   - modules: true
-//   - localIdentName: '[local]-[hash:base64:5]'
-//   is how you setup and get going with CSS Modules
-//
-//   See https://blog.yipl.com.np/css-modules-with-react-the-complete-guide-a98737f79c7c
-//
-// - NOTE: importLoaders must be set to "2" so that sass-loader
-//   is picked up by Webpack on @-imports.
-//
-//   See https://github.com/webpack-contrib/css-loader#importing-and-chained-loaders
-//
-// Issues worth understanding:
-// - [single file configuration...](https://github.com/webpack-contrib/mini-css-extract-plugin/issues/85)
-// - [support multiple instances of MiniCssExtractPlugin](https://github.com/webpack-contrib/mini-css-extract-plugin/issues/45)
-//
 const cssLoader = (cssModule, localIdentName = undefined) => {
   return {
     loader: 'css-loader',
@@ -50,17 +8,6 @@ const cssLoader = (cssModule, localIdentName = undefined) => {
       modules: cssModule,
       importLoaders: 1,
       localIdentName
-      // in the latest, minimize throws errors!
-      // minimize: cssMinimizeOptions
-    }
-  };
-};
-
-const sassResourceLoader = (basePath) => {
-  return {
-    loader: 'sass-resources-loader',
-    options: {
-      resources: require(path.join(basePath, 'site-css/resources.js'))
     }
   };
 };
@@ -74,6 +21,18 @@ const sassLoader = (includePaths) => {
   };
 };
 
+const cssExtractor = (isProd) => {
+  return {
+    loader: MiniCssExtractPlugin.loader,
+    options: {
+      // only enable hot in development
+      hmr: !isProd,
+      // if hmr doesn't work, uncomment next line to use force
+      // reloadAll: true
+    }
+  };
+};
+
 // Keep each export to a single test
 module.exports = (wpc) => {
   const test = /\.(css|scss)$/;
@@ -81,50 +40,55 @@ module.exports = (wpc) => {
   const localCss = [];
   const globalCss = [];
 
-  if (wpc.isProd) {
-    plugins.push(
-      new MiniCssExtractPlugin({
-        filename: '[name][hash].css',
-        chunkFileName: '[name].css',
-      })
-    );
-    // last step in the pipeline is minification
-    localCss.push(MiniCssExtractPlugin.loader);
-    globalCss.push(MiniCssExtractPlugin.loader);
-  } else {
-    // last step in the pipeline is to embed style in html
-    localCss.push({ loader: 'style-loader' });
-    globalCss.push({ loader: 'style-loader' });
-  }
+  // NOTE:
+  // - chunks are from imported css files in java script
+  // - and filenames are entries listed in 'entry' of webpack
+  // - you will need to evaluate the tradeoffs in using a hash
+  //   in the resulting file name fromr either of these sources
+  // - not using a hash allows you to publish to a website without
+  //   accumulating past released cruft but also puts the burden
+  //   of cache busting on you.
+  // - in our case being able to deploy and revert using git is
+  //   important so we chose not to use hash.
+  // - the hash may actually work against you when using service
+  //   workers; thus it is only helpful for simple deployments
+  // - a hash is a simple solution for cache busting; however
+  //   versioning and cache management are for more complex and
+  //   thus need more systems thinking than to accept the simple
+  //   solution without understanding the requirements in detail.
+  plugins.push(
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[name].css'
+      // filename: '[name].[hash].css',
+      // chunkFilename: '[name].[hash].css'
+    })
+  );
+
+  // last step in the pipeline is minification
+  localCss.push(cssExtractor(wpc.isProd));
+  globalCss.push(cssExtractor(wpc.isProd));
 
   localCss.push(cssLoader(true, '[local]-[hash:base64:5]'));
   globalCss.push(cssLoader('global'));
-  // NOTE: loaders are chained last-in-first-out
-  // add sass transformer as the second step in the pipeline
-  localCss.push(sassLoader([wpc.app]));
-  globalCss.push(sassLoader([wpc.web, wpc.lib]));
 
-  // add sass resource loader as the first step in the pipeline
-  localCss.push(sassResourceLoader(wpc.lib));
-  // global css comes from material web components, so we don't
-  // need sass resource loader to resolve local mixins, vars and
-  // extends
-  // globalCss.push(sassResourceLoader(wpc.lib));
+  // NOTE: loaders are chained last-in-first-out
+  localCss.push(sassLoader([wpc.components]));
+  globalCss.push(sassLoader([wpc.app, wpc.lib]));
 
   return {
     module: {
       rules: [
         {
           test,
-          include: [wpc.app],
-          exclude: /node_modules/,
+          include: [`${wpc.app}/components`],
+          exclude: [/node_modules/, wpc.app, wpc.lib],
           use: localCss
         },
         {
           test,
-          include: [
-            path.resolve('./node_modules/picnic/'),
-          ],
+          include: [wpc.app, wpc.lib],
+          exclude: [/node_modules/, `${wpc.app}/components`],
           use: globalCss
         },
       ]

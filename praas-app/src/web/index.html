@@ -3,19 +3,42 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Keep your data to yourself">
   <title>Conduits</title>
+  <!--
+    See https://stackoverflow.com/questions/45321043/preload-css-file-not-supported-on-firefox-and-safari-mac
+    Unfortunately adding the suggested solution breaks the webpack inline css plugin
+    Solution is to not preload css until it is widely supported OR the plugin gets fixed
+    OR to fix the plugin in your local copy.
+
+    Follow https://github.com/Runjuu/html-inline-css-webpack-plugin/issues/10 for
+    the fix and the local fix.
+  -->
+  <% for (var chunk in htmlWebpackPlugin.files.css) { %>
+  <link href="<%= htmlWebpackPlugin.files.css[chunk] %>" as="style" rel="preload">
+  <link href="<%= htmlWebpackPlugin.files.css[chunk] %>" rel="stylesheet">
+  <% } %>
+
+
+  <!-- stuff that we know a priori to exist in the app -->
+  <!-- <link rel="preload" href="assets/branding/conduits.svg.png" as="image"> -->
+  <link rel="preload" href="assets/fonts/fontello.woff2" as="font" crossorigin>
 </head>
 
 <body>
-  <div id='root'>
+  <div id="root">
     <!--
       NOTE: webpack-html-plugin will stuff the compile js and css chunks
       into this file automagically!
     -->
     Loading...
   </div>
+  <% for (var chunk in htmlWebpackPlugin.files.js) { %>
+  <script type="text/javascript" src="<%= htmlWebpackPlugin.files.js[chunk] %>">
+  </script>
+  <% } %>
+
 </body>
 
 </html>

@@ -1,13 +1,14 @@
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const UglifyJs = require('uglifyjs-webpack-plugin');
+const TerserJs = require('terser-webpack-plugin');
+const OptimizeCSSAssets = require('optimize-css-assets-webpack-plugin');
 
 const uglifyOptions = {
+  warnings: false,
   output: {
     comments: false
   },
   compress: {
     unused: true,
-    warnings: false,
     comparisons: true,
     conditionals: true,
     negate_iife: false, // <- for `LazyParseWebpackPlugin()`
@@ -21,21 +22,18 @@ const uglifyOptions = {
   mangle: true
 };
 
-/**
- *
- * @param {wpc} weppack based project configuration
- *
- * Module that does last in the pipeline optimizations to reduce size
- */
 module.exports = (wpc) => {
   const plugins = [];
 
   if (wpc.isProd) {
     plugins.push(
-      new UglifyJsPlugin({ uglifyOptions })
+      new UglifyJs({ uglifyOptions })
     );
     plugins.push(
-      new OptimizeCSSAssetsPlugin()
+      new TerserJs({})
+    );
+    plugins.push(
+      new OptimizeCSSAssets({})
     );
   }
 

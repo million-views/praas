@@ -10,10 +10,6 @@ import { listConduits } from 'store/conduit/list';
 import { deleteConduit } from 'store/conduit/del';
 import { logoutUser } from 'store/user/login';
 
-const mainStyle = {
-  padding: '50px',
-};
-
 class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -62,9 +58,6 @@ class Home extends React.Component {
   render() {
     const { user, logout } = this.props;
     if (user.loggedIn) {
-      if (!this.props.conduits) {
-        return (<div>Loading...</div>);
-      }
       return (
         <React.Fragment>
           <Header
@@ -72,7 +65,7 @@ class Home extends React.Component {
             logout={logout}
             title="Conduits - Pipe data in and out of your storage"
           />
-          <main style={mainStyle}>
+          <main className="content">
             {this.state.mode === 'list' &&
               <ConduitList
                 setConduitId={(cid) => this.setConduitId(cid)}

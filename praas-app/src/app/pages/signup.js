@@ -34,10 +34,6 @@ const signupSchema = Yup.object({
   })
 });
 
-const mainStyle = {
-  padding: '50px',
-};
-
 const Signup = ({ user, dispatch }) => {
   return (
     <React.Fragment>
@@ -46,7 +42,7 @@ const Signup = ({ user, dispatch }) => {
         logout={() => dispatch(logoutUser())}
         title="Conduits - Sign up"
       />
-      <main style={mainStyle}>
+      <main className="content">
         <Formik
           initialValues={initialValues}
           validationSchema={signupSchema}

@@ -39,9 +39,8 @@ NOTE: you should list dependencies and code that gets shipped; which
 excludes having the need to list out tools such as webpack, gulp, etc.; unless
 some part of the code base as described in the introduction got used.
 
-Attributions
-============
-
+Code Attributions
+=================
 Classcat
 --------
 - package-name: classcat
@@ -50,3 +49,28 @@ Classcat
 - used-how: in source form, renamed function name to cx
 - source-modified: yes
 - source-license: MIT
+
+Font Attributions
+=================
+## Font Awesome
+   Copyright (C) 2016 by Dave Gandy
+   Author:    Dave Gandy
+   License:   SIL ()
+   Homepage:  http://fortawesome.github.com/Font-Awesome/
+## Typicons
+   (c) Stephen Hutchings 2012
+   Author:    Stephen Hutchings
+   License:   SIL (http://scripts.sil.org/OFL)
+   Homepage:  http://typicons.com/
+## Entypo
+   Copyright (C) 2012 by Daniel Bruce
+   Author:    Daniel Bruce
+   License:   SIL (http://scripts.sil.org/OFL)
+   Homepage:  http://www.entypo.com
+## Iconic
+   Copyright (C) 2012 by P.J. Onori
+   Author:    P.J. Onori
+   License:   SIL (http://scripts.sil.org/OFL)
+   Homepage:  http://somerandomdude.com/work/iconic/
+
+

@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 
-// import main css file to get processed by sass and webpack
-import 'picnic/picnic.min.css';
-import './main.scss';
+// NOTE:
+// - do not import main.scss in this module
+// - main.scss is an entry point and is inlined
+// - main.scss should typically contain critical PRPL related css
 
 import configureStore from 'store';
 import App from './App.js';
