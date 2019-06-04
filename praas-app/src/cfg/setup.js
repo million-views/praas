@@ -5,7 +5,7 @@
 const webpack = require('webpack');
 const Analyze = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const Clean = require('clean-webpack-plugin');
+const { CleanWebpackPlugin: Clean } = require('clean-webpack-plugin');
 const Copy = require('copy-webpack-plugin');
 const HTML = require('html-webpack-plugin');
 const SuppressKisJs = require('suppress-chunks-webpack-plugin').default;
