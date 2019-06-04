@@ -13,7 +13,8 @@ $radio-background: #555 !default; //< round dot insided the circle
     position: relative;
     cursor: pointer;
     padding-left: $radio-size * 1.5;
-    margin-right: 0.6rem;
+    margin-left: ($separation / 2);
+    margin-right: ($separation);
 
     &::before,
     &::after {
