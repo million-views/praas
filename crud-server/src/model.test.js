@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const config = require('./config');
 const models = require('./models');
 const helpers = require('./lib/helpers');
-const snapshot = require('snap-shot-it');
 
 const generateUsers = async (count = 5) => {
   const fups = [];
@@ -127,7 +126,9 @@ describe('PraaS', () => {
     it('should generate profile JSON', async () => {
       const user = await models.User.findOne({ where: { email: fup.email } });
       const profileJSON = user.toProfileJSONFor();
-      snapshot(profileJSON);
+      expect(profileJSON.email).to.equal(fup.email);
+      expect(profileJSON.firstName).to.equal(fup.firstName);
+      expect(profileJSON.lastName).to.equal(fup.lastName);
     });
 
     it('should generate auth JSON', async () => {
