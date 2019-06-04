@@ -28,7 +28,7 @@ const db = new Sequelize('development', null, null, {
   logging: false,
   // logging: console.log,
   dialect: 'sqlite',
-  operatorsAliases: false,
+  // operatorsAliases: false,
   // sqlite only
   storage: './sqlite-praas-crud.db',
   define: {
