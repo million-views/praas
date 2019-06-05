@@ -25,7 +25,7 @@
     border-radius: 0;
     background: rgba($black, 3 * $transparency);
     transition: $transition;
-    z-index: 100000;
+    z-index: 300;
 
     &::before,
     &::after {
