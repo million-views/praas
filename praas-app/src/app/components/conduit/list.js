@@ -62,7 +62,7 @@ const List = (props) => {
       <h1>List Conduits</h1>
       <h2>A conduit is a handle to a RESTful service endpoint</h2>
       <button onClick={() => props.changeMode('add')}>Add conduit</button>
-      <table className="primary">
+      <table>
         <thead>
           <tr>
             <th>Description</th>
