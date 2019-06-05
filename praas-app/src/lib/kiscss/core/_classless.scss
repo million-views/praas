@@ -35,6 +35,7 @@ body {
 
 // 1. Let old ways die gently
 // See https://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/
+
 *,
 *::before,
 *::after {
@@ -69,7 +70,7 @@ h4,
 h5,
 h6,
 p {
-  margin: 0 0 ($separation / 2) 0;
+  margin: 0 0 ($separation / 2) ($separation / 2);
   padding: ($separation / 2) 0 0 0;
 }
 
@@ -212,12 +213,12 @@ figure {
   }
 }
 
-// Forms
+// Form controls
 // ==========================================================================
-//
 // 1. Change the font styles in all browsers.
 // 2. Fix margins to suite our style.
 // 3. See https://github.com/necolas/normalize.css/issues/778
+
 button,
 input,
 optgroup,
@@ -226,7 +227,15 @@ textarea {
   font-family: inherit; // 1
   font-size: inherit; // 1
   line-height: inherit;
-  margin: ($separation / 2); // 2
+  margin: $control-margin; // 2
+
+  // &:first-child {
+  //   margin-left: 0;
+  // }
+
+  // &:last-child {
+  //   margin-right: 0;
+  // }
 }
 
 // Remove the inheritance of text transform in Edge, Firefox, and IE.
@@ -234,6 +243,35 @@ textarea {
 button,
 select {
   text-transform: none; // 1
+}
+
+// Remove the default vertical scrollbar in IE 10+.
+// 1. Allow resize vertically only
+textarea {
+  height: auto;
+  overflow: auto;
+  resize: vertical; // 1 [kiscss]
+}
+
+input,
+textarea,
+select {
+  min-height: 2.4rem;
+  padding: $control-padding;
+  border: $border;
+  background-color: $control-background;
+  border-radius: $radius;
+  width: 100%;
+
+  &:focus {
+    border: 1px solid $primary;
+    outline: 0;
+  }
+}
+
+[type=file],
+[type=color] {
+  cursor: pointer;
 }
 
 // Correct the inability to style clickable types in iOS and Safari.
@@ -282,14 +320,6 @@ legend {
 // Add the correct vertical alignment in Chrome, Firefox, and Opera.
 progress {
   vertical-align: baseline;
-}
-
-// Remove the default vertical scrollbar in IE 10+.
-// 1. Allow resize vertically only
-textarea {
-  height: auto;
-  overflow: auto;
-  resize: vertical; // 1 [kiscss]
 }
 
 // Correct the cursor style of increment and decrement buttons in Chrome.
@@ -377,34 +407,6 @@ th {
 // Zebra stripes
 tr:nth-child(even) {
   background: rgba($primary, 0.1);
-}
-
-// Form controls
-// ==========================================================================
-//
-// TODO: move to variables/theme
-$control-padding: $separation !default;
-$control-background: #fff !default;
-
-input,
-textarea,
-select {
-  min-height: 2.4rem;
-  padding: $control-padding;
-  border: $border;
-  background-color: $control-background;
-  border-radius: $radius;
-  width: 100%;
-
-  &:focus {
-    border: 1px solid $primary;
-    outline: 0;
-  }
-}
-
-[type=file],
-[type=color] {
-  cursor: pointer;
 }
 
 // Misc

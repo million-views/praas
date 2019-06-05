@@ -1,14 +1,15 @@
 // TODO: move to variables/theme
-$card-shadow: 0 !default;
+// $card-shadow: $shadow !default;
 $card-border: $border !default;
 $card-radius: $radius !default;
+// $card-margin: 0 0.3rem 0 0.3rem !default;
 $card-top-padding: 0.6rem 0.6rem !default;
 $card-bottom-padding: 0.6rem !default;
 
 // minimal container for a card layout
 @mixin card() {
   position: relative;
-  box-shadow: $card-shadow;
+  //  box-shadow: $card-shadow;
   border-radius: $card-radius;
   border: $card-border;
   overflow: hidden;
@@ -21,10 +22,6 @@ $card-bottom-padding: 0.6rem !default;
   > * {
     max-width: 100%;
     display: block;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
   }
 
   // top of the card
@@ -32,6 +29,7 @@ $card-bottom-padding: 0.6rem !default;
   section,
   > p {
     padding: $card-top-padding;
+    // margin: $card-margin;
     font-size: 90%;
   }
 
@@ -50,6 +48,16 @@ $card-bottom-padding: 0.6rem !default;
       line-height: 1;
       display: inline-block;
       vertical-align: text-bottom;
+    }
+
+    // See:
+    // - https://uxplanet.org/why-letter-casing-is-important-to-consider-during-design-decisions-50402acd0a4e
+    // - https://uxdesign.cc/the-microcopyist-cancellation-confirmation-conflagration-8a6047a4cf9
+    h3,
+    h4,
+    h5,
+    h6 {
+      text-transform: uppercase;
     }
 
     &:last-child {

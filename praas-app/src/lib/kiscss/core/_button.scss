@@ -1,6 +1,6 @@
 // TODO: move to variables/theme
-$button-margin: 0.3rem !default;
-$button-padding: 0.6rem !default;
+$button-margin: $control-margin !default;
+$button-padding: $control-padding !default;
 
 $button-hover: inset 0 0 0 99rem rgba($white, $transparency) !default;
 $button-click: inset 0 0 0 99rem rgba($black, $transparency) !default;
@@ -31,9 +31,27 @@ $button-pseudo-hover: inset 0 0 0 99rem rgba($black, $transparency / 2) !default
     box-shadow: none;
     background: rgba($dull, 0.6);
   }
+
+  // &:first-child {
+  //   margin-left: 0;
+  // }
+
+  // &:last-child {
+  //   margin-right: 0;
+  // }
 }
 
 // toggle buttons
+[type] + .toggle {
+  padding: $button-padding;
+  margin-right: 0.3rem;
+
+  &::after,
+  &::before {
+    display: none;
+  }
+}
+
 :checked + .toggle,
 :checked + .toggle:hover {
   box-shadow: $button-click;
@@ -48,7 +66,8 @@ button,
   @include label();
   @include button();
 
-  min-height: 2.4rem;
+  min-height: initial; // 2.4rem;
+  height: auto;
   margin: $button-margin;
   padding: $button-padding;
 }

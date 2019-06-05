@@ -9,9 +9,15 @@ $error: darken($red, $color-variation) !default;
 $dull: darken($gray, $color-variation) !default;
 $transparency: 0.3 !default;
 
-// spaces
+// typography and layout spaces
 $separation: 0.6rem !default;
 $breakpoint: 600px !default;
+
+// form and flow control spaces
+// $control-margin: 0.3rem 0.6rem 0.3rem 0!default;
+$control-margin: 0.3rem !default;
+$control-padding: 0.3rem 0.6rem !default;
+$control-background: #fff !default;
 
 // shapes
 $radius: 0.15rem !default;
