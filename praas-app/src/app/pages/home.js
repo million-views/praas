@@ -64,7 +64,7 @@ class Home extends React.Component {
             loggedIn={user.loggedIn}
             logout={logout}
           />
-          <main className="content">
+          <main className="page">
             {this.state.mode === 'list' &&
               <ConduitList
                 setConduitId={(cid) => this.setConduitId(cid)}

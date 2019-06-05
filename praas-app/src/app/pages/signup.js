@@ -41,7 +41,7 @@ const Signup = ({ user, dispatch }) => {
         loggedIn={user.loggedIn}
         logout={() => dispatch(logoutUser())}
       />
-      <main className="content">
+      <main className="page">
         <Formik
           initialValues={initialValues}
           validationSchema={signupSchema}

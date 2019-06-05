@@ -1,25 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+// See https://uxdesign.cc/the-microcopyist-cancellation-confirmation-conflagration-8a6047a4cf9
+// for an overview on writing copy for destructive actions.
 const Modal = ({ deleteConduit }) => {
   return (
     <div className="modal">
-      <input id="modal_1" type="checkbox" />
-      <label htmlFor="modal_1" className="overlay" />
+      <input id="confirm-conduit-delete" type="checkbox" />
+      <label htmlFor="confirm-conduit-delete" className="overlay" />
       <article>
         <header>
-          <h3>Delete Confirmation Dialog</h3>
-          <label htmlFor="modal_1" className="close">×</label>
+          <h3>Delete Conduit</h3>
+          {/* <label htmlFor="confirm-conduit-delete" className="close">×</label> */}
         </header>
-        <section className="content">
-          Are you sure you want to delete?
+        <section>
+          <p>
+            Deleting a conduit will deactivate and remove the endpoint. You won't
+            be able to access your data store using this endpoint after this
+            operation. Data will remain accessible through the interface provided
+            by the service provider for your data store.
+          </p>
+          <p>Are you sure you want to delete?</p>
         </section>
         <footer>
-          <label htmlFor="modal_1" className="button">
-            No
+          <label htmlFor="confirm-conduit-delete" className="button">
+            Never mind
           </label>
-          <label htmlFor="modal_1" onClick={deleteConduit} className="button dangerous">
-            Yes
+          <label htmlFor="confirm-conduit-delete" onClick={deleteConduit} className="button dangerous">
+            Delete
           </label>
         </footer>
       </article>
@@ -42,7 +50,7 @@ const List = (props) => {
         <td>{conduit.status}</td>
         <td>
           <button onClick={() => { props.changeMode('edit'); props.setConduitId(conduit.id); }}>Edit</button>
-          <label htmlFor="modal_1" className="button">Delete</label>
+          <label htmlFor="confirm-conduit-delete" className="button">Delete</label>
           <Modal deleteConduit={deleteConduit} />
         </td>
       </tr>
