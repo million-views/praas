@@ -30,13 +30,18 @@ nav {
     span,
     div {
       height: 3rem;
-      display: table-cell;
+      display: inline-block;
       text-align: left;
       vertical-align: middle;
     }
 
     img {
       object-fit: scale-down;
+    }
+
+    span,
+    div {
+      padding: ($separation * (3/2)) $separation;
     }
   }
 
@@ -49,6 +54,7 @@ nav {
   .menu {
     clear: both;
     max-height: 0;
+    margin-right: 0.9rem;
     transition: max-height $nav-timing ease-out;
   }
 
@@ -56,7 +62,7 @@ nav {
     cursor: pointer;
     float: right;
     user-select: none;
-    position: relative;
+    // position: relative;
     padding: ($separation * (3/2)) $separation;
     // wierd bug? I am not seeing why the transition
     // fires only when applied on :before but not when
