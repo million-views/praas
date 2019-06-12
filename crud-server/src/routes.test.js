@@ -164,6 +164,16 @@ describe('Praas REST API', () => {
       expect(res.body.conduit).to.have.property('status');
     });
 
+    it('should allow user to fetch multiple service endpoints', async () => {
+      await helpers.generateConduits(jakeUser.id, 20);
+      const res = await Api()
+        .get('/conduits')
+        .query({ start: '505', count: '10' })
+        .set('Authorization', `Token ${jakeUser.token}`);
+      expect(res.status).to.equal(200);
+      expect(res.body.conduits.length).to.equal(10);
+    });
+
     it('should allow user to update service endpoint', async () => {
       const ct = { conduit: { status: 'Inactive' } };
       const res = await Api()
