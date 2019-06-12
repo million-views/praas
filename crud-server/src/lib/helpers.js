@@ -3,6 +3,20 @@
 // const slugify = require('slugify');
 const faker = require('faker');
 const config = require('../config');
+const models = require('../models');
+
+const generateUsers = async (count = 5) => {
+  const fups = [];
+  for (let i = 0; i < count; i++) fups.push(fakeUserProfile());
+  return models.User.bulkCreate(fups);
+};
+
+const generateConduits = async (userId, count = 50) => {
+  const fcts = [];
+  for (let i = 0; i < count; i++) fcts.push(fakeConduit());
+  for (const fct of fcts) fct.userId = userId;
+  return models.Conduit.bulkCreate(fcts);
+};
 
 const fakeUserProfile = (overrides = {}) => {
   const firstName = faker.name.firstName();
@@ -26,20 +40,27 @@ const fakeUserProfile = (overrides = {}) => {
 const fakeConduit = (overrides = {}) => {
   const typesArr = ['Google Sheets', 'Airtable', 'Smart Sheet'];
   const ipstatArr = ['active', 'inactive'];
-  const accessArr = ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'];
   const hfffieldArr = ['partner', 'campaign', 'userName', 'department', 'accountName'];
   const hffPolicyArr = ['drop-if-filled', 'pass-if-match'];
-
-  // Remove random array element random number of times (keep 1 min)
-  for (let i = 0, len = accessArr.length, j = Math.floor(Math.random() * len); i < j; i++) {
-    accessArr.splice(Math.floor(Math.random() * (len - i)), 1);
-  }
-
+  const accessArrSrc = [
+    ['GET'], ['POST'], ['DELETE'], ['PUT'], ['PATCH'],
+    ['GET', 'POST'], ['GET', 'DELETE'], ['GET', 'PUT'], ['GET', 'PATCH'],
+    ['POST', 'DELETE'], ['POST', 'PUT'], ['POST', 'PATCH'],
+    ['DELETE', 'PUT'], ['DELETE', 'PATCH'], ['PUT', 'PATCH'],
+    ['GET', 'POST', 'DELETE'], ['GET', 'POST', 'PUT'], ['GET', 'POST', 'PATCH'],
+    ['GET', 'DELETE', 'PUT'], ['GET', 'DELETE', 'PATCH'], ['GET', 'PUT', 'PATCH'],
+    ['POST', 'DELETE', 'PUT'], ['POST', 'DELETE', 'PATCH'], ['POST', 'PUT', 'PATCH'],
+    ['DELETE', 'PUT', 'PATCH'], ['GET', 'POST', 'DELETE', 'PUT'],
+    ['GET', 'POST', 'DELETE', 'PATCH'], ['GET', 'POST', 'PUT', 'PATCH'],
+    ['GET', 'DELETE', 'PUT', 'PATCH'], ['POST', 'DELETE', 'PUT', 'PATCH'],
+    ['GET', 'POST', 'DELETE', 'PUT', 'PATCH']];
+  const accessArr = accessArrSrc[Math.floor(Math.random() * accessArrSrc.length)];
   const conduit = {
     suriApiKey: faker.random.uuid(),
     suriType: typesArr[Math.floor(Math.random() * typesArr.length)],
     suriObjectKey: faker.lorem.word(),
     suri: faker.internet.url(),
+    curi: 'td',
     whitelist: [{
       ip: faker.internet.ip(),
       status: ipstatArr[Math.floor(Math.random() * ipstatArr.length)],
@@ -77,5 +98,5 @@ const processInput = (inp, req, opt, out, err) => {
 };
 
 module.exports = {
-  fakeUserProfile, fakeConduit, processInput
+  fakeUserProfile, fakeConduit, generateUsers, generateConduits, processInput
 };

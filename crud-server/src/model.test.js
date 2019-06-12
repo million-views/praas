@@ -4,31 +4,6 @@ const config = require('./config');
 const models = require('./models');
 const helpers = require('./lib/helpers');
 
-const generateUsers = async (count = 5) => {
-  const fups = [];
-  for (let i = 0; i < count; i++) {
-    const fup = helpers.fakeUserProfile();
-    let user = models.User.build({ ...fup });
-    user.password = fup.password;
-    user = await user.save();
-    fups.push(user);
-  }
-
-  return fups;
-};
-
-const generateConduits = async (user, count = 5) => {
-  const cts = [];
-  for (let i = 0; i < count; i++) {
-    const fct = helpers.fakeConduit();
-    const ct = models.Conduit.build({ ...fct });
-    ct.userId = user.id;
-    ct.curi = 'td';
-    cts.push(await ct.save());
-  }
-  return cts;
-};
-
 /**
  * Unit tests for the database model
  * - order of tests as written is significant
@@ -146,20 +121,20 @@ describe('PraaS', () => {
     let user, users;
 
     before(async () => {
-      [user] = await generateUsers(1);
+      [user] = await helpers.generateUsers(1);
       await models.Conduit.sync();
     });
 
     after('populate for integration test', async function () {
-      this.timeout(12000); // <- needed to prevent timeout exceeded mocha error
-      users = await generateUsers(10);
+      this.timeout(4000); // <- needed to prevent timeout exceeded mocha error
+      users = await helpers.generateUsers(10);
       for (let i = 0; i < 10; i++) {
-        await generateConduits(users[i]);
+        await helpers.generateConduits(users[i].id);
       }
     });
 
     it('should store conduit', async () => {
-      const [nct] = await generateConduits(user, 1);
+      const [nct] = await helpers.generateConduits(user.id, 1);
 
       expect(nct).to.be.an('object');
       expect(nct).to.have.property('suriApiKey');
