@@ -1,8 +1,11 @@
 import React from 'react';
+import { Route } from 'react-router-dom';
 import {
   IonApp,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
+
+import Signup from './pages/Signup';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -26,6 +29,7 @@ import './theme/variables.css';
 const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
+      <Route exact path="/signup" component={Signup} />
     </IonReactRouter>
   </IonApp>
 );
