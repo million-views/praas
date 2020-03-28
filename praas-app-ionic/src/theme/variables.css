@@ -191,7 +191,8 @@ http://ionicframework.com/docs/theming/ */
    */
 
   .md body {
-    --ion-background-color: #fff;
+    --ion-background-color: #f5f7f8;
+    --ion-toolbar-background: #ffffff;
     --ion-background-color-rgb: 18, 18, 18;
 
     --ion-text-color: #000;
