@@ -1,7 +1,11 @@
-.signup {
+.signup-page {
   background-color: blue;
   height: 100vh;
-  .signup-form-container {
-    width: var(--ion-grid-width-xs);
+  .text-align-center {
+    text-align: center;
+  }
+  .error {
+    color: red;
+    font-size: 12px;
   }
 }
