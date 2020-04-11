@@ -8,28 +8,28 @@ const REGISTER_SUCCESS = 'user/REGISTER_SUCCESS';
 const REGISTER_FAILURE = 'user/REGISTER_FAILURE';
 
 // Sync action creators
-export const registerSuccess = user => ({
+export const registerSuccess = (user) => ({
   type: REGISTER_SUCCESS,
-  payload: user
+  payload: user,
 });
 
-export const registerFailure = error => ({
+export const registerFailure = (error) => ({
   type: REGISTER_FAILURE,
-  payload: error
+  payload: error,
 });
 
 // Async action creators
 export const registerUser = (user, actions) => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({ type: REGISTER_REQUEST, user });
     PraasAPI.user.register(user).then(
-      user => {
+      (user) => {
         dispatch(registerSuccess(user));
         dispatch(loginUserSuccess(user));
         actions.setSubmitting(false);
         // navigate('/login');
       },
-      error => {
+      (error) => {
         dispatch(registerFailure(error));
         actions.setSubmitting(false);
         actions.setStatus({ errors: { ...error.errors } });
@@ -46,18 +46,17 @@ export default function registration(
   switch (type) {
     case REGISTER_REQUEST:
       return {
-        inflight: true
+        inflight: true,
       };
     case REGISTER_SUCCESS:
       return {
         inflight: false,
-        errors: {}
+        errors: {},
       };
     case REGISTER_FAILURE:
-      console.log('Deal with this:', payload);
       return {
         inflight: false,
-        errors: { ...payload.errors }
+        errors: { ...payload.errors },
       };
 
     default:

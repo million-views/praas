@@ -1,5 +1,6 @@
 import { UserRegistrationRequestData } from './types.d';
-const API_URL = 'http://localhost:4000';
+import { API_HOST } from '../config/constants';
+const API_URL = API_HOST;
 
 // throws type error if parameters is not iterable and that is by design...
 // don't call this function when there are no query parameters.
@@ -55,25 +56,22 @@ const afetch = async (url: string, { headers, parameters, ...rest }: any) => {
     ...headers,
     ...authorization(),
     Accept: 'application/json',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   };
 
   return fetch(urlize(url, parameters), {
     ...rest,
-    headers
+    headers,
   }).then(
-    async response => {
+    async (response) => {
       // this handles server response (including non 2xx)
       // we can dispatch both success and non-success action creators
       // from here...
       if (response.ok) {
-        console.log('server response is ok *************');
-        console.log('response.json: ', response);
         return response.json();
       } else {
         const errors = await response.json();
 
-        console.log('error: ', errors);
         if (response.status === 401) {
           // token expired? clear our view of logged in status
           invalidateSession();
@@ -85,12 +83,11 @@ const afetch = async (url: string, { headers, parameters, ...rest }: any) => {
         return Promise.reject({
           statusText: response.statusText,
           status: response.status,
-          ...errors
+          ...errors,
         });
       }
     },
-    error => {
-      console.log('Got into an error situation');
+    (error) => {
       // this path is for network or internal programming errors
       // eslint-disable-next-line prefer-promise-reject-errors
       return Promise.reject({
@@ -98,8 +95,8 @@ const afetch = async (url: string, { headers, parameters, ...rest }: any) => {
         status: 418, // Unable to contact server, can't make coffee,
         errors: {
           offline: 'Check your network connection',
-          network: error.message
-        }
+          network: error.message,
+        },
       });
     }
   );
@@ -110,48 +107,47 @@ const praas = {
     register(user: UserRegistrationRequestData) {
       return afetch('/users', {
         method: 'POST',
-        body: JSON.stringify(user)
+        body: JSON.stringify(user),
         // parameters: { start: 10, count: 20 }
       });
     },
     login(user: any) {
       return afetch('/users/login', {
         method: 'POST',
-        body: JSON.stringify(user)
+        body: JSON.stringify(user),
       });
     },
     logout() {
-      return Promise.resolve('success').then(_success => invalidateSession());
-    }
+      return Promise.resolve('success').then((_success) => invalidateSession());
+    },
   },
   conduit: {
     add(data: any) {
       return afetch('/conduits', {
         method: 'POST',
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
     },
     update(data: any) {
       const cid = data.conduit.id;
       return afetch(`/conduits/${cid}`, {
         method: 'PATCH',
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
     },
     list(id: string) {
       return afetch('/conduits', {
         method: 'GET',
-        body: JSON.stringify(id)
+        body: JSON.stringify(id),
       });
     },
     delete(data: any) {
-      console.log('data: ', data);
       const cid = data;
       return afetch(`/conduits/${cid}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       });
-    }
-  }
+    },
+  },
 };
 
 export default praas;

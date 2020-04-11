@@ -25,16 +25,17 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import './styles/common.scss';
 
 const App: React.FC = () => (
   <IonApp>
-    <IonRouterOutlet>
-      <IonReactRouter>
+    <IonReactRouter>
+      <IonRouterOutlet>
         <Route exact path="/signup" component={Signup} />
         <Route exact path="/signin" component={SignIn} />
         <Route exact path="/" component={Home} />
-      </IonReactRouter>
-    </IonRouterOutlet>
+      </IonRouterOutlet>
+    </IonReactRouter>
   </IonApp>
 );
 

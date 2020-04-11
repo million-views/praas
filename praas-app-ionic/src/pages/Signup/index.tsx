@@ -8,7 +8,7 @@ import {
   IonItem,
   IonLabel,
   IonInput,
-  IonButton
+  IonButton,
 } from '@ionic/react';
 import { useFormik } from 'formik';
 import { connect } from 'react-redux';
@@ -30,23 +30,22 @@ const signupSchema = Yup.object().shape({
     .required("Don't be shy. Tell us your first name"),
   email: Yup.string()
     .email('Invalid email address')
-    .min(23, 'Must be longer than 2 characters')
     .required('Email is required'),
   password: Yup.string()
     .min(2, 'Must be longer than 8 characters')
-    .required('Passphrase is required')
+    .required('Passphrase is required'),
 });
 const Signup: React.FC<Props & RouteComponentProps> = ({
   user,
   history,
-  registerUser
+  registerUser,
 }) => {
   const formik = useFormik({
     initialValues: { firstName: '', email: '', password: '' },
     validationSchema: signupSchema,
     onSubmit: (values, actions) => {
       registerUser({ user: values }, actions);
-    }
+    },
   });
 
   useEffect(() => {
@@ -68,7 +67,7 @@ const Signup: React.FC<Props & RouteComponentProps> = ({
                   <IonInput
                     type="text"
                     name="firstName"
-                    onIonChange={event => {
+                    onIonChange={(event) => {
                       formik.values.firstName = event.detail.value!;
                     }}
                     value={formik.values.firstName}
@@ -80,7 +79,7 @@ const Signup: React.FC<Props & RouteComponentProps> = ({
                   <IonInput
                     type="email"
                     value={formik.values.email}
-                    onIonChange={event => {
+                    onIonChange={(event) => {
                       formik.values.email = event.detail.value!;
                     }}
                   />
@@ -91,7 +90,7 @@ const Signup: React.FC<Props & RouteComponentProps> = ({
                   <IonInput
                     type="password"
                     value={formik.values.password}
-                    onIonChange={event => {
+                    onIonChange={(event) => {
                       formik.values.password = event.detail.value!;
                     }}
                   />
