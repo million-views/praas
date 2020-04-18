@@ -11,6 +11,7 @@ Development
 -----------
 > If using [Yarn](https://yarnpkg.com/), `yarn` can replace all occurences
 > of `npm` in the command line below. :ok_hand:
+> If you don't have node.js, install [nvm](https://github.com/nvm-sh/nvm) is a version manager for [node.js](https://nodejs.org/en/).
 
 If live-server is not installed globally do so now.
 ```

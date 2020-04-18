@@ -1,4 +1,5 @@
 # Sharding, hashes, collisions
+[03JAN2019]
 - decided to use Nano ID
 
 # Register, Sign in flow for v1

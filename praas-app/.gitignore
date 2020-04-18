@@ -64,3 +64,8 @@ typings/
 
 #DS_Store ignore
 .DS_Store
+
+# stuff we override to fit our dev flow
+yarn.lock
+package-lock.json
+
