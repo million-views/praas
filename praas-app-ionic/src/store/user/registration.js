@@ -26,13 +26,10 @@ export const registerUser = (user, actions) => {
       (user) => {
         dispatch(registerSuccess(user));
         dispatch(loginUserSuccess(user));
-        actions.setSubmitting(false);
         // navigate('/login');
       },
       (error) => {
         dispatch(registerFailure(error));
-        actions.setSubmitting(false);
-        actions.setStatus({ errors: { ...error.errors } });
       }
     );
   };

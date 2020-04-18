@@ -10,7 +10,8 @@ import {
   IonInput,
   IonButton,
 } from '@ionic/react';
-import { useFormik } from 'formik';
+import { useForm } from 'react-hook-form';
+
 import { connect } from 'react-redux';
 import { withRouter, RouteComponentProps } from 'react-router';
 import * as Yup from 'yup';
@@ -20,7 +21,7 @@ import './style.scss';
 
 type Props = {
   user: any;
-  registerUser: (data: any, formikActions: any) => void;
+  registerUser: (data: any) => void;
 };
 
 const signupSchema = Yup.object().shape({
@@ -40,62 +41,42 @@ const Signup: React.FC<Props & RouteComponentProps> = ({
   history,
   registerUser,
 }) => {
-  const formik = useFormik({
-    initialValues: { firstName: '', email: '', password: '' },
+  const { register, handleSubmit } = useForm({
+    defaultValues: { firstName: '', email: '', password: '' },
     validationSchema: signupSchema,
-    onSubmit: (values, actions) => {
-      registerUser({ user: values }, actions);
-    },
   });
+
+  const onSubmit = (values: any) => {
+    registerUser({ user: values });
+  };
 
   useEffect(() => {
     if (user.login.loggedIn) history.replace('/');
   }, [user, history]);
 
-  console.log(formik.errors);
-
   return (
     <IonPage className="signup-page">
       <Header />
       <IonContent>
-        <form noValidate onSubmit={formik.handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <IonGrid>
             <IonRow className="ion-justify-content-center">
               <IonCol sizeXs="12" sizeSm="4" className="text-align-center">
                 <IonItem>
                   <IonLabel position="floating">Name</IonLabel>
-                  <IonInput
-                    type="text"
-                    name="firstName"
-                    onIonChange={(event) => {
-                      formik.values.firstName = event.detail.value!;
-                    }}
-                    value={formik.values.firstName}
-                  />
+                  <IonInput type="text" name="firstName" ref={register()} />
                 </IonItem>
-                <div className="error">{formik.errors.firstName}</div>
+                {/* <div className="error">{errors.firstName}</div> */}
                 <IonItem>
                   <IonLabel position="floating">Email</IonLabel>
-                  <IonInput
-                    type="email"
-                    value={formik.values.email}
-                    onIonChange={(event) => {
-                      formik.values.email = event.detail.value!;
-                    }}
-                  />
+                  <IonInput type="email" name="email" ref={register()} />
                 </IonItem>
-                <div className="error">{formik.errors.email}</div>
+                {/* <div className="error">{errors.email}</div> */}
                 <IonItem>
                   <IonLabel position="floating">Password</IonLabel>
-                  <IonInput
-                    type="password"
-                    value={formik.values.password}
-                    onIonChange={(event) => {
-                      formik.values.password = event.detail.value!;
-                    }}
-                  />
+                  <IonInput type="password" name="password" ref={register()} />
                 </IonItem>
-                <div className="error">{formik.errors.password}</div>
+                {/* <div className="error">{errors.password}</div> */}
                 <IonButton type="submit" color="primary">
                   Submit
                 </IonButton>
