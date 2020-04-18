@@ -11,12 +11,12 @@ const LOGOUT = 'user/LOGOUT';
 // Sync action creators
 export const loginUserSuccess = (user) => ({
   type: LOGIN_SUCCESS,
-  payload: user,
+  user,
 });
 
-export const loginUserFailure = (error) => ({
+export const loginUserFailure = ({ errors }) => ({
   type: LOGIN_FAILURE,
-  payload: error,
+  errors,
 });
 
 // odd man out :-(
@@ -45,17 +45,13 @@ export const logoutUser = () => {
 
 export const loginUser = (user, actions) => {
   return (dispatch) => {
-    dispatch({ type: LOGIN_REQUEST, payload: user });
+    dispatch({ type: LOGIN_REQUEST });
     PraasAPI.user.login(user).then(
       (data) => {
         dispatch(loginUserSuccess(data.user));
-        actions.setSubmitting(false);
-        // navigate('/');
       },
       (error) => {
         dispatch(loginUserFailure(error));
-        actions.setSubmitting(false);
-        actions.setStatus({ errors: { ...error.errors } });
       }
     );
   };
@@ -66,26 +62,25 @@ const localUser = JSON.parse(localStorage.getItem('user'));
 const initialState = localUser
   ? { inflight: false, loggedIn: true, ...localUser }
   : { inflight: false, loggedIn: false };
-export default function login(state = initialState, { type, payload }) {
+export default function login(state = initialState, { type, user, errors }) {
   switch (type) {
     case LOGIN_REQUEST:
       return {
         ...state,
         inflight: true,
-        ...payload.user,
       };
     case LOGIN_SUCCESS:
-      localStorage.setItem('user', JSON.stringify(payload.user));
+      localStorage.setItem('user', JSON.stringify(user));
       return {
         inflight: false,
         loggedIn: true,
-        ...payload.user,
+        user,
       };
     case LOGIN_FAILURE:
       return {
         inflight: false,
         loggedIn: false,
-        errors: { ...payload.errors },
+        errors: { ...errors },
       };
     case LOGOUT:
       return {
