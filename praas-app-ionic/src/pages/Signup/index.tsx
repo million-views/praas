@@ -11,18 +11,18 @@ import {
   IonButton,
 } from '@ionic/react';
 import { useForm } from 'react-hook-form';
-
 import { connect } from 'react-redux';
 import { withRouter, RouteComponentProps } from 'react-router';
 import Header from '../../components/Header';
+import Error from '../../components/Error';
 import { registerUser } from '../../store/user/registration';
-import signupSchema from './schema'
+import signupSchema from './schema';
 import './style.scss';
 
-type Props = {
+interface Props extends RouteComponentProps {
   user: any;
   registerUser: (data: any) => void;
-};
+}
 
 const Signup: React.FC<Props & RouteComponentProps> = ({
   user,
@@ -54,17 +54,17 @@ const Signup: React.FC<Props & RouteComponentProps> = ({
                   <IonLabel position="floating">Name</IonLabel>
                   <IonInput type="text" name="firstName" ref={register()} />
                 </IonItem>
-                <div className="error">{errors.firstName?.message}</div>
+                <Error message={errors.firstName?.message} />
                 <IonItem>
                   <IonLabel position="floating">Email</IonLabel>
                   <IonInput type="email" name="email" ref={register()} />
                 </IonItem>
-                <div className="error">{errors?.email?.message}</div>
+                <Error message={errors?.email?.message} />
                 <IonItem>
                   <IonLabel position="floating">Password</IonLabel>
                   <IonInput type="password" name="password" ref={register()} />
                 </IonItem>
-                <div className="error">{errors.password?.message}</div>
+                <Error message={errors?.password?.message} />
                 <IonButton type="submit" color="primary">
                   Submit
                 </IonButton>

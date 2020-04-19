@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   IonContent,
   IonPage,
@@ -10,53 +10,53 @@ import {
   IonInput,
   IonButton,
 } from '@ionic/react';
-import { useFormik } from 'formik';
 import { connect } from 'react-redux';
+import { withRouter, RouteComponentProps } from 'react-router';
+import { useForm } from 'react-hook-form';
 import Header from '../../components/Header';
+import Error from '../../components/Error';
 import { loginUser } from '../../store/user/login';
+import signinSchema from './schema';
 
 import './style.scss';
 
-type Props = {
-  loginUser: (data: any, formikActions: any) => void;
-};
+interface Props extends RouteComponentProps {
+  user: any;
+  loginUser: (data: any) => void;
+}
 
-const LoginPage: React.FC<Props> = ({ loginUser }) => {
-  const formik = useFormik({
-    initialValues: { email: '', password: '' },
-    onSubmit: (values: any, actions: any) => {
-      loginUser({ user: values }, actions);
-    },
+const LoginPage: React.FC<Props> = ({ user, loginUser, history }) => {
+  const { register, handleSubmit, errors } = useForm({
+    defaultValues: { email: '', password: '' },
+    validationSchema: signinSchema,
   });
+
+  const onSubmit = (values: any) => {
+    loginUser({ user: values });
+  };
+
+  useEffect(() => {
+    if (user.login.loggedIn) history.replace('/');
+  }, [user, history]);
 
   return (
     <IonPage className="login-page">
       <Header />
       <IonContent>
-        <form onSubmit={formik.handleSubmit}>
+        <form noValidate onSubmit={handleSubmit(onSubmit)}>
           <IonGrid>
             <IonRow className="ion-justify-content-center">
               <IonCol sizeXs="12" sizeSm="4" className="text-align-center">
                 <IonItem>
                   <IonLabel position="floating">Email</IonLabel>
-                  <IonInput
-                    type="email"
-                    value={formik.values.email}
-                    onIonChange={(event) => {
-                      formik.values.email = event.detail.value!;
-                    }}
-                  />
+                  <IonInput type="email" name="email" ref={register()} />
                 </IonItem>
+                <Error message={errors.email?.message}></Error>
                 <IonItem>
                   <IonLabel position="floating">Password</IonLabel>
-                  <IonInput
-                    type="password"
-                    value={formik.values.password}
-                    onIonChange={(event) => {
-                      formik.values.password = event.detail.value!;
-                    }}
-                  />
+                  <IonInput type="password" name="password" ref={register()} />
                 </IonItem>
+                <Error message={errors.password?.message}></Error>
                 <IonButton type="submit" color="primary">
                   Submit
                 </IonButton>
@@ -70,7 +70,6 @@ const LoginPage: React.FC<Props> = ({ loginUser }) => {
 };
 
 const mapStateToProps = ({ user }: any) => {
-  console.log(user);
   return { user };
 };
 
