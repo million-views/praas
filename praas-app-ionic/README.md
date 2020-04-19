@@ -5,11 +5,11 @@ Prass frontend application using Ionic React
 ## Installation
 
 ```js
-npm install
+npm ci
 ```
 
 ## Development
 
 ```js
-npm run start
+npm start
 ```

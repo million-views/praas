@@ -25,7 +25,7 @@ interface Props extends RouteComponentProps {
   loginUser: (data: any) => void;
 }
 
-const SignIn: React.FC<Props> = ({ user, loginUser, history }) => {
+const LoginPage: React.FC<Props> = ({ user, loginUser, history }) => {
   const { register, handleSubmit, errors } = useForm({
     defaultValues: { email: '', password: '' },
     validationSchema: signinSchema,
@@ -40,7 +40,7 @@ const SignIn: React.FC<Props> = ({ user, loginUser, history }) => {
   }, [user, history]);
 
   return (
-    <IonPage className="signin-page">
+    <IonPage className="login-page">
       <Header />
       <IonContent>
         <form noValidate onSubmit={handleSubmit(onSubmit)}>
@@ -73,4 +73,4 @@ const mapStateToProps = ({ user }: any) => {
   return { user };
 };
 
-export default connect(mapStateToProps, { loginUser })(withRouter(SignIn));
+export default connect(mapStateToProps, { loginUser })(LoginPage);

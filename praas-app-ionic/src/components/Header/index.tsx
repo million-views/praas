@@ -25,8 +25,8 @@ const Header: React.FC<Props> = ({ user, logoutUser }) => {
             </IonButton>
           ) : (
             <>
-              <IonButton fill="outline" href="/signin">
-                SignIn
+              <IonButton fill="outline" href="/login">
+                Login
               </IonButton>
               <IonButton fill="outline" slot="primary" href="/signup">
                 Signup
