@@ -19,20 +19,19 @@ const Header: React.FC<Props> = ({ user, logoutUser }) => {
       <IonToolbar>
         <IonTitle>PRAAS</IonTitle>
         <IonButtons slot="end">
-          {!user.login.loggedIn && (
-            <>
-              <IonButton fill="outline" slot="primary" href="/signup">
-                Signup
-              </IonButton>
-              <IonButton fill="outline" href="/signin">
-                Signin
-              </IonButton>
-            </>
-          )}
-          {user.login.loggedIn && (
+          {user.login.loggedIn ? (
             <IonButton fill="outline" slot="primary" onClick={logoutUser}>
               Logout
             </IonButton>
+          ) : (
+            <>
+              <IonButton fill="outline" href="/signin">
+                SignIn
+              </IonButton>
+              <IonButton fill="outline" slot="primary" href="/signup">
+                Signup
+              </IonButton>
+            </>
           )}
         </IonButtons>
       </IonToolbar>

@@ -14,21 +14,18 @@ import { connect } from 'react-redux';
 import { withRouter, RouteComponentProps } from 'react-router';
 import { useForm } from 'react-hook-form';
 import Header from '../../components/Header';
+import Error from '../../components/Error';
 import { loginUser } from '../../store/user/login';
 import signinSchema from './schema';
 
 import './style.scss';
 
-type Props = {
+interface Props extends RouteComponentProps {
   user: any;
   loginUser: (data: any) => void;
-};
+}
 
-const SignIn: React.FC<Props & RouteComponentProps> = ({
-  user,
-  loginUser,
-  history,
-}) => {
+const SignIn: React.FC<Props> = ({ user, loginUser, history }) => {
   const { register, handleSubmit, errors } = useForm({
     defaultValues: { email: '', password: '' },
     validationSchema: signinSchema,
@@ -54,12 +51,12 @@ const SignIn: React.FC<Props & RouteComponentProps> = ({
                   <IonLabel position="floating">Email</IonLabel>
                   <IonInput type="email" name="email" ref={register()} />
                 </IonItem>
-                <div className="error">{errors.email?.message}</div>
+                <Error message={errors.email?.message}></Error>
                 <IonItem>
                   <IonLabel position="floating">Password</IonLabel>
                   <IonInput type="password" name="password" ref={register()} />
                 </IonItem>
-                <div className="error">{errors.password?.message}</div>
+                <Error message={errors.password?.message}></Error>
                 <IonButton type="submit" color="primary">
                   Submit
                 </IonButton>

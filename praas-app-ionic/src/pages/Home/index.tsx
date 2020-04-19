@@ -4,10 +4,11 @@ import { connect } from 'react-redux';
 import { withRouter, RouteComponentProps } from 'react-router';
 import Header from '../../components/Header';
 
-type Props = {
+interface Props extends RouteComponentProps {
   user: any;
-};
-const Home: React.FC<Props & RouteComponentProps> = ({ user, history }) => {
+}
+
+const Home: React.FC<Props> = ({ user, history }) => {
   useEffect(() => {
     if (!user.login.loggedIn) history.replace('/signin');
   }, [user, history]);
