@@ -21,16 +21,16 @@ type Props = {
   loginUser: (data: any, formikActions: any) => void;
 };
 
-const SignIn: React.FC<Props> = ({ loginUser }) => {
+const LoginPage: React.FC<Props> = ({ loginUser }) => {
   const formik = useFormik({
     initialValues: { email: '', password: '' },
-    onSubmit: (values, actions) => {
+    onSubmit: (values: any, actions: any) => {
       loginUser({ user: values }, actions);
     },
   });
 
   return (
-    <IonPage className="signin-page">
+    <IonPage className="login-page">
       <Header />
       <IonContent>
         <form onSubmit={formik.handleSubmit}>
@@ -74,4 +74,4 @@ const mapStateToProps = ({ user }: any) => {
   return { user };
 };
 
-export default connect(mapStateToProps, { loginUser })(SignIn);
+export default connect(mapStateToProps, { loginUser })(LoginPage);
