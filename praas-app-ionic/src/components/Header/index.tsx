@@ -4,7 +4,7 @@ import {
   IonToolbar,
   IonButtons,
   IonButton,
-  IonTitle
+  IonTitle,
 } from '@ionic/react';
 
 const Header: React.FC = () => {
@@ -16,8 +16,8 @@ const Header: React.FC = () => {
           <IonButton fill="outline" slot="primary" href="/signup">
             Signup
           </IonButton>
-          <IonButton fill="outline" href="/signin">
-            Signin
+          <IonButton fill="outline" href="/login">
+            Login
           </IonButton>
         </IonButtons>
       </IonToolbar>
