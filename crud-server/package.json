@@ -42,6 +42,9 @@
     "mocha": "^6.1.4",
     "snap-shot-it": "^7.4.4"
   },
+  "engines": {
+    "node": ">=12.16.2"
+  },
   "eslintIgnore": [
     "**/__snapshots__/*"
   ]
