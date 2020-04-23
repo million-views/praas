@@ -14,12 +14,14 @@ Development
 > integration tests (test-rest).
 
 ### Tasks
-|  task     | command line                             | notes                               |
-|:----------|:-----------------------------------------|:------------------------------------|
-| install   |```npm install```                         | installs dependencies               |
-| lint      |```npm run lint```                        | run eslint on `src` folder          |
-| test-model|```SNAPSHOT_UPDATE=1 npm run test-model```| run data layer unit tests           |
-| test-rest |```SNAPSHOT_UPDATE=1 npm run test-rest``` | run REST endpoint integration tests |
+|  task     | command line                             | notes                                                   |
+|:----------|:-----------------------------------------|:--------------------------------------------------------|
+| install   |```npm ci```                              | new commers install dependencies in sync with your peers|
+|           |    or                                    |                                                         |
+| install   |```npm install```                         | installs dependencies                                   |
+| lint      |```npm run lint```                        | run eslint on `src` folder                              |
+| test-model|```SNAPSHOT_UPDATE=1 npm run test-model```| run data layer unit tests                               |
+| test-rest |```SNAPSHOT_UPDATE=1 npm run test-rest``` | run REST endpoint integration tests                     |
 
 # Praas Data Model
 
