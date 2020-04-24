@@ -1,5 +1,18 @@
-const generate = require('nanoid/generate');
+const customAlphabet = require('nanoid/async').customAlphabet;
 const System = require('./system');
+
+const nanoid = customAlphabet(
+    System.cconf.settings.alphabet,
+    System.cconf.settings.uccount
+  );
+  const domain = System.cconf.settings.domain;
+  
+  // Construct unique uri string
+  const curi = async () => {
+    const id = await nanoid();
+    console.log('nano-id:', id);
+    return id.concat('.', domain);
+  };
 
 module.exports = (db, DataTypes) => {
   const Conduit = db.define('conduit', {
@@ -29,10 +42,9 @@ module.exports = (db, DataTypes) => {
       isUrl: true,
       unique: true,
       set(val) {
-        const domain = System.cconf.settings.domain;
-        const alphabet = System.cconf.settings.alphabet;
-        const randomStr = generate(alphabet, System.cconf.settings.uccount);
-        this.setDataValue('curi', val.concat('-', randomStr, '.', domain));
+        console.log('val-before: ', val);
+        this.setDataValue('curi', val.concat('-', curi()));
+        console.log('val-after: ', val);
       }
     },
     whitelist: {
