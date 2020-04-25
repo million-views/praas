@@ -21,7 +21,7 @@ Development
 | lint:fix  |```npm run lint:fix```                    | run eslint on `src` folder                  |
 | test-model|```npm run test-model```                  | run data layer unit tests                   |
 | test-rest |```npm run test-rest```                   | run REST endpoint integration tests         |
-| start     |```npm run start```                       | web server build folder                     |
+| start     |```npm run start```                       | web serve `build` folder                    |
 
 # Praas Data Model
 
