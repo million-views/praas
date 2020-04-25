@@ -52,7 +52,7 @@ if (conf.production) {
     // no stacktraces leaked to user in production mode
     res.status(err.status || 500);
     res.json({
-      'errors': {
+      errors: {
         message: err.message,
         error: {}
       }
@@ -65,7 +65,7 @@ if (conf.production) {
     console.log(err.stack);
     res.status(err.status || 500);
     res.json({
-      'errors': {
+      errors: {
         message: err.message,
         error: err
       }

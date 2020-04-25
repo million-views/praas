@@ -10,7 +10,7 @@ router.post('/', auth.required, async function (req, res, next) {
   const errors = {};
 
   conduit.userId = req.payload.id;
-  conduit.curi = 'td'; // for now the prefix is hardcoded, to be updated
+  conduit.curi = await helpers.makeCuri('td'); // for now the prefix is hardcoded, to be updated
   conduit.throttle = true;
   conduit.status = 'Inactive';
 

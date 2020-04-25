@@ -1,19 +1,3 @@
-const customAlphabet = require('nanoid/async').customAlphabet;
-const System = require('./system');
-
-const nanoid = customAlphabet(
-    System.cconf.settings.alphabet,
-    System.cconf.settings.uccount
-  );
-  const domain = System.cconf.settings.domain;
-  
-  // Construct unique uri string
-  const curi = async () => {
-    const id = await nanoid();
-    console.log('nano-id:', id);
-    return id.concat('.', domain);
-  };
-
 module.exports = (db, DataTypes) => {
   const Conduit = db.define('conduit', {
     suriApiKey: {
@@ -41,11 +25,20 @@ module.exports = (db, DataTypes) => {
       allowNull: false,
       isUrl: true,
       unique: true,
-      set(val) {
-        console.log('val-before: ', val);
-        this.setDataValue('curi', val.concat('-', curi()));
-        console.log('val-after: ', val);
-      }
+
+      // set(val) {
+      //   console.log('val-before: ', val);
+      //   const self = this;
+      //   (async function(val) {
+      //     const id = await curi(val);
+      //     self.setDataValue('curi', id);
+      //     console.log('setting curi: ', id);
+      //   })(val).then(() => console.log('now what'));
+
+      //   // curi(val).then(id => self.setDataValue(id));
+      //   // console.log('val-after', val);
+      //   // this.setDataValue('curi', val);
+      // }
     },
     whitelist: {
       type: DataTypes.JSON,

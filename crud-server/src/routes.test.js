@@ -8,11 +8,11 @@ const expect = chai.expect;
 chai.use(chaiHttp);
 
 const jake = {
-  'user': {
-    'firstName': 'Jake',
-    'lastName': 'Jacob',
-    'email': 'jake1000@jake.jake',
-    'password': 'jakejake',
+  user: {
+    firstName: 'Jake',
+    lastName: 'Jacob',
+    email: 'jake1000@jake.jake',
+    password: 'jakejake',
   }
 };
 

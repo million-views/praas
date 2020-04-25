@@ -1,9 +1,47 @@
-'use strict';
-
-// const slugify = require('slugify');
 const faker = require('faker');
 const config = require('../config');
 const models = require('../models');
+
+const customAlphabet = require('nanoid/async').customAlphabet;
+
+// premature optimization is the root of all evil
+// ...
+// some time ago we decided to eliminate a few lines  of code by using
+// the setter method for 'curi' field in a conduit which at that point
+// in time seemed like a 'cool' idea. But now nanoid broke backward
+// compatibility by making the generate function a promise.
+//
+// Sequelize has no intent of supporting async getters
+// and setters. See:
+// - https://github.com/sequelize/sequelize/issues/1821#issuecomment-347801702
+// - https://stackoverflow.com/questions/50641526/async-getter-setter-in-sequelize-as-part-of-a-property
+// - https://stackoverflow.com/questions/14220321/how-do-i-return-the-response-from-an-asynchronous-call
+//
+// Now we have to twist and bend to make the whole thing work again.
+// Moral of the story, don't waste time eliminating a few lines of code
+// unless those few lines happen in a thousand different places!
+//
+
+const nanoid = customAlphabet(
+  models.System.cconf.settings.alphabet,
+  models.System.cconf.settings.uccount
+);
+const domain = models.System.cconf.settings.domain;
+
+// Construct a custom uri...
+// Note once a low level function is asynchronous there is no reasonable way
+// to become synchronous to the caller; here nanoid is async so this function
+// also has to be async; the caller has to await or use a promise to resolve
+// using a callback.
+const makeCuri = async (prefix) => {
+  // use immediately invoked async function pattern to make this
+  // function usable by the caller which cannot declare itself
+  // to be async
+  const id = await nanoid();
+  const uri = prefix.concat('-', id, '.', domain);
+  // console.log('prefix, id, domain, uri:', prefix, id, domain, uri);
+  return uri;
+};
 
 const generateUsers = async (count = 5) => {
   const fups = [];
@@ -13,7 +51,10 @@ const generateUsers = async (count = 5) => {
 
 const generateConduits = async (userId, count = 50) => {
   const fcts = [];
-  for (let i = 0; i < count; i++) fcts.push(fakeConduit());
+  for (let i = 0; i < count; i++) {
+    const curi = await makeCuri('td');
+    fcts.push(fakeConduit({ curi }));
+  }
   for (const fct of fcts) fct.userId = userId;
   return models.Conduit.bulkCreate(fcts);
 };
@@ -60,7 +101,7 @@ const fakeConduit = (overrides = {}) => {
     suriType: typesArr[Math.floor(Math.random() * typesArr.length)],
     suriObjectKey: faker.lorem.word(),
     suri: faker.internet.url(),
-    curi: 'td',
+    // curi: 'td',
     whitelist: [{
       ip: faker.internet.ip(),
       status: ipstatArr[Math.floor(Math.random() * ipstatArr.length)],
@@ -98,5 +139,5 @@ const processInput = (inp, req, opt, out, err) => {
 };
 
 module.exports = {
-  fakeUserProfile, fakeConduit, generateUsers, generateConduits, processInput
+  fakeUserProfile, fakeConduit, generateUsers, generateConduits, processInput, makeCuri
 };
