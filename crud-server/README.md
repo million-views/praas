@@ -9,19 +9,19 @@ TBD...
 Development
 -----------
 > NOTE:
-> Integration tests require bootstrap data created by the unit tests. So,
-> me sure to run unit tests (test-model) first before running the
+> Integration tests require bootstrap data created by the unit tests.
+> So, make sure to run unit tests (test-model) first before running the
 > integration tests (test-rest).
 
 ### Tasks
-|  task     | command line                             | notes                                                   |
-|:----------|:-----------------------------------------|:--------------------------------------------------------|
-| install   |```npm ci```                              | new commers install dependencies in sync with your peers|
-|           |    or                                    |                                                         |
-| install   |```npm install```                         | installs dependencies                                   |
-| lint      |```npm run lint```                        | run eslint on `src` folder                              |
-| test-model|```SNAPSHOT_UPDATE=1 npm run test-model```| run data layer unit tests                               |
-| test-rest |```SNAPSHOT_UPDATE=1 npm run test-rest``` | run REST endpoint integration tests                     |
+|  task     | command line                             | notes                                       |
+|:----------|:-----------------------------------------|:--------------------------------------------|
+| install   |```npm install```                         | installs dependencies                       |
+| lint      |```npm run lint```                        | run eslint on `src` folder                  |
+| lint:fix  |```npm run lint:fix```                    | run eslint on `src` folder                  |
+| test-model|```npm run test-model```                  | run data layer unit tests                   |
+| test-rest |```npm run test-rest```                   | run REST endpoint integration tests         |
+| start     |```npm run start```                       | web server build folder                     |
 
 # Praas Data Model
 
