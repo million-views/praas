@@ -22,6 +22,7 @@ Development
 | test-model|```npm run test-model```                  | run data layer unit tests                   |
 | test-rest |```npm run test-rest```                   | run REST endpoint integration tests         |
 | start     |```npm run start```                       | web serve `build` folder                    |
+| createdb  |```npm run createdb```                    | Creates a new db file with username: admin@praas.com  password: praas  |
 
 # Praas Data Model
 
