@@ -1,0 +1,16 @@
+sequenceDiagram
+    participant Customer
+    participant ConduitServer
+    participant EndUser
+    participant praasServer
+    participant ServiceEndpoint
+    Customer->>+ConduitServer: Manage Conduits
+    Note over Customer,ConduitServer: Service Endpoint and Credentials
+    ConduitServer-->>-Customer: return Conduit URI
+    Customer->>EndUser: Share Conduit URI for later usage
+    EndUser->>+praasServer: Request Conduit URI w/ JSON data
+    praasServer->>+ConduitServer: Query using Conduit URI hostname
+    ConduitServer-->>-praasServer: return Service Endpoint and Credentials
+    praasServer->>+ServiceEndpoint: EndUser's request + JSON Data
+    ServiceEndpoint-->>-praasServer: response
+    praasServer->>-EndUser: send response to EndUser
