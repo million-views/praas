@@ -14,7 +14,7 @@ import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import { useForm } from 'react-hook-form';
 import Header from '../../components/Header';
-import Error from '../../components/Error';
+import FormFieldWithError from '../../components/FormFieldWithError';
 import { loginUser } from '../../store/user/login';
 import signinSchema from './schema';
 
@@ -47,16 +47,14 @@ const LoginPage: React.FC<Props> = ({ user, loginUser, history }) => {
           <IonGrid>
             <IonRow className="ion-justify-content-center">
               <IonCol sizeXs="12" sizeSm="4" className="text-align-center">
-                <IonItem>
+                <FormFieldWithError error={errors.email}>
                   <IonLabel position="floating">Email</IonLabel>
                   <IonInput type="email" name="email" ref={register()} />
-                </IonItem>
-                <Error message={errors.email?.message}></Error>
-                <IonItem>
+                </FormFieldWithError>
+                <FormFieldWithError error={errors.password}>
                   <IonLabel position="floating">Password</IonLabel>
                   <IonInput type="password" name="password" ref={register()} />
-                </IonItem>
-                <Error message={errors.password?.message}></Error>
+                </FormFieldWithError>
                 <IonButton type="submit" color="primary">
                   Submit
                 </IonButton>
