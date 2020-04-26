@@ -24,11 +24,7 @@ interface Props extends RouteComponentProps {
   registerUser: (data: any) => void;
 }
 
-const Signup: React.FC<Props & RouteComponentProps> = ({
-  user,
-  history,
-  registerUser,
-}) => {
+const Signup: React.FC<Props> = ({ user, history, registerUser }) => {
   const { register, handleSubmit, errors } = useForm({
     defaultValues: { firstName: '', email: '', password: '' },
     validationSchema: signupSchema,

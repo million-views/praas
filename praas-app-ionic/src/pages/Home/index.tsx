@@ -1,10 +1,9 @@
 import React from 'react';
 import { IonPage, IonContent } from '@ionic/react';
 import { connect } from 'react-redux';
-import { RouteComponentProps } from 'react-router';
 import Header from '../../components/Header';
 
-interface Props extends RouteComponentProps {
+interface Props {
   user: any;
 }
 
