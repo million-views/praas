@@ -8,10 +8,10 @@ type Props = {
 };
 
 const FormFieldWithError = ({ children, error }: Props) => (
-  <IonItem>
-    {children}
+  <>
+    <IonItem>{children}</IonItem>
     {error && <div className="error">{error.message}</div>}
-  </IonItem>
+  </>
 );
 
 export default FormFieldWithError;

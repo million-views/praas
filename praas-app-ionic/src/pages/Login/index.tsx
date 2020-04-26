@@ -51,7 +51,6 @@ const LoginPage: React.FC<Props> = ({ user, loginUser, history }) => {
                   <IonLabel position="floating">Email</IonLabel>
                   <IonInput type="email" name="email" ref={register()} />
                 </FormFieldWithError>
-                <IonItem></IonItem>
                 <FormFieldWithError error={errors.password}>
                   <IonLabel position="floating">Password</IonLabel>
                   <IonInput type="password" name="password" ref={register()} />
