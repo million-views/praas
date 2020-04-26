@@ -11,7 +11,7 @@ import {
   IonButton,
 } from '@ionic/react';
 import { connect } from 'react-redux';
-import { withRouter, RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router';
 import { useForm } from 'react-hook-form';
 import Header from '../../components/Header';
 import Error from '../../components/Error';

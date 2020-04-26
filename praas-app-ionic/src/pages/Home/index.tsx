@@ -1,17 +1,14 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { IonPage, IonContent } from '@ionic/react';
 import { connect } from 'react-redux';
-import { withRouter, RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router';
 import Header from '../../components/Header';
 
 interface Props extends RouteComponentProps {
   user: any;
 }
 
-const Home: React.FC<Props> = ({ user, history }) => {
-  useEffect(() => {
-    if (!user.login.loggedIn) history.replace('/signin');
-  }, [user, history]);
+const Home: React.FC<Props> = ({ user }) => {
   return (
     <IonPage>
       <Header />
@@ -22,4 +19,4 @@ const Home: React.FC<Props> = ({ user, history }) => {
 const mapStateToProps = ({ user }: any) => ({
   user,
 });
-export default connect(mapStateToProps)(withRouter(Home));
+export default connect(mapStateToProps)(Home);

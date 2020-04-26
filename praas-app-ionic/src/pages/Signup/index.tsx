@@ -12,7 +12,7 @@ import {
 } from '@ionic/react';
 import { useForm } from 'react-hook-form';
 import { connect } from 'react-redux';
-import { withRouter, RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router';
 import Header from '../../components/Header';
 import Error from '../../components/Error';
 import { registerUser } from '../../store/user/registration';
@@ -81,4 +81,4 @@ const mapStateToProps = ({ user }: any) => {
   return { user };
 };
 
-export default connect(mapStateToProps, { registerUser })(withRouter(Signup));
+export default connect(mapStateToProps, { registerUser })(Signup);

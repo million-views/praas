@@ -3,6 +3,7 @@ import { Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
+import AuthenticatedRoute from './components/AuthenticatedRoute';
 import Signup from './pages/Signup';
 import LoginPage from './pages/Login';
 import Home from './pages/Home';
@@ -33,7 +34,7 @@ const App: React.FC = () => (
       <IonRouterOutlet>
         <Route exact path="/signup" component={Signup} />
         <Route exact path="/login" component={LoginPage} />
-        <Route exact path="/" component={Home} />
+        <AuthenticatedRoute exact path="/" component={Home} />
       </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>
