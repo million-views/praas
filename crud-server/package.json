@@ -11,7 +11,8 @@
     "lint": "eslint src --cache",
     "lint:fix": "eslint --fix src",
     "test-rest": "mocha --exit src/routes.test.js",
-    "test-model": "mocha --exit src/model.test.js"
+    "test-model": "mocha --exit src/model.test.js",
+    "createdb": "node ./src/lib/createdb.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
