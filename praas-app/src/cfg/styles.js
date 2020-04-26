@@ -5,9 +5,11 @@ const cssLoader = (cssModule, localIdentName = undefined) => {
     loader: 'css-loader',
     options: {
       sourceMap: true,
-      modules: cssModule,
+      modules: {
+        mode: cssModule,
+        localIdentName
+      },
       importLoaders: 1,
-      localIdentName
     }
   };
 };
