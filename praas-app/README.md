@@ -11,7 +11,7 @@ Development
 -----------
 > If using [Yarn](https://yarnpkg.com/), `yarn` can replace all occurences
 > of `npm` in the command line below. :ok_hand:
-> If you don't have node.js, install [nvm](https://github.com/nvm-sh/nvm) is a version manager for [node.js](https://nodejs.org/en/).
+> If you don't have node.js, install [nvm](https://github.com/nvm-sh/nvm), is a version manager for [node.js](https://nodejs.org/en/).
 
 If live-server is not installed globally do so now.
 ```
@@ -22,15 +22,14 @@ $ which `live-server`
 $ npm install --global live-server
 ```
 ### Tasks
-|  task   | command line      | notes                                                     |
-|:--------|:------------------|:----------------------------------------------------------|
-| install |```npm ci```       | new commers install dependencies in sync with your peers  |
-|         |    or             |                                                           |
-| install |```npm install```  | installs dependencies                                     |
-| lint    |```npm run lint``` | run eslint on `src` folder                                |
-| build   |```npm run build```| compile to `build` folder                                 |
-| start   |```npm run start```| web serve `build` folder                                  |
-| watch   |```npm run watch```| watch/build changes to `app` and `web` folders            |
+|  task    | command line         | notes                                                     |
+|:---------|:---------------------|:----------------------------------------------------------|
+| install  |```npm install```     | installs dependencies                                     |
+| lint     |```npm run lint```    | run eslint on `src` folder                                |
+| lint:fix |```npm run lint:fix```| run eslint on `src` folder                                |
+| build    |```npm run build```   | compile to `build` folder                                 |
+| start    |```npm run start```   | web serve `build` folder                                  |
+| watch    |```npm run watch```   | watch/build changes to `app` and `web` folders            |
 
 Code organization
 -----------------
