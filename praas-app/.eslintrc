@@ -31,8 +31,7 @@
     "browser": true
   },
   "globals": {
-    "location": 1,
-    "ga": 1
+    "location": "writable"
   },
   "rules": {
     "camelcase": 0,
