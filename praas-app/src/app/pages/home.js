@@ -59,7 +59,7 @@ class Home extends React.Component {
     const { user, logout } = this.props;
     if (user.loggedIn) {
       return (
-        <React.Fragment>
+        <>
           <Header
             loggedIn={user.loggedIn}
             logout={logout}
@@ -70,8 +70,8 @@ class Home extends React.Component {
                 setConduitId={(cid) => this.setConduitId(cid)}
                 changeMode={(mode) => this.changeMode(mode)}
                 deleteConduit={(cid) => this.deleteConduit(cid)}
-                conduits={this.props.conduits} />
-            }
+                conduits={this.props.conduits}
+              />}
             {this.state.mode === 'add' &&
               <CreateConduitForm
                 changeMode={(mode) => this.changeMode(mode)}
@@ -82,7 +82,7 @@ class Home extends React.Component {
                 changeMode={(mode) => this.changeMode(mode)}
               />}
           </main>
-        </React.Fragment>
+        </>
       );
     } else {
       return <Redirect to="login" noThrow />;

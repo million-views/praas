@@ -17,13 +17,11 @@ class App extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
-        <Router>
-          <Home path="/" />
-          <Login path="login" />
-          <Signup path="signup" />
-        </Router >
-      </React.Fragment>
+      <Router>
+        <Home path="/" />
+        <Login path="login" />
+        <Signup path="signup" />
+      </Router >
     );
   }
 }

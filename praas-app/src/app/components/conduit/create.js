@@ -40,16 +40,16 @@ class CreateConduitForm extends Component {
         initialValues={initialValues}
         validationSchema={conduitSchema}
         render={props =>
-          <ConduitForm {...props}
+          <ConduitForm
+            {...props}
             buttonLabel="Create Conduit"
             changeMode={changeMode}
-            status={''}
+            status=""
           />}
         onSubmit={(values, actions) => {
           // console.log('in create form, values: ', values);
           dispatch(addConduit({ conduit: { ...values } }, actions, changeMode));
-        }
-        }
+        }}
       />
     );
   }

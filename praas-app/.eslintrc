@@ -33,6 +33,11 @@
   "globals": {
     "location": "writable"
   },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
   "rules": {
     "camelcase": 0,
     "no-multi-spaces": [

@@ -58,7 +58,7 @@ const List = (props) => {
   });
 
   return (
-    <React.Fragment>
+    <>
       <h1>List Conduits</h1>
       <h2>A conduit is a handle to a RESTful service endpoint</h2>
       <button onClick={() => props.changeMode('add')}>Add conduit</button>
@@ -76,7 +76,7 @@ const List = (props) => {
           {conduits}
         </tbody>
       </table>
-    </React.Fragment>
+    </>
   );
 };
 

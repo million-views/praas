@@ -36,7 +36,7 @@ const signupSchema = Yup.object({
 
 const Signup = ({ user, dispatch }) => {
   return (
-    <React.Fragment>
+    <>
       <Header
         loggedIn={user.loggedIn}
         logout={() => dispatch(logoutUser())}
@@ -52,7 +52,7 @@ const Signup = ({ user, dispatch }) => {
           }}
         />
       </main>
-    </React.Fragment>
+    </>
   );
 };
 

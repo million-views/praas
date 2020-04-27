@@ -41,17 +41,18 @@ class EditConduitForm extends Component {
         validationSchema={conduitSchema}
         enableReinitialize
         render={props =>
-          <ConduitForm {...props}
+          <ConduitForm
+            {...props}
             buttonLabel="Save Conduit"
             changeMode={changeMode}
             conduit={conduit}
-            handleFieldUpdates={this.handleFieldUpdates}
-            status={''} />}
+            handleFieldUpdates onChange={this.handleFieldUpdates}
+            status=""
+          />}
         onSubmit={(values, actions) => {
           console.log('in edit form, values: ', values);
           dispatch(updateConduit({ conduit: { ...values, id: conduit.id } }, actions, changeMode));
-        }
-        }
+        }}
       />
     );
   }

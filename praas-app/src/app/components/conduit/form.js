@@ -77,14 +77,16 @@ const IpState = ({
   return (
     <span>
       <label>
-        <input {...field} type="radio"
+        <input
+          {...field} type="radio"
           defaultChecked={details.state === 'Active'}
           value="Active"
         />
         <span className="checkable">Active</span>
       </label>
       <label>
-        <input {...field} type="radio"
+        <input
+          {...field} type="radio"
           defaultChecked={details.state === 'Inactive'}
           value="Inactive"
         />
@@ -101,7 +103,7 @@ const IpState = ({
 const Whitelist = (props) => {
   const { push, remove, form } = props;
   return (
-    <React.Fragment>
+    <>
       {form.values.whitelist &&
         form.values.whitelist.length > 0 &&
         form.values.whitelist.map((address, index) => {
@@ -109,9 +111,11 @@ const Whitelist = (props) => {
             <div className="flex four" key={index}>
               <Field name={`whitelist[${index}].address`} component={IpAddress} />
               <Field name={`whitelist[${index}].comment`} component={Comment} />
-              <Field name={`whitelist[${index}].state`}
+              <Field
+                name={`whitelist[${index}].state`}
                 details={address}
-                component={IpState} />
+                component={IpState}
+              />
               <div className="col">
                 <button type="button" onClick={() => remove(index)}>
                   X
@@ -127,7 +131,7 @@ const Whitelist = (props) => {
       >
         Add IP Address
       </button>
-    </React.Fragment>
+    </>
   );
 };
 
