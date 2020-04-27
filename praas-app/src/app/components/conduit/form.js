@@ -37,7 +37,7 @@ const Racm = (props) => {
         </label>
       ))}
       {
-        form.touched.racm && form.errors['racm'] &&
+        form.touched.racm && form.errors.racm &&
         <div className="field-error">{form.errors.racm}</div>
       }
     </div>
@@ -139,7 +139,7 @@ function ConduitForm(props) {
     isSubmitting,
     status,
   } = props;
-  const classes = cx(['submit', { 'spinner': isSubmitting }]);
+  const classes = cx(['submit', { spinner: isSubmitting }]);
 
   return (
     <Form >

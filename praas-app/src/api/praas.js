@@ -34,8 +34,8 @@ const authorization = () => {
   const user = JSON.parse(localStorage.getItem('user'));
   const header = {};
 
-  if (user && user.hasOwnProperty('token')) {
-    header['Authorization'] = `Bearer ${user.token}`;
+  if (user && {}.propertyIsEnumerable.call(user, 'token')) {
+    header.Authorization = `Bearer ${user.token}`;
   }
 
   return header;
@@ -54,7 +54,7 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
   headers = {
     ...headers,
     ...authorization(),
-    'Accept': 'application/json',
+    Accept: 'application/json',
     'Content-Type': 'application/json',
   };
 
