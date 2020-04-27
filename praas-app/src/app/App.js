@@ -21,7 +21,7 @@ class App extends React.Component {
         <Home path="/" />
         <Login path="login" />
         <Signup path="signup" />
-      </Router >
+      </Router>
     );
   }
 }

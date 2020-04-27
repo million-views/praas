@@ -38,7 +38,7 @@ const Racm = (props) => {
       ))}
       {
         form.touched.racm && form.errors.racm &&
-        <div className="field-error">{form.errors.racm}</div>
+          <div className="field-error">{form.errors.racm}</div>
       }
     </div>
   );
@@ -52,7 +52,7 @@ const IpAddress = ({
       <input {...field} type="text" placeholder="IP Address" />
       {
         touched[field.name] && errors[field.name] &&
-        <div className="field-error">{errors[field.name]}</div>
+          <div className="field-error">{errors[field.name]}</div>
       }
     </div>
   );
@@ -65,7 +65,7 @@ const Comment = ({
       <input {...field} type="text" placeholder="Comment" />
       {
         touched[field.name] && errors[field.name] &&
-        <div className="field-error">{errors[field.name]}</div>
+          <div className="field-error">{errors[field.name]}</div>
       }
     </div>
   );
@@ -94,7 +94,7 @@ const IpState = ({
       </label>
       {
         touched[field.name] && errors[field.name] &&
-        <div className="field-error">{errors[field.name]}</div>
+          <div className="field-error">{errors[field.name]}</div>
       }
     </span>
   );
@@ -146,8 +146,8 @@ function ConduitForm(props) {
   const classes = cx(['submit', { spinner: isSubmitting }]);
 
   return (
-    <Form >
-      <h2 >{buttonLabel}</h2>
+    <Form>
+      <h2>{buttonLabel}</h2>
       {
         status && <Alert klass="alert-danger" message={status.errors} />
       }
