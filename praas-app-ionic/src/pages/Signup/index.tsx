@@ -12,9 +12,9 @@ import {
 } from '@ionic/react';
 import { useForm } from 'react-hook-form';
 import { connect } from 'react-redux';
-import { withRouter, RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router';
 import Header from '../../components/Header';
-import Error from '../../components/Error';
+import FormFieldWithError from '../../components/FormFieldWithError';
 import { registerUser } from '../../store/user/registration';
 import signupSchema from './schema';
 import './style.scss';
@@ -24,11 +24,7 @@ interface Props extends RouteComponentProps {
   registerUser: (data: any) => void;
 }
 
-const Signup: React.FC<Props & RouteComponentProps> = ({
-  user,
-  history,
-  registerUser,
-}) => {
+const Signup: React.FC<Props> = ({ user, history, registerUser }) => {
   const { register, handleSubmit, errors } = useForm({
     defaultValues: { firstName: '', email: '', password: '' },
     validationSchema: signupSchema,
@@ -50,21 +46,18 @@ const Signup: React.FC<Props & RouteComponentProps> = ({
           <IonGrid>
             <IonRow className="ion-justify-content-center">
               <IonCol sizeXs="12" sizeSm="4" className="text-align-center">
-                <IonItem>
+                <FormFieldWithError error={errors.firstName}>
                   <IonLabel position="floating">Name</IonLabel>
                   <IonInput type="text" name="firstName" ref={register()} />
-                </IonItem>
-                <Error message={errors.firstName?.message} />
-                <IonItem>
+                </FormFieldWithError>
+                <FormFieldWithError error={errors?.email}>
                   <IonLabel position="floating">Email</IonLabel>
                   <IonInput type="email" name="email" ref={register()} />
-                </IonItem>
-                <Error message={errors?.email?.message} />
-                <IonItem>
+                </FormFieldWithError>
+                <FormFieldWithError error={errors?.password}>
                   <IonLabel position="floating">Password</IonLabel>
                   <IonInput type="password" name="password" ref={register()} />
-                </IonItem>
-                <Error message={errors?.password?.message} />
+                </FormFieldWithError>
                 <IonButton type="submit" color="primary">
                   Submit
                 </IonButton>
@@ -81,4 +74,4 @@ const mapStateToProps = ({ user }: any) => {
   return { user };
 };
 
-export default connect(mapStateToProps, { registerUser })(withRouter(Signup));
+export default connect(mapStateToProps, { registerUser })(Signup);
