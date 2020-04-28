@@ -29,8 +29,7 @@
   },
   "lint-staged": {
     "*.js": [
-      "eslint --fix src",
-      "git add"
+      "eslint --fix src"
     ],
     "*.scss": [
       "stylelint --fix",
