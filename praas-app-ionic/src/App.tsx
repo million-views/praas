@@ -33,7 +33,9 @@ import { createSuccessNotification } from './store/notification';
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
-  dispatch(createSuccessNotification('hello world'));
+  dispatch(
+    createSuccessNotification({ message: 'Welcome to Praas!', duration: 5000 })
+  );
   return (
     <IonApp>
       <IonReactRouter>
