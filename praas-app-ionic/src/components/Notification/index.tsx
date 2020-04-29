@@ -6,15 +6,15 @@ import { clearNotification } from '../../store/notification';
 const Notification: React.FC = () => {
   const notificationState = useSelector((state: any) => state.notification);
   const dispatch = useDispatch();
-
-  const isToastOpen = !!notificationState.message;
+  const isToastOpen = !!notificationState.data?.message;
   return (
     <IonToast
       isOpen={isToastOpen}
       onDidDismiss={() => dispatch(clearNotification)}
       position="top"
-      message={notificationState.message}
-      duration={1000}
+      color={notificationState.type}
+      message={notificationState.data.message}
+      duration={notificationState.data.duration || 1000}
     />
   );
 };
