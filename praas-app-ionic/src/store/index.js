@@ -4,16 +4,16 @@ import thunk from 'redux-thunk';
 // import ducks (feature state containers)
 import user from './user';
 import conduit from './conduit';
-import alert from './alert';
+import notification from './notification';
 
 // root reducer
 const reducers = combineReducers({
-  alert,
+  notification,
   user,
-  conduit
+  conduit,
 });
 
-const logger = _store => next => action => {
+const logger = (_store) => (next) => (action) => {
   if (typeof action !== 'function') {
     console.log('dispatching:', action);
   }
