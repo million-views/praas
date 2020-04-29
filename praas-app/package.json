@@ -36,6 +36,7 @@
     ]
   },
   "dependencies": {
+    "@babel/runtime": "^7.9.2",
     "@reach/router": "^1.2.1",
     "formik": "^2.1.4",
     "picnic": "^6.5.0",
@@ -55,6 +56,7 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.9.5",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/plugin-transform-react-jsx": "^7.9.4",
+    "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/polyfill": "^7.4.4",
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-react": "^7.9.4",
@@ -86,6 +88,7 @@
     "husky": "^4.2.5",
     "jest": "^25.3.0",
     "lint-staged": "^10.1.7",
+    "live-server": "^1.2.1",
     "mini-css-extract-plugin": "^0.9.0",
     "node-sass": "^4.13.1",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
