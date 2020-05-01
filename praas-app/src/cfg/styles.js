@@ -18,7 +18,10 @@ const sassLoader = (includePaths) => {
   return {
     loader: 'sass-loader',
     options: {
-      sourceMap: true, includePaths
+      sourceMap: true,
+      sassOptions: {
+        includePaths
+      }
     }
   };
 };
