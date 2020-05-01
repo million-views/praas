@@ -8,7 +8,7 @@ interface AuthenticatedRouteProps extends RouteProps {
 
 const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({
   component,
-  redirectTo = '/signin',
+  redirectTo = '/login',
   ...rest
 }) => {
   const isAuthenticated = useAuthentication();
