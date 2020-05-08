@@ -36,6 +36,13 @@ const Home: React.FC<Props> = ({ conduits, listConduits }) => {
             <IonCol className="table-header-col">Status</IonCol>
             <IonCol className="table-header-col">Action</IonCol>
           </IonRow>
+          {!conduits.length && (
+            <IonRow className="table-row">
+              <IonCol className="table-col ion-text-center">
+                No conduits available.
+              </IonCol>
+            </IonRow>
+          )}
           {conduits.map((conduit) => {
             return (
               <IonRow className="table-row">
@@ -73,6 +80,6 @@ const Home: React.FC<Props> = ({ conduits, listConduits }) => {
   );
 };
 const mapStateToProps = ({ conduit }: any) => ({
-  conduits: conduit?.list?.conduits,
+  conduits: conduit?.list?.conduits || [],
 });
 export default connect(mapStateToProps, { listConduits })(Home);
