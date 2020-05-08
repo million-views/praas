@@ -17,19 +17,15 @@ export const updateConduitFailure = (error) => ({
   payload: error,
 });
 
-export const updateConduit = (conduit, actions, changeMode) => {
+export const updateConduit = (conduit) => {
   return (dispatch) => {
     dispatch({ type: UPDATE_CONDUIT_REQUEST, payload: conduit });
     PraasAPI.conduit.update(conduit).then(
       (conduit) => {
-        changeMode('list');
         dispatch(updateConduitSuccess(conduit));
-        actions.setSubmitting(false);
       },
       (error) => {
         dispatch(updateConduitFailure(error));
-        actions.setSubmitting(false);
-        actions.setStatus({ errors: { ...error.errors } });
       }
     );
   };

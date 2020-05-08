@@ -1,0 +1,10 @@
+.racm {
+  &__checkbox {
+    display: flex;
+  }
+  .checkbox {
+    &__label {
+      margin: 0 0.625rem;
+    }
+  }
+}

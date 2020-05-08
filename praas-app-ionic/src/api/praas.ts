@@ -128,11 +128,17 @@ const praas = {
         body: JSON.stringify(data),
       });
     },
-    update(data: any) {
-      const cid = data.conduit.id;
+    update(conduit: any) {
+      debugger;
+      const cid = conduit.id;
       return afetch(`/conduits/${cid}`, {
         method: 'PATCH',
-        body: JSON.stringify(data),
+        body: JSON.stringify({ conduit }),
+      });
+    },
+    get(id: string) {
+      return afetch(`/conduits/${id}`, {
+        method: 'GET',
       });
     },
     list(id: string) {

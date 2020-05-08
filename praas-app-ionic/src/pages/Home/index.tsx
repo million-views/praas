@@ -42,7 +42,7 @@ const Home: React.FC<Props> = ({ conduits, listConduits }) => {
                 <IonCol className="table-col">{conduit.description}</IonCol>
                 <IonCol className="table-col">{conduit.suriType}</IonCol>
                 <IonCol className="table-col">{conduit.suri}</IonCol>
-                <IonCol className="table-col">{conduit.status}</IonCol>
+                <IonCol className="table-col">{conduit.state}</IonCol>
                 <IonCol className="table-col">
                   <IonButtons>
                     <IonButton
