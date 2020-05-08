@@ -2,6 +2,7 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
+import { useDispatch } from 'react-redux';
 
 import AuthenticatedRoute from './components/AuthenticatedRoute';
 import Signup from './pages/Signup';
@@ -28,18 +29,27 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 import './styles/common.scss';
+import Notification from './components/Notification';
+import { createSuccessNotification } from './store/notification';
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route exact path="/signup" component={Signup} />
-        <Route exact path="/login" component={LoginPage} />
-        <AuthenticatedRoute exact path="/" component={Home} />
-        <AuthenticatedRoute exact path="/conduit/:id" component={Conduit} />
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
-);
+const App: React.FC = () => {
+  const dispatch = useDispatch();
+  dispatch(
+    createSuccessNotification({ message: 'Welcome to Praas!', duration: 5000 })
+  );
+  return (
+    <IonApp>
+      <IonReactRouter>
+        <IonRouterOutlet>
+          <Route exact path="/signup" component={Signup} />
+          <Route exact path="/login" component={LoginPage} />
+          <AuthenticatedRoute exact path="/" component={Home} />
+          <AuthenticatedRoute exact path="/conduit/:id" component={Conduit} />
+        </IonRouterOutlet>
+      </IonReactRouter>
+      <Notification />
+    </IonApp>
+  );
+};
 
 export default App;

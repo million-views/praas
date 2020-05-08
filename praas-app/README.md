@@ -1,38 +1,31 @@
-PraaS WebApp
-============
-Front end to interact with the proxy-as-a-service backend to manage
-*conduits*. A conduit is a handle to a RESTful service endpoint.
+# PraaS WebApp
 
-Features
---------
+Front end to interact with the proxy-as-a-service backend to manage
+_conduits_. A conduit is a handle to a RESTful service endpoint.
+
+## Features
+
 TBD...
 
-Development
------------
+## Development
+
 > If using [Yarn](https://yarnpkg.com/), `yarn` can replace all occurences
 > of `npm` in the command line below. :ok_hand:
 > If you don't have node.js, install [nvm](https://github.com/nvm-sh/nvm), is a version manager for [node.js](https://nodejs.org/en/).
 
-If live-server is not installed globally do so now.
-```
-# is live-server installed ?
-$ which `live-server`
-
-# if not installed, install it now
-$ npm install --global live-server
-```
 ### Tasks
-|  task    | command line         | notes                                                     |
-|:---------|:---------------------|:----------------------------------------------------------|
-| install  |```npm install```     | installs dependencies                                     |
-| lint     |```npm run lint```    | run eslint on `src` folder                                |
-| lint:fix |```npm run lint:fix```| run eslint on `src` folder                                |
-| build    |```npm run build```   | compile to `build` folder                                 |
-| start    |```npm run start```   | web serve `build` folder                                  |
-| watch    |```npm run watch```   | watch/build changes to `app` and `web` folders            |
 
-Code organization
------------------
+| task     | command line       | notes                                          |
+| :------- | :----------------- | :--------------------------------------------- |
+| install  | `npm install`      | installs dependencies                          |
+| lint     | `npm run lint`     | run eslint on `src` folder                     |
+| lint:fix | `npm run lint:fix` | run eslint on `src` folder                     |
+| build    | `npm run build`    | compile to `build` folder                      |
+| start    | `npm run start`    | web serve `build` folder                       |
+| watch    | `npm run watch`    | watch/build changes to `app` and `web` folders |
+
+## Code organization
+
 We want an organization that allows us the ability to get to where we need to.
 To that end, we have the following structure at the top level.
 
@@ -58,13 +51,14 @@ src
 └── web            //<- web related assets bundled with code in app and lib folders
 ```
 
-NOTE:
-  I have seen some starter kits name the 'api' folder as 'service', probably
-  to suggest that the app uses the 'service'. I prefer 'api' because an app
-  may use different services. Also instructive is to read the differences
-  between  [facade and service](https://stackoverflow.com/questions/15038324/are-the-roles-of-a-service-and-a-fa%c3%a7ade-similar#15079958)
+> **NOTE:**
+> I have seen some starter kits name the 'api' folder as 'service', probably
+> to suggest that the app uses the 'service'. I prefer 'api' because an app
+> may use different services. Also instructive is to read the differences
+> between [facade and service](https://stackoverflow.com/questions/15038324/are-the-roles-of-a-service-and-a-fa%c3%a7ade-similar#15079958)
 
-### Webpack ###
+### Webpack
+
 Webpack configuration files are under 'cfg' folder and organized as a collection
 of parts merged together by webpack.js which is the entry point to webpack.
 
@@ -79,7 +73,8 @@ cfg/
 └── webpack.js     //<- kickstart webpack using this arrangement
 ```
 
-### Application ###
+### Application
+
 Application code is under 'app' folder. The file main.js is the entry
 point and contains the 'shell' of a PWA.
 
@@ -90,12 +85,15 @@ app
 ├── main.scss      //<- app wide look and feel *may* go here
 ├── routes         //<- are pages or containers in a flow
 ```
-### Application State ###
+
+### Application State
+
 The global state of an application is under 'store' folder, optionally present
 when an application requires complex state management. We refer using the 'ducks'
 way of organizing the store when using Redux.
 
-### Web Assets ###
+### Web Assets
+
 HTML, templates, images, icons and other visual and structural assets are in
 the 'web' folder. These are then copied to the 'build' folder during the build
 process.
@@ -108,7 +106,8 @@ web
 └── manifest.json
 ```
 
-### Third party libraries ###
+### Third party libraries
+
 External libraries used in source form are under 'lib' folder. The
 ATTRIBUTION.md file contains a list of such libraries used by the application
 and in what form.
