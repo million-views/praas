@@ -73,6 +73,6 @@ const Home: React.FC<Props> = ({ conduits, listConduits }) => {
   );
 };
 const mapStateToProps = ({ conduit }: any) => ({
-  conduits: conduit?.list?.conduits,
+  conduits: conduit?.list?.conduits || [],
 });
 export default connect(mapStateToProps, { listConduits })(Home);
