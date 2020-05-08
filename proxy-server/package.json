@@ -1,0 +1,40 @@
+{
+  "name": "praas-crud-server",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Praas Proxy",
+  "main": "src/server.js",
+  "author": "Kavitha Pugal",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/server.js",
+    "lint": "eslint src --cache",
+    "lint:fix": "eslint --fix src"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "errorhandler": "^1.5.1",
+    "express": "^4.17.1",
+    "express-jwt": "^5.3.3"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "faker": "^4.1.0",
+    "mocha": "^7.1.2"
+  },
+  "engines": {
+    "node": ">=12.16.2"
+  },
+  "eslintIgnore": [
+    "**/__snapshots__/*"
+  ]
+}
