@@ -69,6 +69,7 @@ export const CheckBoxGroup = ({
         const checked = selected.includes(o.value);
         return (
           <CheckBox
+            key={o.value}
             name={name}
             checked={checked}
             value={o.value}

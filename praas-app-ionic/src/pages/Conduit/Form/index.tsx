@@ -84,9 +84,8 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
               </FormFieldWithError>
             </IonCol>
           </IonRow>
-          {conduit?.whitelist?.length && (
-            <IPWhiteList whitelist={conduit?.whitelist} />
-          )}
+
+          <IPWhiteList whitelist={conduit?.whitelist} />
 
           <RACM defaultChecked={conduit?.racm} />
           <IonRow className="ion-justify-content-center">

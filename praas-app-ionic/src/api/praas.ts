@@ -129,7 +129,6 @@ const praas = {
       });
     },
     update(conduit: any) {
-      debugger;
       const cid = conduit.id;
       return afetch(`/conduits/${cid}`, {
         method: 'PATCH',

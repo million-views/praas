@@ -15,7 +15,9 @@ const Select = ({ name, value, options, multiple = false }: Props) => {
       as={
         <IonSelect>
           {options.map((o: Option) => (
-            <IonSelectOption value={o.value}>{o.label}</IonSelectOption>
+            <IonSelectOption key={o.value} value={o.value}>
+              {o.label}
+            </IonSelectOption>
           ))}
         </IonSelect>
       }
