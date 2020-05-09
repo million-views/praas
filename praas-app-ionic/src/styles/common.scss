@@ -1,3 +1,7 @@
+.ion-page-invisible {
+  // Quick fix: Ionic is not removing this class when navigating from one route to another
+  opacity: 1 !important;
+}
 .text-align-center {
   text-align: center;
 }

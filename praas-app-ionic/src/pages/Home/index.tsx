@@ -37,7 +37,7 @@ const Home: React.FC<Props> = ({ conduits, listConduits }) => {
             <IonCol className="table-header-col">Action</IonCol>
           </IonRow>
           {!conduits.length && (
-            <IonRow className="table-row">
+            <IonRow key="empty-table" className="table-row">
               <IonCol className="table-col ion-text-center">
                 No conduits available.
               </IonCol>
@@ -45,7 +45,7 @@ const Home: React.FC<Props> = ({ conduits, listConduits }) => {
           )}
           {conduits.map((conduit) => {
             return (
-              <IonRow className="table-row">
+              <IonRow key={conduit.id} className="table-row">
                 <IonCol className="table-col">{conduit.description}</IonCol>
                 <IonCol className="table-col">{conduit.suriType}</IonCol>
                 <IonCol className="table-col">{conduit.suri}</IonCol>

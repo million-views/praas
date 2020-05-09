@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { useDispatch } from 'react-redux';
@@ -42,16 +42,18 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route exact path="/signup" component={Signup} />
-          <Route exact path="/login" component={LoginPage} />
+          <Switch>
+            <Route exact path="/signup" component={Signup} />
+            <Route exact path="/login" component={LoginPage} />
 
-          <AuthenticatedRoute
-            exact
-            path="/conduit/create"
-            component={ConduitCreate}
-          />
-          <AuthenticatedRoute exact path="/conduit/:id" component={Conduit} />
-          <AuthenticatedRoute exact path="/" component={Home} />
+            <AuthenticatedRoute
+              exact
+              path="/conduit/create"
+              component={ConduitCreate}
+            />
+            <AuthenticatedRoute exact path="/conduit/:id" component={Conduit} />
+            <AuthenticatedRoute exact path="/" component={Home} />
+          </Switch>
         </IonRouterOutlet>
       </IonReactRouter>
       <Notification />
