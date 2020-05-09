@@ -13,6 +13,21 @@ type Props = {
   className?: string;
   labelClassName?: string;
 };
+
+type RadioProp = {
+  value: string;
+  label: string;
+  className: string;
+};
+
+const Radio = ({ value, label, className }: RadioProp) => {
+  return (
+    <>
+      <IonRadio value={value}></IonRadio>
+      <IonLabel className={className}>{label}</IonLabel>
+    </>
+  );
+};
 const RadioGroup = ({
   name,
   value,
@@ -26,10 +41,12 @@ const RadioGroup = ({
         <IonRadioGroup className={className}>
           {options.map((o: Option) => {
             return (
-              <>
-                <IonRadio value={o.value}></IonRadio>
-                <IonLabel className={labelClassName}>{o.label}</IonLabel>
-              </>
+              <Radio
+                key={o.value}
+                value={o.value}
+                label={o.label}
+                className={labelClassName}
+              />
             );
           })}
         </IonRadioGroup>
