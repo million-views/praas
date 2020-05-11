@@ -1,3 +1,10 @@
+# Proxy Server hack our way to move to next step
+[11MAY2020]
+- We have decide to hack our way to get all conduits from conduit server
+  - Credentials in .env file
+  - Function to use the credentials and fetch all conduits from conduits server for a special id.
+- We have to revisit all our decisions when we have oauth integrated.
+
 # Forms, forms, forms
 [17JAN2019]
 - Decided to go with Formik for the following reasons:
