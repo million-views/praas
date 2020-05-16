@@ -7,13 +7,14 @@
   "author": "Kavitha Pugal",
   "license": "MIT",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "node -r dotenv/config src/server.js dotenv_config_path=/Users/kavithapugal/m5nv_gitHub/praas/.env",
     "lint": "eslint src --cache",
     "lint:fix": "eslint --fix src"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "errorhandler": "^1.5.1",
     "express": "^4.17.1",
     "express-jwt": "^5.3.3"
