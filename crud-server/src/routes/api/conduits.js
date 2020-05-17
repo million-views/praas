@@ -39,11 +39,24 @@ router.get('/:id', auth.required, async (req, res, next) => {
 });
 
 // Get all conduits + batch (start & count)
+// TODO: add ACL/scope check when integrated with OAuth2
+// For now we are hacking to support proxy-server functionality without adding complexity
 router.get('/', auth.required, async (req, res, next) => {
   try {
-    const conduits = (typeof req.query.start !== 'undefined' && typeof req.query.count !== 'undefined') ?
-      await Conduit.findAll({ where: { id: { [Op.gte]: req.query.start, [Op.lt]: +req.query.start+ +req.query.count }, userId: req.payload.id } }) :
-      await Conduit.findAll({ where: { userId: req.payload.id } });
+    let conduits = undefined;
+    if (typeof req.query.start !== 'undefined' && typeof req.query.count !== 'undefined') {
+      conduits = await Conduit.findAll({
+        where: { id: { [Op.gte]: req.query.start, [Op.lt]: +req.query.start+ +req.query.count }, userId: req.payload.id } 
+      }); 
+    } else {
+      if (req.app.locals.proxyUser && req.app.locals.proxyUser.id === req.payload.id) {
+        // fetch all conduits in active status... TODO: this is brittle and can break
+        conduits = await Conduit.findAll({ where: { status: 'active' } });
+      } else {
+        conduits = await Conduit.findAll({ where: { userId: req.payload.id } });
+      }
+    }
+ 
     if (!conduits) { return res.sendStatus(404); }
     return res.json({ conduits: conduits.map(i => i.toJSON()) });
   } catch (error) {

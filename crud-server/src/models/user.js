@@ -84,5 +84,18 @@ module.exports = (db, DataTypes) => {
     };
   };
 
+  // find a user using e-mail address and validate password
+  // if found and password matches, return the user object
+  // else return falsey...
+  // WARN: watchout for collisions with Sequelize's own class methods
+  User.exists = async function(email, password) {
+    const user = await User.findOne({ where: { email: email } });
+    if (!user || !user.passwordValid(password)) {
+      return undefined;
+    }
+
+    return user;
+  }
+
   return User;
 };

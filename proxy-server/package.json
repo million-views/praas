@@ -14,9 +14,12 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "dotenv-safe": "8.2.0",
     "errorhandler": "^1.5.1",
     "express": "^4.17.1",
-    "express-jwt": "^5.3.3"
+    "express-jwt": "^5.3.3",
+    "localstorage-polyfill": "^1.0.1",
+    "node-fetch": "2.6.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
