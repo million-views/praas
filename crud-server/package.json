@@ -7,7 +7,7 @@
   "author": "Hemalatha Manickam",
   "license": "MIT",
   "scripts": {
-    "start": "node -r dotenv/config src/server.js dotenv_config_path=/Users/kavithapugal/m5nv_gitHub/praas/.env",
+    "start": "node src/server.js",
     "lint": "eslint src --cache",
     "lint:fix": "eslint --fix src",
     "test-rest": "mocha --exit src/routes.test.js",
@@ -17,7 +17,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
+    "dotenv-safe": "8.2.0",
     "errorhandler": "^1.5.1",
     "express": "^4.17.1",
     "express-jwt": "^5.3.3",
