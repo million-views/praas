@@ -8,11 +8,11 @@ passport.use(new LocalStrategy({
 }, async function (email, password, done) {
   let error = null;
   try {
-    const user = await User.findOne({ where: { email: email } });
-    if (!user || !user.passwordValid(password)) {
-      return done(null, false, { errors: { credentials: 'email or password is invalid' } });
-    } else {
+    const user = await User.exists(email, password);
+    if (user) {
       return done(null, user);
+    } else {
+      return done(null, false, { errors: { credentials: 'email or password is invalid' } });
     }
   } catch (e) {
     console.log('caught ', e);

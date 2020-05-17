@@ -1,22 +1,9 @@
-# Sharding, hashes, collisions
-[03JAN2019]
-- decided to use Nano ID
-
-# Register, Sign in flow for v1
-[13JAN2019]
-- go to login after registration
-- backlog for v2:
-  - a different approach would be to take the user through the app
-    in a walkthrough mode, and at the end of it show a popup to complete
-    the user registration by inputing the code that provided in the
-    confirmation email that got sent during registration;
-
-    upon confirmation redirect the user to main conduits screen.
-
-    Note: some flows require the user to click a link in the received
-    e-mail; I have noticed that this results in suboptimal experience
-    since doing so opens a new browser/tab which leads to confusion
-    on where the flow should pick up.
+# Proxy Server hack our way to move to next step
+[11MAY2020]
+- We have decide to hack our way to get all conduits from conduit server
+  - Credentials in .env file
+  - Function to use the credentials and fetch all conduits from conduits server for a special id.
+- We have to revisit all our decisions when we have oauth integrated.
 
 # Forms, forms, forms
 [17JAN2019]
@@ -54,4 +41,22 @@ avoiding class properties feature until it is available natively. So,
 avoid fat arrow methods in classes. But don't let this stop you from
 using them when code comprehension and context dictate their use.
 
+# Register, Sign in flow for v1
+[13JAN2019]
+- go to login after registration
+- backlog for v2:
+  - a different approach would be to take the user through the app
+    in a walkthrough mode, and at the end of it show a popup to complete
+    the user registration by inputing the code that provided in the
+    confirmation email that got sent during registration;
 
+    upon confirmation redirect the user to main conduits screen.
+
+    Note: some flows require the user to click a link in the received
+    e-mail; I have noticed that this results in suboptimal experience
+    since doing so opens a new browser/tab which leads to confusion
+    on where the flow should pick up.
+
+# Sharding, hashes, collisions
+[03JAN2019]
+- decided to use Nano ID
