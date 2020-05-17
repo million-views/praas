@@ -1,0 +1,32 @@
+.home-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  .table {
+    padding-top: 1rem;
+    .table-header {
+      .table-header-col {
+        background-color: #3880ff;
+        border-radius: 5px;
+        margin: 1px;
+      }
+    }
+    .table-row {
+      .table-col {
+        border-radius: 5px;
+        margin: 1px;
+      }
+      &:nth-child(odd) .table-col {
+        background-color: #f8f9fa;
+      }
+      &:hover .table-col {
+        background-color: #edeeef;
+      }
+    }
+  }
+
+  .icon {
+    &.delete {
+      color: #ff0000;
+    }
+  }
+}
