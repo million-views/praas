@@ -16,7 +16,7 @@ import { listConduits } from '../../store/conduit/list';
 import './style.scss';
 
 interface Props {
-  conduits: Array<any>;
+  conduits: Array<Conduit>;
   listConduits: () => void;
 }
 
@@ -49,7 +49,7 @@ const Home: React.FC<Props> = ({ conduits, listConduits }) => {
                 <IonCol className="table-col">{conduit.description}</IonCol>
                 <IonCol className="table-col">{conduit.suriType}</IonCol>
                 <IonCol className="table-col">{conduit.suri}</IonCol>
-                <IonCol className="table-col">{conduit.state}</IonCol>
+                <IonCol className="table-col">{conduit.status}</IonCol>
                 <IonCol className="table-col">
                   <IonButtons>
                     <IonButton
@@ -79,7 +79,11 @@ const Home: React.FC<Props> = ({ conduits, listConduits }) => {
     </IonPage>
   );
 };
-const mapStateToProps = ({ conduit }: any) => ({
-  conduits: conduit?.list?.conduits || [],
+const mapStateToProps = ({
+  conduit,
+}: {
+  conduit: { list: { conduits: Array<Conduit> } };
+}) => ({
+  conduits: conduit.list.conduits,
 });
 export default connect(mapStateToProps, { listConduits })(Home);
