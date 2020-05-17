@@ -1,5 +1,10 @@
+const fetch = require("node-fetch");
+
+// localStorage-polyfill is meant for development but we are 
+// abusing it here to get the proxy server functional...
+require('localstorage-polyfill');
+
 const API_URL = 'http://localhost:4000';
-const localStorage = {};
 
 // throws type error if parameters is not iterable and that is by design...
 // don't call this function when there are no query parameters.
@@ -32,10 +37,10 @@ const authorization = () => {
   // and cons of either approach, we are going with localStorage
   // (which results in less code, faster development and eliminates
   // a few test cases.
-  const user = localStorage.hasOwnProperty('user')&&JSON.parse(localStorage['user']);
+  const user = JSON.parse(localStorage.getItem('user'));
   const header = {};
 
-  if (user) {
+  if (user && {}.propertyIsEnumerable.call(user, 'token')) {
     header.Authorization = `Bearer ${user.token}`;
   }
 
@@ -70,12 +75,9 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
       // we can dispatch both success and non-success action creators
       // from here...
       if (response.ok) {
-        console.log('server response is ok *************');
-        console.log('response.json: ', response);
         return response.json();
       } else {
         const errors = await response.json();
-
         console.log('error: ', errors);
         if (response.status === 401) {
           // token expired? clear our view of logged in status
@@ -105,13 +107,7 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
   );
 };
 
-function getItem() {return this}
-function setItem(_user) {}
-
 const praas = {
-  localStorage: {
-    getItem, setItem
-  },
   user: {
     register(data) {
       return afetch('/users', {
@@ -144,10 +140,11 @@ const praas = {
         body: JSON.stringify(data)
       });
     },
-    list(id) {
+    list(_id) {
+      // id is not used
       return afetch('/conduits', {
         method: 'GET',
-        body: JSON.stringify(id),
+        // body: JSON.stringify(id),
       });
     },
     delete(data) {
@@ -160,4 +157,5 @@ const praas = {
   },
 };
 
-//export default praas;
+// export default praas;
+module.exports = praas;
