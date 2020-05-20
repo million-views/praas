@@ -14,6 +14,7 @@ import { connect } from 'react-redux';
 import Header from '../../components/Header';
 import { listConduits } from '../../store/conduit/list';
 import './style.scss';
+import noop from '../../utils/noop';
 
 interface Props {
   conduits: Array<Conduit>;
@@ -65,7 +66,7 @@ const Home: React.FC<Props> = ({ conduits, listConduits }) => {
                       type="button"
                       fill="clear"
                       size="small"
-                      onClick={() => {}}
+                      onClick={noop}
                     >
                       <IonIcon className="icon delete" icon={trashOutline} />
                     </IonButton>

@@ -19,7 +19,7 @@ export const getConduitFailure = (error) => ({
 
 export const getConduit = (conduitId) => {
   return (dispatch) => {
-    dispatch({ type: GET_CONDUIT_REQUEST, payload: conduitId });
+    dispatch({ type: GET_CONDUIT_REQUEST });
     PraasAPI.conduit.get(conduitId).then(
       (conduit) => {
         dispatch(getConduitSuccess(conduit));

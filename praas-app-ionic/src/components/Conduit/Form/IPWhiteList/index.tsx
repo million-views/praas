@@ -4,6 +4,7 @@ import WhiteListItem from './WhitelistItem';
 import { useFormContext } from 'react-hook-form';
 
 import './style.scss';
+import noop from '../../../../utils/noop';
 
 type WhiteList = {
   address: string;
@@ -36,7 +37,7 @@ const ConduitForm: React.FC<Props> = ({ whitelist = [] }) => {
             key={namePrefix}
             item={w}
             prefix={namePrefix}
-            onDelete={() => {}}
+            onDelete={noop}
           />
         );
       })}

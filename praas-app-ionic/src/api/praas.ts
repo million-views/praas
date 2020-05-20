@@ -129,8 +129,8 @@ const praas = {
       });
     },
     update(conduit: any) {
-      const cid = conduit.id;
-      return afetch(`/conduits/${cid}`, {
+      const { id } = conduit;
+      return afetch(`/conduits/${id}`, {
         method: 'PATCH',
         body: JSON.stringify({ conduit }),
       });
@@ -146,9 +146,8 @@ const praas = {
         body: JSON.stringify(id),
       });
     },
-    delete(data: any) {
-      const cid = data;
-      return afetch(`/conduits/${cid}`, {
+    delete(id: string) {
+      return afetch(`/conduits/${id}`, {
         method: 'DELETE',
       });
     },
