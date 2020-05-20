@@ -5,11 +5,10 @@ import { IonReactRouter } from '@ionic/react-router';
 import { useDispatch } from 'react-redux';
 
 import AuthenticatedRoute from './components/AuthenticatedRoute';
-import Signup from './pages/Signup';
-import LoginPage from './pages/Login';
-import Home from './pages/Home';
-import Conduit from './pages/Conduit';
-import ConduitCreate from './pages/Conduit/Create';
+import SignupPage from './pages/SignupPage';
+import LoginPage from './pages/LoginPage';
+import HomePage from './pages/HomePage';
+import ConduitPage from './pages/ConduitPage';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -43,16 +42,10 @@ const App: React.FC = () => {
       <IonReactRouter>
         <IonRouterOutlet>
           <Switch>
-            <Route exact path="/signup" component={Signup} />
+            <Route exact path="/signup" component={SignupPage} />
             <Route exact path="/login" component={LoginPage} />
-
-            <AuthenticatedRoute
-              exact
-              path="/conduit/create"
-              component={ConduitCreate}
-            />
-            <AuthenticatedRoute exact path="/conduit/:id" component={Conduit} />
-            <AuthenticatedRoute exact path="/" component={Home} />
+            <AuthenticatedRoute path="/conduit" component={ConduitPage} />
+            <AuthenticatedRoute exact path="/" component={HomePage} />
           </Switch>
         </IonRouterOutlet>
       </IonReactRouter>

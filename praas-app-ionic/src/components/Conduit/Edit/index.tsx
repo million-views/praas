@@ -1,18 +1,16 @@
 import React, { useEffect, useCallback } from 'react';
-import { IonPage, IonContent, IonGrid } from '@ionic/react';
+import { IonGrid } from '@ionic/react';
 import { RouteComponentProps } from 'react-router';
-
 import { connect } from 'react-redux';
-import Header from '../../components/Header';
-import { getConduit } from '../../store/conduit/get';
-import { updateConduit } from '../../store/conduit/edit';
-import EditConduit from './Edit';
+import { getConduit } from '../../../store/conduit/get';
+import { updateConduit } from '../../../store/conduit/edit';
+import ConduitForm from '../Form';
 
 type MatchParams = {
   id: string;
 };
 interface Props extends RouteComponentProps<MatchParams> {
-  conduit: Array<any>;
+  conduit: Conduit;
   getConduit: (id: string) => void;
   updateConduit: (conduit: any) => void;
 }
@@ -37,14 +35,11 @@ const Conduit: React.FC<Props> = ({
     [id, updateConduit]
   );
   return (
-    <IonPage className="conduit-detail-page">
-      <Header />
-      <IonContent>
-        <IonGrid>
-          <EditConduit onUpdate={handleUpdate} conduit={conduit} />
-        </IonGrid>
-      </IonContent>
-    </IonPage>
+    <IonGrid>
+      {conduit?.id ? (
+        <ConduitForm onSave={handleUpdate} conduit={conduit} />
+      ) : null}
+    </IonGrid>
   );
 };
 const mapStateToProps = ({ conduit }: any) => ({

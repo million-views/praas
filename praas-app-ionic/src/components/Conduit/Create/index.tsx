@@ -1,9 +1,8 @@
 import React, { useCallback } from 'react';
-import { IonPage, IonContent, IonGrid } from '@ionic/react';
+import { IonGrid } from '@ionic/react';
 import ConduitForm from '../Form';
 
 import { connect } from 'react-redux';
-import Header from '../../../components/Header';
 import { addConduit } from '../../../store/conduit/create';
 
 interface Props {
@@ -20,14 +19,9 @@ const ConduitCreate: React.FC<Props> = ({ addConduit }) => {
     [addConduit]
   );
   return (
-    <IonPage className="conduit-create-page">
-      <Header />
-      <IonContent>
-        <IonGrid>
-          <ConduitForm onSave={handleCreate} conduit={conduit} />
-        </IonGrid>
-      </IonContent>
-    </IonPage>
+    <IonGrid>
+      <ConduitForm onSave={handleCreate} conduit={conduit} />
+    </IonGrid>
   );
 };
 
