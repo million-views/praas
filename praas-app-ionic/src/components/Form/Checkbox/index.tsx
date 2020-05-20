@@ -10,13 +10,13 @@ type CheckboxProps = {
   onChange?: (data: any) => void;
 };
 
-type Option = {
+type OptionType = {
   value: string;
   label: string;
 };
 interface CheckboxGroupProps {
   name: string;
-  options: Array<Option>;
+  options: Array<OptionType>;
   defaultChecked: Array<string>;
 }
 export const CheckBox = ({
