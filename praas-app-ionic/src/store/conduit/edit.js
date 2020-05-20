@@ -17,19 +17,15 @@ export const updateConduitFailure = (error) => ({
   payload: error,
 });
 
-export const updateConduit = (conduit, actions, changeMode) => {
+export const updateConduit = (conduit) => {
   return (dispatch) => {
-    dispatch({ type: UPDATE_CONDUIT_REQUEST, payload: conduit });
+    dispatch({ type: UPDATE_CONDUIT_REQUEST });
     PraasAPI.conduit.update(conduit).then(
       (conduit) => {
-        changeMode('list');
         dispatch(updateConduitSuccess(conduit));
-        actions.setSubmitting(false);
       },
       (error) => {
         dispatch(updateConduitFailure(error));
-        actions.setSubmitting(false);
-        actions.setStatus({ errors: { ...error.errors } });
       }
     );
   };
@@ -42,7 +38,6 @@ export default function create(state = initialState, { type, payload }) {
       return {
         ...state,
         inflight: true,
-        ...payload.conduit,
       };
     case UPDATE_CONDUIT_SUCCESS:
       return {

@@ -128,11 +128,16 @@ const praas = {
         body: JSON.stringify(data),
       });
     },
-    update(data: any) {
-      const cid = data.conduit.id;
-      return afetch(`/conduits/${cid}`, {
+    update(conduit: any) {
+      const { id } = conduit;
+      return afetch(`/conduits/${id}`, {
         method: 'PATCH',
-        body: JSON.stringify(data),
+        body: JSON.stringify({ conduit }),
+      });
+    },
+    get(id: string) {
+      return afetch(`/conduits/${id}`, {
+        method: 'GET',
       });
     },
     list(id: string) {
@@ -141,9 +146,8 @@ const praas = {
         body: JSON.stringify(id),
       });
     },
-    delete(data: any) {
-      const cid = data;
-      return afetch(`/conduits/${cid}`, {
+    delete(id: string) {
+      return afetch(`/conduits/${id}`, {
         method: 'DELETE',
       });
     },

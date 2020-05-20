@@ -8,6 +8,7 @@ import AuthenticatedRoute from './components/AuthenticatedRoute';
 import Signup from './pages/Signup';
 import LoginPage from './pages/Login';
 import Home from './pages/Home';
+import Conduit from './pages/Conduit';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -43,6 +44,7 @@ const App: React.FC = () => {
           <Route exact path="/signup" component={Signup} />
           <Route exact path="/login" component={LoginPage} />
           <AuthenticatedRoute exact path="/" component={Home} />
+          <AuthenticatedRoute exact path="/conduit/:id" component={Conduit} />
         </IonRouterOutlet>
       </IonReactRouter>
       <Notification />
