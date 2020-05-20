@@ -59,21 +59,21 @@ export const CheckBoxGroup = ({
     if (data.checked) {
       updatedList.push(data.value);
     } else {
-      updatedList.filter((d) => d !== data.value);
+      updatedList.filter((item) => item !== data.value);
     }
     return updatedList;
   };
   return (
     <>
-      {options.map((o) => {
-        const checked = selected.includes(o.value);
+      {options.map((option) => {
+        const checked = selected.includes(option.value);
         return (
           <CheckBox
-            key={o.value}
+            key={option.value}
             name={name}
             checked={checked}
-            value={o.value}
-            label={o.label}
+            value={option.value}
+            label={option.label}
             onChange={onChange}
           />
         );
