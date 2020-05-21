@@ -6,7 +6,7 @@ import Input from '../../../components/Form/Input';
 import Select from '../../../components/Form/Select';
 import FormFieldWithError from '../../../components/FormFieldWithError';
 import IPWhiteList from './IPWhiteList';
-import RACM from './RACM';
+import RequestMethods from './RequestMethods';
 import { conduitTypes } from '../options';
 type Props = {
   conduit: any;
@@ -83,7 +83,7 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
 
           <IPWhiteList whitelist={conduit?.whitelist} />
 
-          <RACM defaultChecked={conduit?.racm} />
+          <RequestMethods defaultChecked={conduit?.racm} />
           <IonRow className="ion-justify-content-center">
             <IonCol
               sizeXs="12"
