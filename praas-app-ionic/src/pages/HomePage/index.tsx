@@ -8,8 +8,10 @@ import {
   IonButtons,
   IonButton,
   IonIcon,
+  IonFab,
+  IonFabButton,
 } from '@ionic/react';
-import { createOutline, trashOutline } from 'ionicons/icons';
+import { add, createOutline, trashOutline } from 'ionicons/icons';
 import { connect } from 'react-redux';
 import Header from '../../components/Header';
 import { listConduits } from '../../store/conduit/list';
@@ -76,6 +78,11 @@ const Home: React.FC<Props> = ({ conduits, listConduits }) => {
             );
           })}
         </IonGrid>
+        <IonFab vertical="bottom" horizontal="end" slot="fixed">
+          <IonFabButton href="/conduit/create">
+            <IonIcon icon={add} />
+          </IonFabButton>
+        </IonFab>
       </IonContent>
     </IonPage>
   );
