@@ -1,4 +1,5 @@
 import PraasAPI from '../../api/praas';
+import { DELETE_CONDUIT_SUCCESS } from './del';
 
 // This is a list-conduit duck. A duck is a feature state container.
 
@@ -44,6 +45,14 @@ export default function list(state = initialState, { type, payload }) {
         inflight: false,
         conduits: payload.conduits,
       };
+    case DELETE_CONDUIT_SUCCESS:
+      return {
+        ...state,
+        conduits: state.conduits.filter(
+          (conduit) => conduit.id !== payload.conduitId
+        ),
+      };
+
     case LIST_CONDUIT_FAILURE:
       return {
         inflight: false,
