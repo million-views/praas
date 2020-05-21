@@ -6,13 +6,13 @@ import {
   IonRow,
   IonCol,
   IonLabel,
-  IonInput,
   IonButton,
 } from '@ionic/react';
-import { useForm } from 'react-hook-form';
+import { useForm, FormContext } from 'react-hook-form';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import Header from '../../components/Header';
+import Input from '../../components/Form/Input';
 import FormFieldWithError from '../../components/FormFieldWithError';
 import { registerUser } from '../../store/user/registration';
 import signupSchema from './schema';
@@ -24,10 +24,12 @@ interface Props extends RouteComponentProps {
 }
 
 const Signup: React.FC<Props> = ({ user, history, registerUser }) => {
-  const { register, handleSubmit, errors } = useForm({
+  const formMethods = useForm({
     defaultValues: { firstName: '', email: '', password: '' },
     validationSchema: signupSchema,
   });
+
+  const { register, handleSubmit, errors } = formMethods;
 
   const onSubmit = (values: any) => {
     registerUser({ user: values });
@@ -41,29 +43,31 @@ const Signup: React.FC<Props> = ({ user, history, registerUser }) => {
     <IonPage className="signup-page">
       <Header />
       <IonContent>
-        <form noValidate onSubmit={handleSubmit(onSubmit)}>
-          <IonGrid>
-            <IonRow className="ion-justify-content-center">
-              <IonCol sizeXs="12" sizeSm="4" className="text-align-center">
-                <FormFieldWithError error={errors.firstName}>
-                  <IonLabel position="floating">Name</IonLabel>
-                  <IonInput type="text" name="firstName" ref={register()} />
-                </FormFieldWithError>
-                <FormFieldWithError error={errors?.email}>
-                  <IonLabel position="floating">Email</IonLabel>
-                  <IonInput type="email" name="email" ref={register()} />
-                </FormFieldWithError>
-                <FormFieldWithError error={errors?.password}>
-                  <IonLabel position="floating">Password</IonLabel>
-                  <IonInput type="password" name="password" ref={register()} />
-                </FormFieldWithError>
-                <IonButton type="submit" color="primary">
-                  Submit
-                </IonButton>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-        </form>
+        <FormContext {...formMethods}>
+          <form noValidate onSubmit={handleSubmit(onSubmit)}>
+            <IonGrid>
+              <IonRow className="ion-justify-content-center">
+                <IonCol sizeXs="12" sizeSm="4" className="text-align-center">
+                  <FormFieldWithError error={errors.firstName}>
+                    <IonLabel position="floating">Name</IonLabel>
+                    <Input type="text" name="firstName" value="" />
+                  </FormFieldWithError>
+                  <FormFieldWithError error={errors?.email}>
+                    <IonLabel position="floating">Email</IonLabel>
+                    <Input type="email" name="email" value="" />
+                  </FormFieldWithError>
+                  <FormFieldWithError error={errors?.password}>
+                    <IonLabel position="floating">Password</IonLabel>
+                    <Input type="password" name="password" value="" />
+                  </FormFieldWithError>
+                  <IonButton type="submit" color="primary">
+                    Submit
+                  </IonButton>
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+          </form>
+        </FormContext>
       </IonContent>
     </IonPage>
   );

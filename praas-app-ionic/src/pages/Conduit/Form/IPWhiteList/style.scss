@@ -1,0 +1,12 @@
+.ip-whitelist {
+  position: relative;
+  .ip-whitelist-status {
+    display: flex;
+    &__label {
+      margin: 0 0.3rem;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
