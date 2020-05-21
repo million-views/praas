@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { addConduit } from '../../../store/conduit/create';
 
 interface Props {
-  addConduit: (conduit: any) => void;
+  addConduit: (conduit: Conduit) => void;
 }
 
 const conduit = {};

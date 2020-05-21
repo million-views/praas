@@ -12,7 +12,7 @@ type MatchParams = {
 interface Props extends RouteComponentProps<MatchParams> {
   conduit: Conduit;
   getConduit: (id: string) => void;
-  updateConduit: (conduit: any) => void;
+  updateConduit: (conduit: Conduit) => void;
 }
 
 const Conduit: React.FC<Props> = ({

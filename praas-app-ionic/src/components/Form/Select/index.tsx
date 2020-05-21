@@ -2,11 +2,11 @@ import React from 'react';
 import { IonSelect, IonSelectOption } from '@ionic/react';
 import { Controller } from 'react-hook-form';
 
-type Option = { value: string; label: string };
+type OptionType = { value: string; label: string };
 type Props = {
   name: string;
   value: string;
-  options: Array<Option>;
+  options: Array<OptionType>;
   multiple?: boolean;
 };
 const Select = ({ name, value, options, multiple = false }: Props) => {
@@ -14,9 +14,9 @@ const Select = ({ name, value, options, multiple = false }: Props) => {
     <Controller
       as={
         <IonSelect>
-          {options.map((o: Option) => (
-            <IonSelectOption key={o.value} value={o.value}>
-              {o.label}
+          {options.map((option: OptionType) => (
+            <IonSelectOption key={option.value} value={option.value}>
+              {option.label}
             </IonSelectOption>
           ))}
         </IonSelect>
