@@ -1,13 +1,13 @@
 import React from 'react';
 import { IonGrid, IonRow, IonCol, IonLabel, IonButton } from '@ionic/react';
 import { useHistory } from 'react-router';
+import { useForm, FormContext } from 'react-hook-form';
 import Input from '../../../components/Form/Input';
 import Select from '../../../components/Form/Select';
 import FormFieldWithError from '../../../components/FormFieldWithError';
 import IPWhiteList from './IPWhiteList';
 import RACM from './RACM';
-import { useForm, FormContext } from 'react-hook-form';
-
+import { conduitTypes } from '../options';
 type Props = {
   conduit: any;
   onSave: (conduit: any) => void;
@@ -61,11 +61,7 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
                 <Select
                   name="suriType"
                   value={conduit?.suriType}
-                  options={[
-                    { value: 'google', label: 'Google Sheets' },
-                    { value: 'airtable', label: 'AirTable' },
-                    { value: 'ssheets', label: 'Smart sheets' },
-                  ]}
+                  options={conduitTypes}
                 />
               </FormFieldWithError>
             </IonCol>
