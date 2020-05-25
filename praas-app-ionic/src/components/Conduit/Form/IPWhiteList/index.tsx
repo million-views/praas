@@ -20,7 +20,7 @@ const ConduitForm: React.FC<Props> = ({ whitelist = [] }) => {
   const { getValues } = useFormContext();
 
   const onAdd = () => {
-    const currentValues = getValues({ nest: true })['whitelist'];
+    const currentValues = getValues({ nest: true })['whitelist'] || [];
     const newState = [
       ...currentValues,
       { address: '', comment: '', state: 'Inactive' },

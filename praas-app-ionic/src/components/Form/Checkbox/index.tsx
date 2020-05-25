@@ -1,6 +1,6 @@
 import React from 'react';
 import { IonCheckbox, IonLabel } from '@ionic/react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext, EventFunction } from 'react-hook-form';
 
 type CheckboxProps = {
   name: string;
@@ -10,13 +10,13 @@ type CheckboxProps = {
   onChange?: (data: any) => void;
 };
 
-type Option = {
+type OptionType = {
   value: string;
   label: string;
 };
 interface CheckboxGroupProps {
   name: string;
-  options: Array<Option>;
+  options: Array<OptionType>;
   defaultChecked: Array<string>;
 }
 export const CheckBox = ({
@@ -26,6 +26,13 @@ export const CheckBox = ({
   checked,
   onChange,
 }: CheckboxProps) => {
+  const handleChange: EventFunction = ([selected]) => {
+    if (typeof onChange === 'function') {
+      return onChange(selected.detail);
+    } else {
+      return selected.detail.value;
+    }
+  };
   return (
     <>
       <Controller
@@ -34,13 +41,7 @@ export const CheckBox = ({
         value={value}
         defaultValue={checked}
         onChangeName="onIonChange"
-        onChange={([selected]) => {
-          if (typeof onChange === 'function') {
-            return onChange(selected.detail);
-          } else {
-            return selected.detail.value;
-          }
-        }}
+        onChange={handleChange}
       ></Controller>
       <IonLabel className="checkbox__label">{label}</IonLabel>
     </>
@@ -54,26 +55,27 @@ export const CheckBoxGroup = ({
 }: CheckboxGroupProps) => {
   const { getValues } = useFormContext();
   const selected = getValues()[name] || defaultChecked || [];
-  const onChange = (data: any) => {
+  const handleChange = (data: any) => {
     const updatedList = [...selected];
     if (data.checked) {
       updatedList.push(data.value);
     } else {
-      updatedList.filter((d) => d !== data.value);
+      updatedList.filter((item) => item !== data.value);
     }
     return updatedList;
   };
   return (
     <>
-      {options.map((o) => {
-        const checked = selected.includes(o.value);
+      {options.map((option) => {
+        const checked = selected.includes(option.value);
         return (
           <CheckBox
+            key={option.value}
             name={name}
             checked={checked}
-            value={o.value}
-            label={o.label}
-            onChange={onChange}
+            value={option.value}
+            label={option.label}
+            onChange={handleChange}
           />
         );
       })}
