@@ -40,7 +40,7 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
               sizeSm="12"
               sizeMd="8"
               sizeLg="6"
-              className="text-align-center"
+              className="u-text-align-center"
             >
               <FormFieldWithError error={errors.suriApiKey}>
                 <IonLabel position="floating">API Key</IonLabel>
@@ -54,7 +54,7 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
               sizeSm="12"
               sizeMd="8"
               sizeLg="6"
-              className="text-align-center"
+              className="u-text-align-center"
             >
               <FormFieldWithError error={errors.suriType}>
                 <IonLabel position="floating">Select Type</IonLabel>
@@ -72,7 +72,7 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
               sizeSm="12"
               sizeMd="8"
               sizeLg="6"
-              className="text-align-center"
+              className="u-text-align-center"
             >
               <FormFieldWithError error={errors.suri}>
                 <IonLabel position="floating">Service endpoint uri</IonLabel>
@@ -90,7 +90,7 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
               sizeSm="12"
               sizeMd="8"
               sizeLg="6"
-              className="text-align-center"
+              className="u-text-align-center"
             >
               <FormFieldWithError error={errors.description}>
                 <IonLabel position="floating">
