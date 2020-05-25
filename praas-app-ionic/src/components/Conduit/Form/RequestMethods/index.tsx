@@ -15,11 +15,11 @@ type Props = {
   defaultChecked: Array<string>;
 };
 
-const RACM: React.FC<Props> = ({ defaultChecked }) => {
+const RequestMethods: React.FC<Props> = ({ defaultChecked }) => {
   return (
-    <IonRow className="racm ion-justify-content-center">
+    <IonRow className="request-methods ion-justify-content-center">
       <IonCol
-        className="racm__checkbox ion-align-items-center"
+        className="request-methods__checkbox ion-align-items-center"
         sizeXs="12"
         sizeSm="12"
         sizeMd="8"
@@ -35,4 +35,4 @@ const RACM: React.FC<Props> = ({ defaultChecked }) => {
   );
 };
 
-export default RACM;
+export default RequestMethods;

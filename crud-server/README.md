@@ -1,17 +1,20 @@
-PraaS Back end
-==============
+# PraaS Back end
+
 Back end REST server to manage *conduits*. A conduit is a handle to a RESTful service endpoint.
 
-Features
---------
+## Features
+
 TBD...
 
-Development
------------
+## Development
+
 > NOTE:
-> Integration tests require bootstrap data created by the unit tests.
+> 1 - Integration tests require bootstrap data created by the unit tests.
 > So, make sure to run unit tests (test-model) first before running the
 > integration tests (test-rest).
+
+> 2 - Create .env file at the root of praas folder, at the same location where .env-example file can be found.
+> Fill the values of .env file before you start the crud-server or the proxy-server.
 
 ### Tasks
 |  task     | command line                             | notes                                       |
@@ -24,22 +27,22 @@ Development
 | start     |```npm run start```                       | web serve `build` folder                    |
 | createdb  |```npm run createdb```                    | Creates a new db file with username: admin@praas.com  password: praas  |
 
-# Praas Data Model
+## Praas Data Model
 
 Consists of the three entities: System, User, Conduit
 
-## System Table
+### System Table
 
 System stores all configuration related settings and their values.
 For now storing the config in json format as there are
 only few values. Will store as database entity when more values need
 to be stored.
 
-## User Table
+### User Table
 
 User stores registered user(s) info. an user can have one or more conduits.
 
-### Fields
+#### Fields
 
 |  name     | description          | constraints       |
 |:----------|:---------------------|:------------------|
@@ -49,11 +52,11 @@ User stores registered user(s) info. an user can have one or more conduits.
 | hash      |Password of the user  | not null          |
 | salt      |Random hex value      | not null          |
 
-## Conduit Table
+### Conduit Table
 
 Conduit stores data related to the service endpoint
 
-### Fields
+#### Fields
 
 |  name           | description                                       | constraints                    |
 |:----------------|:--------------------------------------------------|:-------------------------------|

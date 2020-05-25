@@ -1,6 +1,6 @@
 import React from 'react';
 import { IonCheckbox, IonLabel } from '@ionic/react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext, EventFunction } from 'react-hook-form';
 
 type CheckboxProps = {
   name: string;
@@ -26,6 +26,13 @@ export const CheckBox = ({
   checked,
   onChange,
 }: CheckboxProps) => {
+  const handleChange: EventFunction = ([selected]) => {
+    if (typeof onChange === 'function') {
+      return onChange(selected.detail);
+    } else {
+      return selected.detail.value;
+    }
+  };
   return (
     <>
       <Controller
@@ -34,13 +41,7 @@ export const CheckBox = ({
         value={value}
         defaultValue={checked}
         onChangeName="onIonChange"
-        onChange={([selected]) => {
-          if (typeof onChange === 'function') {
-            return onChange(selected.detail);
-          } else {
-            return selected.detail.value;
-          }
-        }}
+        onChange={handleChange}
       ></Controller>
       <IonLabel className="checkbox__label">{label}</IonLabel>
     </>
@@ -54,7 +55,7 @@ export const CheckBoxGroup = ({
 }: CheckboxGroupProps) => {
   const { getValues } = useFormContext();
   const selected = getValues()[name] || defaultChecked || [];
-  const onChange = (data: any) => {
+  const handleChange = (data: any) => {
     const updatedList = [...selected];
     if (data.checked) {
       updatedList.push(data.value);
@@ -74,7 +75,7 @@ export const CheckBoxGroup = ({
             checked={checked}
             value={option.value}
             label={option.label}
-            onChange={onChange}
+            onChange={handleChange}
           />
         );
       })}

@@ -46,22 +46,12 @@ if (conf.production) {
   });
 }
 
-async function storeProxyuser(proxyuser) {
-  try {
-    console.log(`Print the user: ${proxyuser.user.email}`);
-    const udata = await PraasAPI.user.login(proxyuser.user);
-    PraasAPI.setItem('user', JSON.stringify({ ...udata.user }));
-  } catch (e) {
-    console.error(e);
-  }
-}
-
 // Returns proxy server user object (with credentials filled in from .env file)
 // TODO: move this to a common library accessible to both proxy and crud servers
 function getProxyServerCredentials() {
   let proxy_credentials = undefined;
   try {
-    // add proxy-server user... this is temporary and will go away when we 
+    // add proxy-server user... this is temporary and will go away when we
     // integrate with OAuth2 and support client credentials grant flow...
     proxy_credentials = dotenv.config({
       allowEmptyValues: true,
@@ -80,7 +70,7 @@ function getProxyServerCredentials() {
       lastName: 'Server',
       email: proxy_credentials.parsed.PROXY_SERVER_EMAIL,
       password: proxy_credentials.parsed.PROXY_SERVER_PASSWORD
-    }  
+    }
   }
 }
 
@@ -124,8 +114,4 @@ if (!module.parent) {
       console.log("unexpected... ", error);
     }
   );
-
-
-  // console.log(`Proxy username and password: ${process.env.proxyUsername} - ${process.env.proxyPassword}`);
-  // storeProxyuser(proxyuser);
 }

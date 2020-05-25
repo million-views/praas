@@ -3,15 +3,16 @@ type Whitelist = {
   comment?: string;
   state: string;
 };
-type RACM = 'GET' | 'POST' | 'DELETE' | 'PATCH';
+type RequestAccessMethods = 'GET' | 'POST' | 'DELETE' | 'PATCH';
 
 type Conduit = {
+  id: number;
   id: number;
   suriApiKey: string;
   suriType: string;
   suri: string;
   whitelist: Array<Whitelist> | [];
-  racm: Array<RACM>;
+  racm: Array<RequestAccessMethods>;
   status: string;
   description?: string;
 };
