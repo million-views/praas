@@ -1,13 +1,13 @@
 import React from 'react';
 import { IonGrid, IonRow, IonCol, IonLabel, IonButton } from '@ionic/react';
 import { useHistory } from 'react-router';
+import { useForm, FormContext } from 'react-hook-form';
 import Input from '../../../components/Form/Input';
 import Select from '../../../components/Form/Select';
 import FormFieldWithError from '../../../components/FormFieldWithError';
 import IPWhiteList from './IPWhiteList';
-import RACM from './RACM';
-import { useForm, FormContext } from 'react-hook-form';
-
+import RequestMethods from './RequestMethods';
+import { conduitTypes } from '../options';
 type Props = {
   conduit: any;
   onSave: (conduit: any) => void;
@@ -61,11 +61,7 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
                 <Select
                   name="suriType"
                   value={conduit?.suriType}
-                  options={[
-                    { value: 'google', label: 'Google Sheets' },
-                    { value: 'airtable', label: 'AirTable' },
-                    { value: 'ssheets', label: 'Smart sheets' },
-                  ]}
+                  options={conduitTypes}
                 />
               </FormFieldWithError>
             </IonCol>
@@ -84,11 +80,10 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
               </FormFieldWithError>
             </IonCol>
           </IonRow>
-          {conduit?.whitelist?.length && (
-            <IPWhiteList whitelist={conduit?.whitelist} />
-          )}
 
-          <RACM defaultChecked={conduit?.racm} />
+          <IPWhiteList whitelist={conduit?.whitelist} />
+
+          <RequestMethods defaultChecked={conduit?.racm} />
           <IonRow className="ion-justify-content-center">
             <IonCol
               sizeXs="12"

@@ -7,50 +7,47 @@ const LIST_CONDUIT_SUCCESS = 'conduit/LIST_CONDUIT_SUCCESS';
 const LIST_CONDUIT_FAILURE = 'conduit/LIST_CONDUIT_FAILURE';
 
 // Sync action creators
-export const listConduitSuccess = conduits => ({
+export const listConduitSuccess = (conduits) => ({
   type: LIST_CONDUIT_SUCCESS,
-  payload: conduits
+  payload: conduits,
 });
 
-export const listConduitFailure = error => ({
+export const listConduitFailure = (error) => ({
   type: LIST_CONDUIT_FAILURE,
-  payload: error
+  payload: error,
 });
 
-export const listConduits = userId => {
-  return dispatch => {
+export const listConduits = (userId) => {
+  return (dispatch) => {
     dispatch({ type: LIST_CONDUIT_REQUEST, payload: userId });
     PraasAPI.conduit.list(userId).then(
-      conduits => {
+      (conduits) => {
         dispatch(listConduitSuccess(conduits));
-        // actions.setSubmitting(false);
       },
-      error => {
+      (error) => {
         dispatch(listConduitFailure(error));
-        // actions.setSubmitting(false);
-        // actions.setStatus({ errors: { ...error.errors } });
       }
     );
   };
 };
-const initialState = { inflight: false, conduits: [{}] };
+const initialState = { inflight: false, conduits: [] };
 
 export default function list(state = initialState, { type, payload }) {
   switch (type) {
     case LIST_CONDUIT_REQUEST:
       return {
         ...state,
-        inflight: true
+        inflight: true,
       };
     case LIST_CONDUIT_SUCCESS:
       return {
         inflight: false,
-        conduits: payload.conduits
+        conduits: payload.conduits,
       };
     case LIST_CONDUIT_FAILURE:
       return {
         inflight: false,
-        errors: { ...payload.errors }
+        errors: { ...payload.errors },
       };
     default:
       return state;

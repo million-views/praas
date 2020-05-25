@@ -2,16 +2,31 @@ import React from 'react';
 import { IonRadioGroup, IonRadio, IonLabel } from '@ionic/react';
 import { Controller } from 'react-hook-form';
 
-type Option = {
+type OptionType = {
   value: string;
   label: string;
 };
 type Props = {
   name: string;
   value: string;
-  options: Array<Option>;
+  options: Array<OptionType>;
   className?: string;
   labelClassName?: string;
+};
+
+type RadioProp = {
+  value: string;
+  label: string;
+  className: string;
+};
+
+const Radio = ({ value, label, className }: RadioProp) => {
+  return (
+    <>
+      <IonRadio value={value}></IonRadio>
+      <IonLabel className={className}>{label}</IonLabel>
+    </>
+  );
 };
 const RadioGroup = ({
   name,
@@ -24,12 +39,14 @@ const RadioGroup = ({
     <Controller
       as={
         <IonRadioGroup className={className}>
-          {options.map((o: Option) => {
+          {options.map((option: OptionType) => {
             return (
-              <>
-                <IonRadio value={o.value}></IonRadio>
-                <IonLabel className={labelClassName}>{o.label}</IonLabel>
-              </>
+              <Radio
+                key={option.value}
+                value={option.value}
+                label={option.label}
+                className={labelClassName}
+              />
             );
           })}
         </IonRadioGroup>
