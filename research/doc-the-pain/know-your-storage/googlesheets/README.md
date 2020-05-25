@@ -18,6 +18,6 @@
 
 ## References
 
-[1]: https://www.fillup.io/post/read-and-write-google-sheets-from-php/ 'Read And Write Google Sheets From PHP'
-[2]: http://codingfundas.com/how-to-read-edit-google-sheets-using-node-js/index.html 'How to read or modify spreadsheets from Google Sheets using Node.js ?'
-[3]: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/append 'Official Google Sheets API'
+[1]: Google Sheets from PHP https://www.fillup.io/post/read-and-write-google-sheets-from-php/
+[2]: Google Sheets from Node.js http://codingfundas.com/how-to-read-edit-google-sheets-using-node-js/index.html
+[3]: Official Google Sheets API https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/append
