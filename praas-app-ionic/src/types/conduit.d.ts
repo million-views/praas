@@ -7,7 +7,6 @@ type RequestAccessMethods = 'GET' | 'POST' | 'DELETE' | 'PATCH';
 
 type Conduit = {
   id: number;
-  id: number;
   suriApiKey: string;
   suriType: string;
   suri: string;
