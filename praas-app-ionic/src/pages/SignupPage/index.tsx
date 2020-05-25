@@ -1,12 +1,19 @@
 import React, { useEffect } from 'react';
 import {
   IonContent,
+  IonCard,
   IonPage,
   IonGrid,
   IonRow,
   IonCol,
   IonLabel,
   IonButton,
+  IonCardContent,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonCardHeader,
+  IonCardTitle,
 } from '@ionic/react';
 import { useForm, FormContext } from 'react-hook-form';
 import { connect } from 'react-redux';
@@ -43,31 +50,38 @@ const Signup: React.FC<Props> = ({ user, history, registerUser }) => {
     <IonPage className="signup-page">
       <Header />
       <IonContent>
-        <FormContext {...formMethods}>
-          <form noValidate onSubmit={handleSubmit(onSubmit)}>
-            <IonGrid>
-              <IonRow className="ion-justify-content-center">
-                <IonCol sizeXs="12" sizeSm="4" className="text-align-center">
-                  <FormFieldWithError error={errors.firstName}>
-                    <IonLabel position="floating">Name</IonLabel>
-                    <Input type="text" name="firstName" value="" />
-                  </FormFieldWithError>
-                  <FormFieldWithError error={errors?.email}>
-                    <IonLabel position="floating">Email</IonLabel>
-                    <Input type="email" name="email" value="" />
-                  </FormFieldWithError>
-                  <FormFieldWithError error={errors?.password}>
-                    <IonLabel position="floating">Password</IonLabel>
-                    <Input type="password" name="password" value="" />
-                  </FormFieldWithError>
-                  <IonButton type="submit" color="primary">
-                    Submit
-                  </IonButton>
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </form>
-        </FormContext>
+        <IonGrid fixed>
+          <IonRow className="ion-justify-content-center">
+            <IonCol>
+              <IonCard>
+                <IonCardHeader>
+                  <IonCardTitle color="dark">Signup</IonCardTitle>
+                </IonCardHeader>
+                <IonCardContent>
+                  <FormContext {...formMethods}>
+                    <form noValidate onSubmit={handleSubmit(onSubmit)}>
+                      <FormFieldWithError error={errors.firstName}>
+                        <IonLabel position="floating">Name</IonLabel>
+                        <Input type="text" name="firstName" value="" />
+                      </FormFieldWithError>
+                      <FormFieldWithError error={errors?.email}>
+                        <IonLabel position="floating">Email</IonLabel>
+                        <Input type="email" name="email" value="" />
+                      </FormFieldWithError>
+                      <FormFieldWithError error={errors?.password}>
+                        <IonLabel position="floating">Password</IonLabel>
+                        <Input type="password" name="password" value="" />
+                      </FormFieldWithError>
+                      <IonButton type="submit" color="primary" expand="full">
+                        Submit
+                      </IonButton>
+                    </form>
+                  </FormContext>
+                </IonCardContent>
+              </IonCard>
+            </IonCol>
+          </IonRow>
+        </IonGrid>
       </IonContent>
     </IonPage>
   );
