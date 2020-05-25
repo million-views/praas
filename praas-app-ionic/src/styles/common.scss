@@ -1,12 +1,24 @@
+html,
+body {
+  background-color: var(--ion-color-light);
+}
+
+ion-content {
+  --background: var(--ion-color-light);
+}
+
 .ion-page-invisible {
   // Quick fix: Ionic is not removing this class when navigating from one route to another
   opacity: 1 !important;
 }
-.text-align-center {
-  text-align: center;
-}
+
 .error {
   color: var(--ion-color-danger);
   font-size: 12px;
   text-align: left;
+}
+
+/* Utility Classes */
+.u-text-align-center {
+  text-align: center;
 }
