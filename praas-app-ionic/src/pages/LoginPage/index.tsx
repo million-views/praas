@@ -1,12 +1,16 @@
 import React, { useEffect } from 'react';
 import {
   IonContent,
+  IonCard,
+  IonCardContent,
   IonPage,
   IonGrid,
   IonRow,
   IonCol,
   IonLabel,
   IonButton,
+  IonCardHeader,
+  IonCardTitle,
 } from '@ionic/react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
@@ -44,27 +48,44 @@ const LoginPage: React.FC<Props> = ({ user, loginUser, history }) => {
     <IonPage className="login-page">
       <Header />
       <IonContent>
-        <FormContext {...formMethods}>
-          <form noValidate onSubmit={handleSubmit(onSubmit)}>
-            <IonGrid>
-              <IonRow className="ion-justify-content-center">
-                <IonCol sizeXs="12" sizeSm="4" className="text-align-center">
-                  <FormFieldWithError error={errors.email}>
-                    <IonLabel position="floating">Email</IonLabel>
-                    <Input type="email" name="email" value="" />
-                  </FormFieldWithError>
-                  <FormFieldWithError error={errors.password}>
-                    <IonLabel position="floating">Password</IonLabel>
-                    <Input type="password" name="password" value="" />
-                  </FormFieldWithError>
-                  <IonButton type="submit" color="primary">
-                    Submit
-                  </IonButton>
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </form>
-        </FormContext>
+        <IonGrid fixed>
+          <IonRow className="ion-justify-content-center">
+            <IonCol>
+              <IonCard>
+                <IonCardHeader>
+                  <IonCardTitle color="dark">Login</IonCardTitle>
+                </IonCardHeader>
+                <IonCardContent>
+                  <FormContext {...formMethods}>
+                    <form noValidate onSubmit={handleSubmit(onSubmit)}>
+                      <IonGrid>
+                        <IonRow>
+                          <IonCol>
+                            <FormFieldWithError error={errors.email}>
+                              <IonLabel position="floating">Email</IonLabel>
+                              <Input type="email" name="email" value="" />
+                            </FormFieldWithError>
+                            <FormFieldWithError error={errors.password}>
+                              <IonLabel position="floating">Password</IonLabel>
+                              <Input type="password" name="password" value="" />
+                            </FormFieldWithError>
+                            <IonButton
+                              type="submit"
+                              color="primary"
+                              expand="full"
+                            >
+                              Submit
+                            </IonButton>
+                          </IonCol>
+                        </IonRow>
+                      </IonGrid>
+                    </form>
+                  </FormContext>
+                </IonCardContent>
+              </IonCard>
+            </IonCol>
+          </IonRow>
+        </IonGrid>
       </IonContent>
     </IonPage>
   );
