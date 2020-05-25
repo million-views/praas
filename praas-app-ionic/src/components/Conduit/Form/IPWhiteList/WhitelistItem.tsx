@@ -21,7 +21,7 @@ const WhiteListItem = ({ item, prefix, onDelete }: Props) => {
           sizeSm="6"
           sizeMd="2"
           sizeLg="2"
-          className="text-align-center"
+          className="u-text-align-center"
         >
           <FormFieldWithError error={errors[`${prefix}.address`]}>
             <IonLabel position="floating">IP Address</IonLabel>
@@ -33,7 +33,7 @@ const WhiteListItem = ({ item, prefix, onDelete }: Props) => {
           sizeSm="6"
           sizeMd="2"
           sizeLg="2"
-          className="text-align-center"
+          className="u-text-align-center"
         >
           <FormFieldWithError error={errors[`${prefix}.comment`]}>
             <IonLabel position="floating">Comment</IonLabel>
