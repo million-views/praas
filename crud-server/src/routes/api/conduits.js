@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const models = require('../../models');
 const Conduit = require('../../models').Conduit;
 const auth = require('../auth');
 const helpers = require('../../lib/helpers');
@@ -10,7 +11,7 @@ router.post('/', auth.required, async function (req, res, next) {
   const errors = {};
 
   conduit.userId = req.payload.id;
-  conduit.curi = await helpers.makeCuri('td'); // for now the prefix is hardcoded, to be updated
+  conduit.curi = await helpers.makeCuri(models.System.cconf.settings.prefix);
   conduit.throttle = true;
   conduit.status = 'Inactive';
 
@@ -46,8 +47,8 @@ router.get('/', auth.required, async (req, res, next) => {
     let conduits = undefined;
     if (typeof req.query.start !== 'undefined' && typeof req.query.count !== 'undefined') {
       conduits = await Conduit.findAll({
-        where: { id: { [Op.gte]: req.query.start, [Op.lt]: +req.query.start+ +req.query.count }, userId: req.payload.id } 
-      }); 
+        where: { id: { [Op.gte]: req.query.start, [Op.lt]: +req.query.start+ +req.query.count }, userId: req.payload.id }
+      });
     } else {
       if (req.app.locals.proxyUser && req.app.locals.proxyUser.id === req.payload.id) {
         // fetch all conduits in active status... TODO: this is brittle and can break
@@ -56,7 +57,7 @@ router.get('/', auth.required, async (req, res, next) => {
         conduits = await Conduit.findAll({ where: { userId: req.payload.id } });
       }
     }
- 
+
     if (!conduits) { return res.sendStatus(404); }
     return res.json({ conduits: conduits.map(i => i.toJSON()) });
   } catch (error) {
