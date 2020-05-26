@@ -11,6 +11,7 @@ TBD...
 > NOTE:
 > Create a .env file at the root of praas folder, at the same location where .env-example file can be found.
 > Fill the values of .env file before you start the crud-server or the proxy-server.
+> These values will be used to create a new Praas user if it doesn't exist.
 
 ### Tasks
 |  task     | command line                             | notes                                       |
