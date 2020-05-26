@@ -1,6 +1,6 @@
-const fetch = require("node-fetch");
+const fetch = require('node-fetch');
 
-// localStorage-polyfill is meant for development but we are 
+// localStorage-polyfill is meant for development but we are
 // abusing it here to get the proxy server functional...
 require('localstorage-polyfill');
 
@@ -13,9 +13,9 @@ const queryize = parameters => {
     .entries(parameters)
     .reduce((acc, entry, index) => {
       const [param, value] = entry;
-      const encoded = (index === 0)
-        ? `${param}=${encodeURIComponent(value)}`
-        : `&${param}=${encodeURIComponent(value)}`;
+      const encoded = (index === 0) ?
+        `${param}=${encodeURIComponent(value)}&` :
+        `${param}=${encodeURIComponent(value)}`;
       return `${acc}${encoded}`;
     }, '');
 };

@@ -17,7 +17,6 @@ app.use(cors());
 // TODO: this will evolve... soonish
 app.get('/', (req, res) => res.send('Hi there....PRaaS Proxy server is up and running!'));
 
-
 /// error handling...
 // note: error handler should be registered after all routes have been registered
 if (conf.production) {
@@ -59,8 +58,8 @@ function getProxyServerCredentials() {
       path: path.resolve('../.env'),
     });
     // console.log(proxy_credentials);
-  } catch(e) {
-    console.log("unexpected...", e);
+  } catch (e) {
+    console.log('unexpected...', e);
     process.exit(1);
   }
 
@@ -71,7 +70,7 @@ function getProxyServerCredentials() {
       email: proxy_credentials.parsed.PROXY_SERVER_EMAIL,
       password: proxy_credentials.parsed.PROXY_SERVER_PASSWORD
     }
-  }
+  };
 }
 
 // launch the server and listen only when running as a standalone process
@@ -89,6 +88,7 @@ if (!module.parent) {
       try {
         const payload = await PraasAPI.conduit.list(data.user.id);
         const conduits = payload.conduits;
+        let conduit;
         // console.log('conduits... yay!', typeof(conduits), conduits);
 
         // store conduits indexed by curi in app.locals for lookup later...
@@ -99,8 +99,7 @@ if (!module.parent) {
         }
         app.locals.cmap = cmap;
         console.log(`${app.locals.cmap.size} active conduits received`);
-
-      } catch(e) {
+      } catch (e) {
         console.log('unexpected... ', e);
       }
 
@@ -111,7 +110,7 @@ if (!module.parent) {
       });
     },
     (error) => {
-      console.log("unexpected... ", error);
+      console.log('unexpected... ', error);
     }
   );
 }
