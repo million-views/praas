@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 
 // localStorage-polyfill is meant for development but we are
 // abusing it here to get the proxy server functional...
-require('localstorage-polyfill');
+const localStorage = require('localstorage-polyfill');
 
 const API_URL = 'http://localhost:4000';
 

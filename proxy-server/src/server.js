@@ -1,10 +1,10 @@
 const path = require('path');
 const express = require('express');
-// const bodyParser = require('body-parser');
 const cors = require('cors');
 const errorhandler = require('errorhandler');
 const conf = require('./config');
 const dotenv = require('dotenv-safe');
+const localStorage = require('localstorage-polyfill');
 
 const PraasAPI = require('./lib/praas');
 
