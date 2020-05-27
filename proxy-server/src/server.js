@@ -4,7 +4,7 @@ const cors = require('cors');
 const errorhandler = require('errorhandler');
 const conf = require('./config');
 const dotenv = require('dotenv-safe');
-const localStorage = require('localstorage-polyfill');
+// const localStorage = require('localstorage-polyfill');
 
 const PraasAPI = require('./lib/praas');
 
