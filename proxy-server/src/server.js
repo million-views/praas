@@ -1,5 +1,6 @@
 const path = require('path');
 const express = require('express');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const errorhandler = require('errorhandler');
 const dotenv = require('dotenv-safe');
@@ -12,6 +13,7 @@ const PraasAPI = require('./lib/praas');
 // Create global app object
 const app = express();
 
+app.use(bodyParser.json());
 app.use(cors());
 
 // store conduits indexed by curi in app.locals for lookup later...
@@ -31,6 +33,25 @@ app.all('/', (req, res) => {
   // check racm for allowed methods
   if (conduit.racm.findIndex(method => method === req.method) === -1) {
     return res.status(403).send(`${req.method} is not permitted`);
+  }
+
+  // perform hidden form field validation
+  // sgk 28May20: hff is an array! Should we perform this multiple times?
+  // for now performing the first only, all records have only one hff
+  const hff = conduit.hiddenFormField[0];
+  let reqHff = undefined;
+  if (req.body && req.body[hff.fieldName]) reqHff = req.body[hff.fieldName];
+
+  // This feature is to catch spam bots, so don't
+  // send error if failure, but log error instead
+  if (hff && hff.policy === 'drop-if-filled' && reqHff) {
+    console.log(`${printTime()} : HFF validation failed`);
+    return res.sendStatus(200);
+  }
+
+  if (hff && hff.policy === 'pass-if-match' && !(reqHff === hff.value)) {
+    console.log(`${printTime()} : HFF validation failed`);
+    return res.sendStatus(200);
   }
 
   res.send('Proxy request will be processed!');
