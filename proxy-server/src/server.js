@@ -19,8 +19,22 @@ app.use(cors());
 app.locals.cmap = new Map();
 
 // we handle all requests to the proxy end point...
-// TODO: this will evolve... soonish
-app.get('/', (req, res) => res.send('Hi there....PRaaS Proxy server is up and running!'));
+app.all('/', (req, res) => {
+  const reqCuri = req.hostname;
+  const conduit = app.locals.cmap.get(reqCuri);
+
+  // If conduit not found in Cache, send 404
+  if (!conduit) {
+    return res.status(404).send(`${reqCuri} conduit not found`);
+  }
+
+  // check racm for allowed methods
+  if (conduit.racm.findIndex(method => method === req.method) === -1) {
+    return res.status(403).send(`${req.method} is not permitted`);
+  }
+
+  res.send('Proxy request will be processed!');
+});
 
 /// error handling...
 // note: error handler should be registered after all routes have been registered
