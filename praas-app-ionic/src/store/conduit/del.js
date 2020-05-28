@@ -2,17 +2,19 @@ import PraasAPI from '../../api/praas';
 
 // This is a list-conduit duck. A duck is a feature state container.
 
-const DELETE_CONDUIT_REQUEST = 'conduit/DELETE_CONDUIT_REQUEST';
-const DELETE_CONDUIT_SUCCESS = 'conduit/DELETE_CONDUIT_SUCCESS';
-const DELETE_CONDUIT_FAILURE = 'conduit/DELETE_CONDUIT_FAILURE';
+export const DELETE_CONDUIT_REQUEST = 'conduit/DELETE_CONDUIT_REQUEST';
+export const DELETE_CONDUIT_SUCCESS = 'conduit/DELETE_CONDUIT_SUCCESS';
+export const DELETE_CONDUIT_FAILURE = 'conduit/DELETE_CONDUIT_FAILURE';
 
 // Sync action creators
 export const deleteConduitSuccess = (conduitId) => ({
-  type: DELETE_CONDUIT_SUCCESS, payload: { conduitId }
+  type: DELETE_CONDUIT_SUCCESS,
+  payload: { conduitId },
 });
 
 export const deleteConduitFailure = (error) => ({
-  type: DELETE_CONDUIT_FAILURE, payload: error
+  type: DELETE_CONDUIT_FAILURE,
+  payload: error,
 });
 
 export const deleteConduit = (conduitId) => {
@@ -44,9 +46,9 @@ export default function del(state = initialState, { type, payload }) {
     case DELETE_CONDUIT_FAILURE:
       return {
         inflight: false,
-        errors: { ...payload.errors }
+        errors: { ...payload.errors },
       };
     default:
       return state;
-  };
-};
+  }
+}
