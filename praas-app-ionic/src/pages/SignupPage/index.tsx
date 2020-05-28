@@ -52,7 +52,7 @@ const Signup: React.FC<Props> = ({ user, history, registerUser }) => {
       <IonContent>
         <IonGrid fixed>
           <IonRow className="ion-justify-content-center">
-            <IonCol>
+            <IonCol sizeXs="12" sizeXl="8">
               <IonCard>
                 <IonCardHeader>
                   <IonCardTitle color="dark">Signup</IonCardTitle>
