@@ -2,9 +2,10 @@ const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const errorhandler = require('errorhandler');
-const conf = require('./config');
 const dotenv = require('dotenv-safe');
-// const localStorage = require('localstorage-polyfill');
+
+const conf = require('./config');
+const { printTime } = require('./lib/helpers');
 
 const PraasAPI = require('./lib/praas');
 
@@ -75,20 +76,6 @@ function getProxyServerCredentials() {
       password: proxy_credentials.parsed.PROXY_SERVER_PASSWORD
     }
   };
-}
-
-function padLeft(val, len=2, padChar='0') {
-  return (''+val).padStart(len, padChar);
-}
-
-function printTime() {
-  const now = new Date();
-  return now.getFullYear() +
-    '-' + padLeft((now.getMonth() + 1)) +
-    '-' + padLeft(now.getDate()) +
-    ' ' + padLeft(now.getHours()) +
-    ':' + padLeft(now.getMinutes()) +
-    ':' + padLeft(now.getSeconds());
 }
 
 async function fetchConduits (user) {
