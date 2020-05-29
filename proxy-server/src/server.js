@@ -32,7 +32,7 @@ app.all('/', (req, res) => {
 
   // check racm for allowed methods
   if (conduit.racm.findIndex(method => method === req.method) === -1) {
-    return res.status(403).send(`${req.method} is not permitted`);
+    return res.status(405).send(`${req.method} is not permitted`);
   }
 
   // perform hidden form field validation
