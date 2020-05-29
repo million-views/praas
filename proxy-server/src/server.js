@@ -112,10 +112,6 @@ function getProxyServerCredentials() {
 }
 
 async function fetchConduits (user) {
-  // console.log('logged in?', data);
-  // save our token...
-  global.localStorage.setItem('user', JSON.stringify({ ...user }));
-
   // fetch a list of conduits... be sure to run test-model, test-rest in sequence
   // before starting the proxy so we have data to test...
   try {
@@ -147,6 +143,10 @@ if (!module.parent) {
   // by logging in...
   PraasAPI.user.login(getProxyServerCredentials())
     .then(async (data) => {
+      // console.log('logged in?', data);
+      // save our token...
+      global.localStorage.setItem('user', JSON.stringify({ ...data.user }));
+
       fetchConduits(data.user);
       setInterval(() => fetchConduits(data.user), conf.cacheRefreshInterval);
     })
