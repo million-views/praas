@@ -36,22 +36,20 @@ app.all('/', (req, res) => {
   }
 
   // perform hidden form field validation
-  // sgk 28May20: hff is an array! Should we perform this multiple times?
-  // for now performing the first only, all records have only one hff
-  const hff = conduit.hiddenFormField[0];
-  let reqHff = undefined;
-  if (req.body && req.body[hff.fieldName]) reqHff = req.body[hff.fieldName];
+  for (let i=0, imax=conduit.hiddenFormField.length; i < imax; i++) {
+    const hff = conduit.hiddenFormField[i];
+    let reqHff = undefined;
+    if (req.body && req.body[hff.fieldName]) reqHff = req.body[hff.fieldName];
 
-  // This feature is to catch spam bots, so don't
-  // send error if failure, but log error instead
-  if (hff && hff.policy === 'drop-if-filled' && reqHff) {
-    console.log(`${printTime()} : HFF validation failed`);
-    return res.sendStatus(200);
-  }
+    // This feature is to catch spam bots, so don't
+    // send error if failure, send 200-OK instead
+    if (hff && hff.policy === 'drop-if-filled' && reqHff) {
+      return res.sendStatus(200);
+    }
 
-  if (hff && hff.policy === 'pass-if-match' && !(reqHff === hff.value)) {
-    console.log(`${printTime()} : HFF validation failed`);
-    return res.sendStatus(200);
+    if (hff && hff.policy === 'pass-if-match' && !(reqHff === hff.value)) {
+      return res.sendStatus(200);
+    }
   }
 
   res.send('Proxy request will be processed!');
