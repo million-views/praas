@@ -52,7 +52,7 @@ const LoginPage: React.FC<Props> = ({ user, loginUser, history }) => {
           <IonRow className="ion-justify-content-center">
             <IonCol sizeXs="12" sizeXl="8">
               <IonCard>
-                <IonCardHeader className="u-text-align-center">
+                <IonCardHeader className="ion-text-center">
                   <IonCardTitle color="dark">Login</IonCardTitle>
                 </IonCardHeader>
                 <IonCardContent>
