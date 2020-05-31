@@ -1,12 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, ReactText } from 'react';
 import {
   IonPage,
   IonContent,
   IonGrid,
   IonRow,
   IonCol,
-  IonButtons,
-  IonButton,
   IonIcon,
   IonFab,
   IonFabButton,
@@ -17,17 +15,20 @@ import { connect } from 'react-redux';
 import Header from '../../components/Header';
 import { listConduits } from '../../store/conduit/list';
 import './style.scss';
-import noop from '../../utils/noop';
+import ListItem from '../../components/Conduit/List/ListItem';
+import { deleteConduit } from '../../store/conduit/del';
 
 interface Props {
   conduits: Array<Conduit>;
   listConduits: () => void;
+  deleteConduit: (id: ReactText) => void;
 }
 
-const Home: React.FC<Props> = ({ conduits, listConduits }) => {
+const Home: React.FC<Props> = ({ conduits, listConduits, deleteConduit }) => {
   useEffect(() => {
     listConduits();
   }, []);
+
   return (
     <IonPage>
       <Header />
@@ -56,33 +57,11 @@ const Home: React.FC<Props> = ({ conduits, listConduits }) => {
 
             {conduits.map((conduit) => {
               return (
-                <IonRow key={conduit.id} className="table-row">
-                  <IonCol className="table-col">{conduit.description}</IonCol>
-                  <IonCol className="table-col">{conduit.suriType}</IonCol>
-                  <IonCol className="table-col">{conduit.suri}</IonCol>
-                  <IonCol className="table-col">{conduit.status}</IonCol>
-                  <IonCol className="table-col">
-                    <IonButtons>
-                      <IonButton
-                        type="button"
-                        fill="clear"
-                        size="small"
-                        href={`conduit/${conduit.id}`}
-                      >
-                        <IonIcon className="icon edit" icon={createOutline} />
-                        <i className="far fa-edit"></i>
-                      </IonButton>
-                      <IonButton
-                        type="button"
-                        fill="clear"
-                        size="small"
-                        onClick={noop}
-                      >
-                        <IonIcon className="icon delete" icon={trashOutline} />
-                      </IonButton>
-                    </IonButtons>
-                  </IonCol>
-                </IonRow>
+                <ListItem
+                  key={conduit.id}
+                  conduit={conduit}
+                  onDelete={deleteConduit}
+                />
               );
             })}
           </IonGrid>
@@ -103,4 +82,4 @@ const mapStateToProps = ({
 }) => ({
   conduits: conduit.list.conduits,
 });
-export default connect(mapStateToProps, { listConduits })(Home);
+export default connect(mapStateToProps, { listConduits, deleteConduit })(Home);
