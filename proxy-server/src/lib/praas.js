@@ -1,6 +1,6 @@
-const fetch = require("node-fetch");
+const fetch = require('node-fetch');
 
-// localStorage-polyfill is meant for development but we are 
+// localStorage-polyfill is meant for development but we are
 // abusing it here to get the proxy server functional...
 require('localstorage-polyfill');
 
@@ -13,9 +13,9 @@ const queryize = parameters => {
     .entries(parameters)
     .reduce((acc, entry, index) => {
       const [param, value] = entry;
-      const encoded = (index === 0)
-        ? `${param}=${encodeURIComponent(value)}`
-        : `&${param}=${encodeURIComponent(value)}`;
+      const encoded = (index === 0) ?
+        `${param}=${encodeURIComponent(value)}&` :
+        `${param}=${encodeURIComponent(value)}`;
       return `${acc}${encoded}`;
     }, '');
 };
@@ -37,7 +37,7 @@ const authorization = () => {
   // and cons of either approach, we are going with localStorage
   // (which results in less code, faster development and eliminates
   // a few test cases.
-  const user = JSON.parse(localStorage.getItem('user'));
+  const user = JSON.parse(global.localStorage.getItem('user'));
   const header = {};
 
   if (user && {}.propertyIsEnumerable.call(user, 'token')) {
@@ -48,7 +48,7 @@ const authorization = () => {
 };
 
 const invalidateSession = () => {
-  localStorage.removeItem('user');
+  global.localStorage.removeItem('user');
 };
 
 // This is a custom fetch that is coded to work with the specification

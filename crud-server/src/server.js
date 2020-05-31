@@ -82,7 +82,7 @@ if (conf.production) {
 function getProxyServerCredentials() {
   let proxy_credentials = undefined;
   try {
-    // add proxy-server user... this is temporary and will go away when we 
+    // add proxy-server user... this is temporary and will go away when we
     // integrate with OAuth2 and support client credentials grant flow...
     proxy_credentials = dotenv.config({
       allowEmptyValues: true,
@@ -90,8 +90,8 @@ function getProxyServerCredentials() {
       path: path.resolve('../.env'),
     });
     // console.log(proxy_credentials);
-  } catch(e) {
-    console.log("Unexpected... ", e);
+  } catch (e) {
+    console.log('Unexpected... ', e);
     process.exit(1);
   }
 
@@ -101,10 +101,9 @@ function getProxyServerCredentials() {
       lastName: 'Server',
       email: proxy_credentials.parsed.PROXY_SERVER_EMAIL,
       password: proxy_credentials.parsed.PROXY_SERVER_PASSWORD
-    }  
-  }
+    }
+  };
 }
-
 
 // launch the server and listen only when running as a standalone process
 if (!module.parent) {
@@ -115,13 +114,13 @@ if (!module.parent) {
       Object.assign(user, proxyUser);
       try {
         await user.save();
-      } catch({name, errors}) {
-        if (name === 'SequelizeUniqueConstraintError') {
+      } catch (e) {
+        if (e.name === 'SequelizeUniqueConstraintError') {
           console.log('Client credentials for proxy already registered!');
           // find our privileged user... TODO: think of ways this method can fail and catch the failures....
           user = await models.User.exists(proxyUser.email, proxyUser.password);
         } else {
-          console.log(`Unexpected error: ${name}, aborting... ${errors}`);
+          console.log(`Unexpected error: ${e.name}, aborting... ${e}`);
           process.exit(2);
         }
       }
@@ -135,7 +134,7 @@ if (!module.parent) {
       // and proxy user is either created anew or already exists.
       app.listen(conf.port, async () => {
         console.log(`Praas API server is listening on port ${conf.port}`);
-      });      
+      });
     }
   );
 }

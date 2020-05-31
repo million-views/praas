@@ -139,7 +139,7 @@ describe('PraaS', () => {
       expect(nct).to.be.an('object');
       expect(nct).to.have.property('suriApiKey');
       expect(nct).to.have.property('suriType');
-      expect(nct.curi.length).to.equal(19);
+      expect(nct.curi.length).to.equal(models.System.cconf.settings.curiLen);
     });
   });
 });

@@ -158,6 +158,7 @@ describe('Praas REST API', () => {
       expect(res.body.conduit).to.have.property('suriApiKey');
       expect(res.body.conduit).to.have.property('suriType');
       expect(res.body.conduit).to.have.property('suri');
+      expect(res.body.conduit).to.have.property('curi');
       expect(res.body.conduit).to.have.property('whitelist');
       expect(res.body.conduit).to.have.property('racm');
       expect(res.body.conduit).to.have.property('throttle');
