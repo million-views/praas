@@ -23,9 +23,7 @@ export const deleteConduitFailure = (error) => ({
 
 export const deleteConduit = (conduitId) => {
   return (dispatch) => {
-    console.log('here ');
     dispatch({ type: DELETE_CONDUIT_REQUEST });
-    console.log('here');
     PraasAPI.conduit.delete(conduitId).then(
       () => {
         dispatch(deleteConduitSuccess(conduitId));

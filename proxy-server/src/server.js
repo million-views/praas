@@ -1,17 +1,14 @@
-const path = require('path');
-const express = require('express');
-<<<<<<< HEAD
-=======
-const bodyParser = require('body-parser');
->>>>>>> e3860a9670af2ae2dbe6c5c31cccd44550b517a9
-const cors = require('cors');
-const errorhandler = require('errorhandler');
-const dotenv = require('dotenv-safe');
+const path = require("path");
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const errorhandler = require("errorhandler");
+const dotenv = require("dotenv-safe");
 
-const conf = require('./config');
-const { printTime } = require('./lib/helpers');
+const conf = require("./config");
+const {printTime} = require("./lib/helpers");
 
-const PraasAPI = require('./lib/praas');
+const PraasAPI = require("./lib/praas");
 
 // Create global app object
 const app = express();
@@ -24,7 +21,7 @@ app.use(cors());
 app.locals.cmap = new Map();
 
 // we handle all requests to the proxy end point...
-app.all('/', (req, res) => {
+app.all("/", (req, res) => {
   const reqCuri = req.hostname;
   const conduit = app.locals.cmap.get(reqCuri);
 
@@ -34,28 +31,28 @@ app.all('/', (req, res) => {
   }
 
   // check racm for allowed methods
-  if (conduit.racm.findIndex(method => method === req.method) === -1) {
+  if (conduit.racm.findIndex((method) => method === req.method) === -1) {
     return res.status(405).send(`${req.method} is not permitted`);
   }
 
   // perform hidden form field validation
-  for (let i=0, imax=conduit.hiddenFormField.length; i < imax; i++) {
+  for (let i = 0, imax = conduit.hiddenFormField.length; i < imax; i++) {
     const hff = conduit.hiddenFormField[i];
     let reqHff = undefined;
     if (req.body && req.body[hff.fieldName]) reqHff = req.body[hff.fieldName];
 
     // This feature is to catch spam bots, so don't
     // send error if failure, send 200-OK instead
-    if (hff && hff.policy === 'drop-if-filled' && reqHff) {
+    if (hff && hff.policy === "drop-if-filled" && reqHff) {
       return res.sendStatus(200);
     }
 
-    if (hff && hff.policy === 'pass-if-match' && !(reqHff === hff.value)) {
+    if (hff && hff.policy === "pass-if-match" && !(reqHff === hff.value)) {
       return res.sendStatus(200);
     }
   }
 
-  res.send('Proxy request will be processed!');
+  res.send("Proxy request will be processed!");
 });
 
 /// error handling...
@@ -67,8 +64,8 @@ if (conf.production) {
     res.json({
       errors: {
         message: err.message,
-        error: {}
-      }
+        error: {},
+      },
     });
   });
 } else {
@@ -80,8 +77,8 @@ if (conf.production) {
     res.json({
       errors: {
         message: err.message,
-        error: err
-      }
+        error: err,
+      },
     });
   });
 }
@@ -95,33 +92,26 @@ function getProxyServerCredentials() {
     // integrate with OAuth2 and support client credentials grant flow...
     proxy_credentials = dotenv.config({
       allowEmptyValues: true,
-      example: path.resolve('../.env-example'),
-      path: path.resolve('../.env'),
+      example: path.resolve("../.env-example"),
+      path: path.resolve("../.env"),
     });
     // console.log(proxy_credentials);
   } catch (e) {
-    console.log('unexpected...', e);
+    console.log("unexpected...", e);
     process.exit(1);
   }
 
   return {
     user: {
-      firstName: 'Proxy',
-      lastName: 'Server',
+      firstName: "Proxy",
+      lastName: "Server",
       email: proxy_credentials.parsed.PROXY_SERVER_EMAIL,
-      password: proxy_credentials.parsed.PROXY_SERVER_PASSWORD
-    }
+      password: proxy_credentials.parsed.PROXY_SERVER_PASSWORD,
+    },
   };
 }
 
-async function fetchConduits (user) {
-<<<<<<< HEAD
-  // console.log('logged in?', data);
-  // save our token...
-  global.localStorage.setItem('user', JSON.stringify({ ...user }));
-
-=======
->>>>>>> e3860a9670af2ae2dbe6c5c31cccd44550b517a9
+async function fetchConduits(user) {
   // fetch a list of conduits... be sure to run test-model, test-rest in sequence
   // before starting the proxy so we have data to test...
   try {
@@ -129,47 +119,40 @@ async function fetchConduits (user) {
     const conduits = payload.conduits;
 
     // remove conduits which are not found in the list, from the cache
-    app.locals.cmap.forEach(cache => {
-      if (conduits.findIndex(list => list.curi === cache.curi) === -1) {
+    app.locals.cmap.forEach((cache) => {
+      if (conduits.findIndex((list) => list.curi === cache.curi) === -1) {
         app.locals.cmap.delete(cache.curi);
       }
     });
 
     // upsert conduits in cache from list received
-    for (let i=0, imax=conduits.length; i < imax; i++) {
+    for (let i = 0, imax = conduits.length; i < imax; i++) {
       const conduit = conduits[i];
       app.locals.cmap.set(conduit.curi, conduit);
     }
 
     console.log(`${printTime()} : ${app.locals.cmap.size} active conduits`);
   } catch (e) {
-    console.log('unexpected... ', e);
+    console.log("unexpected... ", e);
   }
-};
+}
 
 // launch the server and listen only when running as a standalone process
 if (!module.parent) {
   // fetch the conduits first... but first check if our credentials are kosher with resource server
   // by logging in...
-  PraasAPI.user.login(getProxyServerCredentials())
+  PraasAPI.user
+    .login(getProxyServerCredentials())
     .then(async (data) => {
-<<<<<<< HEAD
-      fetchConduits(data.user);
-      setInterval(() => fetchConduits(data.user), conf.cacheRefreshInterval);
-    })
-    .catch((error) => console.log('unexpected... ', error));
-
-=======
       // console.log('logged in?', data);
       // save our token...
-      global.localStorage.setItem('user', JSON.stringify({ ...data.user }));
+      global.localStorage.setItem("user", JSON.stringify({...data.user}));
 
       fetchConduits(data.user);
       setInterval(() => fetchConduits(data.user), conf.cacheRefreshInterval);
     })
-    .catch((error) => console.log('unexpected... ', error));
+    .catch((error) => console.log("unexpected... ", error));
 
->>>>>>> e3860a9670af2ae2dbe6c5c31cccd44550b517a9
   // start listening only after logging in to the resource server...
   // if we can't login then there's no point in running the proxy
   app.listen(conf.port, () => {
