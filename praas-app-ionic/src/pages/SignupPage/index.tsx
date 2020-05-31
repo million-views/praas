@@ -55,7 +55,9 @@ const Signup: React.FC<Props> = ({ user, history, registerUser }) => {
             <IonCol sizeXs="12" sizeXl="8">
               <IonCard>
                 <IonCardHeader>
-                  <IonCardTitle color="dark">Signup</IonCardTitle>
+                  <IonCardTitle color="dark" className="ion-text-center">
+                    Signup
+                  </IonCardTitle>
                 </IonCardHeader>
                 <IonCardContent>
                   <FormContext {...formMethods}>
