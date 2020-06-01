@@ -18,10 +18,10 @@ export const listConduitFailure = (error) => ({
   payload: error,
 });
 
-export const listConduits = (userId) => {
+export const listConduits = () => {
   return (dispatch) => {
-    dispatch({ type: LIST_CONDUIT_REQUEST, payload: userId });
-    PraasAPI.conduit.list(userId).then(
+    dispatch({ type: LIST_CONDUIT_REQUEST });
+    PraasAPI.conduit.list().then(
       (conduits) => {
         dispatch(listConduitSuccess(conduits));
       },

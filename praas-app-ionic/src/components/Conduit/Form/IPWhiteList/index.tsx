@@ -43,7 +43,7 @@ const IPWhiteList: React.FC<Props> = ({ whitelist = [] }) => {
         );
       })}
       <IonRow className="ion-justify-content-center">
-        <IonCol sizeXs="12" sizeSm="12" sizeMd="8" sizeLg="6">
+        <IonCol>
           <IonButton type="button" onClick={onAdd}>
             Add IP Address
           </IonButton>

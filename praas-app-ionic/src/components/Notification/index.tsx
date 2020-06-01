@@ -13,8 +13,8 @@ const Notification: React.FC = () => {
       onDidDismiss={() => dispatch(clearNotification)}
       position="top"
       color={notificationState.type}
-      message={notificationState.data.message}
-      duration={notificationState.data.duration || 1000}
+      message={notificationState.data?.message}
+      duration={notificationState.data?.duration || 1000}
     />
   );
 };

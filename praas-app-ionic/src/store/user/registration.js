@@ -23,10 +23,9 @@ export const registerUser = (user, actions) => {
   return (dispatch) => {
     dispatch({ type: REGISTER_REQUEST, user });
     PraasAPI.user.register(user).then(
-      (user) => {
-        dispatch(registerSuccess(user));
-        dispatch(loginUserSuccess(user));
-        // navigate('/login');
+      (data) => {
+        dispatch(registerSuccess(data.user));
+        dispatch(loginUserSuccess(data.user));
       },
       (error) => {
         dispatch(registerFailure(error));
