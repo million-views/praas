@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback } from 'react';
-import { IonGrid } from '@ionic/react';
+import { IonGrid, IonRow, IonCol, IonCard } from '@ionic/react';
 import { RouteComponentProps } from 'react-router';
 import { connect } from 'react-redux';
 import { getConduit } from '../../../store/conduit/get';
@@ -24,6 +24,7 @@ const Conduit: React.FC<Props> = ({
   const {
     params: { id },
   } = match;
+
   useEffect(() => {
     getConduit(id);
   }, []);
@@ -34,10 +35,17 @@ const Conduit: React.FC<Props> = ({
     },
     [id, updateConduit]
   );
+
   return (
     <IonGrid>
       {conduit?.id ? (
-        <ConduitForm onSave={handleUpdate} conduit={conduit} />
+        <IonRow className="ion-justify-content-center">
+          <IonCol sizeXs="12" sizeXl="8">
+            <IonCard>
+              <ConduitForm onSave={handleUpdate} conduit={conduit} />
+            </IonCard>
+          </IonCol>
+        </IonRow>
       ) : null}
     </IonGrid>
   );

@@ -1,4 +1,6 @@
 .signup-page {
-  background-color: blue;
   height: 100vh;
+  .signup-card {
+    width: var(--ion-card-small);
+  }
 }

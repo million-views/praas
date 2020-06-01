@@ -1,12 +1,8 @@
 .ip-whitelist {
-  position: relative;
+  padding: 20px;
+  border: 2px solid var(--ion-color-light);
+  margin-top: 10px;
   .ip-whitelist-status {
-    display: flex;
-    &__label {
-      margin: 0 0.3rem;
-      &:last-child {
-        margin-right: 0;
-      }
-    }
+    margin-top: 10px;
   }
 }

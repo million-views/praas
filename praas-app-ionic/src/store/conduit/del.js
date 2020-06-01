@@ -1,4 +1,8 @@
 import PraasAPI from '../../api/praas';
+import {
+  createSuccessNotification,
+  createErrorNotification,
+} from '../notification';
 
 // This is a list-conduit duck. A duck is a feature state container.
 
@@ -23,9 +27,19 @@ export const deleteConduit = (conduitId) => {
     PraasAPI.conduit.delete(conduitId).then(
       () => {
         dispatch(deleteConduitSuccess(conduitId));
+        dispatch(
+          createSuccessNotification({
+            message: 'Conduit deleted successfully',
+          })
+        );
       },
       (error) => {
         dispatch(deleteConduitFailure(error));
+        dispatch(
+          createErrorNotification({
+            message: 'Conduit deletion failed',
+          })
+        );
       }
     );
   };

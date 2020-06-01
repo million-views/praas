@@ -2,7 +2,6 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { useDispatch } from 'react-redux';
 
 import AuthenticatedRoute from './components/AuthenticatedRoute';
 import SignupPage from './pages/SignupPage';
@@ -33,10 +32,6 @@ import Notification from './components/Notification';
 import { createSuccessNotification } from './store/notification';
 
 const App: React.FC = () => {
-  const dispatch = useDispatch();
-  dispatch(
-    createSuccessNotification({ message: 'Welcome to Praas!', duration: 5000 })
-  );
   return (
     <IonApp>
       <IonReactRouter>
