@@ -140,10 +140,9 @@ const praas = {
         method: 'GET',
       });
     },
-    list(id: string) {
+    list() {
       return afetch('/conduits', {
         method: 'GET',
-        body: JSON.stringify(id),
       });
     },
     delete(id: string) {
