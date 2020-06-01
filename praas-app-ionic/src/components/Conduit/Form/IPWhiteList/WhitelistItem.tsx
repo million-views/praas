@@ -1,6 +1,6 @@
 import React from 'react';
 import { IonRow, IonCol, IonLabel } from '@ionic/react';
-import { useFormContext } from 'react-hook-form';
+import { FieldError } from 'react-hook-form';
 import Input from '../../../../components/Form/Input';
 import RadioGroup from '../../../../components/Form/RadioGroup';
 import FormFieldWithError from '../../../../components/FormFieldWithError';
@@ -8,11 +8,10 @@ import FormFieldWithError from '../../../../components/FormFieldWithError';
 type Props = {
   item: any;
   prefix: string;
+  error: { address?: FieldError; comment?: FieldError; state?: FieldError };
   onDelete: (idx: number) => void;
 };
-const WhiteListItem = ({ item, prefix, onDelete }: Props) => {
-  const { errors } = useFormContext();
-
+const WhiteListItem = ({ item, prefix, onDelete, error }: Props) => {
   return (
     <>
       <IonRow className="ion-justify-content-center ion-align-items-center ip-whitelist">
@@ -23,7 +22,7 @@ const WhiteListItem = ({ item, prefix, onDelete }: Props) => {
           sizeLg="2"
           className="text-align-center"
         >
-          <FormFieldWithError error={errors[`${prefix}.address`]}>
+          <FormFieldWithError error={error?.address}>
             <IonLabel position="floating">IP Address</IonLabel>
             <Input name={`${prefix}.address`} value={item.address} />
           </FormFieldWithError>
@@ -35,7 +34,7 @@ const WhiteListItem = ({ item, prefix, onDelete }: Props) => {
           sizeLg="2"
           className="text-align-center"
         >
-          <FormFieldWithError error={errors[`${prefix}.comment`]}>
+          <FormFieldWithError error={error?.comment}>
             <IonLabel position="floating">Comment</IonLabel>
             <Input name={`${prefix}.comment`} value={item.comment} />
           </FormFieldWithError>

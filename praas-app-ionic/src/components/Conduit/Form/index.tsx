@@ -8,6 +8,7 @@ import FormFieldWithError from '../../../components/FormFieldWithError';
 import IPWhiteList from './IPWhiteList';
 import RequestMethods from './RequestMethods';
 import { conduitTypes } from '../options';
+import conduitSchema from './schema';
 type Props = {
   conduit: any;
   onSave: (conduit: any) => void;
@@ -16,7 +17,7 @@ type Props = {
 const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
   const formMethods = useForm({
     defaultValues: conduit,
-    validationSchema: null,
+    validationSchema: conduitSchema,
   });
 
   const history = useHistory();
