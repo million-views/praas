@@ -34,28 +34,16 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
     <FormContext {...formMethods}>
       <form noValidate onSubmit={handleSubmit(onSubmit)}>
         <IonGrid>
-          <IonRow className="ion-justify-content-center">
-            <IonCol
-              sizeXs="12"
-              sizeSm="12"
-              sizeMd="8"
-              sizeLg="6"
-              className="text-align-center"
-            >
+          <IonRow>
+            <IonCol>
               <FormFieldWithError error={errors.suriApiKey}>
                 <IonLabel position="floating">API Key</IonLabel>
                 <Input name="suriApiKey" value={conduit?.suriApiKey} />
               </FormFieldWithError>
             </IonCol>
           </IonRow>
-          <IonRow className="ion-justify-content-center">
-            <IonCol
-              sizeXs="12"
-              sizeSm="12"
-              sizeMd="8"
-              sizeLg="6"
-              className="text-align-center"
-            >
+          <IonRow>
+            <IonCol>
               <FormFieldWithError error={errors.suriType}>
                 <IonLabel position="floating">Select Type</IonLabel>
                 <Select
@@ -66,14 +54,8 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
               </FormFieldWithError>
             </IonCol>
           </IonRow>
-          <IonRow className="ion-justify-content-center">
-            <IonCol
-              sizeXs="12"
-              sizeSm="12"
-              sizeMd="8"
-              sizeLg="6"
-              className="text-align-center"
-            >
+          <IonRow>
+            <IonCol>
               <FormFieldWithError error={errors.suri}>
                 <IonLabel position="floating">Service endpoint uri</IonLabel>
                 <Input name="suri" value={conduit?.suri} />
@@ -84,14 +66,8 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
           <IPWhiteList whitelist={conduit?.whitelist} />
 
           <RequestMethods defaultChecked={conduit?.racm} />
-          <IonRow className="ion-justify-content-center">
-            <IonCol
-              sizeXs="12"
-              sizeSm="12"
-              sizeMd="8"
-              sizeLg="6"
-              className="text-align-center"
-            >
+          <IonRow>
+            <IonCol>
               <FormFieldWithError error={errors.description}>
                 <IonLabel position="floating">
                   Description of the endpoint
@@ -100,8 +76,8 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
               </FormFieldWithError>
             </IonCol>
           </IonRow>
-          <IonRow className="ion-justify-content-center">
-            <IonCol sizeXs="12" sizeSm="12" sizeMd="8" sizeLg="6">
+          <IonRow>
+            <IonCol>
               <IonButton type="submit">Submit</IonButton>
               <IonButton type="button" fill="outline" onClick={onBack}>
                 Back

@@ -1,14 +1,14 @@
 .home-page {
-  max-width: 1200px;
   margin: 0 auto;
+  .no-conduits {
+    margin-top: 50px;
+  }
   .table {
     padding-top: 1rem;
-    .table-header {
-      .table-header-col {
-        background-color: var(--ion-color-primary);
-        border-radius: 5px;
-        margin: 1px;
-      }
+    .table-header-col {
+      background-color: var(--ion-color-primary);
+      border-radius: 5px;
+      margin: 1px;
     }
     .table-row {
       .table-col {

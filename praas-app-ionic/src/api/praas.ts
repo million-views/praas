@@ -140,6 +140,7 @@ const praas = {
         method: 'GET',
       });
     },
+    // TODO: no body here but use queryize
     list(id: string) {
       return afetch('/conduits', {
         method: 'GET',

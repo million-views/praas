@@ -18,13 +18,7 @@ type Props = {
 const RequestMethods: React.FC<Props> = ({ defaultChecked }) => {
   return (
     <IonRow className="request-methods ion-justify-content-center">
-      <IonCol
-        className="request-methods__checkbox ion-align-items-center"
-        sizeXs="12"
-        sizeSm="12"
-        sizeMd="8"
-        sizeLg="6"
-      >
+      <IonCol className="request-methods__checkbox">
         <CheckBoxGroup
           name="racm"
           defaultChecked={defaultChecked}
