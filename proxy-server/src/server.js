@@ -151,7 +151,7 @@ if (!module.parent) {
       fetchConduits(data.user);
       setInterval(() => fetchConduits(data.user), conf.cacheRefreshInterval);
     })
-    .catch((error) => console.log("unexpected... ", error));
+    .catch((error) => { console.log("unexpected... ", error); process.exit(1) });
 
   // start listening only after logging in to the resource server...
   // if we can't login then there's no point in running the proxy
