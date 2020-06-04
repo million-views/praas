@@ -15,9 +15,9 @@ type Props = {
   whitelist: Array<WhiteList>;
 };
 
-const ConduitForm: React.FC<Props> = ({ whitelist = [] }) => {
+const IPWhiteList: React.FC<Props> = ({ whitelist = [] }) => {
   const [whitelistState, setWhitelistState] = useState(whitelist);
-  const { getValues } = useFormContext();
+  const { getValues, errors } = useFormContext();
 
   const onAdd = () => {
     const currentValues = getValues({ nest: true })['whitelist'] || [];
@@ -34,6 +34,7 @@ const ConduitForm: React.FC<Props> = ({ whitelist = [] }) => {
         const namePrefix = `whitelist[${index}]`;
         return (
           <WhiteListItem
+            error={errors.whitelist?.[index]}
             key={namePrefix}
             item={w}
             prefix={namePrefix}
@@ -52,4 +53,4 @@ const ConduitForm: React.FC<Props> = ({ whitelist = [] }) => {
   );
 };
 
-export default ConduitForm;
+export default IPWhiteList;
