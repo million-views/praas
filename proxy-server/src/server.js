@@ -1,13 +1,11 @@
-const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const errorhandler = require('errorhandler');
-const dotenv = require('dotenv-safe');
 const fetch = require('node-fetch');
 
 const conf = require('./config');
-const { printTime } = require('./lib/helpers');
+const helpers = require('./lib/helpers');
 
 const PraasAPI = require('./lib/praas');
 
@@ -108,34 +106,6 @@ if (conf.production) {
   });
 }
 
-// Returns proxy server user object (with credentials filled in from .env file)
-// TODO: move this to a common library accessible to both proxy and crud servers
-function getProxyServerCredentials() {
-  let proxy_credentials = undefined;
-  try {
-    // add proxy-server user... this is temporary and will go away when we
-    // integrate with OAuth2 and support client credentials grant flow...
-    proxy_credentials = dotenv.config({
-      allowEmptyValues: true,
-      example: path.resolve('../.env-example'),
-      path: path.resolve('../.env'),
-    });
-    // console.log(proxy_credentials);
-  } catch (e) {
-    console.log('unexpected...', e);
-    process.exit(1);
-  }
-
-  return {
-    user: {
-      firstName: 'Proxy',
-      lastName: 'Server',
-      email: proxy_credentials.parsed.PROXY_SERVER_EMAIL,
-      password: proxy_credentials.parsed.PROXY_SERVER_PASSWORD,
-    },
-  };
-}
-
 async function fetchConduits(user) {
   // fetch a list of conduits... be sure to run test-model, test-rest in sequence
   // before starting the proxy so we have data to test...
@@ -156,7 +126,7 @@ async function fetchConduits(user) {
       app.locals.cmap.set(conduit.curi, conduit);
     }
 
-    console.log(`${printTime()} : ${app.locals.cmap.size} active conduits`);
+    console.log(`${helpers.printTime()} : ${app.locals.cmap.size} active conduits`);
   } catch (e) {
     console.log('unexpected... ', e);
   }
@@ -167,7 +137,7 @@ if (!module.parent) {
   // fetch the conduits first... but first check if our credentials are kosher with resource server
   // by logging in...
   PraasAPI.user
-    .login(getProxyServerCredentials())
+    .login(helpers.getProxyServerCredentials())
     .then(async (data) => {
       // console.log('logged in?', data);
       // save our token...
@@ -185,3 +155,5 @@ if (!module.parent) {
     console.log(`Conduits proxy server is listening on port ${conf.port}`);
   });
 }
+
+module.exports = { app };
