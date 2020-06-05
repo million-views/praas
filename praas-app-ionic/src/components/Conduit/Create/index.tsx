@@ -9,7 +9,10 @@ interface Props {
   addConduit: (conduit: Conduit) => void;
 }
 
-const conduit = {};
+const conduit = {
+  racm: [],
+  whitelist: [{ address: '', comment: '', state: 'Inactive' }],
+};
 
 const ConduitCreate: React.FC<Props> = ({ addConduit }) => {
   const handleCreate = useCallback(
