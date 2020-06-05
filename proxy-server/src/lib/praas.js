@@ -140,6 +140,11 @@ const praas = {
         body: JSON.stringify(data)
       });
     },
+    get(id) {
+      return afetch(`/conduits/${id}`, {
+        method: 'GET',
+      });
+    },
     list(_id) {
       // id is not used
       return afetch('/conduits', {
