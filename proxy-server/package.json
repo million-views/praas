@@ -9,7 +9,8 @@
   "scripts": {
     "start": "node src/server.js",
     "lint": "eslint src --cache",
-    "lint:fix": "eslint --fix src"
+    "lint:fix": "eslint --fix src",
+    "test": "mocha --exit src/server.test.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
