@@ -3,14 +3,14 @@ const chaiHttp = require('chai-http');
 
 const helpers = require('./lib/helpers');
 const PraasAPI = require('./lib/praas');
-// const { app } = require('./server');
 
 const expect = chai.expect;
 chai.use(chaiHttp);
 
-// const proxyServer = () => chai.request(app);
 const proxyServerURL = 'http://localhost:5000';
+const proxyServer = () => chai.request(proxyServerURL);
 
+let testConduitId;
 const testConduit = {
   conduit: {
     description: 'Local proxy server for testing',
@@ -43,7 +43,8 @@ describe('Testing Proxy Server...', async () => {
     });
     // Setup conduit with test values
     it('Should setup test Conduit', done => {
-      PraasAPI.conduit.list(user.id)
+      PraasAPI.conduit
+        .list(user.id)
         .then(list => {
           return list.conduits.find(it => it.curi === proxyServerURL);
         })
@@ -51,20 +52,22 @@ describe('Testing Proxy Server...', async () => {
           if (cdt && cdt.id) return ({ conduit: cdt });
           else return PraasAPI.conduit.add(testConduit);
         })
-        .then(addCdt => {
+        .then(cdt => {
           return PraasAPI.conduit.update({
             conduit: {
-              id: addCdt.conduit.id,
+              id: cdt.conduit.id,
               curi: proxyServerURL,
+              ...testConduit,
             }
           });
         })
-        .then(updCdt => {
-          expect(updCdt.conduit).to.haveOwnProperty('id');
-          expect(updCdt.conduit.curi).to.equal(proxyServerURL);
-          expect(updCdt.conduit.suri).to.equal(testConduit.conduit.suri);
-          expect(updCdt.conduit.suriApiKey).to.equal(testConduit.conduit.suriApiKey);
-          expect(updCdt.conduit.suriObjectKey).to.equal(testConduit.conduit.suriObjectKey);
+        .then(cdt => {
+          expect(cdt.conduit).to.haveOwnProperty('id');
+          expect(cdt.conduit.curi).to.equal(proxyServerURL);
+          expect(cdt.conduit.suri).to.equal(testConduit.conduit.suri);
+          expect(cdt.conduit.suriApiKey).to.equal(testConduit.conduit.suriApiKey);
+          expect(cdt.conduit.suriObjectKey).to.equal(testConduit.conduit.suriObjectKey);
+          testConduitId = cdt.conduit.id;
           done();
         })
         .catch(error => console.log('unexpected... ', error));
@@ -72,7 +75,27 @@ describe('Testing Proxy Server...', async () => {
   });
 
   context('Validating Request', () => {
-    it('Should validate RACM', async () => {
+    it('Should validate RACM', done => {
+      PraasAPI.conduit
+        .update({
+          conduit: {
+            id: testConduitId,
+            racm: ['PUT', 'POST', 'PATCH', 'DELETE'],
+          }
+        })
+        .then(() => proxyServer().get('/'))
+        .then(resp => expect(resp.status).to.equal(405))
+        .then(() => {
+          PraasAPI.conduit
+            .update({
+              conduit: {
+                id: testConduitId,
+                racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
+              }
+            });
+          done();
+        })
+        .catch(error => console.log('unexpected... ', error));
     });
     it('Should validate Hidden Form Field', async () => {
     });

@@ -21,7 +21,8 @@ app.locals.cmap = new Map();
 
 // we handle all requests to the proxy end point...
 app.all('/*', (req, res) => {
-  const reqCuri = req.hostname;
+  const reqCuri = req.protocol + '://' + req.get('host');
+  console.log(`reqCuri: ${reqCuri}`);
   const conduit = app.locals.cmap.get(reqCuri);
 
   // If conduit not found in Cache, send 404
