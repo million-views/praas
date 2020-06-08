@@ -10,27 +10,86 @@ chai.use(chaiHttp);
 const proxyServerURL = 'http://localhost:5000';
 const proxyServer = () => chai.request(proxyServerURL);
 
+// Test Data
 let testConduitId;
 const testConduit = {
   conduit: {
     description: 'Local proxy server for testing',
-    hiddenFormField: [{ fieldName: 'campaign', policy: 'pass-if-match', include: false, value: 'consequatur' }],
     racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
     status: 'active',
-    suri: 'https://api.airtable.com/v0/appGy4fvzLsmR7vTX/',
+    suri: 'https://api.airtable.com/v0/appGy4fvzLsmR7vTX',
     suriApiKey: 'keyy97SC6NQE0uXJ8',
     suriObjectKey: 'Contacts',
     suriType: 'Airtable',
     throttle: '1',
     userId: '4',
-    whitelist: [{ ip: '765.654.543.432', status: 'inactive', comment: 'Sample whitelist for testing' }],
   }
+};
+
+// Conduit hff to test pass-if-match and include=true
+const hff1 = {
+  hiddenFormField: [{
+    fieldName: 'campaign',
+    policy: 'pass-if-match',
+    include: true,
+    value: 'BOGO June2020',
+  }],
+};
+
+// Test request to fail pass-if-match
+const testReq1body = {
+  records: [{
+    fields: {
+      name: 'fname1 lname1',
+      email: 'fname1@lname1.com',
+    }
+  }],
+};
+
+// Test request to pass pass-if-match and include=true
+const testReq2body = {
+  records: [{
+    fields: {
+      name: 'fname2 lname2',
+      email: 'fname2@lname2.com',
+      campaign: 'BOGO June2020',
+    }
+  }],
+};
+
+// Conduit hff to test include=false
+const hff2 = {
+  hiddenFormField: [{
+    fieldName: 'campaign',
+    policy: 'pass-if-match',
+    include: false,
+    value: 'CORONA 10',
+  }],
+};
+
+// Conduit hff to test policy drop-if-filled
+const hff3 = {
+  hiddenFormField: [{
+    fieldName: 'department',
+    policy: 'drop-if-filled',
+    include: false,
+  }],
+};
+
+// Test request to fail drop-if-filled
+const testReq3body = {
+  records: [{
+    fields: {
+      name: 'fname2 lname2',
+      email: 'fname2@lname2.com',
+      department: 'Marketing'
+    }
+  }],
 };
 
 describe('Testing Proxy Server...', async () => {
   let user;
   context('Creating Conduit...', () => {
-    // Login to CRUD Server
     it('Should login to CRUD Server as Proxy User', done => {
       PraasAPI.user
         .login(helpers.getProxyServerCredentials())
@@ -41,7 +100,6 @@ describe('Testing Proxy Server...', async () => {
         })
         .catch(error => console.log('unexpected... ', error));
     });
-    // Setup conduit with test values
     it('Should setup test Conduit', done => {
       PraasAPI.conduit
         .list(user.id)
@@ -74,30 +132,65 @@ describe('Testing Proxy Server...', async () => {
     });
   });
 
-  context('Validating Request', () => {
-    it('Should validate RACM', done => {
-      PraasAPI.conduit
-        .update({
-          conduit: {
-            id: testConduitId,
-            racm: ['PUT', 'POST', 'PATCH', 'DELETE'],
-          }
-        })
-        .then(() => proxyServer().get('/'))
-        .then(resp => expect(resp.status).to.equal(405))
-        .then(() => {
-          PraasAPI.conduit
-            .update({
-              conduit: {
-                id: testConduitId,
-                racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
-              }
-            });
-          done();
-        })
-        .catch(error => console.log('unexpected... ', error));
+  context('Validate incoming request', () => {
+    context('Validating RACM', () => {
+      it('Should reject method not present in RACM list', done => {
+        PraasAPI.conduit
+          .update({
+            conduit: {
+              id: testConduitId,
+              racm: ['PUT', 'POST', 'PATCH', 'DELETE'],
+            }
+          })
+          .then(() => proxyServer().get('/').set('Host', 'http:1'))
+          .then(resp => {
+            expect(resp.status).to.equal(405);
+            done();
+          })
+          .catch(error => console.log('unexpected... ', error));
+      });
+      it('Should allow method present in RACM list', done => {
+        PraasAPI.conduit
+          .update({
+            conduit: {
+              id: testConduitId,
+              racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
+            }
+          })
+          .then(() => proxyServer().get('/').set('Host', 'http:2'))
+          .then(resp => {
+            expect(resp.status).not.to.equal(405);
+            done();
+          })
+          .catch(error => console.log('unexpected... ', error));
+      });
     });
-    it('Should validate Hidden Form Field', async () => {
+    context('Validating Hidden Form Field', () => {
+      it('Should reject if pass-if-match doesnt match', done => {
+        PraasAPI.conduit
+          .update({
+            conduit: {
+              id: testConduitId,
+              ...hff1,
+            }
+          })
+          .then(() => proxyServer().post('/').send(testReq1body))
+          .then(resp => {
+            expect(resp.status).to.equal(200);
+
+          })
+          .then(() => {
+            PraasAPI.conduit
+              .update({
+                conduit: {
+                  id: testConduitId,
+                  racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
+                }
+              });
+            done();
+          })
+          .catch(error => console.log('unexpected... ', error));
+      });
     });
   });
   context('Testing Airtable Gateway', () => {
