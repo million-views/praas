@@ -21,6 +21,18 @@ app.locals.cmap = new Map();
 
 // we handle all requests to the proxy end point...
 app.all('/*', (req, res) => {
+  // Verify that PUT, POST and PATCH operations have fields data in body
+  if (['PUT', 'PATCH', 'POST'].includes(req.method) &&
+    req.body.records[0].fields === undefined) {
+    return res.status(422).send('Fields not present');
+  }
+
+  // Verify that PUT and PATCH operations have id field in body
+  if (['PUT', 'PATCH'].includes(req.method) &&
+    req.body.records[0].id === undefined) {
+    return res.status(422).send('id not provided');
+  }
+
   const reqCuri = req.protocol + '://' + req.get('host');
   console.log(`reqCuri: ${reqCuri}`);
   const conduit = app.locals.cmap.get(reqCuri);
@@ -36,19 +48,23 @@ app.all('/*', (req, res) => {
   }
 
   // perform hidden form field validation
-  for (let i = 0, imax = conduit.hiddenFormField.length; i < imax; i++) {
-    const hff = conduit.hiddenFormField[i];
-    let reqHff = undefined;
-    if (req.body && req.body[hff.fieldName]) reqHff = req.body[hff.fieldName];
+  if (req.method === 'POST') {
+    for (let i = 0, imax = conduit.hiddenFormField.length; i < imax; i++) {
+      const hff = conduit.hiddenFormField[i];
+      let reqHff = undefined;
+      if (req.body.records && req.body.records[0].fields[hff.fieldName]) {
+        reqHff = req.body[hff.fieldName];
+      };
 
-    // This feature is to catch spam bots, so don't
-    // send error if failure, send 200-OK instead
-    if (hff && hff.policy === 'drop-if-filled' && reqHff) {
-      return res.sendStatus(200);
-    }
+      // This feature is to catch spam bots, so don't
+      // send error if failure, send 200-OK instead
+      if (hff && hff.policy === 'drop-if-filled' && reqHff) {
+        return res.sendStatus(200);
+      }
 
-    if (hff && hff.policy === 'pass-if-match' && !(reqHff === hff.value)) {
-      return res.sendStatus(200);
+      if (hff && hff.policy === 'pass-if-match' && !(reqHff === hff.value)) {
+        return res.sendStatus(200);
+      }
     }
   }
 
