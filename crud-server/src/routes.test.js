@@ -169,7 +169,7 @@ describe('Praas REST API', () => {
       await helpers.generateConduits(jakeUser.id, 20);
       const res = await Api()
         .get('/conduits')
-        .query({ start: '505', count: '10' })
+        .query({ start: '510', count: '10' })
         .set('Authorization', `Token ${jakeUser.token}`);
       expect(res.status).to.equal(200);
       expect(res.body.conduits.length).to.equal(10);

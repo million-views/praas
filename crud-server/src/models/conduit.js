@@ -13,18 +13,22 @@ module.exports = (db, DataTypes) => {
     },
     suriObjectKey: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: false
     },
     suri: {
       type: DataTypes.STRING(512),
       allowNull: false,
-      isUrl: true,
+      validate: {
+        isUrl: true,
+      }
     },
     curi: {
       type: DataTypes.STRING(512),
       allowNull: false,
-      isUrl: true,
       unique: true,
+      validate: {
+        isUrl: true,
+      }
 
       // set(val) {
       //   console.log('val-before: ', val);
