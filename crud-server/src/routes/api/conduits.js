@@ -21,7 +21,10 @@ router.post('/', auth.required, async function (req, res, next) {
   if (Object.keys(errors).length) return res.status(422).json({ errors });
 
   try { await conduit.save(); } catch (error) {
-    return res.status(500).json({ error });
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      conduit.curi = await helpers.makeCuri(models.System.cconf.settings.prefix);
+      await conduit.save();
+    } else return res.status(500).json({ error });
   };
 
   return res.status(201).json({ conduit: { id: conduit.id } });
