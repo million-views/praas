@@ -95,7 +95,7 @@ module.exports = (db, DataTypes) => {
     }
 
     return user;
-  }
+  };
 
   return User;
 };

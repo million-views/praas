@@ -190,6 +190,15 @@ describe('Praas REST API', () => {
       expect(res2.body.conduit.status).to.equal('Inactive');
     });
 
+    it('should not allow curi to be updated by the service end point', async () => {
+      const ct = { conduit: { curi: 'td-12345.trickle.cc' } };
+      const res = await Api()
+        .patch(`/conduits/${ctId1}`)
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send(ct);
+      expect(res.status).to.equal(400);
+    });
+
     it('should allow user to remove service endpoint', async () => {
       const res = await Api()
         .delete(`/conduits/${ctId2}`)
