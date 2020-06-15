@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
@@ -11,20 +14,7 @@ const proxyServerURL = 'http://localhost:5000';
 const proxyServer = () => chai.request(proxyServerURL);
 
 // Test Data
-let testConduitId;
-const testConduit = {
-  conduit: {
-    description: 'Local proxy server for testing',
-    racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
-    status: 'active',
-    suri: 'https://api.airtable.com/v0/appGy4fvzLsmR7vTX',
-    suriApiKey: 'keyy97SC6NQE0uXJ8',
-    suriObjectKey: 'Contacts',
-    suriType: 'Airtable',
-    throttle: '1',
-    userId: '4',
-  }
-};
+const testConduit = JSON.parse(fs.readFileSync(path.resolve('../.test-conduit-data.json')));
 
 // Conduit hff to test pass-if-match and include=true
 const hff1 = {
@@ -88,78 +78,20 @@ const testReq3body = {
 };
 
 describe('Testing Proxy Server...', async () => {
-  let user;
-  context('Creating Conduit...', () => {
-    it('Should login to CRUD Server as Proxy User', done => {
-      PraasAPI.user
-        .login(helpers.getProxyServerCredentials())
-        .then(async data => {
-          user = data.user;
-          global.localStorage.setItem('user', JSON.stringify({ ...user }));
-          done();
-        })
-        .catch(error => console.log('unexpected... ', error));
-    });
-    it('Should setup test Conduit', done => {
-      PraasAPI.conduit
-        .list(user.id)
-        .then(list => {
-          return list.conduits.find(it => it.curi === proxyServerURL);
-        })
-        .then(cdt => {
-          if (cdt && cdt.id) return ({ conduit: cdt });
-          else return PraasAPI.conduit.add(testConduit);
-        })
-        .then(cdt => {
-          return PraasAPI.conduit.update({
-            conduit: {
-              id: cdt.conduit.id,
-              curi: proxyServerURL,
-              ...testConduit,
-            }
-          });
-        })
-        .then(cdt => {
-          expect(cdt.conduit).to.haveOwnProperty('id');
-          expect(cdt.conduit.curi).to.equal(proxyServerURL);
-          expect(cdt.conduit.suri).to.equal(testConduit.conduit.suri);
-          expect(cdt.conduit.suriApiKey).to.equal(testConduit.conduit.suriApiKey);
-          expect(cdt.conduit.suriObjectKey).to.equal(testConduit.conduit.suriObjectKey);
-          testConduitId = cdt.conduit.id;
-          done();
-        })
-        .catch(error => console.log('unexpected... ', error));
-    });
-  });
-
   context('Validate incoming request', () => {
     context('Validating RACM', () => {
-      it('Should reject method not present in RACM list', done => {
-        PraasAPI.conduit
-          .update({
-            conduit: {
-              id: testConduitId,
-              racm: ['PUT', 'POST', 'PATCH', 'DELETE'],
-            }
-          })
-          .then(() => proxyServer().get('/').set('Host', 'http:1'))
+      it('Should allow method present in RACM list', done => {
+        proxyServer().get('/').set('Host', testConduit.curi)
           .then(resp => {
-            expect(resp.status).to.equal(405);
+            expect(resp.status).to.not.equal(405);
             done();
           })
           .catch(error => console.log('unexpected... ', error));
       });
-      it('Should allow method present in RACM list', done => {
-        PraasAPI.conduit
-          .update({
-            conduit: {
-              id: testConduitId,
-              racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
-            }
-          })
-          .then(() => proxyServer().get('/').set('Host', 'http:2'))
+      it('Should reject method not present in RACM list', done => {
+        proxyServer().get('/').set('Host', testConduit.curi)
           .then(resp => {
-            expect(resp.status).not.to.equal(405);
+            expect(resp.status).to.equal(405);
             done();
           })
           .catch(error => console.log('unexpected... ', error));
@@ -167,26 +99,9 @@ describe('Testing Proxy Server...', async () => {
     });
     context('Validating Hidden Form Field', () => {
       it('Should reject if pass-if-match doesnt match', done => {
-        PraasAPI.conduit
-          .update({
-            conduit: {
-              id: testConduitId,
-              ...hff1,
-            }
-          })
-          .then(() => proxyServer().post('/').send(testReq1body))
+        proxyServer().post('/').send(testReq1body)
           .then(resp => {
             expect(resp.status).to.equal(200);
-
-          })
-          .then(() => {
-            PraasAPI.conduit
-              .update({
-                conduit: {
-                  id: testConduitId,
-                  racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
-                }
-              });
             done();
           })
           .catch(error => console.log('unexpected... ', error));

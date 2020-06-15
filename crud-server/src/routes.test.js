@@ -1,8 +1,11 @@
+const fs = require('fs');
+const path = require('path');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
 const server = require('./server');
 const helpers = require('./lib/helpers');
+const dotEnv = require('dotenv-safe');
 
 const expect = chai.expect;
 chai.use(chaiHttp);
@@ -114,6 +117,41 @@ describe('Praas REST API', () => {
     });
 
     after('logout', async () => {
+      console.log('setting up test data for proxy server');
+      const dotEnvValues = dotEnv.config({
+        allowEmptyValues: true,
+        example: path.resolve('../.env.conduit.example'),
+        path: path.resolve('../.env.conduit')
+      });
+      let testConduit = {
+        description: 'Local proxy server for testing',
+        curi: await helpers.makeCuri('test'),
+        suri: dotEnvValues.parsed.CONDUIT_SERVICE_URI,
+        suriApiKey: dotEnvValues.parsed.CONDUIT_SERVICE_API_KEY,
+        suriObjectKey: dotEnvValues.parsed.CONDUIT_SERVICE_OBJECT_KEY,
+        suriType: 'Airtable',
+        racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
+        whitelist: [{
+          ip: '765.654.543.432',
+          status: 'inactive',
+          comment: 'Sample whitelist for testing'
+        }],
+        throttle: false,
+        status: 'active',
+      };
+      await Api()
+        .post('/conduits')
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ conduit: testConduit })
+        .then( res => expect(res).to.have.status(201) )
+        .then(() => {
+          fs.writeFileSync(
+            path.resolve('../.test-conduit-data.json'),
+            JSON.stringify(testConduit, null, 2)
+          );
+        })
+        .catch( () => console.error('setting up of test conduit failed') )
+
       jakeUser.token = '';
     });
 
