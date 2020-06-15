@@ -76,7 +76,7 @@ router.patch('/:id', auth.required, async (req, res, next) => {
     if (!conduit) {
       return res.sendStatus(404);
     }
-    if (req.body.conduit.curi === undefined) {
+    if (!req.body.conduit.curi) {
       await conduit.update(await req.body.conduit);
       res.status(200).json({ conduit: conduit.toJSON() });
     } else {
