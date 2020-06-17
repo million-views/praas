@@ -24,7 +24,7 @@ router.post('/', auth.required, async function (req, res, next) {
     if (error.name === 'SequelizeUniqueConstraintError') {
       conduit.curi = await helpers.makeCuri(models.System.cconf.settings.prefix);
       await conduit.save();
-    } else return res.status(500).json({ error });
+    } else next(error);
   };
 
   return res.status(201).json({ conduit: { id: conduit.id } });
@@ -70,7 +70,6 @@ router.get('/', auth.required, async (req, res, next) => {
 
 // Update conduit
 router.patch('/:id', auth.required, async (req, res, next) => {
-  let errors = null;
   try {
     const conduit = await Conduit.findByPk(req.params.id);
     if (!conduit) {
@@ -82,11 +81,9 @@ router.patch('/:id', auth.required, async (req, res, next) => {
 
     await conduit.update(await req.body.conduit);
     res.status(200).json({ conduit: conduit.toJSON() });
-  } catch (e) {
-    errors = e;
-    console.log('errors... ', e);
+  } catch (error) {
+    next(error);
   }
-  next(errors);
 });
 
 // Delete conduit
