@@ -6,35 +6,33 @@ const fetch = require('node-fetch');
 
 const conf = require('./config');
 const helpers = require('./lib/helpers');
-
 const PraasAPI = require('./lib/praas');
 
-// Create global app object
 const app = express();
 
 app.use(bodyParser.json());
 app.use(cors());
 
 // store conduits indexed by curi in app.locals for lookup later...
-// Start with empty cache
+// Start with empty cache - this will be populated by fetchConduits
 app.locals.cmap = new Map();
 
 // we handle all requests to the proxy end point...
 app.all('/*', (req, res) => {
-  // Verify that PUT, POST and PATCH operations have fields data in body
+  // PUT, POST and PATCH operations need fields data in body
   if (['PUT', 'PATCH', 'POST'].includes(req.method) &&
     req.body.records[0].fields === undefined) {
     return res.status(422).send('Fields not present');
   }
 
-  // Verify that PUT and PATCH operations have id field in body
+  // PUT and PATCH operations need id field in body
   if (['PUT', 'PATCH'].includes(req.method) &&
     req.body.records[0].id === undefined) {
     return res.status(422).send('id not provided');
   }
 
   const reqCuri = req.protocol + '://' + req.get('host');
-  console.log(`reqCuri: ${reqCuri}`);
+  // console.log(`reqCuri: ${reqCuri}`);
   const conduit = app.locals.cmap.get(reqCuri);
 
   // If conduit not found in Cache, send 404
@@ -47,9 +45,10 @@ app.all('/*', (req, res) => {
     return res.status(405).send(`${req.method} is not permitted`);
   }
 
-  // perform hidden form field validation
+  // perform hidden form field validation (needed only for new record creation)
   if (req.method === 'POST') {
     for (let i = 0, imax = conduit.hiddenFormField.length; i < imax; i++) {
+      // We`ll be using this multiple times, so store in a short variable
       const hff = conduit.hiddenFormField[i];
       let reqHff = undefined;
       if (req.body.records && req.body.records[0].fields[hff.fieldName]) {
@@ -69,7 +68,7 @@ app.all('/*', (req, res) => {
   }
 
   // Prepare request
-  const url = conduit.suri + '/' + conduit.suriObjectKey + req.path;
+  let url = conduit.suri + '/' + conduit.suriObjectKey + req.path;
   const options = {
     method: req.method,
     headers: {
@@ -78,8 +77,14 @@ app.all('/*', (req, res) => {
     },
   };
 
-  if (!(req.method === 'GET') && req.body.records) {
+  // GET and DELETE don't need request body
+  if (['PUT', 'POST', 'PATCH'].includes(req.method)) {
     options.body = JSON.stringify(req.body);
+  }
+
+  // Multi DELETE to be sent as query paramters
+  if ((req.method === 'DELETE') && req.query.records) {
+    url += req.query.records.reduce((q, i) => q + `records[]=${i}&`, '?');
   }
 
   // Send request
