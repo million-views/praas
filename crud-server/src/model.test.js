@@ -145,109 +145,698 @@ describe('PraaS', () => {
       expect(objCdt.curi.length).to.equal(models.System.cconf.settings.curiLen);
     });
 
-    it('should not allow duplicate curi', () => {
-      const objCdt = models.Conduit.build(cdt);
-      objCdt.save()
-        .then(() => { throw (new Error('Test Failed')); })
-        .catch(e => {
-          expect(e.name).to.equal('SequelizeUniqueConstraintError');
-        });
+    context('testing curi field...', () => {
+      it('should not allow duplicate curi', () => {
+        const objCdt = models.Conduit.build(cdt);
+        objCdt.save()
+          .then(() => { throw (new Error('Test Failed')); })
+          .catch(e => {
+            expect(e.name).to.equal('SequelizeUniqueConstraintError');
+          });
+      });
+
+      it('should not allow non-url curi', () => {
+        const cdt = helpers.fakeConduit({ userId: user.id, curi: 'not-in-url-format' });
+        const objCdt = models.Conduit.build(cdt);
+        objCdt.save()
+          .then(() => { throw (new Error('Test Failed')); })
+          .catch(e => {
+            expect(e.name).to.equal('SequelizeValidationError');
+            expect(e.errors[0].path).to.equal('curi');
+          });
+      });
     });
 
-    it('should not allow non-url curi', () => {
-      const cdt = helpers.fakeConduit({ userId: user.id, curi: 'not-in-url-format' });
-      const objCdt = models.Conduit.build(cdt);
-      objCdt.save()
-        .then(() => { throw (new Error('Test Failed')); })
-        .catch(e => {
-          expect(e.name).to.equal('SequelizeValidationError');
-          expect(e.errors[0].path).to.equal('curi');
-        });
+    context('testing suri field...', () => {
+      it('should not allow no suri', () => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            delete cdt.suri;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => { throw (new Error('Test Failed')); })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suri');
+              });
+          });
+      });
+
+      it('should not allow undefined suri', () => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suri = undefined;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => { throw (new Error('Test Failed')); })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suri');
+              });
+          });
+      });
+
+      it('should not allow null suri', () => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suri = null;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => { throw (new Error('Test Failed')); })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suri');
+              });
+          });
+      });
+
+      it('should not allow empty suri', () => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suri = '';
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => { throw (new Error('Test Failed')); })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suri');
+              });
+          });
+      });
+
+      it('should not allow blank suri', () => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suri = '    ';
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => { throw (new Error('Test Failed')); })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suri');
+              });
+          });
+      });
+
+      it('should not allow non-url suri', () => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suri = 'not-in-url-format';
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => { throw (new Error('Test Failed')); })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suri');
+              });
+          });
+      });
     });
 
-    it('should not allow empty suriAPIKey', () => {
-      helpers.makeCuri('td')
-        .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-        .then(cdt => {
-          delete cdt.suriApiKey;
-          return models.Conduit.build(cdt);
-        })
-        .then(objCdt => {
-          objCdt.save()
-            .then(() => { throw (new Error('Test Failed')); })
-            .catch(e => {
-              expect(e.name).to.equal('SequelizeValidationError');
-              expect(e.errors[0].path).to.equal('suriApiKey');
-            });
-        });
+    context('testing suriType field...', () => {
+      it('should not allow no suriType', () => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            delete cdt.suriType;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => { throw (new Error('Test Failed')); })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suriType');
+              });
+          });
+      });
+
+      it('should not allow undefined suriType', () => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suriType = undefined;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => { throw (new Error('Test Failed')); })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suriType');
+              });
+          });
+      });
+
+      it('should not allow null suriType', () => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suriType = null;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => { throw (new Error('Test Failed')); })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suriType');
+              });
+          });
+      });
+
+      it('should not allow empty suriType', () => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suriType = '';
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => { throw (new Error('Test Failed')); })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suriType');
+              });
+          });
+      });
+
+      it('should not allow blank suriType', () => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suriType = '    ';
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => { throw (new Error('Test Failed')); })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suriType');
+              });
+          });
+      });
+
+      it('should allow only \'Airtable\', \'Google sheets\', or \'Smart sheet\'', () => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suriType = 'random';
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => { throw (new Error('Test Failed')); })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suriType');
+              });
+          });
+      });
     });
 
-    it('should not allow empty suriType', () => {
-      helpers.makeCuri('td')
-        .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-        .then(cdt => {
-          delete cdt.suriType;
-          return models.Conduit.build(cdt);
-        })
-        .then(objCdt => {
-          objCdt.save()
-            .then(() => { throw (new Error('Test Failed')); })
-            .catch(e => {
-              expect(e.name).to.equal('SequelizeValidationError');
-              expect(e.errors[0].path).to.equal('suriType');
-            });
-        });
+    context('testing suriApiKey field...', () => {
+      it('should not allow no suriApiKey', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            delete cdt.suriApiKey;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('Conduit saved without required suriApiKey'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suriApiKey');
+                done();
+              });
+          });
+      });
+
+      it('should not allow undefined suriApiKey', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suriApiKey = undefined;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('Conduit saved with undefined suriApiKey'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suriApiKey');
+                done();
+              });
+          });
+      });
+
+      it('should not allow null suriApiKey', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suriApiKey = null;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('Conduit saved with null suriApiKey'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suriApiKey');
+                done();
+              });
+          });
+      });
+
+      it('should not allow empty suriApiKey', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suriApiKey = '';
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('Conduit saved with empty suriApiKey'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suriApiKey');
+                done();
+              });
+          });
+      });
+
+      it('should not allow blank suriApiKey', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suriApiKey = '    ';
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('Conduit saved with blank suriApiKey'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suriApiKey');
+                done();
+              });
+          });
+      });
     });
 
-    it('should not allow empty suriObjectKey', () => {
-      helpers.makeCuri('td')
-        .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-        .then(cdt => {
-          delete cdt.suriObjectKey;
-          return models.Conduit.build(cdt);
-        })
-        .then(objCdt => {
-          objCdt.save()
-            .then(() => { throw (new Error('Test Failed')); })
-            .catch(e => {
-              expect(e.name).to.equal('SequelizeValidationError');
-              expect(e.errors[0].path).to.equal('suriObjectKey');
-            });
-        });
+    context('testing suriObjectKey field...', () => {
+      it('should not allow no suriObjectKey', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            delete cdt.suriObjectKey;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('Conduit saved without required suriObjectKey'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suriObjectKey');
+                done();
+              });
+          });
+      });
+
+      it('should not allow undefined suriObjectKey', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suriObjectKey = undefined;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('Conduit saved with undefined suriObjectKey'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suriObjectKey');
+                done();
+              });
+          });
+      });
+
+      it('should not allow null suriObjectKey', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suriObjectKey = null;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('Conduit saved with null suriObjectKey'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suriObjectKey');
+                done();
+              });
+          });
+      });
+
+      it('should not allow empty suriObjectKey', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suriObjectKey = '';
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('Conduit saved with empty suriObjectKey'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suriObjectKey');
+                done();
+              });
+          });
+      });
+
+      it('should not allow blank suriObjectKey', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.suriObjectKey = '    ';
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('Conduit saved with blank suriObjectKey'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('suriObjectKey');
+                done();
+              });
+          });
+      });
     });
 
-    it('should not allow empty suri', () => {
-      helpers.makeCuri('td')
-        .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-        .then(cdt => {
-          delete cdt.suri;
-          return models.Conduit.build(cdt);
-        })
-        .then(objCdt => {
-          objCdt.save()
-            .then(() => { throw (new Error('Test Failed')); })
-            .catch(e => {
-              expect(e.name).to.equal('SequelizeValidationError');
-              expect(e.errors[0].path).to.equal('suri');
-            });
-        });
+    context('testing status field...', () => {
+      it('should set default status to \'active\' if no status is set', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            delete cdt.status;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(objCdt => {
+                expect(objCdt.status).to.equal('active');
+                done();
+              })
+              .catch(_err => {
+                done(Error('status was not saved with default value'));
+              });
+          });
+      });
+
+      it('should set default status to \'active\' if status is undefined', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.status = undefined;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(objCdt => {
+                expect(objCdt.status).to.equal('active');
+                done();
+              })
+              .catch(_err => {
+                done(Error('status was not saved with default value'));
+              });
+          });
+      });
+
+      it('should not allow null status', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.status = null;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('null value was saved successfully'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('status');
+                done();
+              });
+          });
+      });
+
+      it('should not allow empty status', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.status = '';
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('empty value was saved successfully'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('status');
+                done();
+              });
+          });
+      });
+
+      it('should not allow blank status', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.status = '    ';
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('blank value was saved successfully'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('status');
+                done();
+              });
+          });
+      });
+
+      it('should allow only \'active\' or \'inactive\'', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.status = 'random';
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('\'random\' value was saved successfully'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('status');
+                done();
+              });
+          });
+      });
     });
 
-    it('should not allow non-url suri', () => {
-      helpers.makeCuri('td')
-        .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-        .then(cdt => {
-          cdt.suri = 'not-in-url-format';
-          return models.Conduit.build(cdt);
-        })
-        .then(objCdt => {
-          objCdt.save()
-            .then(() => { throw (new Error('Test Failed')); })
-            .catch(e => {
-              expect(e.name).to.equal('SequelizeValidationError');
-              expect(e.errors[0].path).to.equal('suri');
-            });
-        });
+    context('testing racm field...', () => {
+      it('should set default racm to [] if no racm is set', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            delete cdt.racm;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(objCdt => {
+                expect(objCdt.racm).to.eql([]);
+                done();
+              })
+              .catch(_err => {
+                done(Error('racm was not saved with default value'));
+              });
+          });
+      });
+
+      it('should set default racm to [] if racm is undefined', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.racm = undefined;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(objCdt => {
+                expect(objCdt.racm).to.eql([]);
+                done();
+              })
+              .catch(_err => {
+                done(Error('racm was not saved with default value'));
+              });
+          });
+      });
+
+      it('should not allow null racm', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.racm = null;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('null value was saved successfully'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('racm');
+                done();
+              });
+          });
+      });
+    });
+
+    context('testing throttle field...', () => {
+      it('should set default throttle to true if no throttle is set', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            delete cdt.throttle;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(objCdt => {
+                expect(objCdt.throttle).to.equal(true);
+                done();
+              })
+              .catch(_err => {
+                done(Error('throttle was not saved with default value'));
+              });
+          });
+      });
+
+      it('should set default throttle to true if throttle is undefined', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.throttle = undefined;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(objCdt => {
+                expect(objCdt.throttle).to.equal(true);
+                done();
+              })
+              .catch(_err => {
+                done(Error('throttle was not saved with default value'));
+              });
+          });
+      });
+
+      it('should not allow null throttle', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.throttle = null;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('null value was saved successfully'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('throttle');
+                done();
+              });
+          });
+      });
+
+      it('should allow only \'true\' or \'false\' values', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.throttle = 'random';
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('\'random\' value was saved successfully'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('throttle');
+                done();
+              });
+          });
+      });
     });
 
     it('should not allow null whitelist', () => {
@@ -263,57 +852,6 @@ describe('PraaS', () => {
             .catch(e => {
               expect(e.name).to.equal('SequelizeValidationError');
               expect(e.errors[0].path).to.equal('whitelist');
-            });
-        });
-    });
-
-    it('should not allow null racm', () => {
-      helpers.makeCuri('td')
-        .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-        .then(cdt => {
-          cdt.racm = null;
-          return models.Conduit.build(cdt);
-        })
-        .then(objCdt => {
-          objCdt.save()
-            .then(() => { throw (new Error('Test Failed')); })
-            .catch(e => {
-              expect(e.name).to.equal('SequelizeValidationError');
-              expect(e.errors[0].path).to.equal('racm');
-            });
-        });
-    });
-
-    it('should not allow null throttle', () => {
-      helpers.makeCuri('td')
-        .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-        .then(cdt => {
-          cdt.throttle = null;
-          return models.Conduit.build(cdt);
-        })
-        .then(objCdt => {
-          objCdt.save()
-            .then(() => { throw (new Error('Test Failed')); })
-            .catch(e => {
-              expect(e.name).to.equal('SequelizeValidationError');
-              expect(e.errors[0].path).to.equal('throttle');
-            });
-        });
-    });
-
-    it('should not allow empty status', () => {
-      helpers.makeCuri('td')
-        .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-        .then(cdt => {
-          cdt.status = null;
-          return models.Conduit.build(cdt);
-        })
-        .then(objCdt => {
-          objCdt.save()
-            .then(() => { throw (new Error('Test Failed')); })
-            .catch(e => {
-              expect(e.name).to.equal('SequelizeValidationError');
-              expect(e.errors[0].path).to.equal('status');
             });
         });
     });

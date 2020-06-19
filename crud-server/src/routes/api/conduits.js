@@ -15,16 +15,19 @@ router.post('/', auth.required, async function (req, res, next) {
   conduit.throttle = true;
   conduit.status = 'Inactive';
 
-  const conduitReqdFields = ['suriApiKey', 'suriType', 'suri', 'whitelist', 'racm'];
-  const conduitOptFields = ['suriObjectKey', 'throttle', 'status', 'description', 'hiddenFormField'];
+  const conduitReqdFields = ['suriApiKey', 'suriObjectKey', 'suriType', 'suri', 'whitelist', 'racm'];
+  const conduitOptFields = ['throttle', 'status', 'description', 'hiddenFormField'];
   helpers.processInput(await req.body.conduit, conduitReqdFields, conduitOptFields, conduit, errors);
   if (Object.keys(errors).length) return res.status(422).json({ errors });
 
   try { await conduit.save(); } catch (error) {
+    if (error.name === 'SequelizeValidationError') {
+      return res.status(422).json({ error });
+    }
     if (error.name === 'SequelizeUniqueConstraintError') {
       conduit.curi = await helpers.makeCuri(models.System.cconf.settings.prefix);
       await conduit.save();
-    } else next(error);
+    } else return next(error);
   };
 
   return res.status(201).json({ conduit: { id: conduit.id } });
@@ -82,7 +85,7 @@ router.patch('/:id', auth.required, async (req, res, next) => {
     await conduit.update(await req.body.conduit);
     res.status(200).json({ conduit: conduit.toJSON() });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -94,7 +97,7 @@ router.delete('/:id', auth.required, async (req, res, next) => {
     // return count ? res.sendStatus(200) : res.sendStatus(404);
     return count ? res.status(200).json({ conduit: { id: req.params.id } }) : res.sendStatus(404);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 

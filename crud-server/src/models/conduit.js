@@ -10,10 +10,17 @@ module.exports = (db, DataTypes) => {
     suriType: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        notEmpty: true,
+        isIn: [['Airtable', 'Google Sheets', 'Smart Sheet']]
+      }
     },
     suriObjectKey: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        notEmpty: true
+      }
     },
     suri: {
       type: DataTypes.STRING(512),
@@ -62,7 +69,10 @@ module.exports = (db, DataTypes) => {
     status: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: 'active'
+      defaultValue: 'active',
+      validate: {
+        isIn: [['active', 'inactive']]
+      }
     },
     description: {
       type: DataTypes.TEXT,
