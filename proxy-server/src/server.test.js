@@ -81,6 +81,14 @@ const testReq3body = {
 
 describe('Testing Proxy Server...', async () => {
   context('Validate incoming request', () => {
+    it('should reject requests of inactive conduits', async function () {
+      const res = await proxyServer().get('/');
+      expect(res.status).to.equal(404)
+    });
+    context.skip('validate allowList', () => {
+      it('should reject requests from IPs not in AllowList');
+      it('should allow requests from IPs in AllowList');
+    });
     context('Validating RACM', () => {
       it('Should reject method not present in RACM list', async function () {
         const res = await proxyServer().get('/').set('Host', dropConduit);
