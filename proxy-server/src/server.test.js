@@ -82,21 +82,13 @@ const testReq3body = {
 describe('Testing Proxy Server...', async () => {
   context('Validate incoming request', () => {
     context('Validating RACM', () => {
-      it('Should allow method present in RACM list', done => {
-        proxyServer().get('/').set('Host', testConduit.curi)
-          .then(resp => {
-            expect(resp.status).to.not.equal(405);
-            done();
-          })
-          .catch(error => console.log('unexpected... ', error));
+      it('Should reject method not present in RACM list', async function () {
+        const res = await proxyServer().get('/').set('Host', dropConduit);
+        expect(res.status).to.equal(405);
       });
-      it('Should reject method not present in RACM list', done => {
-        proxyServer().get('/').set('Host', testConduit.curi)
-          .then(resp => {
-            expect(resp.status).to.equal(405);
-            done();
-          })
-          .catch(error => console.log('unexpected... ', error));
+      it('Should allow method present in RACM list', async function () {
+        const res = await proxyServer().get('/').set('Host', passConduit);
+        expect(res.status).to.not.equal(405);
       });
     });
     context('Validating Hidden Form Field', () => {
