@@ -138,11 +138,11 @@ describe('Praas REST API', () => {
         }],
         throttle: false,
         status: 'active',
-        hiddenFormField: {
+        hiddenFormField: [{
           fieldName: 'hiddenFormField',
           policy: 'drop-if-filled',
           include: false
-        }
+        }]
       };
       await Api()
         .post('/conduits')
@@ -167,12 +167,12 @@ describe('Praas REST API', () => {
         }],
         throttle: false,
         status: 'active',
-        hiddenFormField: {
+        hiddenFormField: [{
           fieldName: 'hiddenFormField',
           policy: 'pass-if-match',
           include: true,
           value: 'hidden-form-field-value'
-        }
+        }]
       };
       await Api()
         .post('/conduits')

@@ -37,25 +37,15 @@ const request1 = {
   }]
 };
 
-// Test request to pass pass-if-match and include=true
-const testReq2body = {
+// non-compliant hiddenFormField
+const request2 = {
   records: [{
     fields: {
-      name: 'fname2 lname2',
-      email: 'fname2@lname2.com',
-      campaign: 'BOGO June2020',
+      name: 'first last',
+      email: 'first@last.com',
+      hiddenFormField: 'hiddenFormFieldValue',
     }
-  }],
-};
-
-// Conduit hff to test include=false
-const hff2 = {
-  hiddenFormField: [{
-    fieldName: 'campaign',
-    policy: 'pass-if-match',
-    include: false,
-    value: 'CORONA 10',
-  }],
+  }]
 };
 
 // Conduit hff to test policy drop-if-filled
@@ -115,13 +105,14 @@ describe('Testing Proxy Server...', async () => {
       });
     });
     context('Validating Hidden Form Field', () => {
-      it('Should reject if pass-if-match doesnt match', done => {
-        proxyServer().post('/').send(testReq1body)
-          .then(resp => {
-            expect(resp.status).to.equal(200);
-            done();
-          })
-          .catch(error => console.log('unexpected... ', error));
+      context('when hiddenFormField.policy is pass-if-match', () => {
+        it('should silently drop if value does not match', async function () {
+          const res = await proxyServer()
+                        .post('/')
+                        .set('Host', passConduit)
+                        .send(request2);
+          expect(res.status).to.equal(200);
+        });
       });
     });
   });
