@@ -61,5 +61,5 @@ typings/
 # next.js build output
 .next
 
-# test-conduit-data
-.test-conduit-data.json
+# test-data
+.test-data-curi.json

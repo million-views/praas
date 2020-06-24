@@ -116,42 +116,81 @@ describe('Praas REST API', () => {
       expect(jwtDecoded.id).to.equal(jakeUser.id);
     });
 
-    after('logout', async () => {
-      console.log('setting up test data for proxy server');
+    after('set up proxy-server and logout', async () => {
+      console.log('starting setting up test data for proxy server');
       const dotEnvValues = dotEnv.config({
         allowEmptyValues: true,
         example: path.resolve('../.env.conduit.example'),
         path: path.resolve('../.env.conduit')
       });
-      let testConduit = {
-        description: 'Local proxy server for testing',
-        curi: await helpers.makeCuri('test'),
+      let testConduit1, testConduit2, curis = {};
+      testConduit1 = {
+        description: 'test conduit with drop-if-filled HFF policy',
+        suri: dotEnvValues.parsed.CONDUIT_SERVICE_URI,
+        suriApiKey: dotEnvValues.parsed.CONDUIT_SERVICE_API_KEY,
+        suriObjectKey: dotEnvValues.parsed.CONDUIT_SERVICE_OBJECT_KEY,
+        suriType: 'Airtable',
+        racm: ['PUT'],
+        whitelist: [{
+          ip: '123.234.123.234',
+          status: 'inactive',
+          comment: 'Sample whitelist for testing'
+        }],
+        throttle: false,
+        status: 'active',
+        hiddenFormField: {
+          fieldName: 'hiddenFormField',
+          policy: 'drop-if-filled',
+          include: false
+        }
+      };
+      await Api()
+        .post('/conduits')
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ conduit: testConduit1 })
+        .then( res => {
+          expect(res).to.have.status(201);
+          curis.dropConduit = res.body.conduit.curi;
+        })
+        .catch( () => console.error('setting up of test conduit 1 failed') )
+      testConduit2 = {
+        description: 'test conduit with pass-if-match HFF policy',
         suri: dotEnvValues.parsed.CONDUIT_SERVICE_URI,
         suriApiKey: dotEnvValues.parsed.CONDUIT_SERVICE_API_KEY,
         suriObjectKey: dotEnvValues.parsed.CONDUIT_SERVICE_OBJECT_KEY,
         suriType: 'Airtable',
         racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
         whitelist: [{
-          ip: '765.654.543.432',
+          ip: '123.234.123.234',
           status: 'inactive',
           comment: 'Sample whitelist for testing'
         }],
         throttle: false,
         status: 'active',
+        hiddenFormField: {
+          fieldName: 'hiddenFormField',
+          policy: 'pass-if-match',
+          include: true,
+          value: 'hidden-form-field-value'
+        }
       };
       await Api()
         .post('/conduits')
         .set('Authorization', `Token ${jakeUser.token}`)
-        .send({ conduit: testConduit })
-        .then( res => expect(res).to.have.status(201) )
-        .then(() => {
-          fs.writeFileSync(
-            path.resolve('../.test-conduit-data.json'),
-            JSON.stringify(testConduit, null, 2)
-          );
+        .send({ conduit: testConduit2 })
+        .then( res => {
+          expect(res).to.have.status(201);
+          curis.passConduit = res.body.conduit.curi;
         })
-        .catch( () => console.error('setting up of test conduit failed') )
+        .catch( () => console.error('setting up of test conduit 2 failed') )
 
+      fs.writeFileSync(
+        path.resolve('../.test-data-curi.json'),
+        JSON.stringify(curis, null, 2)
+      );
+      console.log('finished setting up test data for proxy server');
+
+      // log user out
       jakeUser.token = '';
     });
 

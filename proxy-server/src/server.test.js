@@ -14,7 +14,9 @@ const proxyServerURL = 'http://localhost:5000';
 const proxyServer = () => chai.request(proxyServerURL);
 
 // Test Data
-const testConduit = JSON.parse(fs.readFileSync(path.resolve('../.test-conduit-data.json')));
+const testConduits = JSON.parse(fs.readFileSync(path.resolve('../.test-data-curi.json')));
+const dropConduit = testConduits.dropConduit;
+const passConduit = testConduits.passConduit;
 
 // Conduit hff to test pass-if-match and include=true
 const hff1 = {
