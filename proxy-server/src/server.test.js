@@ -28,14 +28,13 @@ const hff1 = {
   }],
 };
 
-// Test request to fail pass-if-match
-const testReq1body = {
+const request1 = {
   records: [{
     fields: {
-      name: 'fname1 lname1',
-      email: 'fname1@lname1.com',
+      name: 'first last',
+      email: 'first@last.com',
     }
-  }],
+  }]
 };
 
 // Test request to pass pass-if-match and include=true
@@ -85,9 +84,21 @@ describe('Testing Proxy Server...', async () => {
       const res = await proxyServer().get('/');
       expect(res.status).to.equal(404)
     });
-    context.skip('validate allowList', () => {
-      it('should reject requests from IPs not in AllowList');
-      it('should allow requests from IPs in AllowList');
+    context('validate allowList', () => {
+      it('should reject requests from IPs not in AllowList', async function () {
+        const res = await proxyServer()
+                            .put('/')
+                            .set('Host', dropConduit)
+                            .send(request1);
+        expect(res.status).to.equal(403);
+      });
+      it('should allow requests from IPs in AllowList', async function () {
+        const res = await proxyServer()
+                            .put('/')
+                            .set('Host', dropConduit)
+                            .send(request1);
+        expect(res.status).to.equal(201);
+      });
     });
     context('Validating RACM', () => {
       it('Should reject method not present in RACM list', async function () {
