@@ -31,7 +31,7 @@ app.all('/*', (req, res) => {
     return res.status(422).send('id not provided');
   }
 
-  const reqCuri = req.protocol + '://' + req.get('host');
+  const reqCuri = req.get('host');
   // console.log(`reqCuri: ${reqCuri}`);
   const conduit = app.locals.cmap.get(reqCuri);
 
