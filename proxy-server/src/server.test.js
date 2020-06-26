@@ -84,6 +84,10 @@ describe('Testing Proxy Server...', async () => {
       const res = await proxyServer().get('/');
       expect(res.status).to.equal(404)
     });
+    it('should have a body for PUT / PATCH / POST requests', async function () {
+      const res = await proxyServer().put('/').set('Host', dropConduit);
+      expect(res.status).to.equal(422);
+    });
     context('validate allowList', () => {
       it('should reject requests from IPs not in AllowList', async function () {
         const res = await proxyServer()
