@@ -13,7 +13,7 @@ module.exports = (db, DataTypes) => {
     },
     suriObjectKey: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     suri: {
       type: DataTypes.STRING(512),

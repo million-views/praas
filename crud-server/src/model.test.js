@@ -199,7 +199,8 @@ describe('PraaS', () => {
         });
     });
 
-    it('should not allow empty suriObjectKey', () => {
+    xit('should not allow empty suriObjectKey', () => {
+      // @srini you can remove this test when you are merging your changes
       helpers.makeCuri('td')
         .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
         .then(cdt => {
