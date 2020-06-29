@@ -17,7 +17,7 @@ module.exports = (db, DataTypes) => {
     },
     suriObjectKey: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       validate: {
         notEmpty: true
       }

@@ -607,27 +607,6 @@ describe('PraaS', () => {
           .catch(e => done(e));
       });
 
-      it('should not allow null suriObjectKey', done => {
-        helpers.makeCuri('td')
-          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-          .then(cdt => {
-            cdt.suriObjectKey = null;
-            return models.Conduit.build(cdt);
-          })
-          .then(objCdt => {
-            objCdt.save()
-              .then(() => {
-                done(Error('Conduit saved with null suriObjectKey'));
-              })
-              .catch(e => {
-                expect(e.name).to.equal('SequelizeValidationError');
-                expect(e.errors[0].path).to.equal('suriObjectKey');
-                done();
-              });
-          })
-          .catch(e => done(e));
-      });
-
       it('should not allow empty suriObjectKey', done => {
         helpers.makeCuri('td')
           .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
