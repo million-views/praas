@@ -302,7 +302,7 @@ describe('Praas REST API', () => {
             expect(Object.keys(res.body.errors)).to.include('suriType');
           });
 
-          it('should should reject unsupported service types', async () => {
+          it('should reject unsupported service types', async () => {
             const ct = await helpers.fakeConduit();
             ct.suriType = 'random';
             const res = await Api()
