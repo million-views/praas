@@ -328,27 +328,6 @@ describe('PraaS', () => {
           .catch(e => done(e));
       });
 
-      it('should not allow blank suri', done => {
-        helpers.makeCuri('td')
-          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-          .then(cdt => {
-            cdt.suri = '    ';
-            return models.Conduit.build(cdt);
-          })
-          .then(objCdt => {
-            objCdt.save()
-              .then(() => {
-                done(Error('Conduit was saved with null suri'));
-              })
-              .catch(e => {
-                expect(e.name).to.equal('SequelizeValidationError');
-                expect(e.errors[0].path).to.equal('suri');
-                done();
-              });
-          })
-          .catch(e => done(e));
-      });
-
       it('should not allow non-url suri', done => {
         helpers.makeCuri('td')
           .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
@@ -446,27 +425,6 @@ describe('PraaS', () => {
             objCdt.save()
               .then(() => {
                 done(Error('Conduit was saved with empty suriType'));
-              })
-              .catch(e => {
-                expect(e.name).to.equal('SequelizeValidationError');
-                expect(e.errors[0].path).to.equal('suriType');
-                done();
-              });
-          })
-          .catch(e => done(e));
-      });
-
-      it('should not allow blank suriType', done => {
-        helpers.makeCuri('td')
-          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-          .then(cdt => {
-            cdt.suriType = '    ';
-            return models.Conduit.build(cdt);
-          })
-          .then(objCdt => {
-            objCdt.save()
-              .then(() => {
-                done(Error('Conduit was saved with blank suriType'));
               })
               .catch(e => {
                 expect(e.name).to.equal('SequelizeValidationError');
@@ -796,27 +754,6 @@ describe('PraaS', () => {
           .catch(e => done(e));
       });
 
-      it('should not allow blank status', done => {
-        helpers.makeCuri('td')
-          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-          .then(cdt => {
-            cdt.status = '    ';
-            return models.Conduit.build(cdt);
-          })
-          .then(objCdt => {
-            objCdt.save()
-              .then(() => {
-                done(Error('blank value was saved successfully'));
-              })
-              .catch(e => {
-                expect(e.name).to.equal('SequelizeValidationError');
-                expect(e.errors[0].path).to.equal('status');
-                done();
-              });
-          })
-          .catch(e => done(e));
-      });
-
       it('should allow only \'active\' or \'inactive\'', done => {
         helpers.makeCuri('td')
           .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
@@ -885,6 +822,27 @@ describe('PraaS', () => {
           .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
           .then(cdt => {
             cdt.throttle = null;
+            return models.Conduit.build(cdt);
+          })
+          .then(objCdt => {
+            objCdt.save()
+              .then(() => {
+                done(Error('null value was saved successfully'));
+              })
+              .catch(e => {
+                expect(e.name).to.equal('SequelizeValidationError');
+                expect(e.errors[0].path).to.equal('throttle');
+                done();
+              });
+          })
+          .catch(e => done(e));
+      });
+
+      it('should not allow empty throttle', done => {
+        helpers.makeCuri('td')
+          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
+          .then(cdt => {
+            cdt.throttle = '';
             return models.Conduit.build(cdt);
           })
           .then(objCdt => {
