@@ -68,7 +68,7 @@ Conduit stores data related to the service endpoint
 | whitelist       |Allowed ip list                                    |not null                        |
 | racm            |(Request Access Control Map - GET/POST/DEL/PUT...) |not null                        |
 | throttle        |Limit requests to 5/sec to avoid DOS attack        |not null, defaults to 'true'    |
-| status          |Active/Inactive                                    |not null, defaults to 'Inactive'|
+| status          |active/inactive                                    |not null, defaults to 'inactive'|
 | description     |Notes about the conduit                            |null                            |
 | hiddenFormField |To avoid bot spamming                              |null                            |
 
@@ -76,9 +76,9 @@ Conduit stores data related to the service endpoint
 
 | Property  | Description        |
 |:----------|:-------------------|
-| ipAddress | ipAddress          |
+| ip        | ip address         |
 | comment   | comment            |
-| status    | `Active` or `Inactive` |
+| status    | `active` or `inactive` |
 
 \* racm is an array of allowed methods
 
