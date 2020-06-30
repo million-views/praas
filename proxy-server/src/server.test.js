@@ -106,6 +106,13 @@ describe('Testing Proxy Server...', async () => {
     });
     context('Validating Hidden Form Field', () => {
       context('when hiddenFormField.policy is pass-if-match', () => {
+        it('should silently drop if value is not filled', async function () {
+          const res = await proxyServer()
+                        .post('/')
+                        .set('Host', passConduit)
+                        .send(request1);
+          expect(res.status).to.equal(200);
+        });
         it('should silently drop if value does not match', async function () {
           const res = await proxyServer()
                         .post('/')
