@@ -371,63 +371,6 @@ describe('Praas REST API', () => {
           });
         });
 
-        context('testing suriObjectKey field...', () => {
-          it('should not allow no suriObjectKey', async () => {
-            const ct = await helpers.fakeConduit();
-            delete ct.suriObjectKey;
-            const res = await Api()
-              .post(`/conduits`)
-              .set('Authorization', `Token ${jakeUser.token}`)
-              .send({ conduit: ct });
-            expect(res.status).to.equal(422);
-            expect(Object.keys(res.body.errors)).to.include('suriObjectKey');
-          });
-
-          it('should not allow undefined suriObjectKey', async () => {
-            const ct = await helpers.fakeConduit();
-            ct.suriObjectKey = undefined;
-            const res = await Api()
-              .post(`/conduits`)
-              .set('Authorization', `Token ${jakeUser.token}`)
-              .send({ conduit: ct });
-            expect(res.status).to.equal(422);
-            expect(Object.keys(res.body.errors)).to.include('suriObjectKey');
-          });
-
-          it('should not allow null suriObjectKey', async () => {
-            const ct = await helpers.fakeConduit();
-            ct.suriObjectKey = null;
-            const res = await Api()
-              .post(`/conduits`)
-              .set('Authorization', `Token ${jakeUser.token}`)
-              .send({ conduit: ct });
-            expect(res.status).to.equal(422);
-            expect(Object.keys(res.body.errors)).to.include('suriObjectKey');
-          });
-
-          it('should not allow empty suriObjectKey', async () => {
-            const ct = await helpers.fakeConduit();
-            ct.suriObjectKey = '';
-            const res = await Api()
-              .post(`/conduits`)
-              .set('Authorization', `Token ${jakeUser.token}`)
-              .send({ conduit: ct });
-            expect(res.status).to.equal(422);
-            expect(Object.keys(res.body.errors)).to.include('suriObjectKey');
-          });
-
-          it('should not allow blank suriObjectKey', async () => {
-            const ct = await helpers.fakeConduit();
-            ct.suriObjectKey = '    ';
-            const res = await Api()
-              .post(`/conduits`)
-              .set('Authorization', `Token ${jakeUser.token}`)
-              .send({ conduit: ct });
-            expect(res.status).to.equal(422);
-            expect(Object.keys(res.body.errors)).to.include('suriObjectKey');
-          });
-        });
-
         context('testing status field...', () => {
           it('should not allow null status', async () => {
             const ct = await helpers.fakeConduit();

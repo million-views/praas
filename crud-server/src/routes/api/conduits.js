@@ -8,12 +8,12 @@ const { Conduit } = require('../../models');
 
 const conduitReqdFields = [
   'suriApiKey',
-  'suriObjectKey',
   'suriType',
   'suri',
 ];
 
 const conduitOptFields = [
+  'suriObjectKey', // default: 
   'throttle', // default: true
   'status', // default: inactive
   'description', // nulls allowed

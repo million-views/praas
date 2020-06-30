@@ -68,7 +68,12 @@ app.all('/*', (req, res) => {
   }
 
   // Prepare request
-  let url = conduit.suri + '/' + conduit.suriObjectKey + req.path;
+  let url = conduit.suri;
+  if (conduit.suriObjectKey) {
+    url.concat(`/${conduit.suriObjectKey}`);
+  }
+  url.concat(req.path);
+
   const options = {
     method: req.method,
     headers: {
