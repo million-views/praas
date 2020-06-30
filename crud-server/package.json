@@ -10,8 +10,10 @@
     "start": "node src/server.js",
     "lint": "eslint src --cache",
     "lint:fix": "eslint --fix src",
-    "test-rest": "mocha --exit src/routes.test.js",
     "test-model": "mocha --exit src/model.test.js",
+    "test-model-with-coverage": "nyc --reporter=text mocha --exit src/model.test.js",
+    "test-rest": "mocha --exit src/routes.test.js",
+    "test-rest-with-coverage": "nyc --reporter=text mocha --exit src/routes.test.js",
     "createdb": "node ./src/lib/createdb.js"
   },
   "dependencies": {
@@ -42,7 +44,8 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "faker": "^4.1.0",
-    "mocha": "^7.1.2"
+    "mocha": "^7.1.2",
+    "nyc": "^15.1.0"
   },
   "engines": {
     "node": ">=12.16.2"
