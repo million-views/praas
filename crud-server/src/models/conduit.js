@@ -36,20 +36,6 @@ module.exports = (db, DataTypes) => {
       validate: {
         isUrl: true,
       }
-
-      // set(val) {
-      //   console.log('val-before: ', val);
-      //   const self = this;
-      //   (async function(val) {
-      //     const id = await curi(val);
-      //     self.setDataValue('curi', id);
-      //     console.log('setting curi: ', id);
-      //   })(val).then(() => console.log('now what'));
-
-      //   // curi(val).then(id => self.setDataValue(id));
-      //   // console.log('val-after', val);
-      //   // this.setDataValue('curi', val);
-      // }
     },
     whitelist: {
       type: DataTypes.JSON,
