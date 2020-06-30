@@ -70,9 +70,10 @@ app.all('/*', (req, res) => {
   // Prepare request
   let url = conduit.suri;
   if (conduit.suriObjectKey) {
-    url.concat(`/${conduit.suriObjectKey}`);
+    // mdn strongly recommends + or += operator for performance
+    url += `/${conduit.suriObjectKey}`;
   }
-  url.concat(req.path);
+  url += req.path;
 
   const options = {
     method: req.method,
