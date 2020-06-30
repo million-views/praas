@@ -130,7 +130,7 @@ describe('Praas REST API', () => {
         suriApiKey: dotEnvValues.parsed.CONDUIT_SERVICE_API_KEY,
         suriObjectKey: dotEnvValues.parsed.CONDUIT_SERVICE_OBJECT_KEY,
         suriType: 'Airtable',
-        racm: ['PUT'],
+        racm: ['POST'],
         whitelist: [{
           ip: '123.234.123.234',
           status: 'inactive',

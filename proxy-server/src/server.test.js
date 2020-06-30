@@ -68,21 +68,21 @@ describe('Testing Proxy Server...', async () => {
       expect(res.status).to.equal(404)
     });
     it('should have a body for PUT / PATCH / POST requests', async function () {
-      const res = await proxyServer().put('/').set('Host', dropConduit);
+      const res = await proxyServer().post('/').set('Host', dropConduit);
       expect(res.status).to.equal(422);
     });
     context('validate allowList', () => {
       it('should reject requests from IPs not in AllowList', async function () {
         const res = await proxyServer()
-                            .put('/')
+                            .post('/')
                             .set('Host', dropConduit)
                             .send(request1);
         expect(res.status).to.equal(403);
       });
       it('should allow requests from IPs in AllowList', async function () {
         const res = await proxyServer()
-                            .put('/')
-                            .set('Host', dropConduit)
+                            .post('/')
+                            .set('Host', passConduit)
                             .send(request1);
         expect(res.status).to.equal(201);
       });
