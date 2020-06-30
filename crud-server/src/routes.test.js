@@ -80,13 +80,21 @@ describe('Praas REST API', () => {
     });
 
     it('should return errors for bad registration data of user', async () => {
-      // TODO:
-      // - add a test case for empty body submission
-      // - add test case variations for empty fields vs fields with
-      //   undefined values
-      const res = await Api()
+      let res = await Api()
         .post('/users')
         .send({ user: {} });
+      expect(res.status).to.equal(422);
+
+      // empty field values
+      res = await Api()
+        .post('/users')
+        .send({ user: {firstName: '', email: '' }});
+      expect(res.status).to.equal(422);
+
+      // empty body
+      res = await Api()
+        .post('/users')
+        .send();
       expect(res.status).to.equal(422);
     });
   });
