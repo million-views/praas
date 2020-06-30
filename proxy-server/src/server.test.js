@@ -121,6 +121,15 @@ describe('Testing Proxy Server...', async () => {
           expect(res.status).to.equal(200);
         });
       });
+      context('when hiddenFormField.policy is drop-if-filled', () => {
+        it('should process a request if value is not filled', async function () {
+          const res = await proxyServer()
+                        .post('/')
+                        .set('Host', dropConduit)
+                        .send(request1);
+          expect(res.status).to.equal(200);
+        });
+      });
     });
   });
   context('Testing Airtable Gateway', () => {
