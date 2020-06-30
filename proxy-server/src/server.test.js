@@ -129,6 +129,13 @@ describe('Testing Proxy Server...', async () => {
                         .send(request1);
           expect(res.status).to.equal(200);
         });
+        it('should silently drop request if hiddenFormField is filled', async function () {
+          const res = await proxyServer()
+                        .post('/')
+                        .set('Host', dropConduit)
+                        .send(request2);
+          expect(res.status).to.equal(200);
+        });
       });
     });
   });
