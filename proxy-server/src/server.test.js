@@ -48,24 +48,17 @@ const request2 = {
   }]
 };
 
-// Conduit hff to test policy drop-if-filled
-const hff3 = {
-  hiddenFormField: [{
-    fieldName: 'department',
-    policy: 'drop-if-filled',
-    include: false,
-  }],
-};
-
-// Test request to fail drop-if-filled
-const testReq3body = {
+// valid hiddenFormField
+// the value for hiddenFormField comes from `../crud-server/src/routes.test.js`
+// validate it against the value in `testConduit2`
+const request3 = {
   records: [{
     fields: {
-      name: 'fname2 lname2',
-      email: 'fname2@lname2.com',
-      department: 'Marketing'
+      name: 'first last',
+      email: 'first@last.com',
+      hiddenFormField: 'hidden-form-field-value',
     }
-  }],
+  }]
 };
 
 describe('Testing Proxy Server...', async () => {
@@ -118,6 +111,13 @@ describe('Testing Proxy Server...', async () => {
                         .post('/')
                         .set('Host', passConduit)
                         .send(request2);
+          expect(res.status).to.equal(200);
+        });
+        it('should process a valid request with value', async function () {
+          const res = await proxyServer()
+                        .post('/')
+                        .set('Host', passConduit)
+                        .send(request3);
           expect(res.status).to.equal(200);
         });
       });
