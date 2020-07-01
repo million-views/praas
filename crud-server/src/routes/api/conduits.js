@@ -13,7 +13,7 @@ const conduitReqdFields = [
 ];
 
 const conduitOptFields = [
-  'suriObjectKey', // default: 
+  'suriObjectKey', // default:
   'throttle', // default: true
   'status', // default: inactive
   'description', // nulls allowed

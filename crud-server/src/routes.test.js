@@ -88,7 +88,7 @@ describe('Praas REST API', () => {
       // empty field values
       res = await Api()
         .post('/users')
-        .send({ user: {firstName: '', email: '' }});
+        .send({ user: { firstName: '', email: '' } });
       expect(res.status).to.equal(422);
 
       // empty body

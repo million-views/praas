@@ -435,7 +435,7 @@ describe('PraaS', () => {
           .catch(e => done(e));
       });
 
-      it('should allow only \'Airtable\', \'Google sheets\', or \'Smart sheet\'', done => {
+      it('should reject unsupported service types', done => {
         helpers.makeCuri('td')
           .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
           .then(cdt => {

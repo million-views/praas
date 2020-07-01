@@ -1,3 +1,8 @@
+const validator = require('validator');
+
+// cache frequently used objects
+const allowListProperties = ['comment', 'ip', 'status'].join('');
+
 module.exports = (db, DataTypes) => {
   const Conduit = db.define('conduit', {
     suriApiKey: {
@@ -12,14 +17,14 @@ module.exports = (db, DataTypes) => {
       allowNull: false,
       validate: {
         notEmpty: true,
-        isIn: [['Airtable', 'Google Sheets', 'Smart Sheet']]
+        isIn: [['Airtable', 'Google Sheets', 'Smartsheet']]
       }
     },
     suriObjectKey: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    
+
     suri: {
       type: DataTypes.STRING(512),
       allowNull: false,
@@ -42,17 +47,13 @@ module.exports = (db, DataTypes) => {
       validate: {
         isValidProperty: value => {
           if (!value.every(entry =>
-            Object.keys(entry).sort().join('') ===
-              ['comment', 'ip', 'status'].join('')
+            Object.keys(entry).sort().join('') === allowListProperties
           )) {
             throw new Error('whitelist properties not specified correctly');
           }
         },
         isValidIP: value => {
-          if (!value.every(entry =>
-            entry.ip.split('.').length === 4 &&
-            entry.ip.split('.').every(num => num >= 0 && num < 256)
-          )) {
+          if (!value.every(entry => validator.isIP(entry.ip))) {
             throw new Error('Invalid ip address specified in whitelist');
           }
         },
