@@ -63,7 +63,7 @@ const request3 = {
 
 describe('Testing Proxy Server...', async () => {
   context('Validate incoming request', () => {
-    it('should reject requests of inactive conduits', async function () {
+    it('should reject requests to inactive conduits', async function () {
       const res = await proxyServer().get('/');
       expect(res.status).to.equal(404)
     });
