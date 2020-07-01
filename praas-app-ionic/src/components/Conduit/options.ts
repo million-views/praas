@@ -1,5 +1,5 @@
 export const conduitTypes = [
-  { value: 'google', label: 'Google Sheets' },
-  { value: 'airtable', label: 'AirTable' },
-  { value: 'ssheets', label: 'Smart sheets' },
+  { value: 'Google Sheets', label: 'Google Sheets' },
+  { value: 'Airtable', label: 'Airtable' },
+  { value: 'Smartsheet', label: 'Smartsheet' },
 ];

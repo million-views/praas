@@ -11,7 +11,7 @@ interface Props {
 
 const conduit = {
   racm: [],
-  whitelist: [{ address: '', comment: '', state: 'Inactive' }],
+  whitelist: [{ ip: '', comment: '', status: 'inactive' }],
 };
 
 const ConduitCreate: React.FC<Props> = ({ addConduit }) => {

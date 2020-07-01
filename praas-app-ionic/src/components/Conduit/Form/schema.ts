@@ -13,9 +13,9 @@ const conduitSchema = Yup.object().shape({
   whitelist: Yup.array()
     .of(
       Yup.object().shape({
-        address: Yup.string().required('IP Address Required'),
+        ip: Yup.string().required('IP Address Required'),
         comment: Yup.string().required('Comment required'),
-        state: Yup.string().required('IP state required'),
+        status: Yup.string().required('IP status required'),
       })
     )
     .required(),

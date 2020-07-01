@@ -8,16 +8,16 @@ import FormFieldWithError from '../../../../components/FormFieldWithError';
 type Props = {
   item: any;
   prefix: string;
-  error: { address?: FieldError; comment?: FieldError; state?: FieldError };
+  error: { ip?: FieldError; comment?: FieldError; status?: FieldError };
   onDelete: (idx: number) => void;
 };
 const WhiteListItem = ({ item, prefix, onDelete, error }: Props) => {
   return (
     <IonGrid className="ip-whitelist">
       <IonRow>
-        <FormFieldWithError error={error?.address}>
+        <FormFieldWithError error={error?.ip}>
           <IonLabel position="floating">IP Address</IonLabel>
-          <Input name={`${prefix}.address`} value={item.address} />
+          <Input name={`${prefix}.ip`} value={item.ip} />
         </FormFieldWithError>
 
         <FormFieldWithError error={error?.comment}>
@@ -28,11 +28,11 @@ const WhiteListItem = ({ item, prefix, onDelete, error }: Props) => {
       <IonRow className="ip-whitelist-status">
         <RadioGroup
           labelClassName="ip-whitelist-status__label"
-          name={`${prefix}.state`}
-          value={item.state}
+          name={`${prefix}.status`}
+          value={item.status}
           options={[
-            { value: 'Active', label: 'Active' },
-            { value: 'Inactive', label: 'Inactive' },
+            { value: 'active', label: 'Active' },
+            { value: 'inactive', label: 'Inactive' },
           ]}
         />
       </IonRow>

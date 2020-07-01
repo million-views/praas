@@ -7,9 +7,9 @@ import './style.scss';
 import noop from '../../../../utils/noop';
 
 type WhiteList = {
-  address: string;
+  ip: string;
   comment: string;
-  state: string;
+  status: string;
 };
 type Props = {
   whitelist: Array<WhiteList>;
@@ -23,7 +23,7 @@ const IPWhiteList: React.FC<Props> = ({ whitelist = [] }) => {
     const currentValues = getValues({ nest: true })['whitelist'] || [];
     const newState = [
       ...currentValues,
-      { address: '', comment: '', state: 'Inactive' },
+      { ip: '', comment: '', status: 'inactive' },
     ];
     setWhitelistState(newState);
   };
