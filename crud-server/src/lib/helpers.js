@@ -79,7 +79,7 @@ const fakeUserProfile = (overrides = {}) => {
 };
 
 const fakeConduit = (overrides = {}) => {
-  const typesArr = ['Google Sheets', 'Airtable', 'Smart Sheet'];
+  const typesArr = ['Google Sheets', 'Airtable', 'Smartsheet'];
   const ipstatArr = ['active', 'inactive'];
   const hfffieldArr = ['partner', 'campaign', 'userName', 'department', 'accountName'];
   const hffPolicyArr = ['drop-if-filled', 'pass-if-match'];
