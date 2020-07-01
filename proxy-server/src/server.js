@@ -19,6 +19,12 @@ app.locals.cmap = new Map();
 
 // we handle all requests to the proxy end point...
 app.all('/*', (req, res) => {
+  // PUT, POST and PATCH operations have records in body
+  if (['PUT', 'PATCH', 'POST'].includes(req.method) &&
+    !(req.body.records)) {
+    return res.status(422).send('records not present');
+  }
+
   // PUT, POST and PATCH operations need fields data in body
   if (['PUT', 'PATCH', 'POST'].includes(req.method) &&
     req.body.records[0].fields === undefined) {

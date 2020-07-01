@@ -56,6 +56,10 @@ typings/
 
 # dotenv environment variables file
 .env
+.env.conduit
 
 # next.js build output
 .next
+
+# test-data
+.test-data-curi.json

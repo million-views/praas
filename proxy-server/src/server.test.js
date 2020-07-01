@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
@@ -11,20 +14,9 @@ const proxyServerURL = 'http://localhost:5000';
 const proxyServer = () => chai.request(proxyServerURL);
 
 // Test Data
-let testConduitId;
-const testConduit = {
-  conduit: {
-    description: 'Local proxy server for testing',
-    racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
-    status: 'active',
-    suri: 'https://api.airtable.com/v0/appGy4fvzLsmR7vTX',
-    suriApiKey: 'keyy97SC6NQE0uXJ8',
-    suriObjectKey: 'Contacts',
-    suriType: 'Airtable',
-    throttle: '1',
-    userId: '4',
-  }
-};
+const testConduits = JSON.parse(fs.readFileSync(path.resolve('../.test-data-curi.json')));
+const dropConduit = testConduits.dropConduit;
+const passConduit = testConduits.passConduit;
 
 // Conduit hff to test pass-if-match and include=true
 const hff1 = {
@@ -36,160 +28,114 @@ const hff1 = {
   }],
 };
 
-// Test request to fail pass-if-match
-const testReq1body = {
+const request1 = {
   records: [{
     fields: {
-      name: 'fname1 lname1',
-      email: 'fname1@lname1.com',
+      name: 'first last',
+      email: 'first@last.com',
     }
-  }],
+  }]
 };
 
-// Test request to pass pass-if-match and include=true
-const testReq2body = {
+// non-compliant hiddenFormField
+const request2 = {
   records: [{
     fields: {
-      name: 'fname2 lname2',
-      email: 'fname2@lname2.com',
-      campaign: 'BOGO June2020',
+      name: 'first last',
+      email: 'first@last.com',
+      hiddenFormField: 'hiddenFormFieldValue',
     }
-  }],
+  }]
 };
 
-// Conduit hff to test include=false
-const hff2 = {
-  hiddenFormField: [{
-    fieldName: 'campaign',
-    policy: 'pass-if-match',
-    include: false,
-    value: 'CORONA 10',
-  }],
-};
-
-// Conduit hff to test policy drop-if-filled
-const hff3 = {
-  hiddenFormField: [{
-    fieldName: 'department',
-    policy: 'drop-if-filled',
-    include: false,
-  }],
-};
-
-// Test request to fail drop-if-filled
-const testReq3body = {
+// valid hiddenFormField
+// the value for hiddenFormField comes from `../crud-server/src/routes.test.js`
+// validate it against the value in `testConduit2`
+const request3 = {
   records: [{
     fields: {
-      name: 'fname2 lname2',
-      email: 'fname2@lname2.com',
-      department: 'Marketing'
+      name: 'first last',
+      email: 'first@last.com',
+      hiddenFormField: 'hidden-form-field-value',
     }
-  }],
+  }]
 };
 
 describe('Testing Proxy Server...', async () => {
-  let user;
-  context('Creating Conduit...', () => {
-    it('Should login to CRUD Server as Proxy User', done => {
-      PraasAPI.user
-        .login(helpers.getProxyServerCredentials())
-        .then(async data => {
-          user = data.user;
-          global.localStorage.setItem('user', JSON.stringify({ ...user }));
-          done();
-        })
-        .catch(error => console.log('unexpected... ', error));
-    });
-    it('Should setup test Conduit', done => {
-      PraasAPI.conduit
-        .list(user.id)
-        .then(list => {
-          return list.conduits.find(it => it.curi === proxyServerURL);
-        })
-        .then(cdt => {
-          if (cdt && cdt.id) return ({ conduit: cdt });
-          else return PraasAPI.conduit.add(testConduit);
-        })
-        .then(cdt => {
-          return PraasAPI.conduit.update({
-            conduit: {
-              id: cdt.conduit.id,
-              curi: proxyServerURL,
-              ...testConduit,
-            }
-          });
-        })
-        .then(cdt => {
-          expect(cdt.conduit).to.haveOwnProperty('id');
-          expect(cdt.conduit.curi).to.equal(proxyServerURL);
-          expect(cdt.conduit.suri).to.equal(testConduit.conduit.suri);
-          expect(cdt.conduit.suriApiKey).to.equal(testConduit.conduit.suriApiKey);
-          expect(cdt.conduit.suriObjectKey).to.equal(testConduit.conduit.suriObjectKey);
-          testConduitId = cdt.conduit.id;
-          done();
-        })
-        .catch(error => console.log('unexpected... ', error));
-    });
-  });
-
   context('Validate incoming request', () => {
-    context('Validating RACM', () => {
-      it('Should reject method not present in RACM list', done => {
-        PraasAPI.conduit
-          .update({
-            conduit: {
-              id: testConduitId,
-              racm: ['PUT', 'POST', 'PATCH', 'DELETE'],
-            }
-          })
-          .then(() => proxyServer().get('/').set('Host', 'http:1'))
-          .then(resp => {
-            expect(resp.status).to.equal(405);
-            done();
-          })
-          .catch(error => console.log('unexpected... ', error));
+    it('should reject requests to inactive conduits', async function () {
+      const res = await proxyServer().get('/');
+      expect(res.status).to.equal(404)
+    });
+    it('should have a body for PUT / PATCH / POST requests', async function () {
+      const res = await proxyServer().post('/').set('Host', dropConduit);
+      expect(res.status).to.equal(422);
+    });
+    context('validate allowList', () => {
+      it('should reject requests from IPs not in AllowList', async function () {
+        const res = await proxyServer()
+                            .post('/')
+                            .set('Host', dropConduit)
+                            .send(request1);
+        expect(res.status).to.equal(403);
       });
-      it('Should allow method present in RACM list', done => {
-        PraasAPI.conduit
-          .update({
-            conduit: {
-              id: testConduitId,
-              racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
-            }
-          })
-          .then(() => proxyServer().get('/').set('Host', 'http:2'))
-          .then(resp => {
-            expect(resp.status).not.to.equal(405);
-            done();
-          })
-          .catch(error => console.log('unexpected... ', error));
+      it('should allow requests from IPs in AllowList', async function () {
+        const res = await proxyServer()
+                            .post('/')
+                            .set('Host', passConduit)
+                            .send(request1);
+        expect(res.status).to.equal(201);
+      });
+    });
+    context('Validating RACM', () => {
+      it('Should reject method not present in RACM list', async function () {
+        const res = await proxyServer().get('/').set('Host', dropConduit);
+        expect(res.status).to.equal(405);
+      });
+      it('Should allow method present in RACM list', async function () {
+        const res = await proxyServer().get('/').set('Host', passConduit);
+        expect(res.status).to.not.equal(405);
       });
     });
     context('Validating Hidden Form Field', () => {
-      it('Should reject if pass-if-match doesnt match', done => {
-        PraasAPI.conduit
-          .update({
-            conduit: {
-              id: testConduitId,
-              ...hff1,
-            }
-          })
-          .then(() => proxyServer().post('/').send(testReq1body))
-          .then(resp => {
-            expect(resp.status).to.equal(200);
-
-          })
-          .then(() => {
-            PraasAPI.conduit
-              .update({
-                conduit: {
-                  id: testConduitId,
-                  racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
-                }
-              });
-            done();
-          })
-          .catch(error => console.log('unexpected... ', error));
+      context('when hiddenFormField.policy is pass-if-match', () => {
+        it('should silently drop if value is not filled', async function () {
+          const res = await proxyServer()
+                        .post('/')
+                        .set('Host', passConduit)
+                        .send(request1);
+          expect(res.status).to.equal(200);
+        });
+        it('should silently drop if value does not match', async function () {
+          const res = await proxyServer()
+                        .post('/')
+                        .set('Host', passConduit)
+                        .send(request2);
+          expect(res.status).to.equal(200);
+        });
+        it('should process a valid request with value', async function () {
+          const res = await proxyServer()
+                        .post('/')
+                        .set('Host', passConduit)
+                        .send(request3);
+          expect(res.status).to.equal(200);
+        });
+      });
+      context('when hiddenFormField.policy is drop-if-filled', () => {
+        it('should process a request if value is not filled', async function () {
+          const res = await proxyServer()
+                        .post('/')
+                        .set('Host', dropConduit)
+                        .send(request1);
+          expect(res.status).to.equal(200);
+        });
+        it('should silently drop request if hiddenFormField is filled', async function () {
+          const res = await proxyServer()
+                        .post('/')
+                        .set('Host', dropConduit)
+                        .send(request2);
+          expect(res.status).to.equal(200);
+        });
       });
     });
   });
