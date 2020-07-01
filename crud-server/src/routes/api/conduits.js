@@ -98,8 +98,7 @@ router.get('/', auth.required, async (req, res, next) => {
       if (req.app.locals.proxyUser &&
           req.app.locals.proxyUser.id === req.payload.id
       ) {
-        // fetch all conduits in active status...
-        // TODO: this is brittle and can break
+        // fetch conduits in active status; check status enums in model.js
         conduits = await Conduit.findAll({ where: { status: 'active' } });
       } else {
         conduits = await Conduit.findAll({ where: { userId: req.payload.id } });
