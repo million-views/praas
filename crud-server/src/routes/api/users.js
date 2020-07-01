@@ -35,7 +35,7 @@ router.post('/users', async (req, res, next) => {
       }
       return res.status(422).json({ errors });
     } else {
-      errors.unknown = 'unknown error, please contact support';
+      errors.unknown = `unknown error ${name}, please contact support`;
       next(errors);
     }
   }

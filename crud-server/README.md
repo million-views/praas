@@ -1,49 +1,47 @@
 # PraaS Back end
+REST server to manage *conduits*. A conduit is a handle to a RESTful 
+service endpoint.
 
-Back end REST server to manage *conduits*. A conduit is a handle to a RESTful service endpoint.
-
-## Features
-
+# Features
 TBD...
 
-## Development
+# Development
+> NOTE: <br>
+> 1. Integration tests require bootstrap data created by unit tests. So,
+>    `npm run test-model` first before testing the REST api. Alternatively
+>    you can also run `npm run createdb`.
+>
+> 2. Create .env file at the root of praas folder, at the same location
+>    where .env-example file can be found. Fill the values of .env file
+>    before you start the crud-server or the proxy-server.
 
-> NOTE:
-> 1 - Integration tests require bootstrap data created by the unit tests.
-> So, make sure to run unit tests (test-model) first before running the
-> integration tests (test-rest).
+## Developer Tasks
+|  task                                           | command line                        |
+|:------------------------------------------------|:------------------------------------|
+| Install dependencies                            |`npm install`                        |
+| Run linter on `src`                             |`npm run lint`                       |
+| Fix lint errors                                 |`npm run lint:fix`                   |
+| Run data layer tests                            |`npm run test-model`                 |
+| Run data layer tests with code coverage         |`npm run test-model-with-coverage`   |
+| Run REST api tests                              |`npm run test-rest`                  |
+| Run REST api tests with code coverage           |`npm run test-rest-with-coverage`    |
+| Run conduits resource server                    |`npm run start`                      |
+| Init db with user: admin@praas.com, pwd: praas  |`npm run createdb`                   |
 
-> 2 - Create .env file at the root of praas folder, at the same location where .env-example file can be found.
-> Fill the values of .env file before you start the crud-server or the proxy-server.
+# Praas Data Model
+Consists of the three entities: System, User, Conduit. These entities are
+currently not normalized and subject to breaking design changes.
 
-### Tasks
-|  task     | command line                             | notes                                       |
-|:----------|:-----------------------------------------|:--------------------------------------------|
-| install   |```npm install```                         | installs dependencies                       |
-| lint      |```npm run lint```                        | run eslint on `src` folder                  |
-| lint:fix  |```npm run lint:fix```                    | run eslint on `src` folder                  |
-| test-model|```npm run test-model```                  | run data layer unit tests                   |
-| test-rest |```npm run test-rest```                   | run REST endpoint integration tests         |
-| start     |```npm run start```                       | web serve `build` folder                    |
-| createdb  |```npm run createdb```                    | Creates a new db file with username: admin@praas.com  password: praas  |
-
-## Praas Data Model
-
-Consists of the three entities: System, User, Conduit
-
-### System Table
-
+## System Table
 System stores all configuration related settings and their values.
 For now storing the config in json format as there are
 only few values. Will store as database entity when more values need
 to be stored.
 
-### User Table
+## User Table
+User stores details of registered users. Users can have zero or more conduits.
 
-User stores registered user(s) info. an user can have one or more conduits.
-
-#### Fields
-
+### Fields
 |  name     | description          | constraints       |
 |:----------|:---------------------|:------------------|
 | firstName |First name of the user| not null          |
@@ -52,41 +50,48 @@ User stores registered user(s) info. an user can have one or more conduits.
 | hash      |Password of the user  | not null          |
 | salt      |Random hex value      | not null          |
 
-### Conduit Table
+## Conduit Table
+Conduit stores data related to a non-traditional-storage service endpoint.
 
-Conduit stores data related to the service endpoint
-
-#### Fields
-
+### Fields
 |  name           | description                                       | constraints                    |
 |:----------------|:--------------------------------------------------|:-------------------------------|
 | suriApiKey      |Service URI API Key                                |not null                        |
-| suriType        |The type of conduit (AirTable, Google Sheets)      |not null                        |
-| suriObjectKey   |Key to identify the object                         |null                            |
+| suriType        |The type of conduit                                |not null                        |
+| suriObjectKey   |Key to locate an object at the NTS provider        |null                            |
 | suri            |Service URI (AirTable URI)                         |not null                        |
 | curi            |System generated conduit URI                       |not null, unique                |
-| whitelist       |Allowed ip list                                    |not null                        |
-| racm            |(Request Access Control Map - GET/POST/DEL/PUT...) |not null                        |
+| whitelist (1)   |Allowed ip list                                    |not null                        |
+| racm            |Request Access Control Map |not null               |not null                        |
 | throttle        |Limit requests to 5/sec to avoid DOS attack        |not null, defaults to 'true'    |
-| status          |Active/Inactive                                    |not null, defaults to 'Inactive'|
+| status          |active/inactive                                    |not null, defaults to 'inactive'|
 | description     |Notes about the conduit                            |null                            |
-| hiddenFormField |To avoid bot spamming                              |null                            |
+| hiddenFormField |To avoid bot spamming or manage campaigns          |null                            |
 
-\* whitelist is an array of objects with the following properties:
+#### suriType
+Enum: plan is to support AirTable, Google Sheets, Smartsheet.
 
-| Property  | Description        |
-|:----------|:-------------------|
-| ipAddress | ipAddress          |
-| comment   | comment            |
-| status    | `Active` or `Inactive` |
+#### whitelist
+JSON: containing an array of objects with the following properties:
 
-\* racm is an array of allowed methods
+| Property  | Description            |
+|:----------|:-----------------------|
+| ip        | ip address             |
+| comment   | comment                |
+| status    | `active` or `inactive` |
 
-\* hiddenFormField is an array of objects with the following properties:
+#### racm
+JSON: containing an array of allowed HTTP methods. The accepted 
+methods are:  GET, PUT, POST, PATCH, DELETE.
 
-| Property  | Description                     |
-|:----------|:--------------------------------|
-| fieldName | name of the field               |
-| policy    | `drop-if-filled` or `pass-if-match` |
-| include   | boolean indicating if the field should be sent to the suri |
+TBD: add reference to the conduits API here.
+
+#### hiddenFormField
+JSON blob: containing an array of objects with the following properties:
+
+| Property  | Description                                                      |
+|:----------|:-----------------------------------------------------------------|
+| fieldName | name of the field                                                |
+| policy    | `drop-if-filled` or `pass-if-match`                              |
+| include   | boolean indicating if the field should be sent to the suri       |
 | value     | Value to be matched against the field in case of `pass-if-match` |

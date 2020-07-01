@@ -70,7 +70,7 @@ const Comment = ({
     </div>
   );
 
-const IpState = ({
+const IpStatus = ({
   field, form: { touched, errors }, ...props
 }) => {
   const details = props.details;
@@ -79,16 +79,16 @@ const IpState = ({
       <label>
         <input
           {...field} type="radio"
-          defaultChecked={details.state === 'Active'}
-          value="Active"
+          defaultChecked={details.status === 'active'}
+          value="active"
         />
         <span className="checkable">Active</span>
       </label>
       <label>
         <input
           {...field} type="radio"
-          defaultChecked={details.state === 'Inactive'}
-          value="Inactive"
+          defaultChecked={details.status === 'inactive'}
+          value="inactive"
         />
         <span className="checkable">Inactive</span>
       </label>
@@ -106,15 +106,15 @@ const Whitelist = (props) => {
     <>
       {form.values.whitelist &&
         form.values.whitelist.length > 0 &&
-        form.values.whitelist.map((address, index) => {
+        form.values.whitelist.map((ip, index) => {
           return (
             <div className="flex four" key={index}>
-              <Field name={`whitelist[${index}].address`} component={IpAddress} />
+              <Field name={`whitelist[${index}].ip`} component={IpAddress} />
               <Field name={`whitelist[${index}].comment`} component={Comment} />
               <Field
-                name={`whitelist[${index}].state`}
-                details={address}
-                component={IpState}
+                name={`whitelist[${index}].status`}
+                details={ip}
+                component={IpStatus}
               />
               <div className="col">
                 <button type="button" onClick={() => remove(index)}>
@@ -126,7 +126,7 @@ const Whitelist = (props) => {
         }
         )}
       <button
-        onClick={() => push({ address: '', comment: '', state: '' })}
+        onClick={() => push({ ip: '', comment: '', status: '' })}
         className="secondary"
       >
         Add IP Address
@@ -165,9 +165,9 @@ function ConduitForm(props) {
         component="select"
         required
       >
-        <option value="google">Google Sheets</option>
-        <option value="airtable">AirTable</option>
-        <option value="ssheets">Smart sheets</option>
+        <option value="Google Sheets">Google Sheets</option>
+        <option value="Airtable">Airtable</option>
+        <option value="Smartsheet">Smartsheet</option>
       </Field>
       <ErrorMessage name="suriType" component="div" className="error" />
 

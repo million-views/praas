@@ -79,7 +79,7 @@ const fakeUserProfile = (overrides = {}) => {
 };
 
 const fakeConduit = (overrides = {}) => {
-  const typesArr = ['Google Sheets', 'Airtable', 'Smart Sheet'];
+  const typesArr = ['Google Sheets', 'Airtable', 'Smartsheet'];
   const ipstatArr = ['active', 'inactive'];
   const hfffieldArr = ['partner', 'campaign', 'userName', 'department', 'accountName'];
   const hffPolicyArr = ['drop-if-filled', 'pass-if-match'];
@@ -124,8 +124,13 @@ const fakeConduit = (overrides = {}) => {
 };
 
 const processInput = (inp, req, opt, out, err) => {
+  if (!inp) {
+    err.conduit = 'Conduit object not provided';
+    return;
+  }
   for (let i = 0; i < req.length; i++) {
-    if (typeof inp[req[i]] === 'undefined') {
+    if (typeof inp[req[i]] === 'undefined' || inp[req[i]] === null ||
+      ('' + inp[req[i]]).trim() === '') {
       err[req[i]] = `${req[i]} can't be blank`;
     } else {
       out[req[i]] = inp[req[i]];
