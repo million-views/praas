@@ -4,10 +4,22 @@ const Sequelize = require('sequelize');
 // users of persistent storage layer. As you read through the code
 // it helps to visit the links provided below.
 //
+// https://sequelize.org/v5/manual/models-definition.html
 // NOTE: sequelize by default adds the following fields:
-// - id        INTEGER NOT NULL
+// - id        INTEGER, PRIMARY_KEY, AUTO_INCREMENT
 // - createdAt DATETIME
 // - updatedAt DATETIME
+//
+// id: {
+//   type: Sequelize.INTEGER,
+//   primaryKey: true,
+//   autoIncrement: true,
+// },
+//
+// // Timestamps
+// createdAt: Sequelize.DATE,
+// updatedAt: Sequelize.DATE,
+// 
 //
 // See http://stackoverflow.com/questions/20600483/is-there-a-way-to-change-the-default-id-column-that-is-created-automatically
 // on how you can circumvent it if needed.

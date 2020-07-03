@@ -156,11 +156,11 @@ describe('Praas REST API', () => {
         .post('/conduits')
         .set('Authorization', `Token ${jakeUser.token}`)
         .send({ conduit: testConduit1 })
-        .then( res => {
+        .then(res => {
           expect(res).to.have.status(201);
           curis.dropConduit = res.body.conduit.curi;
         })
-        .catch( () => console.error('setting up of test conduit 1 failed') )
+        .catch(() => console.error('setting up of test conduit 1 failed'));
       testConduit2 = {
         description: 'test conduit with pass-if-match HFF policy',
         suri: dotEnvValues.parsed.CONDUIT_SERVICE_URI,
@@ -186,11 +186,11 @@ describe('Praas REST API', () => {
         .post('/conduits')
         .set('Authorization', `Token ${jakeUser.token}`)
         .send({ conduit: testConduit2 })
-        .then( res => {
+        .then(res => {
           expect(res).to.have.status(201);
           curis.passConduit = res.body.conduit.curi;
         })
-        .catch( () => console.error('setting up of test conduit 2 failed') )
+        .catch(() => console.error('setting up of test conduit 2 failed'));
 
       fs.writeFileSync(
         path.resolve('../.test-data-curi.json'),
@@ -815,18 +815,31 @@ describe('Praas REST API', () => {
 
     context('testing conduit update (PATCH)...', () => {
       it('should allow user to update service endpoint', async () => {
-        const ct = { conduit: { status: 'inactive' } };
+        const ctinactive = { conduit: { status: 'inactive' } };
         const res = await Api()
-          .patch(`/conduits/${ctId1}`)
+          .patch(`/conduits/${ctId2}`)
           .set('Authorization', `Token ${jakeUser.token}`)
-          .send(ct);
+          .send(ctinactive);
         expect(res.status).to.equal(200);
 
         const res2 = await Api()
-          .get(`/conduits/${ctId1}`)
+          .get(`/conduits/${ctId2}`)
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res2.status).to.equal(200);
         expect(res2.body.conduit.status).to.equal('inactive');
+
+        const ctactive = { conduit: { status: 'active' } };
+        const res3 = await Api()
+          .patch(`/conduits/${ctId1}`)
+          .set('Authorization', `Token ${jakeUser.token}`)
+          .send(ctactive);
+        expect(res3.status).to.equal(200);
+
+        const res4 = await Api()
+          .get(`/conduits/${ctId1}`)
+          .set('Authorization', `Token ${jakeUser.token}`);
+        expect(res4.status).to.equal(200);
+        expect(res4.body.conduit.status).to.equal('active');
       });
 
       it('should not allow curi to be updated by the service end point', async () => {
@@ -840,7 +853,7 @@ describe('Praas REST API', () => {
     });
 
     context('testing conduit removal (DELETE)...', () => {
-      it('should allow user to remove service endpoint', async () => {
+      it('should allow user to remove inactive service endpoint', async () => {
         const res = await Api()
           .delete(`/conduits/${ctId2}`)
           .set('Authorization', `Token ${jakeUser.token}`);
@@ -850,6 +863,12 @@ describe('Praas REST API', () => {
           .get(`/conduits/${ctId2}`)
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res2.status).to.equal(404);
+      });
+      it('should not allow user to remove active service endpoint', async () => {
+        const res = await Api()
+          .delete(`/conduits/${ctId1}`)
+          .set('Authorization', `Token ${jakeUser.token}`);
+        expect(res.status).to.equal(403);
       });
     });
   });

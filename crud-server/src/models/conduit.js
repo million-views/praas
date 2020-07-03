@@ -108,7 +108,7 @@ module.exports = (db, DataTypes) => {
       defaultValue: [],
       validate: {
         isValidProperty: value => {
-          if (!value.every(entry => 
+          if (!value.every(entry =>
             Object.keys(entry).sort().join('') === HFF_PROPS
           )) {
             throw new Error('hiddenFormField properties not set correctly');

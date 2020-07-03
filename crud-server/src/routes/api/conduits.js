@@ -157,10 +157,21 @@ router.patch('/:id', auth.required, async (req, res, next) => {
 // Delete conduit
 router.delete('/:id', auth.required, async (req, res, next) => {
   try {
+    const conduit = await Conduit.findOne({ where: { id: req.params.id } });
+    if (!conduit) {
+      return res.sendStatus(404); // not found
+    } 
+    
+    if (conduit.status === 'active') {
+      return res.sendStatus(403); // should not be deleted when active
+    } 
+
     const count = await Conduit.destroy({ where: { id: req.params.id } });
-    return count ?
-      res.status(200).json({ conduit: { id: req.params.id } }) :
-      res.sendStatus(404);
+    if (count === 1) {
+      return res.status(200).json({ conduit: { id: req.params.id } });
+    } 
+    
+    next(new Error('Unexpected error while removing an inactive conduit'));
   } catch (error) { return next(error); }
 });
 
