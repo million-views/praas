@@ -15,7 +15,7 @@ class CreateConduitForm extends Component {
       suriApiKey: '',
       suriType: '',
       suri: '',
-      whitelist: '',
+      allowlist: '',
       racm: [],
       description: '',
     };
@@ -26,8 +26,8 @@ class CreateConduitForm extends Component {
         .required('Service endpoint type is required'),
       suri: Yup.string()
         .required('Service endpoint uri is required'),
-      whitelist: Yup.string()
-        .required('Whitelist (ip addresses) is required'),
+      allowlist: Yup.string()
+        .required('Allowlist (ip addresses) is required'),
       // racm: Yup.string()
       racm: Yup.array().of(Yup.string())
         .required('Request access control is required'),

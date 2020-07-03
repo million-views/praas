@@ -100,19 +100,19 @@ const IpStatus = ({
   );
 };
 
-const Whitelist = (props) => {
+const Allowlist = (props) => {
   const { push, remove, form } = props;
   return (
     <>
-      {form.values.whitelist &&
-        form.values.whitelist.length > 0 &&
-        form.values.whitelist.map((ip, index) => {
+      {form.values.allowlist &&
+        form.values.allowlist.length > 0 &&
+        form.values.allowlist.map((ip, index) => {
           return (
             <div className="flex four" key={index}>
-              <Field name={`whitelist[${index}].ip`} component={IpAddress} />
-              <Field name={`whitelist[${index}].comment`} component={Comment} />
+              <Field name={`allowlist[${index}].ip`} component={IpAddress} />
+              <Field name={`allowlist[${index}].comment`} component={Comment} />
               <Field
-                name={`whitelist[${index}].status`}
+                name={`allowlist[${index}].status`}
                 details={ip}
                 component={IpStatus}
               />
@@ -179,7 +179,7 @@ function ConduitForm(props) {
       />
       <ErrorMessage name="suri" component="div" className="error" />
 
-      <FieldArray name="whitelist" component={Whitelist} />
+      <FieldArray name="allowlist" component={Allowlist} />
       <FieldArray name="racm" component={Racm} />
 
       <Field

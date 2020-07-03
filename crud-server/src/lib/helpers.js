@@ -102,7 +102,7 @@ const fakeConduit = (overrides = {}) => {
     suriObjectKey: faker.lorem.word(),
     suri: faker.internet.url(),
     // curi: 'td',
-    whitelist: [{
+    allowlist: [{
       ip: faker.internet.ip(),
       status: ipstatArr[Math.floor(Math.random() * ipstatArr.length)],
       comment: faker.lorem.words()

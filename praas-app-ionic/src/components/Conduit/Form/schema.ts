@@ -10,7 +10,7 @@ const conduitSchema = Yup.object().shape({
     )
     .required('Service type required'),
   suri: Yup.string().required('Service Endpoint uri is required'),
-  whitelist: Yup.array()
+  allowlist: Yup.array()
     .of(
       Yup.object().shape({
         ip: Yup.string().required('IP Address Required'),

@@ -18,7 +18,7 @@ const app = express();
 app.use(cors());
 
 // Log all requests to console
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 
 // Normal express config defaults
 app.use(bodyParser.urlencoded({ extended: false }));

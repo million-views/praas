@@ -1,40 +1,40 @@
 import React, { useState } from 'react';
 import { IonRow, IonCol, IonButton } from '@ionic/react';
-import WhiteListItem from './WhitelistItem';
+import AllowListItem from './AllowlistItem';
 import { useFormContext } from 'react-hook-form';
 
 import './style.scss';
 import noop from '../../../../utils/noop';
 
-type WhiteList = {
+type AllowList = {
   ip: string;
   comment: string;
   status: string;
 };
 type Props = {
-  whitelist: Array<WhiteList>;
+  allowlist: Array<AllowList>;
 };
 
-const IPWhiteList: React.FC<Props> = ({ whitelist = [] }) => {
-  const [whitelistState, setWhitelistState] = useState(whitelist);
+const IPAllowList: React.FC<Props> = ({ allowlist = [] }) => {
+  const [allowlistState, setAllowlistState] = useState(allowlist);
   const { getValues, errors } = useFormContext();
 
   const onAdd = () => {
-    const currentValues = getValues({ nest: true })['whitelist'] || [];
+    const currentValues = getValues({ nest: true })['allowlist'] || [];
     const newState = [
       ...currentValues,
       { ip: '', comment: '', status: 'inactive' },
     ];
-    setWhitelistState(newState);
+    setAllowlistState(newState);
   };
 
   return (
     <>
-      {whitelistState.map((w, index) => {
-        const namePrefix = `whitelist[${index}]`;
+      {allowlistState.map((w, index) => {
+        const namePrefix = `allowlist[${index}]`;
         return (
-          <WhiteListItem
-            error={errors.whitelist?.[index]}
+          <AllowListItem
+            error={errors.allowlist?.[index]}
             key={namePrefix}
             item={w}
             prefix={namePrefix}
@@ -53,4 +53,4 @@ const IPWhiteList: React.FC<Props> = ({ whitelist = [] }) => {
   );
 };
 
-export default IPWhiteList;
+export default IPAllowList;

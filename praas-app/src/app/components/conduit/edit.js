@@ -16,7 +16,7 @@ class EditConduitForm extends Component {
       suriApiKey: conduit.suriApiKey,
       suriType: conduit.suriType,
       suri: conduit.suri,
-      whitelist: conduit.whitelist,
+      allowlist: conduit.allowlist,
       racm: conduit.racm,
       description: conduit.description,
     };
@@ -27,8 +27,8 @@ class EditConduitForm extends Component {
         .required('Service endpoint type is required'),
       suri: Yup.string()
         .required('Service endpoint uri is required'),
-      whitelist: Yup.string()
-        .required('Whitelist (ip addresses) is required'),
+      allowlist: Yup.string()
+        .required('Allowlist (ip addresses) is required'),
       racm: Yup.array().of(Yup.string())
         .required('Request access control is required'),
       description: Yup.string()

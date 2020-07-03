@@ -46,7 +46,7 @@ module.exports = (db, DataTypes) => {
         isUrl: true,
       }
     },
-    whitelist: {
+    allowlist: {
       type: DataTypes.JSON,
       allowNull: false,
       defaultValue: [],
@@ -55,17 +55,17 @@ module.exports = (db, DataTypes) => {
           if (!value.every(entry =>
             Object.keys(entry).sort().join('') === ALLOWLIST_PROPS
           )) {
-            throw new Error('whitelist properties not specified correctly');
+            throw new Error('allowlist properties not specified correctly');
           }
         },
         isValidIP: value => {
           if (!value.every(entry => validator.isIP(entry.ip))) {
-            throw new Error('Invalid ip address specified in whitelist');
+            throw new Error('Invalid ip address specified in allowlist');
           }
         },
         isValidStatus: value => {
           if (!value.every(entry => STATUS_ENUM.includes(entry.status))) {
-            throw new Error('Invalid status specified in whitelist');
+            throw new Error('Invalid status specified in allowlist');
           }
         },
       }
@@ -143,7 +143,7 @@ module.exports = (db, DataTypes) => {
       suriObjectKey: this.suriObjectKey,
       suri: this.suri,
       curi: this.curi,
-      whitelist: this.whitelist,
+      allowlist: this.allowlist,
       racm: this.racm,
       throttle: this.throttle,
       status: this.status,

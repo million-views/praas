@@ -61,7 +61,7 @@ Conduit stores data related to a non-traditional-storage service endpoint.
 | suriObjectKey   |Key to locate an object at the NTS provider        |null                            |
 | suri            |Service URI (AirTable URI)                         |not null                        |
 | curi            |System generated conduit URI                       |not null, unique                |
-| whitelist (1)   |Allowed ip list                                    |not null                        |
+| allowlist       |Allowed ip list                                    |not null                        |
 | racm            |Request Access Control Map |not null               |not null                        |
 | throttle        |Limit requests to 5/sec to avoid DOS attack        |not null, defaults to 'true'    |
 | status          |active/inactive                                    |not null, defaults to 'inactive'|
@@ -71,7 +71,7 @@ Conduit stores data related to a non-traditional-storage service endpoint.
 #### suriType
 Enum: plan is to support AirTable, Google Sheets, Smartsheet.
 
-#### whitelist
+#### allowlist
 JSON: containing an array of objects with the following properties:
 
 | Property  | Description            |

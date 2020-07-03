@@ -920,115 +920,115 @@ describe('PraaS', () => {
       });
     });
 
-    context('testing whitelist field...', () => {
-      it('should set default whitelist to [] if whitelist is not specified', done => {
+    context('testing allowlist field...', () => {
+      it('should set default allowlist to [] if allowlist is not specified', done => {
         helpers.makeCuri('td')
           .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
           .then(cdt => {
-            delete cdt.whitelist;
+            delete cdt.allowlist;
             return models.Conduit.build(cdt);
           })
           .then(objCdt => {
             objCdt.save()
               .then(objCdt => {
-                expect(objCdt.whitelist).to.eql([]);
+                expect(objCdt.allowlist).to.eql([]);
                 done();
               })
               .catch(_err => {
-                done(Error('whitelist was not saved with default value'));
+                done(Error('allowlist was not saved with default value'));
               });
           })
           .catch(e => done(e));
       });
 
-      it('should set default whitelist to [] if whitelist is undefined', done => {
+      it('should set default allowlist to [] if allowlist is undefined', done => {
         helpers.makeCuri('td')
           .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
           .then(cdt => {
-            cdt.whitelist = undefined;
+            cdt.allowlist = undefined;
             return models.Conduit.build(cdt);
           })
           .then(objCdt => {
             objCdt.save()
               .then(objCdt => {
-                expect(objCdt.whitelist).to.eql([]);
+                expect(objCdt.allowlist).to.eql([]);
                 done();
               })
               .catch(_err => {
-                done(Error('whitelist was not saved with default value'));
+                done(Error('allowlist was not saved with default value'));
               });
           })
           .catch(e => done(e));
       });
 
-      it('should not allow empty whitelist', done => {
+      it('should not allow empty allowlist', done => {
         helpers.makeCuri('td')
           .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
           .then(cdt => {
-            cdt.whitelist = '';
+            cdt.allowlist = '';
             return models.Conduit.build(cdt);
           })
           .then(objCdt => {
             objCdt.save()
               .then(() => {
-                done(Error('Conduit saved with empty whitelist'));
+                done(Error('Conduit saved with empty allowlist'));
               })
               .catch(e => {
                 expect(e.name).to.equal('SequelizeValidationError');
-                expect(e.errors[0].path).to.equal('whitelist');
+                expect(e.errors[0].path).to.equal('allowlist');
                 done();
               });
           })
           .catch(e => done(e));
       });
 
-      it('should not allow blank whitelist', done => {
+      it('should not allow blank allowlist', done => {
         helpers.makeCuri('td')
           .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
           .then(cdt => {
-            cdt.whitelist = '    ';
+            cdt.allowlist = '    ';
             return models.Conduit.build(cdt);
           })
           .then(objCdt => {
             objCdt.save()
               .then(() => {
-                done(Error('Conduit saved with blank whitelist'));
+                done(Error('Conduit saved with blank allowlist'));
               })
               .catch(e => {
                 expect(e.name).to.equal('SequelizeValidationError');
-                expect(e.errors[0].path).to.equal('whitelist');
+                expect(e.errors[0].path).to.equal('allowlist');
                 done();
               });
           })
           .catch(e => done(e));
       });
 
-      it('should not allow null whitelist', done => {
+      it('should not allow null allowlist', done => {
         helpers.makeCuri('td')
           .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
           .then(cdt => {
-            cdt.whitelist = null;
+            cdt.allowlist = null;
             return models.Conduit.build(cdt);
           })
           .then(objCdt => {
             objCdt.save()
               .then(() => {
-                done(Error('Conduit saved with null whitelist'));
+                done(Error('Conduit saved with null allowlist'));
               })
               .catch(e => {
                 expect(e.name).to.equal('SequelizeValidationError');
-                expect(e.errors[0].path).to.equal('whitelist');
+                expect(e.errors[0].path).to.equal('allowlist');
                 done();
               });
           })
           .catch(e => done(e));
       });
 
-      it('should not allow non-specified whitelist properties', done => {
+      it('should not allow non-specified allowlist properties', done => {
         helpers.makeCuri('td')
           .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
           .then(cdt => {
-            cdt.whitelist = [{
+            cdt.allowlist = [{
               ip: '123.234.345.456',
               comment: 'test',
               status: 'active',
@@ -1039,11 +1039,11 @@ describe('PraaS', () => {
           .then(objCdt => {
             objCdt.save()
               .then(() => {
-                done(Error('Saved with non-specified whitelist properties'));
+                done(Error('Saved with non-specified allowlist properties'));
               })
               .catch(e => {
                 expect(e.name).to.equal('SequelizeValidationError');
-                expect(e.errors[0].path).to.equal('whitelist');
+                expect(e.errors[0].path).to.equal('allowlist');
                 done();
               });
           })
@@ -1051,11 +1051,11 @@ describe('PraaS', () => {
       });
 
       context('testing ip address property', () => {
-        it('should not allow no ip address in whitelist', done => {
+        it('should not allow no ip address in allowlist', done => {
           helpers.makeCuri('td')
             .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
             .then(cdt => {
-              cdt.whitelist = [{
+              cdt.allowlist = [{
                 comment: 'test',
                 status: 'active',
               }];
@@ -1068,18 +1068,18 @@ describe('PraaS', () => {
                 })
                 .catch(e => {
                   expect(e.name).to.equal('SequelizeValidationError');
-                  expect(e.errors[0].path).to.equal('whitelist');
+                  expect(e.errors[0].path).to.equal('allowlist');
                   done();
                 });
             })
             .catch(e => done(e));
         });
 
-        it('should not allow undefined ip address in whitelist', done => {
+        it('should not allow undefined ip address in allowlist', done => {
           helpers.makeCuri('td')
             .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
             .then(cdt => {
-              cdt.whitelist = [{
+              cdt.allowlist = [{
                 ip: undefined,
                 comment: 'test',
                 status: 'active',
@@ -1093,18 +1093,18 @@ describe('PraaS', () => {
                 })
                 .catch(e => {
                   expect(e.name).to.equal('SequelizeValidationError');
-                  expect(e.errors[0].path).to.equal('whitelist');
+                  expect(e.errors[0].path).to.equal('allowlist');
                   done();
                 });
             })
             .catch(e => done(e));
         });
 
-        it('should not allow null ip address in whitelist', done => {
+        it('should not allow null ip address in allowlist', done => {
           helpers.makeCuri('td')
             .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
             .then(cdt => {
-              cdt.whitelist = [{
+              cdt.allowlist = [{
                 ip: null,
                 comment: 'test',
                 status: 'active',
@@ -1118,18 +1118,18 @@ describe('PraaS', () => {
                 })
                 .catch(e => {
                   expect(e.name).to.equal('SequelizeValidationError');
-                  expect(e.errors[0].path).to.equal('whitelist');
+                  expect(e.errors[0].path).to.equal('allowlist');
                   done();
                 });
             })
             .catch(e => done(e));
         });
 
-        it('should not allow empty ip address in whitelist', done => {
+        it('should not allow empty ip address in allowlist', done => {
           helpers.makeCuri('td')
             .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
             .then(cdt => {
-              cdt.whitelist = [{
+              cdt.allowlist = [{
                 ip: '',
                 comment: 'test',
                 status: 'active',
@@ -1143,18 +1143,18 @@ describe('PraaS', () => {
                 })
                 .catch(e => {
                   expect(e.name).to.equal('SequelizeValidationError');
-                  expect(e.errors[0].path).to.equal('whitelist');
+                  expect(e.errors[0].path).to.equal('allowlist');
                   done();
                 });
             })
             .catch(e => done(e));
         });
 
-        it('should not allow maligned ip address in whitelist', done => {
+        it('should not allow maligned ip address in allowlist', done => {
           helpers.makeCuri('td')
             .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
             .then(cdt => {
-              cdt.whitelist = [{
+              cdt.allowlist = [{
                 ip: '123.234.345',
                 comment: 'test',
                 status: 'active',
@@ -1168,18 +1168,18 @@ describe('PraaS', () => {
                 })
                 .catch(e => {
                   expect(e.name).to.equal('SequelizeValidationError');
-                  expect(e.errors[0].path).to.equal('whitelist');
+                  expect(e.errors[0].path).to.equal('allowlist');
                   done();
                 });
             })
             .catch(e => done(e));
         });
 
-        it('should not allow out-of-range ip address in whitelist', done => {
+        it('should not allow out-of-range ip address in allowlist', done => {
           helpers.makeCuri('td')
             .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
             .then(cdt => {
-              cdt.whitelist = [{
+              cdt.allowlist = [{
                 ip: '123.234.345.456',
                 comment: 'test',
                 status: 'active',
@@ -1193,7 +1193,7 @@ describe('PraaS', () => {
                 })
                 .catch(e => {
                   expect(e.name).to.equal('SequelizeValidationError');
-                  expect(e.errors[0].path).to.equal('whitelist');
+                  expect(e.errors[0].path).to.equal('allowlist');
                   done();
                 });
             })
@@ -1206,7 +1206,7 @@ describe('PraaS', () => {
           helpers.makeCuri('td')
             .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
             .then(cdt => {
-              cdt.whitelist = [{
+              cdt.allowlist = [{
                 ip: '127.0.0.1',
                 comment: 'test',
               }];
@@ -1215,11 +1215,11 @@ describe('PraaS', () => {
             .then(objCdt => {
               objCdt.save()
                 .then(() => {
-                  done(Error('Conduit saved with no whitelist status'));
+                  done(Error('Conduit saved with no allowlist status'));
                 })
                 .catch(e => {
                   expect(e.name).to.equal('SequelizeValidationError');
-                  expect(e.errors[0].path).to.equal('whitelist');
+                  expect(e.errors[0].path).to.equal('allowlist');
                   done();
                 });
             })
@@ -1230,7 +1230,7 @@ describe('PraaS', () => {
           helpers.makeCuri('td')
             .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
             .then(cdt => {
-              cdt.whitelist = [{
+              cdt.allowlist = [{
                 ip: '127.0.0.1',
                 comment: 'test',
                 status: undefined,
@@ -1240,11 +1240,11 @@ describe('PraaS', () => {
             .then(objCdt => {
               objCdt.save()
                 .then(() => {
-                  done(Error('Conduit saved with undefined whitelist status'));
+                  done(Error('Conduit saved with undefined allowlist status'));
                 })
                 .catch(e => {
                   expect(e.name).to.equal('SequelizeValidationError');
-                  expect(e.errors[0].path).to.equal('whitelist');
+                  expect(e.errors[0].path).to.equal('allowlist');
                   done();
                 });
             })
@@ -1255,7 +1255,7 @@ describe('PraaS', () => {
           helpers.makeCuri('td')
             .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
             .then(cdt => {
-              cdt.whitelist = [{
+              cdt.allowlist = [{
                 ip: '127.0.0.1',
                 comment: 'test',
                 status: null,
@@ -1265,11 +1265,11 @@ describe('PraaS', () => {
             .then(objCdt => {
               objCdt.save()
                 .then(() => {
-                  done(Error('Conduit saved with null whitelist status'));
+                  done(Error('Conduit saved with null allowlist status'));
                 })
                 .catch(e => {
                   expect(e.name).to.equal('SequelizeValidationError');
-                  expect(e.errors[0].path).to.equal('whitelist');
+                  expect(e.errors[0].path).to.equal('allowlist');
                   done();
                 });
             })
@@ -1280,7 +1280,7 @@ describe('PraaS', () => {
           helpers.makeCuri('td')
             .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
             .then(cdt => {
-              cdt.whitelist = [{
+              cdt.allowlist = [{
                 ip: '127.0.0.1',
                 comment: 'test',
                 status: '',
@@ -1290,11 +1290,11 @@ describe('PraaS', () => {
             .then(objCdt => {
               objCdt.save()
                 .then(() => {
-                  done(Error('Conduit saved with null whitelist status'));
+                  done(Error('Conduit saved with null allowlist status'));
                 })
                 .catch(e => {
                   expect(e.name).to.equal('SequelizeValidationError');
-                  expect(e.errors[0].path).to.equal('whitelist');
+                  expect(e.errors[0].path).to.equal('allowlist');
                   done();
                 });
             })
@@ -1305,7 +1305,7 @@ describe('PraaS', () => {
           helpers.makeCuri('td')
             .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
             .then(cdt => {
-              cdt.whitelist = [{
+              cdt.allowlist = [{
                 ip: '123.234.345.456',
                 comment: 'test',
                 status: 'random'
@@ -1315,11 +1315,11 @@ describe('PraaS', () => {
             .then(objCdt => {
               objCdt.save()
                 .then(() => {
-                  done(Error('Conduit saved with \'random\' whitelist status'));
+                  done(Error('Conduit saved with \'random\' allowlist status'));
                 })
                 .catch(e => {
                   expect(e.name).to.equal('SequelizeValidationError');
-                  expect(e.errors[0].path).to.equal('whitelist');
+                  expect(e.errors[0].path).to.equal('allowlist');
                   done();
                 });
             })

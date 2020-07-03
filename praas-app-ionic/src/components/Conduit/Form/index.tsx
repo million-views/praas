@@ -5,7 +5,7 @@ import { useForm, FormContext } from 'react-hook-form';
 import Input from '../../../components/Form/Input';
 import Select from '../../../components/Form/Select';
 import FormFieldWithError from '../../../components/FormFieldWithError';
-import IPWhiteList from './IPWhiteList';
+import IPAllowList from './IPAllowList';
 import RequestMethods from './RequestMethods';
 import { conduitTypes } from '../options';
 import conduitSchema from './schema';
@@ -64,7 +64,7 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
             </IonCol>
           </IonRow>
 
-          <IPWhiteList whitelist={conduit?.whitelist} />
+          <IPAllowList allowlist={conduit?.allowlist} />
 
           <RequestMethods defaultChecked={conduit?.racm} />
           <IonRow>

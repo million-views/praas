@@ -46,7 +46,7 @@ We created this project for our own internal experiments. Once completed and sta
 - Simple web interface to manage conduits
 - Request Access Control Map (configurable CORS?)
 - Request Throttling
-- IP Address Whitelist
+- IP Address AllowList
 - Hidden Form Field
 
 # Contribution

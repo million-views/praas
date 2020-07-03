@@ -11,9 +11,9 @@ type Props = {
   error: { ip?: FieldError; comment?: FieldError; status?: FieldError };
   onDelete: (idx: number) => void;
 };
-const WhiteListItem = ({ item, prefix, onDelete, error }: Props) => {
+const AllowListItem = ({ item, prefix, onDelete, error }: Props) => {
   return (
-    <IonGrid className="ip-whitelist">
+    <IonGrid className="ip-allowlist">
       <IonRow>
         <FormFieldWithError error={error?.ip}>
           <IonLabel position="floating">IP Address</IonLabel>
@@ -25,9 +25,9 @@ const WhiteListItem = ({ item, prefix, onDelete, error }: Props) => {
           <Input name={`${prefix}.comment`} value={item.comment} />
         </FormFieldWithError>
       </IonRow>
-      <IonRow className="ip-whitelist-status">
+      <IonRow className="ip-allowlist-status">
         <RadioGroup
-          labelClassName="ip-whitelist-status__label"
+          labelClassName="ip-allowlist-status__label"
           name={`${prefix}.status`}
           value={item.status}
           options={[
@@ -40,4 +40,4 @@ const WhiteListItem = ({ item, prefix, onDelete, error }: Props) => {
   );
 };
 
-export default WhiteListItem;
+export default AllowListItem;

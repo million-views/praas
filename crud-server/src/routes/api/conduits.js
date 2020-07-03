@@ -18,7 +18,7 @@ const conduitOptFields = [
   'status', // default: inactive
   'description', // nulls allowed
   'hiddenFormField', // default: []
-  'whitelist', // default: []
+  'allowlist', // default: []
   'racm', // default: []
 ];
 

@@ -139,10 +139,10 @@ describe('Praas REST API', () => {
         suriObjectKey: dotEnvValues.parsed.CONDUIT_SERVICE_OBJECT_KEY,
         suriType: 'Airtable',
         racm: ['POST'],
-        whitelist: [{
+        allowlist: [{
           ip: '123.234.123.234',
           status: 'inactive',
-          comment: 'Sample whitelist for testing'
+          comment: 'Sample allowlist for testing'
         }],
         throttle: false,
         status: 'active',
@@ -168,10 +168,10 @@ describe('Praas REST API', () => {
         suriObjectKey: dotEnvValues.parsed.CONDUIT_SERVICE_OBJECT_KEY,
         suriType: 'Airtable',
         racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
-        whitelist: [{
+        allowlist: [{
           ip: '123.234.123.234',
           status: 'inactive',
-          comment: 'Sample whitelist for testing'
+          comment: 'Sample allowlist for testing'
         }],
         throttle: false,
         status: 'active',
@@ -560,38 +560,38 @@ describe('Praas REST API', () => {
           });
         });
 
-        context('testing whitelist field...', () => {
-          it('should not allow null whitelist', async () => {
+        context('testing allowlist field...', () => {
+          it('should not allow null allowlist', async () => {
             const ct = await helpers.fakeConduit();
-            ct.whitelist = null;
+            ct.allowlist = null;
             const res = await Api()
               .post(`/conduits`)
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.error.errors[0].path).to.equal('whitelist');
+            expect(res.body.error.errors[0].path).to.equal('allowlist');
           });
 
-          it('should not allow empty whitelist', async () => {
+          it('should not allow empty allowlist', async () => {
             const ct = await helpers.fakeConduit();
-            ct.whitelist = '';
+            ct.allowlist = '';
             const res = await Api()
               .post(`/conduits`)
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.error.errors[0].path).to.equal('whitelist');
+            expect(res.body.error.errors[0].path).to.equal('allowlist');
           });
 
-          it('should allow only valid whitelist properties', async () => {
+          it('should allow only valid allowlist properties', async () => {
             const ct = await helpers.fakeConduit();
-            ct.whitelist = [{ random: 'random' }];
+            ct.allowlist = [{ random: 'random' }];
             const res = await Api()
               .post(`/conduits`)
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.error.errors[0].path).to.equal('whitelist');
+            expect(res.body.error.errors[0].path).to.equal('allowlist');
           });
         });
 
@@ -696,9 +696,9 @@ describe('Praas REST API', () => {
           expect(res2.body.conduit.racm).to.eql([]);
         });
 
-        it('should set default whitelist to [] if no whitelist is set', async () => {
+        it('should set default allowlist to [] if no allowlist is set', async () => {
           const ct = await helpers.fakeConduit();
-          delete ct.whitelist;
+          delete ct.allowlist;
           const res = await Api()
             .post(`/conduits`)
             .set('Authorization', `Token ${jakeUser.token}`)
@@ -709,12 +709,12 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`)
             .send();
           expect(res2.status).to.equal(200);
-          expect(res2.body.conduit.whitelist).to.eql([]);
+          expect(res2.body.conduit.allowlist).to.eql([]);
         });
 
-        it('should set default whitelist to [] if whitelist is undefined', async () => {
+        it('should set default allowlist to [] if allowlist is undefined', async () => {
           const ct = await helpers.fakeConduit();
-          ct.whitelist = undefined;
+          ct.allowlist = undefined;
           const res = await Api()
             .post(`/conduits`)
             .set('Authorization', `Token ${jakeUser.token}`)
@@ -725,7 +725,7 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`)
             .send();
           expect(res2.status).to.equal(200);
-          expect(res2.body.conduit.whitelist).to.eql([]);
+          expect(res2.body.conduit.allowlist).to.eql([]);
         });
 
         it('should set default HFF to [] if no HFF is set', async () => {
@@ -796,7 +796,7 @@ describe('Praas REST API', () => {
         expect(res.body.conduit).to.have.property('suriType');
         expect(res.body.conduit).to.have.property('suri');
         expect(res.body.conduit).to.have.property('curi');
-        expect(res.body.conduit).to.have.property('whitelist');
+        expect(res.body.conduit).to.have.property('allowlist');
         expect(res.body.conduit).to.have.property('racm');
         expect(res.body.conduit).to.have.property('throttle');
         expect(res.body.conduit).to.have.property('status');

@@ -1,4 +1,4 @@
-type Whitelist = {
+type Allowlist = {
   address: string;
   comment?: string;
   state: string;
@@ -10,7 +10,7 @@ type Conduit = {
   suriApiKey: string;
   suriType: string;
   suri: string;
-  whitelist: Array<Whitelist> | [];
+  allowlist: Array<Allowlist> | [];
   racm: Array<RequestAccessMethods>;
   status: string;
   description?: string;
