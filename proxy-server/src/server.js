@@ -58,7 +58,7 @@ app.all('/*', (req, res) => {
       const hff = conduit.hiddenFormField[i];
       let reqHff = undefined;
       if (req.body.records && req.body.records[0].fields[hff.fieldName]) {
-        reqHff = req.body[hff.fieldName];
+        reqHff = req.body.records[0].fields[hff.fieldName];
       };
 
       // This feature is to catch spam bots, so don't
