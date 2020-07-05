@@ -4,10 +4,10 @@ import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
 import AuthenticatedRoute from './components/AuthenticatedRoute';
-import SignupPage from './pages/SignupPage';
-import LoginPage from './pages/LoginPage';
-import HomePage from './pages/HomePage';
-import ConduitPage from './pages/ConduitPage';
+import SignupPage from './pages/Signup';
+import LoginPage from './pages/Login';
+import HomePage from './pages/Home';
+import ConduitPage from './pages/Conduit';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
