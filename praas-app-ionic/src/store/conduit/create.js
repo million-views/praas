@@ -2,9 +2,9 @@ import PraasAPI from '../../api/praas';
 
 // This is a create-conduit duck. A duck is a feature state container.
 
-const ADD_CONDUIT_REQUEST = 'conduit/ADD_CONDUIT_REQUEST';
-const ADD_CONDUIT_SUCCESS = 'conduit/ADD_CONDUIT_SUCCESS';
-const ADD_CONDUIT_FAILURE = 'conduit/ADD_CONDUIT_FAILURE';
+export const ADD_CONDUIT_REQUEST = 'conduit/ADD_CONDUIT_REQUEST';
+export const ADD_CONDUIT_SUCCESS = 'conduit/ADD_CONDUIT_SUCCESS';
+export const ADD_CONDUIT_FAILURE = 'conduit/ADD_CONDUIT_FAILURE';
 
 // Sync action creators
 export const addConduitSuccess = (conduit) => ({
@@ -38,12 +38,10 @@ export default function create(state = initialState, { type, payload }) {
       return {
         ...state,
         inflight: true,
-        ...payload.conduit,
       };
     case ADD_CONDUIT_SUCCESS:
       return {
         inflight: false,
-        ...payload.conduit,
       };
     case ADD_CONDUIT_FAILURE:
       return {
