@@ -140,6 +140,14 @@ describe('Testing Proxy Server...', async () => {
     });
   });
   context('Testing Airtable Gateway', () => {
+    let recordId;
+    before('create an arbitrary record', async function () {
+      const res = await proxyServer()
+                          .post('/')
+                          .set('Host', passConduit)
+                          .send(request1);
+      recordId = res.body.records[0].id;
+    });
     it('Should create Contacts (POST)', async () => {
     });
     it('should GET all entries', async function () {
