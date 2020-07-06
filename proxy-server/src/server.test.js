@@ -142,9 +142,12 @@ describe('Testing Proxy Server...', async () => {
   context('Testing Airtable Gateway', () => {
     it('Should create Contacts (POST)', async () => {
     });
-    it('Should get Contact by id (GET)', async () => {
+    it('should GET all entries', async function () {
+      const res = await proxyServer().get('/').set('Host', passConduit);
+      expect(res.status).to.equal(200)
+      expect(res.body).to.haveOwnProperty('records');
     });
-    it('Should list all Contacts (GET)', async () => {
+    it('Should get Contact by id (GET)', async () => {
     });
     it('Should update Contacts - partial (PATCH)', async () => {
     });
