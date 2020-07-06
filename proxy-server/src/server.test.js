@@ -183,7 +183,20 @@ describe('Testing Proxy Server...', async () => {
       expect(res.status).to.equal(200);
       expect(res.body).to.haveOwnProperty('records');
     });
-    it('Should update Contacts - full (PUT)', async () => {
+    it('should PUT into an existing entry (full update)', async function () {
+      const req = {
+        records: [{
+          id: recordId,
+          fields: {
+            name: 'last, first',
+        }]
+      };
+      const res = await proxyServer()
+                    .put('/')
+                    .set('Host', passConduit)
+                    .send(req);
+      expect(res.status).to.equal(200);
+      expect(res.body).to.haveOwnProperty('records');
     });
     it('Should delete contacts (DELETE)', async () => {
     });
