@@ -167,7 +167,21 @@ describe('Testing Proxy Server...', async () => {
       expect(res.body).hasOwnProperty('fields');
       expect(res.body.fields).to.eql(request1.records[0].fields);
     });
-    it('Should update Contacts - partial (PATCH)', async () => {
+    it('should PATCH entries (partial update)', async function () {
+      const req = {
+        records: [{
+          id: recordId,
+          fields: {
+            email: 'flast@last.com',
+          }
+        }]
+      };
+      const res = await proxyServer()
+                    .patch('/')
+                    .set('Host', passConduit)
+                    .send(req);
+      expect(res.status).to.equal(200);
+      expect(res.body).to.haveOwnProperty('records');
     });
     it('Should update Contacts - full (PUT)', async () => {
     });
