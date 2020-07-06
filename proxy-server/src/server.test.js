@@ -161,7 +161,11 @@ describe('Testing Proxy Server...', async () => {
       expect(res.status).to.equal(200)
       expect(res.body).to.haveOwnProperty('records');
     });
-    it('Should get Contact by id (GET)', async () => {
+    it('should GET entry by ID', async function () {
+      const res = await proxyServer().get('/' + recordId).set('Host', passConduit);
+      expect(res.status).to.equal(200);
+      expect(res.body).hasOwnProperty('fields');
+      expect(res.body.fields).to.eql(request1.records[0].fields);
     });
     it('Should update Contacts - partial (PATCH)', async () => {
     });
