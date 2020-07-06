@@ -148,7 +148,13 @@ describe('Testing Proxy Server...', async () => {
                           .send(request1);
       recordId = res.body.records[0].id;
     });
-    it('Should create Contacts (POST)', async () => {
+    it('should POST a new entry', async function () {
+      const res = await proxyServer()
+                    .post('/')
+                    .set('Host', passConduit)
+                    .send(request1);
+      expect(res.status).to.equal(200);
+      expect(res.body).to.haveOwnProperty('records');
     });
     it('should GET all entries', async function () {
       const res = await proxyServer().get('/').set('Host', passConduit);
