@@ -19,7 +19,7 @@ const ListItem = ({ conduit, onDelete }: Props) => {
     <IonRow key={conduit.id} className="table-row">
       <IonCol className="table-col">{conduit.description}</IonCol>
       <IonCol className="table-col">{conduit.suriType}</IonCol>
-      <IonCol className="table-col">{conduit.suri}</IonCol>
+      <IonCol className="table-col">{conduit.curi}</IonCol>
       <IonCol className="table-col">{conduit.status}</IonCol>
       <IonCol className="table-col">
         <IonButtons>

@@ -50,7 +50,7 @@ const Home: React.FC<Props> = ({ conduits, listConduits, deleteConduit }) => {
             <IonRow className="table-header">
               <IonCol className="table-header-col">Description</IonCol>
               <IonCol className="table-header-col">Type</IonCol>
-              <IonCol className="table-header-col">Service Endpoint</IonCol>
+              <IonCol className="table-header-col">Conduit Endpoint</IonCol>
               <IonCol className="table-header-col">Status</IonCol>
               <IonCol className="table-header-col">Action</IonCol>
             </IonRow>

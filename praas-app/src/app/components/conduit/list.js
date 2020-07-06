@@ -46,7 +46,7 @@ const List = (props) => {
       <tr key={index}>
         <td>{conduit.description}</td>
         <td>{conduit.suriType}</td>
-        <td>{conduit.suri}</td>
+        <td>{conduit.curi}</td>
         <td>{conduit.status}</td>
         <td>
           <button onClick={() => { props.changeMode('edit'); props.setConduitId(conduit.id); }}>Edit</button>
@@ -67,7 +67,7 @@ const List = (props) => {
           <tr>
             <th>Description</th>
             <th>Type</th>
-            <th>Service Endpoint</th>
+            <th>Conduit Endpoint</th>
             <th>Status</th>
             <th>Action</th>
           </tr>

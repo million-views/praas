@@ -10,6 +10,7 @@ type Conduit = {
   suriApiKey: string;
   suriType: string;
   suri: string;
+  curi: string;
   allowlist: Array<Allowlist> | [];
   racm: Array<RequestAccessMethods>;
   status: string;
