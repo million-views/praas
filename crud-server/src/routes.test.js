@@ -149,7 +149,8 @@ describe('Praas REST API', () => {
         hiddenFormField: [{
           fieldName: 'hiddenFormField',
           policy: 'drop-if-filled',
-          include: false
+          include: false,
+          value: ''
         }]
       };
       await Api()
