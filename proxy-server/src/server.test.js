@@ -140,34 +140,123 @@ describe('Testing Proxy Server...', async () => {
     });
   });
   context('Testing Airtable Gateway', () => {
-    it('Should create Contacts (POST)', async () => {
+    let recordId;
+    before('create an arbitrary record', async function () {
+      const res = await proxyServer()
+                          .post('/')
+                          .set('Host', passConduit)
+                          .send(request1);
+      recordId = res.body.records[0].id;
     });
-    it('Should get Contact by id (GET)', async () => {
+    it('should POST a new entry', async function () {
+      const res = await proxyServer()
+                    .post('/')
+                    .set('Host', passConduit)
+                    .send(request1);
+      expect(res.status).to.equal(200);
+      expect(res.body).to.haveOwnProperty('records');
     });
-    it('Should list all Contacts (GET)', async () => {
+    it('should GET all entries', async function () {
+      const res = await proxyServer().get('/').set('Host', passConduit);
+      expect(res.status).to.equal(200)
+      expect(res.body).to.haveOwnProperty('records');
     });
-    it('Should update Contacts - partial (PATCH)', async () => {
+    it('should GET entry by ID', async function () {
+      const res = await proxyServer().get('/' + recordId).set('Host', passConduit);
+      expect(res.status).to.equal(200);
+      expect(res.body).hasOwnProperty('fields');
+      expect(res.body.fields).to.eql(request1.records[0].fields);
     });
-    it('Should update Contacts - full (PUT)', async () => {
+    it('should PATCH entries (partial update)', async function () {
+      const req = {
+        records: [{
+          id: recordId,
+          fields: {
+            email: 'flast@last.com',
+          }
+        }]
+      };
+      const res = await proxyServer()
+                    .patch('/')
+                    .set('Host', passConduit)
+                    .send(req);
+      expect(res.status).to.equal(200);
+      expect(res.body).to.haveOwnProperty('records');
     });
-    it('Should delete contacts (DELETE)', async () => {
+    it('should PUT into an existing entry (full update)', async function () {
+      const req = {
+        records: [{
+          id: recordId,
+          fields: {
+            name: 'last, first',
+        }]
+      };
+      const res = await proxyServer()
+                    .put('/')
+                    .set('Host', passConduit)
+                    .send(req);
+      expect(res.status).to.equal(200);
+      expect(res.body).to.haveOwnProperty('records');
+    });
+    it('should DELETE a single entry', async function () {
+      const res = await proxyServer().delete('/' + recordId).set('Host', passConduit);
+      expect(res.status).to.equal(200);
+      expect(res.body.deleted).to.be.true;
+      expect(res.body.id).to.equal(recordId);
+    });
+    it('should DELETE multiple entries', async function () {
+      // add some extra records to delete
+      const req = {
+        records: [
+          {
+            fields: {
+              name: 'first last',
+              email: 'first@last.com',
+              hiddenFormField: 'hidden-form-field-value',
+            }
+          },
+          {
+            fields: {
+              name: 'second last',
+              email: 'second@last.com',
+              hiddenFormField: 'hidden-form-field-value',
+            }
+          },
+          {
+            fields: {
+              name: 'third last',
+              email: 'third@last.com',
+              hiddenFormField: 'hidden-form-field-value',
+            }
+          }
+        ]
+      };
+      const res = await proxyServer()
+                  .post('/')
+                  .set('Host', passConduit)
+                  .send(req);
+
+      // create list of records to be deleted
+      let records = [];
+      for( let i = 0; i < res.body.records.length; i++ ) {
+        records.push(res.body.records[i].id);
+      }
+
+      // actually send the `DELETE` request
+      const del = await proxyServer()
+                    .delete('/')
+                    .set('Host', passConduit)
+                    .query({records});
+      expect(del.status).to.equal(200);
+      expect(del.body).to.haveOwnProperty('records');
+      expect(del.body.records.length).to.equal(records.length);
+      for( let i = 0; i < del.body.records.length; i++ ) {
+        expect(del.body.records[i].deleted).to.be.true;
+        expect(del.body.records[i].id).to.equal(records[i]);
+      }
     });
   });
-  context('Testing Google Sheets Gateway', () => {
-    it('Should create Contacts (POST)', async () => {
-    });
-    it('Should get Contact by id (GET)', async () => {
-    });
-    it('Should list all Contacts (GET)', async () => {
-    });
-    it('Should update Contacts - partial (PATCH)', async () => {
-    });
-    it('Should update Contacts - full (PUT)', async () => {
-    });
-    it('Should delete contacts (DELETE)', async () => {
-    });
-  });
-  context('Testing SmartSheets Gateway', () => {
+  context.skip('Testing Google Sheets Gateway', () => {
     it('Should create Contacts (POST)', async () => {
     });
     it('Should get Contact by id (GET)', async () => {
