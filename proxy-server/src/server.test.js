@@ -198,7 +198,62 @@ describe('Testing Proxy Server...', async () => {
       expect(res.status).to.equal(200);
       expect(res.body).to.haveOwnProperty('records');
     });
-    it('Should delete contacts (DELETE)', async () => {
+    it('should DELETE a single entry', async function () {
+      const res = await proxyServer().delete('/' + recordId).set('Host', passConduit);
+      expect(res.status).to.equal(200);
+      expect(res.body.deleted).to.be.true;
+      expect(res.body.id).to.equal(recordId);
+    });
+    it('should DELETE multiple entries', async function () {
+      // add some extra records to delete
+      const req = {
+        records: [
+          {
+            fields: {
+              name: 'first last',
+              email: 'first@last.com',
+              hiddenFormField: 'hidden-form-field-value',
+            }
+          },
+          {
+            fields: {
+              name: 'second last',
+              email: 'second@last.com',
+              hiddenFormField: 'hidden-form-field-value',
+            }
+          },
+          {
+            fields: {
+              name: 'third last',
+              email: 'third@last.com',
+              hiddenFormField: 'hidden-form-field-value',
+            }
+          }
+        ]
+      };
+      const res = await proxyServer()
+                  .post('/')
+                  .set('Host', passConduit)
+                  .send(req);
+
+      // create list of records to be deleted
+      let records = [];
+      for( let i = 0; i < res.body.records.length; i++ ) {
+        records.push(res.body.records[i].id);
+      }
+
+      // actually send the `DELETE` request
+      const del = await proxyServer()
+                    .delete('/')
+                    .set('Host', passConduit)
+                    .query({records});
+      expect(del.status).to.equal(200);
+      expect(del.body).to.haveOwnProperty('records');
+      expect(del.body.records.length).to.equal(records.length);
+      for( let i = 0; i < del.body.records.length; i++ ) {
+        expect(del.body.records[i].deleted).to.be.true;
+        expect(del.body.records[i].id).to.equal(records[i]);
+      }
     });
   });
   context('Testing Google Sheets Gateway', () => {
