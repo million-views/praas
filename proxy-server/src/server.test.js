@@ -270,18 +270,4 @@ describe('Testing Proxy Server...', async () => {
     it('Should delete contacts (DELETE)', async () => {
     });
   });
-  context('Testing SmartSheets Gateway', () => {
-    it('Should create Contacts (POST)', async () => {
-    });
-    it('Should get Contact by id (GET)', async () => {
-    });
-    it('Should list all Contacts (GET)', async () => {
-    });
-    it('Should update Contacts - partial (PATCH)', async () => {
-    });
-    it('Should update Contacts - full (PUT)', async () => {
-    });
-    it('Should delete contacts (DELETE)', async () => {
-    });
-  });
 });
