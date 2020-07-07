@@ -256,7 +256,7 @@ describe('Testing Proxy Server...', async () => {
       }
     });
   });
-  context('Testing Google Sheets Gateway', () => {
+  context.skip('Testing Google Sheets Gateway', () => {
     it('Should create Contacts (POST)', async () => {
     });
     it('Should get Contact by id (GET)', async () => {
