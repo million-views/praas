@@ -14,11 +14,12 @@ const conduitSchema = Yup.object().shape({
     .of(
       Yup.object().shape({
         ip: Yup.string().required('IP Address Required'),
-        comment: Yup.string().required('Comment required'),
+        comment: Yup.string().notRequired(),
         status: Yup.string().required('IP status required'),
       })
     )
-    .required(),
+    .min(0)
+    .max(4),
   racm: Yup.array()
     .min(1, 'Select atleast on request method')
     .required('Request methods is required'),
