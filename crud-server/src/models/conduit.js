@@ -1,7 +1,6 @@
 const validator = require('validator');
 
 // cache frequently used objects and enumerations
-const ALLOWLIST_PROPS = ['comment', 'ip', 'status'].join('');
 const HFF_PROPS = ['fieldName', 'include', 'policy', 'value'].join('');
 const HFF_POLICY = ['drop-if-filled', 'pass-if-match'];
 const SERVICE_ENUM = ['Airtable', 'Google Sheets', 'Smartsheet'];
@@ -52,9 +51,7 @@ module.exports = (db, DataTypes) => {
       defaultValue: [],
       validate: {
         isValidProperty: value => {
-          if (!value.every(entry =>
-            Object.keys(entry).sort().join('') === ALLOWLIST_PROPS
-          )) {
+          if (!value.every(entry => (entry.ip && entry.status))) {
             throw new Error('allowlist properties not specified correctly');
           }
         },
