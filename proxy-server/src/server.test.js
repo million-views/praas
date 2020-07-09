@@ -17,6 +17,7 @@ const proxyServer = () => chai.request(proxyServerURL);
 const testConduits = JSON.parse(fs.readFileSync(path.resolve('../.test-data-curi.json')));
 const dropConduit = testConduits.dropConduit;
 const passConduit = testConduits.passConduit;
+const noIncludeConduit = testConduits.noIncludeConduit;
 
 // Conduit hff to test pass-if-match and include=true
 const hff1 = {
@@ -135,6 +136,36 @@ describe('Testing Proxy Server...', async () => {
                         .set('Host', dropConduit)
                         .send(request2);
           expect(res.status).to.equal(200);
+        });
+      });
+      context('for hiddenFormField.include', async function () {
+        it('should send hiddenFormField if include = true', async function () {
+          const res = await proxyServer()
+                        .post('/')
+                        .set('Host', passConduit)
+                        .send(request3);
+          expect(res.status).to.equal(200);
+          if (res.body.records && res.body.records.length === request3.records.length) {
+            for( let i = 0; i < res.body.records.length; i++ ) {
+              expect(res.body.records[i].fields).to.eql(request3.records[i].fields);
+            }
+          } else {
+            throw new Error('number of records in response mismatch from request');
+          }
+        });
+        it('should not send hiddenFormField if include = false', async function () {
+          const res = await proxyServer()
+                        .post('/')
+                        .set('Host', noIncludeConduit)
+                        .send(request3);
+          expect(res.status).to.equal(200);
+          if (res.body.records && res.body.records.length === request3.records.length) {
+            for( let i = 0; i < res.body.records.length; i++ ) {
+              expect(res.body.records[i].fields).to.not.eql(request3.records[i].fields);
+            }
+          } else {
+            throw new Error('number of records in response mismatch from request');
+          }
         });
       });
     });

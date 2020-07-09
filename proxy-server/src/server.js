@@ -70,6 +70,10 @@ app.all('/*', (req, res) => {
       if (hff && hff.policy === 'pass-if-match' && !(reqHff === hff.value)) {
         return res.sendStatus(200);
       }
+
+      if (!hff.include) {
+        delete req.body.records[0].fields[hff.fieldName];
+      }
     }
   }
 
