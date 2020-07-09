@@ -168,7 +168,11 @@ describe('Testing Proxy Server...', async () => {
                           .post('/')
                           .set('Host', passConduit)
                           .send(request1);
-      recordId = res.body.records[0].id;
+      if ( res.body.records ) {
+        recordId = res.body.records[0].id;
+      } else {
+        throw new Error('could not create arbitrary record');
+      }
     });
     it('should POST a new entry', async function () {
       const res = await proxyServer()
