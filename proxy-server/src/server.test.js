@@ -189,6 +189,7 @@ describe('Testing Proxy Server...', async () => {
           id: recordId,
           fields: {
             name: 'last, first',
+          }
         }]
       };
       const res = await proxyServer()
