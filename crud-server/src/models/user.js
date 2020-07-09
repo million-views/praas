@@ -97,5 +97,9 @@ module.exports = (db, DataTypes) => {
     return user;
   };
 
+  User.findById = async function (id) {
+    return User.findOne({ where: { id: id } });
+  };
+
   return User;
 };

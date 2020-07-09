@@ -240,6 +240,19 @@ describe('Praas REST API', () => {
       expect(User(res).email).to.equal(jake.user.email);
     });
 
+    it('should allow the user to update their information', async function () {
+      const userName = {
+        firstName: 'John',
+        lastName: 'Doe'
+      }
+      const res = await Api()
+                    .put('/user')
+                    .set('Authorization', `Token ${jakeUser.token}`)
+                    .send({ user: userName });
+      expect(res.body.user.firstName).to.equal(userName.firstName);
+      expect(res.body.user.lastName).to.equal(userName.lastName);
+    });
+
     let ctId1, ctId2;
 
     context('testing conduit creation (POST)...', () => {
