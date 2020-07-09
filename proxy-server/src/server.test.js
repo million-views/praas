@@ -19,15 +19,6 @@ const dropConduit = testConduits.dropConduit;
 const passConduit = testConduits.passConduit;
 const noIncludeConduit = testConduits.noIncludeConduit;
 
-// Conduit hff to test pass-if-match and include=true
-const hff1 = {
-  hiddenFormField: [{
-    fieldName: 'campaign',
-    policy: 'pass-if-match',
-    include: true,
-    value: 'BOGO June2020',
-  }],
-};
 
 const request1 = {
   records: [{
