@@ -901,6 +901,12 @@ describe('Praas REST API', () => {
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res.status).to.equal(403);
       });
+      it('should not be able to DELETE non-existant conduits', async () => {
+        const res = await Api()
+          .delete('/conduits/non-existant')
+          .set('Authorization', `Token ${jakeUser.token}`);
+        expect(res.status).to.equal(404);
+      });
     });
   });
 });
