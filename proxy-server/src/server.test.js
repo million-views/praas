@@ -136,12 +136,9 @@ describe('Testing Proxy Server...', async () => {
                         .set('Host', passConduit)
                         .send(request3);
           expect(res.status).to.equal(200);
-          if (res.body.records && res.body.records.length === request3.records.length) {
-            for( let i = 0; i < res.body.records.length; i++ ) {
-              expect(res.body.records[i].fields).to.eql(request3.records[i].fields);
-            }
-          } else {
-            throw new Error('number of records in response mismatch from request');
+          expect(res.body.records.length).to.equal(request3.records.length);
+          for( let i = 0; i < res.body.records.length; i++ ) {
+            expect(res.body.records[i].fields).to.eql(request3.records[i].fields);
           }
         });
         it('should not send hiddenFormField if include = false', async function () {
@@ -150,12 +147,9 @@ describe('Testing Proxy Server...', async () => {
                         .set('Host', noIncludeConduit)
                         .send(request3);
           expect(res.status).to.equal(200);
-          if (res.body.records && res.body.records.length === request3.records.length) {
-            for( let i = 0; i < res.body.records.length; i++ ) {
-              expect(res.body.records[i].fields).to.not.eql(request3.records[i].fields);
-            }
-          } else {
-            throw new Error('number of records in response mismatch from request');
+          expect(res.body.records.length).to.equal(request3.records.length);
+          for( let i = 0; i < res.body.records.length; i++ ) {
+            expect(res.body.records[i].fields).to.not.eql(request3.records[i].fields);
           }
         });
       });
