@@ -12,11 +12,10 @@ type Props = {
   error: { ip?: FieldError; comment?: FieldError; status?: FieldError };
   onDelete: (idx: number) => void;
 };
-const AllowListItem = ({ index, item, prefix, onDelete, error }: Props) => {
+const AllowListItem = ({ index, item, prefix, error }: Props) => {
   return (
     <IonGrid className="ip-allowlist">
       <IonRow>
-        <IonCol>
           <FormFieldWithError error={error?.ip}>
             <IonLabel position="floating">IP Address</IonLabel>
             <Input name={`${prefix}.ip`} value={item.ip} />
@@ -26,12 +25,6 @@ const AllowListItem = ({ index, item, prefix, onDelete, error }: Props) => {
             <IonLabel position="floating">Comment</IonLabel>
             <Input name={`${prefix}.comment`} value={item.comment} />
           </FormFieldWithError>
-        </IonCol>
-        <IonCol>
-          <IonButton type="button" onClick={() => onDelete(index)}>
-            X
-          </IonButton>
-        </IonCol>
       </IonRow>
       <IonRow className="ip-allowlist-status">
           <RadioGroup

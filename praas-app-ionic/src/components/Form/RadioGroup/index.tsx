@@ -24,10 +24,16 @@ type Props = {
 type RadioProp = {
   value: string;
   label: string;
-  className: string;
+  className?: string;
 };
 
-const Radio = ({ value, label, className }: RadioProp) => {
+type GroupProp = {
+  options: Array<OptionType>;
+  className?: string;
+  labelClassName?: string;
+};
+
+const Radio = ({value, label, className }: RadioProp) => {
   return (
     <IonItem lines="none">
       <IonRadio value={value}></IonRadio>
@@ -35,6 +41,25 @@ const Radio = ({ value, label, className }: RadioProp) => {
     </IonItem>
   );
 };
+
+const Group = ({options, className, labelClassName}:GroupProp) => {
+  return <IonRadioGroup className={className}>
+  <IonRow>
+    {options.map((option: OptionType) => {
+      return (
+        <IonCol key={option.value}>
+          <Radio
+            value={option.value}
+            label={option.label}
+            className={labelClassName}
+          />
+        </IonCol>
+      );
+    })}
+  </IonRow>
+</IonRadioGroup>
+}
+
 const RadioGroup = ({
   name,
   value,
@@ -45,22 +70,7 @@ const RadioGroup = ({
   return (
     <Controller
       as={
-        <IonRadioGroup className={className}>
-          <IonRow>
-            {options.map((option: OptionType) => {
-              return (
-                <IonCol>
-                  <Radio
-                    key={option.value}
-                    value={option.value}
-                    label={option.label}
-                    className={labelClassName}
-                  />
-                </IonCol>
-              );
-            })}
-          </IonRow>
-        </IonRadioGroup>
+        <Group labelClassName={labelClassName} className={className} options={options} />
       }
       name={name}
       defaultValue={value}
@@ -68,7 +78,7 @@ const RadioGroup = ({
       onChange={([selected]) => {
         return selected.detail.value;
       }}
-    ></Controller>
+    />
   );
 };
 
