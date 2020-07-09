@@ -56,10 +56,9 @@ app.all('/*', (req, res) => {
     for (let i = 0, imax = conduit.hiddenFormField.length; i < imax; i++) {
       // We`ll be using this multiple times, so store in a short variable
       const hff = conduit.hiddenFormField[i];
-      let reqHff = undefined;
-      if (req.body.records && req.body.records[0].fields[hff.fieldName]) {
-        reqHff = req.body.records[0].fields[hff.fieldName];
-      };
+      let reqHff = req.body.records ?
+                     req.body.records[0].fields[hff.fieldName] :
+                     undefined;
 
       // This feature is to catch spam bots, so don't
       // send error if failure, send 200-OK instead
