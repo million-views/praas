@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const multer = require('multer');
 const cors = require('cors');
 const errorhandler = require('errorhandler');
 const fetch = require('node-fetch');
@@ -8,6 +9,7 @@ const conf = require('./config');
 const helpers = require('./lib/helpers');
 const PraasAPI = require('./lib/praas');
 
+const upload = multer();
 const app = express();
 
 app.use(bodyParser.json());
@@ -19,7 +21,7 @@ app.use(cors());
 app.locals.cmap = new Map();
 
 // we handle all requests to the proxy end point...
-app.all('/*', (req, res) => {
+app.all('/*', upload.none(), (req, res) => {
   // PUT, POST and PATCH operations have records in body
   if (['PUT', 'PATCH', 'POST'].includes(req.method) &&
     !(req.body.records)) {
