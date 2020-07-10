@@ -104,6 +104,11 @@ describe('Praas REST API', () => {
 
   context('When authenticated', () => {
     let jakeUser = undefined;
+    const dotEnvValues = dotEnv.config({
+      allowEmptyValues: true,
+      example: path.resolve('../.env.conduit.example'),
+      path: path.resolve('../.env.conduit')
+    });
 
     before('login', async () => {
       const res = await Api()
@@ -126,11 +131,6 @@ describe('Praas REST API', () => {
 
     after('set up proxy-server and logout', async () => {
       console.log('starting setting up test data for proxy server');
-      const dotEnvValues = dotEnv.config({
-        allowEmptyValues: true,
-        example: path.resolve('../.env.conduit.example'),
-        path: path.resolve('../.env.conduit')
-      });
       let testConduit1, testConduit2, testConduit3, curis = {};
       testConduit1 = {
         description: 'test conduit with drop-if-filled HFF policy',
@@ -841,6 +841,46 @@ describe('Praas REST API', () => {
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res.status).to.equal(200);
         expect(res.body.conduits.length).to.equal(10);
+      });
+    });
+
+    context('the PUT method', async function () {
+      it('should overwrite an existing record', async function () {
+        const conduit = await Api()
+                          .get('/conduits/' + ctId1)
+                          .set('Authorization', `Token ${jakeUser.token}`);
+        expect(conduit.body).to.haveOwnProperty('conduit');
+
+        const putData = {
+          suri: dotEnvValues.parsed.CONDUIT_SERVICE_URI,
+          suriApiKey: dotEnvValues.parsed.CONDUIT_SERVICE_API_KEY,
+          suriObjectKey: dotEnvValues.parsed.CONDUIT_SERVICE_OBJECT_KEY,
+          suriType: 'Airtable',
+        }
+
+        const res = await Api()
+                      .put('/conduits/' + ctId1)
+                      .set('Authorization', `Token ${jakeUser.token}`)
+                      .send({ conduit: putData });
+        expect(res.status).to.equal(200);
+        expect(res.body.conduit).to.not.eql(conduit.body.conduit);
+        expect(res.body.conduit.suri).to.equal(putData.suri);
+        expect(res.body.conduit.suriApiKey).to.equal(putData.suriApiKey);
+        expect(res.body.conduit.suriObjectKey).to.equal(putData.suriObjectKey);
+        expect(res.body.conduit.suriType).to.equal(putData.suriType);
+        expect(
+          res.body.conduit.allowlist,
+          res.body.conduit.racm,
+          res.body.conduit.hiddenFormField
+        ).to.be.empty;
+      });
+      it('should not allow CURI to be updated', async function () {
+        const conduit = { conduit: { curi: 'td-12345.trickle.cc' } };
+        const res = await Api()
+                      .put(`/conduits/${ctId1}`)
+                      .set('Authorization', `Token ${jakeUser.token}`)
+                      .send(conduit);
+        expect(res.status).to.equal(400);
       });
     });
 
