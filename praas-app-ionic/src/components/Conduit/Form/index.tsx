@@ -5,6 +5,8 @@ import { useForm, FormContext } from 'react-hook-form';
 import Input from '../../../components/Form/Input';
 import Select from '../../../components/Form/Select';
 import FormFieldWithError from '../../../components/FormFieldWithError';
+import RadioGroup from '../../../components/Form/RadioGroup';
+
 import IPAllowList from './IPAllowList';
 import RequestMethods from './RequestMethods';
 import { conduitTypes } from '../options';
@@ -76,6 +78,17 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
                 <Input name="description" value={conduit?.description} />
               </FormFieldWithError>
             </IonCol>
+          </IonRow>
+          <IonRow className="ip-allowlist-status">
+            <RadioGroup
+              labelClassName="status__label"
+              name={`status`}
+              value={conduit.status}
+              options={[
+                { value: 'active', label: 'Active' },
+                { value: 'inactive', label: 'Inactive' },
+              ]}
+            />
           </IonRow>
           <IonRow>
             <IonCol>

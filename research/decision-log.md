@@ -1,9 +1,13 @@
-# Proxy Server hack our way to move to next step
+# Service account, resource server, OAuth2
 [11MAY2020]
-- We have decide to hack our way to get all conduits from conduit server
-  - Credentials in .env file
-  - Function to use the credentials and fetch all conduits from conduits server for a special id.
-- We have to revisit all our decisions when we have oauth integrated.
+## How to get all conduits?
+- Decided to hack our way to get all conduits from conduit server
+  - Use .env file for credentials
+  - Use a 'service-account' for proxy to access all conduits from resource-server
+  - revisit and refactor when we integrate with an OAuth2 stack
+- Note:
+  > technically in OAuth2 speak, the proxy is a confidential and systems
+  > client of the resource server that has special scope claim. 
 
 # Forms, forms, forms
 [17JAN2019]
