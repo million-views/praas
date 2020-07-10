@@ -1,8 +1,17 @@
+const fs = require('fs');
+const path = require('path');
 const expect = require('chai').expect;
 const jwt = require('jsonwebtoken');
 const config = require('./config');
 const models = require('./models');
 const helpers = require('./lib/helpers');
+const dotEnv = require('dotenv-safe');
+
+const dotEnvValues = dotEnv.config({
+  allowEmptyValues: true,
+  example: path.resolve('../.env.conduit-user.example'),
+  path: path.resolve('../.env.conduit-user')
+});
 
 /**
  * Unit tests for the database model
@@ -121,12 +130,92 @@ describe('PraaS', () => {
     let cdt, user, users;
 
     before(async () => {
-      [user] = await helpers.generateUsers(1);
+      const userObj = await models.User.create({
+        firstName: dotEnvValues.parsed.USER_FIRST_NAME,
+        lastName: dotEnvValues.parsed.USER_LAST_NAME,
+        email: dotEnvValues.parsed.USER_EMAIL,
+        password: dotEnvValues.parsed.USER_PASSWORD
+      });
+      user = userObj.toJSON();
       await models.Conduit.sync();
     });
 
     after('populate for integration test', async function () {
       this.timeout(4000); // <- needed to prevent timeout exceeded mocha error
+
+      // create test conduits for proxy server
+      let proxyBaseConduit,
+        proxyDropConduit,
+        proxyPassConduit,
+        proxyNoIncludeConduit,
+        curis = {};
+
+      proxyBaseConduit = {
+        userId: user.id,
+        suri: dotEnvValues.parsed.CONDUIT_SERVICE_URI,
+        suriApiKey: dotEnvValues.parsed.CONDUIT_SERVICE_API_KEY,
+        suriObjectKey: dotEnvValues.parsed.CONDUIT_SERVICE_OBJECT_KEY,
+        suriType: 'Airtable',
+        allowlist: [{
+          ip: '123.234.123.234',
+          status: 'inactive',
+          comment: 'Sample allowlist for testing'
+        }],
+        throttle: false,
+        status: 'active',
+      }
+
+      proxyDropConduit = await models.Conduit.create({
+        description: 'test conduit with drop-if-filled HFF policy',
+        curi: await helpers.makeCuri('td'),
+        racm: ['POST'],
+        hiddenFormField: [{
+          fieldName: 'hiddenFormField',
+          policy: 'drop-if-filled',
+          include: false,
+          value: 'hiddenFormFieldValue'
+        }],
+        ...proxyBaseConduit
+      });
+      curis.dropConduit = proxyDropConduit.curi;
+
+      proxyPassConduit = await models.Conduit.create({
+        description: 'test conduit with pass-if-match HFF policy',
+        curi: await helpers.makeCuri('td'),
+        racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
+        hiddenFormField: [{
+          fieldName: 'hiddenFormField',
+          policy: 'pass-if-match',
+          include: true,
+          value: 'hidden-form-field-value'
+        }],
+        ...proxyBaseConduit
+      });
+      curis.passConduit = proxyPassConduit.curi;
+
+      proxyNoIncludeConduit = await models.Conduit.create({
+        description: 'test conduit with HFF include = false',
+        curi: await helpers.makeCuri('td'),
+        racm: ['POST'],
+        hiddenFormField: [{
+          fieldName: 'hiddenFormField',
+          policy: 'pass-if-match',
+          include: false,
+          value: 'hidden-form-field-value'
+        }],
+        ...proxyBaseConduit
+      });
+      curis.noIncludeConduit = proxyNoIncludeConduit.curi;
+
+      fs.writeFileSync(
+        path.resolve('../.test-data-curi.json'),
+        JSON.stringify(curis, null, 2)
+      );
+
+      // flood user with random conduits
+      helpers.generateConduits(user.id, 200);
+
+      // generate random users and conduits for integration test
       users = await helpers.generateUsers(10);
       for (let i = 0; i < 10; i++) {
         await helpers.generateConduits(users[i].id);

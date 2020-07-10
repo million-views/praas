@@ -30,9 +30,10 @@ file can be found )
       **crud-server**; otherwise, it will fail to start.
    2. This is a workaround until we have proper user
       management in place.
-2. A `.env.conduit` that contains credentials related to the
-   external service. This is required for testing the proxy
-   server.
+2. A `.env.conduit-user` that contains credentials related to
+   the functioning of the conduit service. This includes
+   information about the external service and user details.
+   This is required for testing the proxy server.
 
 :warning: Start the **crud-server** first (make sure you
 follow all steps in [crud-server#Tasks] before you start the
