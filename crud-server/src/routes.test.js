@@ -100,6 +100,35 @@ describe('Praas REST API', () => {
         .send();
       expect(res.status).to.equal(422);
     });
+    it('should not authenticate when user credentials are missing', async function () {
+      const user = { ...jake.user };
+      delete user.password;
+      const res = await Api()
+                    .post('/users/login')
+                    .send({ user: user });
+       expect(res.status).to.equal(422);
+       expect(res.body.message).to.equal('Missing credentials');
+    });
+    it('should not authenticate without valid user credentials', async function () {
+      const user = { ...jake.user };
+      user.password = 'jake';
+      const res = await Api()
+                    .post('/users/login')
+                    .send({ user: user });
+       expect(res.status).to.equal(422);
+       expect(res.body).to.have.property('errors');
+       expect(res.body.errors.credentials).to.equal('email or password is invalid');
+    });
+    it('should authenticate with valid user credentials', async function () {
+      const res = await Api()
+                    .post('/users/login')
+                    .send(jake);
+       expect(res.status).to.equal(200);
+       expect(res.body.user).to.have.property('firstName');
+       expect(res.body.user).to.have.property('lastName');
+       expect(res.body.user).to.have.property('email');
+       expect(res.body.user).to.have.property('token');
+    });
   });
 
   context('When authenticated', () => {
@@ -238,6 +267,22 @@ describe('Praas REST API', () => {
         .get('/user')
         .set('Authorization', `Token ${jakeUser.token}`);
       expect(User(res).email).to.equal(jake.user.email);
+    });
+
+    it('should allow the user to update their information', async function () {
+      const userName = {
+        firstName: 'John',
+        lastName: 'Doe'
+      }
+      const res = await Api()
+                    .put('/user')
+                    .set('Authorization', `Token ${jakeUser.token}`)
+                    .send({ user: userName });
+      expect(res.body).to.have.property('user');
+      expect(res.body.user).to.have.property('firstName');
+      expect(res.body.user.firstName).to.equal(userName.firstName);
+      expect(res.body.user).to.have.property('lastName');
+      expect(res.body.user.lastName).to.equal(userName.lastName);
     });
 
     let ctId1, ctId2;
@@ -614,6 +659,22 @@ describe('Praas REST API', () => {
             expect(res.body.error.errors[0].path).to.equal('allowlist');
           });
 
+          it('should not allow invalid IP in allowlist', async function () {
+            const conduit = await helpers.fakeConduit();
+            conduit.allowlist = [{
+              ip: '123.456.789.0',
+              status: 'active'
+            }];
+            const res = await Api()
+              .post(`/conduits`)
+              .set('Authorization', `Token ${jakeUser.token}`)
+              .send({ conduit: conduit });
+            expect(res.status).to.equal(422);
+            expect(res.body.error.name).to.equal('SequelizeValidationError');
+            expect(res.body.error.errors[0].path).to.equal('allowlist');
+            expect(res.body.error.errors[0].message).to.equal('Invalid ip address specified in allowlist');
+          });
+
           it('should allow only valid allowlist properties', async () => {
             const ct = await helpers.fakeConduit();
             ct.allowlist = [{ random: 'random' }];
@@ -940,6 +1001,12 @@ describe('Praas REST API', () => {
           .delete(`/conduits/${ctId1}`)
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res.status).to.equal(403);
+      });
+      it('should not be able to DELETE non-existant conduits', async () => {
+        const res = await Api()
+          .delete('/conduits/non-existant')
+          .set('Authorization', `Token ${jakeUser.token}`);
+        expect(res.status).to.equal(404);
       });
     });
   });
