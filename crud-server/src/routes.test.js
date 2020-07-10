@@ -100,6 +100,35 @@ describe('Praas REST API', () => {
         .send();
       expect(res.status).to.equal(422);
     });
+    it('should not authenticate when user credentials are missing', async function () {
+      const user = { ...jake.user };
+      delete user.password;
+      const res = await Api()
+                    .post('/users/login')
+                    .send({ user: user });
+       expect(res.status).to.equal(422);
+       expect(res.body.message).to.equal('Missing credentials');
+    });
+    it('should not authenticate without valid user credentials', async function () {
+      const user = { ...jake.user };
+      user.password = 'jake';
+      const res = await Api()
+                    .post('/users/login')
+                    .send({ user: user });
+       expect(res.status).to.equal(422);
+       expect(res.body).to.have.property('errors');
+       expect(res.body.errors.credentials).to.equal('email or password is invalid');
+    });
+    it('should authenticate with valid user credentials', async function () {
+      const res = await Api()
+                    .post('/users/login')
+                    .send(jake);
+       expect(res.status).to.equal(200);
+       expect(res.body.user).to.have.property('firstName');
+       expect(res.body.user).to.have.property('lastName');
+       expect(res.body.user).to.have.property('email');
+       expect(res.body.user).to.have.property('token');
+    });
   });
 
   context('When authenticated', () => {
