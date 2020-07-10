@@ -656,6 +656,22 @@ describe('Praas REST API', () => {
             expect(res.body.error.errors[0].path).to.equal('allowlist');
           });
 
+          it('should not allow invalid IP in allowlist', async function () {
+            const conduit = await helpers.fakeConduit();
+            conduit.allowlist = [{
+              ip: '123.456.789.0',
+              status: 'active'
+            }];
+            const res = await Api()
+              .post(`/conduits`)
+              .set('Authorization', `Token ${jakeUser.token}`)
+              .send({ conduit: conduit });
+            expect(res.status).to.equal(422);
+            expect(res.body.error.name).to.equal('SequelizeValidationError');
+            expect(res.body.error.errors[0].path).to.equal('allowlist');
+            expect(res.body.error.errors[0].message).to.equal('Invalid ip address specified in allowlist');
+          });
+
           it('should allow only valid allowlist properties', async () => {
             const ct = await helpers.fakeConduit();
             ct.allowlist = [{ random: 'random' }];
