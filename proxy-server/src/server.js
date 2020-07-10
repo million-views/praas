@@ -11,6 +11,7 @@ const PraasAPI = require('./lib/praas');
 const app = express();
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 // store conduits indexed by curi in app.locals for lookup later...
