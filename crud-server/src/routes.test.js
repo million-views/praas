@@ -1,11 +1,8 @@
-const fs = require('fs');
-const path = require('path');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
 const server = require('./server');
 const helpers = require('./lib/helpers');
-const dotEnv = require('dotenv-safe');
 
 const expect = chai.expect;
 chai.use(chaiHttp);
@@ -158,107 +155,7 @@ describe('Praas REST API', () => {
       expect(jwtDecoded.id).to.equal(jakeUser.id);
     });
 
-    after('set up proxy-server and logout', async () => {
-      console.log('starting setting up test data for proxy server');
-      let testConduit1, testConduit2, testConduit3, curis = {};
-      testConduit1 = {
-        description: 'test conduit with drop-if-filled HFF policy',
-        suri: dotEnvValues.parsed.CONDUIT_SERVICE_URI,
-        suriApiKey: dotEnvValues.parsed.CONDUIT_SERVICE_API_KEY,
-        suriObjectKey: dotEnvValues.parsed.CONDUIT_SERVICE_OBJECT_KEY,
-        suriType: 'Airtable',
-        racm: ['POST'],
-        allowlist: [{
-          ip: '123.234.123.234',
-          status: 'inactive',
-          comment: 'Sample allowlist for testing'
-        }],
-        throttle: false,
-        status: 'active',
-        hiddenFormField: [{
-          fieldName: 'hiddenFormField',
-          policy: 'drop-if-filled',
-          include: false,
-          value: ''
-        }]
-      };
-      await Api()
-        .post('/conduits')
-        .set('Authorization', `Token ${jakeUser.token}`)
-        .send({ conduit: testConduit1 })
-        .then(res => {
-          expect(res).to.have.status(201);
-          curis.dropConduit = res.body.conduit.curi;
-        })
-        .catch(() => console.error('setting up of test conduit 1 failed'));
-      testConduit2 = {
-        description: 'test conduit with pass-if-match HFF policy',
-        suri: dotEnvValues.parsed.CONDUIT_SERVICE_URI,
-        suriApiKey: dotEnvValues.parsed.CONDUIT_SERVICE_API_KEY,
-        suriObjectKey: dotEnvValues.parsed.CONDUIT_SERVICE_OBJECT_KEY,
-        suriType: 'Airtable',
-        racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
-        allowlist: [{
-          ip: '123.234.123.234',
-          status: 'inactive',
-          comment: 'Sample allowlist for testing'
-        }],
-        throttle: false,
-        status: 'active',
-        hiddenFormField: [{
-          fieldName: 'hiddenFormField',
-          policy: 'pass-if-match',
-          include: true,
-          value: 'hidden-form-field-value'
-        }]
-      };
-      await Api()
-        .post('/conduits')
-        .set('Authorization', `Token ${jakeUser.token}`)
-        .send({ conduit: testConduit2 })
-        .then(res => {
-          expect(res).to.have.status(201);
-          curis.passConduit = res.body.conduit.curi;
-        })
-        .catch(() => console.error('setting up of test conduit 2 failed'));
-      testConduit3 = {
-        description: 'test conduit with HFF include = false',
-        suri: dotEnvValues.parsed.CONDUIT_SERVICE_URI,
-        suriApiKey: dotEnvValues.parsed.CONDUIT_SERVICE_API_KEY,
-        suriObjectKey: dotEnvValues.parsed.CONDUIT_SERVICE_OBJECT_KEY,
-        suriType: 'Airtable',
-        racm: ['POST'],
-        allowlist: [{
-          ip: '123.234.123.234',
-          status: 'inactive',
-          comment: 'Sample allowlist for testing'
-        }],
-        throttle: false,
-        status: 'active',
-        hiddenFormField: [{
-          fieldName: 'hiddenFormField',
-          policy: 'pass-if-match',
-          include: false,
-          value: 'hidden-form-field-value'
-        }]
-      };
-      await Api()
-        .post('/conduits')
-        .set('Authorization', `Token ${jakeUser.token}`)
-        .send({ conduit: testConduit3 })
-        .then( res => {
-          expect(res).to.have.status(201);
-          curis.noIncludeConduit = res.body.conduit.curi;
-        })
-        .catch(() => console.error('setting up of test conduit 3 failed'))
-
-      fs.writeFileSync(
-        path.resolve('../.test-data-curi.json'),
-        JSON.stringify(curis, null, 2)
-      );
-      console.log('finished setting up test data for proxy server');
-
-      // log user out
+    after('logout', async () => {
       jakeUser.token = '';
     });
 
