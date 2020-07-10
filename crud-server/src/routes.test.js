@@ -278,7 +278,10 @@ describe('Praas REST API', () => {
                     .put('/user')
                     .set('Authorization', `Token ${jakeUser.token}`)
                     .send({ user: userName });
+      expect(res.body).to.have.property('user');
+      expect(res.body.user).to.have.property('firstName');
       expect(res.body.user.firstName).to.equal(userName.firstName);
+      expect(res.body.user).to.have.property('lastName');
       expect(res.body.user.lastName).to.equal(userName.lastName);
     });
 
