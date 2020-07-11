@@ -22,6 +22,38 @@ const conduitOptFields = [
   'racm', // default: []
 ];
 
+REST_API_ERRORS = {
+  400: 'Bad Request',
+  401: 'Unauthorized',
+  402: 'Payment Required',
+  403: 'Forbidden',
+  404: 'Not Found',
+  405: 'Method Not Allowed',
+  406: 'Not Acceptable',
+  407: 'Proxy Authentication Required',
+  408: 'Request Timeout',
+  409: 'Conflict',
+  410: 'Gone',
+  422: 'Unprocessable Entity',
+  424: 'Failed Dependency',
+  500: 'Internal Server Error',
+  501: 'Not Implemented',
+  502: 'Bad Gateway',
+  503: 'Service Unavailable',
+  504: 'Gateway Timeout',
+  505: 'HTTP Version Not Supported',
+  511: 'Network Authentication Required',
+};
+
+function RestApiError(path, statusCode, errors = [], message = undefined) {
+  Error.captureStackTrace(this, this.constructor);
+  this.path = path;
+  this.errors = errors;
+  this.message = message || REST_API_ERRORS[statusCode];
+  this.status = statusCode;
+  console.log('Inside RestApiError function, statusCode', statusCode);
+};
+
 // add conduit
 router.post('/', auth.required, async function (req, res, next) {
   const conduit = new Conduit();
@@ -38,7 +70,8 @@ router.post('/', auth.required, async function (req, res, next) {
     errors
   );
 
-  if (Object.keys(errors).length) return res.status(422).json({ errors });
+  // if (Object.keys(errors).length) return res.status(422).json({ errors });
+  if (Object.keys(errors).length) return next(new RestApiError(req.path, 422, errors));
 
   try { await conduit.save(); } catch (error) {
     if (error.name === 'SequelizeValidationError') {
@@ -68,7 +101,7 @@ router.get('/:id', auth.required, async (req, res, next) => {
         userId: req.payload.id
       }
     });
-    if (!conduit) return res.sendStatus(404);
+    if (!conduit) return next(new RestApiError(req.path, 404));
 
     return res.json({ conduit: conduit.toJSON() });
   } catch (error) { next(error); }
@@ -160,17 +193,18 @@ router.delete('/:id', auth.required, async (req, res, next) => {
     const conduit = await Conduit.findOne({ where: { id: req.params.id } });
     if (!conduit) {
       return res.sendStatus(404); // not found
-    } 
-    
+    }
+
     if (conduit.status === 'active') {
-      return res.sendStatus(403); // should not be deleted when active
-    } 
+      // return res.sendStatus(403); // should not be deleted when active
+      return next(new RestApiError(req.path, 403, errors, message));
+    }
 
     const count = await Conduit.destroy({ where: { id: req.params.id } });
     if (count === 1) {
       return res.status(200).json({ conduit: { id: req.params.id } });
-    } 
-    
+    }
+
     next(new Error('Unexpected error while removing an inactive conduit'));
   } catch (error) { return next(error); }
 });

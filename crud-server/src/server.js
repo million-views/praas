@@ -18,7 +18,8 @@ const app = express();
 app.use(cors());
 
 // Log all requests to console
-// app.use(morgan('dev'));
+app.use(morgan('dev'));
+app.use(morgan('combined'));
 
 // Normal express config defaults
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -68,15 +69,12 @@ if (conf.production) {
 } else {
   // in development mode, use error handler and print stacktrace
   console.log('Conduits resource server is in development mode...');
-  app.use(errorhandler());
   app.use(function (err, req, res, next) {
+    console.log('before err stack');
     console.log(err.stack);
     res.status(err.status || 500);
     res.json({
-      errors: {
-        message: err.message,
-        error: err
-      }
+      errors: err.errors
     });
   });
 }

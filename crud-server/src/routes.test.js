@@ -217,11 +217,11 @@ describe('Praas REST API', () => {
         .post('/conduits')
         .set('Authorization', `Token ${jakeUser.token}`)
         .send({ conduit: testConduit3 })
-        .then( res => {
+        .then(res => {
           expect(res).to.have.status(201);
           curis.noIncludeConduit = res.body.conduit.curi;
         })
-        .catch(() => console.error('setting up of test conduit 3 failed'))
+        .catch(() => console.error('setting up of test conduit 3 failed'));
 
       fs.writeFileSync(
         path.resolve('../.test-data-curi.json'),
