@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const multer = require('multer');
 const cors = require('cors');
 const errorhandler = require('errorhandler');
 const fetch = require('node-fetch');
@@ -8,9 +9,11 @@ const conf = require('./config');
 const helpers = require('./lib/helpers');
 const PraasAPI = require('./lib/praas');
 
+const upload = multer();
 const app = express();
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 // store conduits indexed by curi in app.locals for lookup later...
@@ -18,7 +21,7 @@ app.use(cors());
 app.locals.cmap = new Map();
 
 // we handle all requests to the proxy end point...
-app.all('/*', (req, res) => {
+app.all('/*', upload.none(), (req, res) => {
   // PUT, POST and PATCH operations have records in body
   if (['PUT', 'PATCH', 'POST'].includes(req.method) &&
     !(req.body.records)) {
@@ -69,6 +72,10 @@ app.all('/*', (req, res) => {
 
       if (hff && hff.policy === 'pass-if-match' && !(reqHff === hff.value)) {
         return res.sendStatus(200);
+      }
+
+      if (!hff.include) {
+        delete req.body.records[0].fields[hff.fieldName];
       }
     }
   }

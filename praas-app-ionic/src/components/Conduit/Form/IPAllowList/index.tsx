@@ -4,7 +4,6 @@ import AllowListItem from './AllowlistItem';
 import { useFormContext } from 'react-hook-form';
 
 import './style.scss';
-import noop from '../../../../utils/noop';
 
 type AllowList = {
   ip: string;
@@ -25,20 +24,37 @@ const IPAllowList: React.FC<Props> = ({ allowlist = [] }) => {
       ...currentValues,
       { ip: '', comment: '', status: 'inactive' },
     ];
+    console.log('@newState', allowlistState);
     setAllowlistState(newState);
   };
+
+  const onDelete = (index: number) => {
+    /* console.log('index number on delete:', index);
+    const currentValues = getValues({ nest: true })['allowlist'] || [];
+    console.log('@before delete', currentValues);
+    //setAllowlistState(currentValues.splice(index, 1));
+    currentValues.splice(index, 1);
+    console.log('@after delete', currentValues);
+    const newState = [ ...currentValues ];
+    //console.log('@newState in delete, before setAllowlistState', newState);
+    setAllowlistState(newState); */
+    const toBeDeleted = allowlistState[index];
+    setAllowlistState(prev =>  [...prev.filter(item => item !== toBeDeleted)]);
+  }
 
   return (
     <>
       {allowlistState.map((w, index) => {
+        console.log('allowlist index while displaying', index);
         const namePrefix = `allowlist[${index}]`;
         return (
           <AllowListItem
+            index={index}
             error={errors.allowlist?.[index]}
             key={namePrefix}
             item={w}
             prefix={namePrefix}
-            onDelete={noop}
+            onDelete={onDelete}
           />
         );
       })}

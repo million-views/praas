@@ -1,0 +1,37 @@
+.title {
+  font-family: sans-serif;
+}
+label {
+  font-family: sans-serif;
+  font-size: 1.25rem;
+}
+input[type='text'],
+input[type='email'] {
+  height: 40px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  box-sizing: border-box;
+  border: 1px solid #e0e0e0;
+  outline: none;
+  box-shadow: none;
+}
+button.primary {
+  height: 40px;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: #a30020;
+  color: #fff;
+  font-family: sans-serif;
+  font-size: 1.25rem;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  min-width: 100px;
+}
+.form-block {
+  margin-bottom: 15px;
+}
+.form-block > label,
+.form-block > input {
+  display: block;
+}

@@ -74,11 +74,11 @@ Enum: plan is to support AirTable, Google Sheets, Smartsheet.
 #### allowlist
 JSON: containing an array of objects with the following properties:
 
-| Property  | Description            |
-|:----------|:-----------------------|
-| ip        | ip address             |
-| comment   | comment                |
-| status    | `active` or `inactive` |
+| Property  | Description            | constraint |
+|:----------|:-----------------------|:-----------|
+| ip        | ip address             | required   |
+| comment   | comment                | optional   |
+| status    | `active` or `inactive` | required   |
 
 #### racm
 JSON: containing an array of allowed HTTP methods. The accepted 
