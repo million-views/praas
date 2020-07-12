@@ -9,6 +9,10 @@ import {
   IonFab,
   IonFabButton,
   IonText,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
 } from '@ionic/react';
 import { add, createOutline, trashOutline } from 'ionicons/icons';
 import { connect } from 'react-redux';
@@ -46,25 +50,31 @@ const Home: React.FC<Props> = ({ conduits, listConduits, deleteConduit }) => {
           </IonRow>
         )}
         {!!conduits.length && (
-          <IonGrid fixed className="table">
-            <IonRow className="table-header">
-              <IonCol className="table-header-col">Description</IonCol>
-              <IonCol className="table-header-col">Type</IonCol>
-              <IonCol className="table-header-col">Conduit Endpoint</IonCol>
-              <IonCol className="table-header-col">Status</IonCol>
-              <IonCol className="table-header-col">Action</IonCol>
-            </IonRow>
-
-            {conduits.map((conduit) => {
-              return (
-                <ListItem
-                  key={conduit.id}
-                  conduit={conduit}
-                  onDelete={deleteConduit}
-                />
-              );
-            })}
-          </IonGrid>
+          <IonCard>
+            <IonCardHeader>
+              <IonCardTitle>Conduits</IonCardTitle>
+            </IonCardHeader>
+            <IonCardContent>
+              <IonGrid className="table">
+                <IonRow className="ion-margin-bottom table-header">
+                  <IonCol className="table-header-col">Description</IonCol>
+                  <IonCol className="table-header-col">Type</IonCol>
+                  <IonCol className="table-header-col">Conduit Endpoint</IonCol>
+                  <IonCol className="table-header-col">Status</IonCol>
+                  <IonCol className="table-header-col">Actions</IonCol>
+                </IonRow>
+                {conduits.map((conduit) => {
+                  return (
+                    <ListItem
+                      key={conduit.id}
+                      conduit={conduit}
+                      onDelete={deleteConduit}
+                    />
+                  );
+                })}
+              </IonGrid>
+            </IonCardContent>
+          </IonCard>
         )}
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
           <IonFabButton color="primary" href="/conduit/create">
