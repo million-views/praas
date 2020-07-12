@@ -17,11 +17,19 @@ const ListItem = ({ conduit, onDelete }: Props) => {
   const [deletePrompt, setDeletePrompt] = useState(false);
   return (
     <IonRow key={conduit.id} className="table-row">
-      <IonCol className="table-col">{conduit.description}</IonCol>
-      <IonCol className="table-col">{conduit.suriType}</IonCol>
-      <IonCol className="table-col">{conduit.curi}</IonCol>
-      <IonCol className="table-col">{conduit.status}</IonCol>
-      <IonCol className="table-col">
+      <IonCol className="table-col" size="3">
+        {conduit.description}
+      </IonCol>
+      <IonCol className="table-col" size="2">
+        {conduit.suriType}
+      </IonCol>
+      <IonCol className="table-col" size="3">
+        {conduit.curi}
+      </IonCol>
+      <IonCol className="table-col" size="2">
+        {conduit.status}
+      </IonCol>
+      <IonCol className="table-col" size="2">
         <IonButtons>
           <IonButton
             type="button"
