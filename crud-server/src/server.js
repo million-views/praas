@@ -71,7 +71,7 @@ if (conf.production) {
   console.log('Conduits resource server is in development mode...');
   app.use(function (err, req, res, next) {
     res.status(err.status || 500);
-    res.json( err.body );
+    res.json(err.body);
     next(res);
   });
 }
