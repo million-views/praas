@@ -8,7 +8,7 @@ const RestApiError = require('../../lib/error');
 router.get('/user', auth.required, async (req, res, next) => {
   try {
     const user = await User.findOne({ where: { id: req.payload.id } });
-    if (!user) return next(401, 'user not found');
+    if (!user) return next(new RestApiError(401, 'user not found'));
     return res.json({ user: user.toAuthJSON() });
   } catch (error) {
     next(error);
