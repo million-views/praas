@@ -1,6 +1,6 @@
 {
-    "fields": {
-        "First": "Jill",
-        "Email": "jill@example.com"
-    }
+  "fields": {
+    "First": "Jill",
+    "Email": "jill@example.com"
+  }
 }
