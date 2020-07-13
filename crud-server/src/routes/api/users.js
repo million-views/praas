@@ -3,43 +3,12 @@ const User = require('../../models').User;
 const auth = require('../auth');
 const helpers = require('../../lib/helpers');
 const passport = require('passport');
-
-REST_API_ERRORS = {
-  400: 'Bad Request',
-  401: 'Unauthorized',
-  402: 'Payment Required',
-  403: 'Forbidden',
-  404: 'Not Found',
-  405: 'Method Not Allowed',
-  406: 'Not Acceptable',
-  407: 'Proxy Authentication Required',
-  408: 'Request Timeout',
-  409: 'Conflict',
-  410: 'Gone',
-  422: 'Unprocessable Entity',
-  424: 'Failed Dependency',
-  500: 'Internal Server Error',
-  501: 'Not Implemented',
-  502: 'Bad Gateway',
-  503: 'Service Unavailable',
-  504: 'Gateway Timeout',
-  505: 'HTTP Version Not Supported',
-  511: 'Network Authentication Required',
-};
-
-function RestApiError(path, statusCode, errors = [], message = undefined) {
-  Error.captureStackTrace(this, this.constructor);
-  this.path = path;
-  this.errors = errors;
-  this.message = message || REST_API_ERRORS[statusCode];
-  this.status = statusCode;
-  console.log('Inside RestApiError function, statusCode', statusCode);
-};
+const RestApiError = require('../../lib/error');
 
 router.get('/user', auth.required, async (req, res, next) => {
   try {
     const user = await User.findOne({ where: { id: req.payload.id } });
-    if (!user) return res.sendStatus(401);
+    if (!user) return next(401, 'user not found');
     return res.json({ user: user.toAuthJSON() });
   } catch (error) {
     next(error);
@@ -54,7 +23,7 @@ router.post('/users', async (req, res, next) => {
   const userReqFields = ['firstName', 'email', 'password'];
   const userOptFields = ['lastName'];
   helpers.processInput(req.body.user, userReqFields, userOptFields, user, errors);
-  if (Object.keys(errors).length) return res.status(422).json({ errors });
+  if (Object.keys(errors).length) return next(new RestApiError(422, errors));
 
   try {
     const result = await user.save();
@@ -65,10 +34,10 @@ router.post('/users', async (req, res, next) => {
       for (let i = 0; i < fields.length; i++) {
         errors[fields[i]] = dberrors[i].message;
       }
-      return res.status(422).json({ errors });
+      return next(new RestApiError(422, errors));
     } else {
       errors.unknown = `unknown error ${name}, please contact support`;
-      next(errors);
+      return next(errors);
     }
   }
 });
@@ -76,7 +45,7 @@ router.post('/users', async (req, res, next) => {
 // Update User
 router.put('/user', auth.required, function (req, res, next) {
   User.findById(req.payload.id).then(function (user) {
-    if (!user) return res.sendStatus(401);
+    if (!user) return next(new RestApiError(401, 'user not found'));
 
     const userOptFields = ['firstName', 'lastName', 'password'];
     helpers.processInput(req.body.user, [], userOptFields, user, {});
@@ -103,8 +72,7 @@ router.post('/users/login', function (req, res, next) {
       // console.log('user.with.jwt; ', userWithJwt);
       return res.json({ user: userWithJwt });
     } else {
-      // return res.status(422).json(info);
-      return next(new RestApiError(req.path, 422, errors, message));
+      return next(new RestApiError(422, info));
     }
   })(req, res, next);
 });

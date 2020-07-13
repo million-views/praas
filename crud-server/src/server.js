@@ -70,12 +70,9 @@ if (conf.production) {
   // in development mode, use error handler and print stacktrace
   console.log('Conduits resource server is in development mode...');
   app.use(function (err, req, res, next) {
-    console.log('before err stack');
-    console.log(err.stack);
     res.status(err.status || 500);
-    res.json({
-      errors: err.errors
-    });
+    res.json( err.body );
+    next(res);
   });
 }
 
