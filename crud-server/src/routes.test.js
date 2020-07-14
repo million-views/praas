@@ -101,31 +101,31 @@ describe('Praas REST API', () => {
       const user = { ...jake.user };
       delete user.password;
       const res = await Api()
-                    .post('/users/login')
-                    .send({ user: user });
-       console.log('------------------------------------', res);
-       expect(res.status).to.equal(422);
-       expect(res.body.message).to.equal('Missing credentials');
+        .post('/users/login')
+        .send({ user: user });
+      console.log('------------------------------------', res);
+      expect(res.status).to.equal(422);
+      expect(res.body.message).to.equal('Missing credentials');
     });
     it('should not authenticate without valid user credentials', async function () {
       const user = { ...jake.user };
       user.password = 'jake';
       const res = await Api()
-                    .post('/users/login')
-                    .send({ user: user });
-       expect(res.status).to.equal(422);
-       expect(res.body).to.have.property('errors');
-       expect(res.body.errors.credentials).to.equal('email or password is invalid');
+        .post('/users/login')
+        .send({ user: user });
+      expect(res.status).to.equal(422);
+      expect(res.body).to.have.property('errors');
+      expect(res.body.errors.credentials).to.equal('email or password is invalid');
     });
     it('should authenticate with valid user credentials', async function () {
       const res = await Api()
-                    .post('/users/login')
-                    .send(jake);
-       expect(res.status).to.equal(200);
-       expect(res.body.user).to.have.property('firstName');
-       expect(res.body.user).to.have.property('lastName');
-       expect(res.body.user).to.have.property('email');
-       expect(res.body.user).to.have.property('token');
+        .post('/users/login')
+        .send(jake);
+      expect(res.status).to.equal(200);
+      expect(res.body.user).to.have.property('firstName');
+      expect(res.body.user).to.have.property('lastName');
+      expect(res.body.user).to.have.property('email');
+      expect(res.body.user).to.have.property('token');
     });
   });
 
@@ -166,11 +166,11 @@ describe('Praas REST API', () => {
       const userName = {
         firstName: 'John',
         lastName: 'Doe'
-      }
+      };
       const res = await Api()
-                    .put('/user')
-                    .set('Authorization', `Token ${jakeUser.token}`)
-                    .send({ user: userName });
+        .put('/user')
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ user: userName });
       expect(res.body).to.have.property('user');
       expect(res.body.user).to.have.property('firstName');
       expect(res.body.user.firstName).to.equal(userName.firstName);
@@ -801,16 +801,16 @@ describe('Praas REST API', () => {
     context('the PUT method', async function () {
       it('should overwrite an existing record', async function () {
         const conduit = await Api()
-                          .get('/conduits/' + ctId1)
-                          .set('Authorization', `Token ${jakeUser.token}`);
+          .get('/conduits/' + ctId1)
+          .set('Authorization', `Token ${jakeUser.token}`);
         expect(conduit.body).to.haveOwnProperty('conduit');
 
         const putData = await helpers.fakeConduit();
 
         const res = await Api()
-                      .put('/conduits/' + ctId1)
-                      .set('Authorization', `Token ${jakeUser.token}`)
-                      .send({ conduit: putData });
+          .put('/conduits/' + ctId1)
+          .set('Authorization', `Token ${jakeUser.token}`)
+          .send({ conduit: putData });
         expect(res.status).to.equal(200);
         expect(res.body.conduit).to.not.eql(conduit.body.conduit);
         expect(res.body.conduit.suri).to.equal(putData.suri);
@@ -824,9 +824,9 @@ describe('Praas REST API', () => {
       it('should not allow CURI to be updated', async function () {
         const conduit = { conduit: { curi: 'td-12345.trickle.cc' } };
         const res = await Api()
-                      .put(`/conduits/${ctId1}`)
-                      .set('Authorization', `Token ${jakeUser.token}`)
-                      .send(conduit);
+          .put(`/conduits/${ctId1}`)
+          .set('Authorization', `Token ${jakeUser.token}`)
+          .send(conduit);
         expect(res.status).to.equal(400);
       });
     });

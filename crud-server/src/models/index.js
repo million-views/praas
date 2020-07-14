@@ -19,7 +19,7 @@ const Sequelize = require('sequelize');
 // // Timestamps
 // createdAt: Sequelize.DATE,
 // updatedAt: Sequelize.DATE,
-// 
+//
 //
 // See http://stackoverflow.com/questions/20600483/is-there-a-way-to-change-the-default-id-column-that-is-created-automatically
 // on how you can circumvent it if needed.
