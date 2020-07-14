@@ -103,6 +103,7 @@ describe('Praas REST API', () => {
       const res = await Api()
                     .post('/users/login')
                     .send({ user: user });
+       console.log('------------------------------------', res);
        expect(res.status).to.equal(422);
        expect(res.body.message).to.equal('Missing credentials');
     });

@@ -3,9 +3,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const cors = require('cors');
-const errorhandler = require('errorhandler');
+// const errorhandler = require('errorhandler');
 const dotenv = require('dotenv-safe');
-const morgan = require('morgan');
 
 const conf = require('./config');
 const models = require('./models');
@@ -18,8 +17,9 @@ const app = express();
 app.use(cors());
 
 // Log all requests to console
-app.use(morgan('dev'));
-app.use(morgan('combined'));
+// const morgan = require('morgan');
+// app.use(morgan('dev'));
+// app.use(morgan('combined'));
 
 // Normal express config defaults
 app.use(bodyParser.urlencoded({ extended: false }));
