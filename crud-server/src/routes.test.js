@@ -130,11 +130,6 @@ describe('Praas REST API', () => {
 
   context('When authenticated', () => {
     let jakeUser = undefined;
-    const dotEnvValues = dotEnv.config({
-      allowEmptyValues: true,
-      example: path.resolve('../.env.conduit.example'),
-      path: path.resolve('../.env.conduit')
-    });
 
     before('login', async () => {
       const res = await Api()
@@ -795,7 +790,7 @@ describe('Praas REST API', () => {
         await helpers.generateConduits(jakeUser.id, 20);
         const res = await Api()
           .get('/conduits')
-          .query({ start: '520', count: '10' })
+          .query({ start: '720', count: '10' })
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res.status).to.equal(200);
         expect(res.body.conduits.length).to.equal(10);
@@ -809,12 +804,7 @@ describe('Praas REST API', () => {
                           .set('Authorization', `Token ${jakeUser.token}`);
         expect(conduit.body).to.haveOwnProperty('conduit');
 
-        const putData = {
-          suri: dotEnvValues.parsed.CONDUIT_SERVICE_URI,
-          suriApiKey: dotEnvValues.parsed.CONDUIT_SERVICE_API_KEY,
-          suriObjectKey: dotEnvValues.parsed.CONDUIT_SERVICE_OBJECT_KEY,
-          suriType: 'Airtable',
-        }
+        const putData = await helpers.fakeConduit();
 
         const res = await Api()
                       .put('/conduits/' + ctId1)
@@ -826,11 +816,9 @@ describe('Praas REST API', () => {
         expect(res.body.conduit.suriApiKey).to.equal(putData.suriApiKey);
         expect(res.body.conduit.suriObjectKey).to.equal(putData.suriObjectKey);
         expect(res.body.conduit.suriType).to.equal(putData.suriType);
-        expect(
-          res.body.conduit.allowlist,
-          res.body.conduit.racm,
-          res.body.conduit.hiddenFormField
-        ).to.be.empty;
+        expect(res.body.conduit.allowlist).to.eql(putData.allowlist);
+        expect(res.body.conduit.racm).to.eql(putData.racm);
+        expect(res.body.conduit.hiddenFormField).to.eql(putData.hiddenFormField);
       });
       it('should not allow CURI to be updated', async function () {
         const conduit = { conduit: { curi: 'td-12345.trickle.cc' } };
