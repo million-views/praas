@@ -71,7 +71,19 @@ if (conf.production) {
   console.log('Conduits resource server is in development mode...');
   app.use(function (err, req, res, next) {
     res.status(err.status || 500);
-    res.json(err.body);
+    // res.json(err.body);
+    // FIXME!
+    // in the next round we need to normalize the shape of the error
+    // response and fixup all the test cases.
+    // res.json({
+    //   errors: {
+    //     message: err.message,
+    //     error: err.errors
+    //   }
+    // });
+    res.json({
+      errors: err.errors
+    });
     console.error(err.stack);
     next(res);
   });

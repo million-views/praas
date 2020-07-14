@@ -1,4 +1,4 @@
-REST_API_ERRORS = {
+const REST_API_ERRORS = {
   400: 'Bad Request',
   401: 'Unauthorized',
   402: 'Payment Required',
