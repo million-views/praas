@@ -19,15 +19,6 @@ const dropConduit = testConduits.dropConduit;
 const passConduit = testConduits.passConduit;
 const noIncludeConduit = testConduits.noIncludeConduit;
 
-// Conduit hff to test pass-if-match and include=true
-const hff1 = {
-  hiddenFormField: [{
-    fieldName: 'campaign',
-    policy: 'pass-if-match',
-    include: true,
-    value: 'BOGO June2020',
-  }],
-};
 
 const request1 = {
   records: [{
@@ -145,12 +136,9 @@ describe('Testing Proxy Server...', async () => {
                         .set('Host', passConduit)
                         .send(request3);
           expect(res.status).to.equal(200);
-          if (res.body.records && res.body.records.length === request3.records.length) {
-            for( let i = 0; i < res.body.records.length; i++ ) {
-              expect(res.body.records[i].fields).to.eql(request3.records[i].fields);
-            }
-          } else {
-            throw new Error('number of records in response mismatch from request');
+          expect(res.body.records.length).to.equal(request3.records.length);
+          for( let i = 0; i < res.body.records.length; i++ ) {
+            expect(res.body.records[i].fields).to.eql(request3.records[i].fields);
           }
         });
         it('should not send hiddenFormField if include = false', async function () {
@@ -159,12 +147,9 @@ describe('Testing Proxy Server...', async () => {
                         .set('Host', noIncludeConduit)
                         .send(request3);
           expect(res.status).to.equal(200);
-          if (res.body.records && res.body.records.length === request3.records.length) {
-            for( let i = 0; i < res.body.records.length; i++ ) {
-              expect(res.body.records[i].fields).to.not.eql(request3.records[i].fields);
-            }
-          } else {
-            throw new Error('number of records in response mismatch from request');
+          expect(res.body.records.length).to.equal(request3.records.length);
+          for( let i = 0; i < res.body.records.length; i++ ) {
+            expect(res.body.records[i].fields).to.not.eql(request3.records[i].fields);
           }
         });
       });
@@ -177,7 +162,11 @@ describe('Testing Proxy Server...', async () => {
                           .post('/')
                           .set('Host', passConduit)
                           .send(request1);
-      recordId = res.body.records[0].id;
+      if ( res.body.records ) {
+        recordId = res.body.records[0].id;
+      } else {
+        throw new Error('could not create arbitrary record');
+      }
     });
     it('should POST a new entry', async function () {
       const res = await proxyServer()
@@ -270,8 +259,12 @@ describe('Testing Proxy Server...', async () => {
 
       // create list of records to be deleted
       let records = [];
-      for( let i = 0; i < res.body.records.length; i++ ) {
-        records.push(res.body.records[i].id);
+      if (res.body.records) {
+        for( let i = 0; i < res.body.records.length; i++ ) {
+          records.push(res.body.records[i].id);
+        }
+      } else {
+        throw new Error('response.body does not have any `records`');
       }
 
       // actually send the `DELETE` request

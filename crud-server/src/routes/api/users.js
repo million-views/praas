@@ -44,7 +44,7 @@ router.post('/users', async (req, res, next) => {
 
 // Update User
 router.put('/user', auth.required, function (req, res, next) {
-  User.findById(req.payload.id).then(function (user) {
+  User.findByPk(req.payload.id).then(function (user) {
     if (!user) return next(new RestApiError(req.path, 401, ['user not found']));
 
     const userOptFields = ['firstName', 'lastName', 'password'];

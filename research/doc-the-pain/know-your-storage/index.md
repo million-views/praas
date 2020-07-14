@@ -1,46 +1,41 @@
 # Know your storage
-- [x] create if needed an AirTable or SmartSheet account
-- [x] create a custom base (e.g first-name, email)
-- [x] access the token
-- [x] use curl to write and read back test data
+Spreadsheets constitute what can be described as a non-traditional storage
+(NTS) medium. This document will guide the reader to gain understanding of
+what it takes to be able to read/write to these storage types. And may be,
+just may be inspire you to build the next SaaS unicorn! [^1]
 
-## Activity log
+[^1]: A few think that most SaaS products are [glorified spreadsheets](https://twitter.com/DavidSacks/status/1078755080478715904). We don't think so. Even
+if they are, it is bloody hard to build an application on top of a
+spreadsheet. If we can make that task even a little bit easier then this
+project will have earned its badge.
 
-### AirTable
+# Activity Overview
+- [x] create if needed an AirTable or Google account
+- [x] create a custom base (e.g first-name, email), or google-sheet
+      named Contacts
+- [x] read support documentation to figure out how to obtain an access
+      token
+- [x] read api documentation on how to add, update, delete rows using
+      service provider's REST API
+- [x] use curl to write and read back test data using the access token
 
-#### Add contact
-```shell
-curl -v -XPOST https://api.airtable.com/v0/appgYyVces4B669Ma/Contacts -H "Authorization: Bearer <YOUR_API_KEY>" -H "Content-Type: application/json" --data @./airtable/contact-add.json
-```
+After obtaining the access token, try the following activities to be
+able to read/write to a chosen NTS. Verify the data via the vendor's 
+application as well.
 
-#### List contact
-```shell
-curl https://api.airtable.com/v0/appgYyVces4B669Ma/Contacts?api_key=<YOUR_API_KEY>
-```
+Instructions and references can be found below for each NTS.
+- [AirtTable](airtable/README.md)
+- [GoogleSheets](googlesheets/README.md)
 
-#### Remove contact
-```shell
-curl -v -XDELETE "https://api.airtable.com/v0/appgYyVces4B669Ma/Contacts/recvWfARzbshAwa3q" \
--H "Authorization: Bearer YOUR_API_KEY"
-```
+> NOTE <br>
+> Smartsheet's suitability to be an NTS is hindered by its domain specific
+> API (which has its roots in project management). Making it unsuitable 
+> for many of the usecases that are feasible with other NTS types.
+> 
+> Moreover, the website of Smartsheet with its gazillion trackers 
+> is a turn off. So, no more time will be invested in Smartsheet.
+>
 
-### SmartSheet
-
-#### Add contact
-```shell
-curl https://api.smartsheet.com/2.0/sheets/{sheetId}/rows \
--H "Authorization: Bearer YOUR_API_KEY" \
--H "Content-Type: application/json" \
--X POST \
---data @./smartsheet/contact-add.json
-```
-#### List contact
-```shell
-curl -X GET -H "Authorization: Bearer YOUR_API_KEY" "https://api.smartsheet.com/2.0/sheets/{sheetId}"
-```
-#### Remove contact
-```shell
-curl 'https://api.smartsheet.com/2.0/sheets/{sheetId}/rows?ids={rowId1},{rowId2},{rowId3}&ignoreRowsNotFound=true' \
--H "Authorization: Bearer YOUR_API_KEY" \
--X DELETE
-```
+## References
+1. [Line folding with curl](https://stackoverflow.com/questions/32341091/multiline-curl-command)
+2. [Data option in curl](https://ec.haxx.se/cmdline/cmdline-options)
