@@ -52,17 +52,17 @@ module.exports = (db, DataTypes) => {
       validate: {
         isValidProperty: value => {
           if (!value || !value.every(entry => (entry.ip && entry.status))) {
-            throw new Error('allowlist properties not specified correctly');
+            throw new Error('missing required properties');
           }
         },
         isValidIP: value => {
-          if (!value || !value.every(entry => validator.isIP(entry.ip))) {
-            throw new Error('Invalid ip address specified in allowlist');
+          if (!value || !value.every(entry => entry.ip && validator.isIP(entry.ip))) {
+            throw new Error('invalid ip address');
           }
         },
         isValidStatus: value => {
           if (!value || !value.every(entry => STATUS_ENUM.includes(entry.status))) {
-            throw new Error('Invalid status specified in allowlist');
+            throw new Error('invalid status value');
           }
         },
       }
@@ -74,7 +74,7 @@ module.exports = (db, DataTypes) => {
       validate: {
         isValidHTTPMethod: value => {
           if (!value || !value.every(method => HTTP_METHODS_ENUM.includes(method))) {
-            throw new Error('Only GET, POST, PUT, PATCH and DELETE allowed!');
+            throw new Error('invalid method');
           }
         }
       }
@@ -108,24 +108,24 @@ module.exports = (db, DataTypes) => {
           if (!value || !value.every(entry =>
             Object.keys(entry).sort().join('') === HFF_PROPS
           )) {
-            throw new Error('hiddenFormField properties not set correctly');
+            throw new Error('missing required properties');
           }
         },
         isValidField: value => {
           if (!value || value.some(entry => !entry.fieldName || entry.fieldName.trim() === '')) {
-            throw new Error('Invalid fieldName value set in hiddenFormField');
+            throw new Error('invalid fieldName value');
           }
         },
         isValidPolicy: value => {
           if (!value || !value.every(entry => HFF_POLICY.includes(entry.policy))) {
-            throw new Error('Invalid policy value set in hiddenFormField');
+            throw new Error('invalid policy value');
           }
         },
         isValidInclude: value => {
           if (!value || !value.every(entry =>
             BOOLEAN_ENUM.includes(entry.include)
           )) {
-            throw new Error('Invalid include value set in hiddenFormField');
+            throw new Error('invalid include value');
           }
         }
       }

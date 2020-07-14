@@ -92,6 +92,17 @@ if (conf.production) {
     if (!Array.isArray(errors)) {
       if (errors.errors) {
         errors = errors.errors;
+        if (Array.isArray(errors)) {
+          // sequelize errors..
+          const essentials = [];
+          for (const error of errors) {
+            const sanitized = { [error.path]: error.message };
+            // console.log('----------------->', sanitized);
+            essentials.push(sanitized);
+          }
+          errors = essentials;
+          err.errors = errors; // remove sequelize internal details!
+        }
       }
     }
     res.json({ errors });
