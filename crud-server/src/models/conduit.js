@@ -51,17 +51,17 @@ module.exports = (db, DataTypes) => {
       defaultValue: [],
       validate: {
         isValidProperty: value => {
-          if (!value.every(entry => (entry.ip && entry.status))) {
+          if (!value || !value.every(entry => (entry.ip && entry.status))) {
             throw new Error('allowlist properties not specified correctly');
           }
         },
         isValidIP: value => {
-          if (!value.every(entry => validator.isIP(entry.ip))) {
+          if (!value || !value.every(entry => validator.isIP(entry.ip))) {
             throw new Error('Invalid ip address specified in allowlist');
           }
         },
         isValidStatus: value => {
-          if (!value.every(entry => STATUS_ENUM.includes(entry.status))) {
+          if (!value || !value.every(entry => STATUS_ENUM.includes(entry.status))) {
             throw new Error('Invalid status specified in allowlist');
           }
         },
@@ -73,7 +73,7 @@ module.exports = (db, DataTypes) => {
       defaultValue: [],
       validate: {
         isValidHTTPMethod: value => {
-          if (!value.every(method => HTTP_METHODS_ENUM.includes(method))) {
+          if (!value || !value.every(method => HTTP_METHODS_ENUM.includes(method))) {
             throw new Error('Only GET, POST, PUT, PATCH and DELETE allowed!');
           }
         }
@@ -105,24 +105,24 @@ module.exports = (db, DataTypes) => {
       defaultValue: [],
       validate: {
         isValidProperty: value => {
-          if (!value.every(entry =>
+          if (!value || !value.every(entry =>
             Object.keys(entry).sort().join('') === HFF_PROPS
           )) {
             throw new Error('hiddenFormField properties not set correctly');
           }
         },
         isValidField: value => {
-          if (value.some(entry => !entry.fieldName || entry.fieldName.trim() === '')) {
+          if (!value || value.some(entry => !entry.fieldName || entry.fieldName.trim() === '')) {
             throw new Error('Invalid fieldName value set in hiddenFormField');
           }
         },
         isValidPolicy: value => {
-          if (!value.every(entry => HFF_POLICY.includes(entry.policy))) {
+          if (!value || !value.every(entry => HFF_POLICY.includes(entry.policy))) {
             throw new Error('Invalid policy value set in hiddenFormField');
           }
         },
         isValidInclude: value => {
-          if (!value.every(entry =>
+          if (!value || !value.every(entry =>
             BOOLEAN_ENUM.includes(entry.include)
           )) {
             throw new Error('Invalid include value set in hiddenFormField');
