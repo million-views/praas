@@ -21,10 +21,29 @@ const REST_API_ERRORS = {
   511: 'Network Authentication Required',
 };
 
+function sanitize(errors) {
+  if (!Array.isArray(errors)) {
+    if (errors.errors) {
+      errors = errors.errors;
+      if (Array.isArray(errors)) {
+        // sanitize sequelize errors..
+        const essentials = [];
+        for (const error of errors) {
+          const sanitized = { [error.path]: error.message };
+          essentials.push(sanitized);
+        }
+        errors = essentials;
+      }
+    }
+  }
+
+  return errors;
+}
+
 function RestApiError(path, statusCode, errors = {}, message = undefined) {
   Error.captureStackTrace(this, RestApiError);
   this.path = path;
-  this.errors = errors;
+  this.errors = sanitize(errors);
   this.message = message || REST_API_ERRORS[statusCode];
   this.status = statusCode;
 };

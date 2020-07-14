@@ -8,6 +8,7 @@ const dotenv = require('dotenv-safe');
 
 const conf = require('./config');
 const models = require('./models');
+const { env } = require('process');
 
 require('./passport');
 
@@ -71,43 +72,20 @@ if (conf.production) {
   console.log('Conduits resource server is in development mode...');
   app.use(function (err, req, res, next) {
     res.status(err.status || 500);
-    // res.json(err.body);
-    // FIXME!
-    // in the next round we need to normalize the shape of the error
-    // response and fixup all the test cases.
-    // res.json({
-    //   errors: {
-    //     message: err.message,
-    //     error: err.errors
-    //   }
-    // });
-
-    // FIXME!
-    // hack to keep going; revisit during a proper normalization phase.
-    // naive normalization follows to make the tests pass with minimal
-    // changes...
-
-    // what a mess!
-    let errors = err.errors;
-    if (!Array.isArray(errors)) {
-      if (errors.errors) {
-        errors = errors.errors;
-        if (Array.isArray(errors)) {
-          // sequelize errors..
-          const essentials = [];
-          for (const error of errors) {
-            const sanitized = { [error.path]: error.message };
-            // console.log('----------------->', sanitized);
-            essentials.push(sanitized);
-          }
-          errors = essentials;
-          err.errors = errors; // remove sequelize internal details!
-        }
-      }
-    }
+    const errors = err.errors;
     res.json({ errors });
-    console.error(err);
-    // next(res);
+
+    // on mac/linux run with:
+    // DUMP_ERROR_RESPONSE=1 npm run `task`
+    if (process.env.DUMP_ERROR_RESPONSE) {
+      console.error(err);
+    }
+
+    if (process.env.DUMP_STACK_TRACE) {
+      // on mac/linux run with:
+      // DUMP_STACK_TRACE=1 npm run `task`
+      console.error(err.stack);
+    }
   });
 }
 

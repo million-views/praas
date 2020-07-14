@@ -51,8 +51,12 @@ describe('Praas REST API', () => {
         // ... in order to test here!
         if (workingCorsResponse) {
           expect(workingCorsResponse).to.have.status(204);
-          // expect(workingCorsResponse).to.have.header('access-control-allow-credentials', 'true');
-          expect(workingCorsResponse).to.have.header('access-control-allow-methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+          expect(workingCorsResponse)
+            .to.have
+            .header(
+              'access-control-allow-methods',
+              'GET,HEAD,PUT,PATCH,POST,DELETE'
+            );
         }
       }
     });
@@ -63,7 +67,9 @@ describe('Praas REST API', () => {
       const { firstName, lastName, email, password } = jake.user;
       const res = await Api()
         .post('/users')
-        .send({ user: { firstName, lastName, email: email.toLowerCase(), password } });
+        .send({
+          user: { firstName, lastName, email: email.toLowerCase(), password }
+        });
       expect(User(res).email).to.equal(email.toLowerCase());
     });
 
@@ -71,7 +77,9 @@ describe('Praas REST API', () => {
       const { firstName, lastName, email, password } = jake.user;
       const res = await Api()
         .post('/users')
-        .send({ user: { firstName, lastName, email: email.toLowerCase(), password } });
+        .send({
+          user: { firstName, lastName, email: email.toLowerCase(), password }
+        });
       expect(res.status).to.equal(422);
       const errors = res.body.errors;
       for (const error of Object.keys(errors)) {
