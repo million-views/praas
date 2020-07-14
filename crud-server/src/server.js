@@ -72,6 +72,7 @@ if (conf.production) {
   app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.json(err.body);
+    console.error(err.stack);
     next(res);
   });
 }
