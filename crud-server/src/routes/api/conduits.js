@@ -39,7 +39,7 @@ router.post('/', auth.required, async function (req, res, next) {
     errors
   );
 
-  if (Object.keys(errors).length) return next(new RestApiError(422, errors));
+  if (Object.keys(errors).length) return next(new RestApiError(req.path, 422, errors));
 
   try { await conduit.save(); } catch (error) {
     if (error.name === 'SequelizeValidationError') {
@@ -69,7 +69,7 @@ router.get('/:id', auth.required, async (req, res, next) => {
         userId: req.payload.id
       }
     });
-    if (!conduit) return next(new RestApiError(404, 'conduit not found'));
+    if (!conduit) return next(new RestApiError(req.path, 404, ['conduit not found']));
 
     return res.json({ conduit: conduit.toJSON() });
   } catch (error) { next(error); }
@@ -164,7 +164,7 @@ router.delete('/:id', auth.required, async (req, res, next) => {
     }
 
     if (conduit.status === 'active') {
-      return next(new RestApiError(403, 'cannot delete an active conduit'));
+      return next(new RestApiError(req.path, 403, ['cannot delete an active conduit']));
     }
 
     const count = await Conduit.destroy({ where: { id: req.params.id } });

@@ -8,7 +8,7 @@ const RestApiError = require('../../lib/error');
 router.get('/user', auth.required, async (req, res, next) => {
   try {
     const user = await User.findOne({ where: { id: req.payload.id } });
-    if (!user) return next(new RestApiError(401, 'user not found'));
+    if (!user) return next(new RestApiError(req.path, 401, ['user not found']));
     return res.json({ user: user.toAuthJSON() });
   } catch (error) {
     next(error);
@@ -23,7 +23,7 @@ router.post('/users', async (req, res, next) => {
   const userReqFields = ['firstName', 'email', 'password'];
   const userOptFields = ['lastName'];
   helpers.processInput(req.body.user, userReqFields, userOptFields, user, errors);
-  if (Object.keys(errors).length) return next(new RestApiError(422, errors));
+  if (Object.keys(errors).length) return next(new RestApiError(req.path, 422, errors));
 
   try {
     const result = await user.save();
@@ -34,7 +34,7 @@ router.post('/users', async (req, res, next) => {
       for (let i = 0; i < fields.length; i++) {
         errors[fields[i]] = dberrors[i].message;
       }
-      return next(new RestApiError(422, errors));
+      return next(new RestApiError(req.path, 422, errors));
     } else {
       errors.unknown = `unknown error ${name}, please contact support`;
       return next(errors);
@@ -45,7 +45,7 @@ router.post('/users', async (req, res, next) => {
 // Update User
 router.put('/user', auth.required, function (req, res, next) {
   User.findById(req.payload.id).then(function (user) {
-    if (!user) return next(new RestApiError(401, 'user not found'));
+    if (!user) return next(new RestApiError(req.path, 401, ['user not found']));
 
     const userOptFields = ['firstName', 'lastName', 'password'];
     helpers.processInput(req.body.user, [], userOptFields, user, {});
@@ -72,7 +72,7 @@ router.post('/users/login', function (req, res, next) {
       // console.log('user.with.jwt; ', userWithJwt);
       return res.json({ user: userWithJwt });
     } else {
-      return next(new RestApiError(422, info));
+      return next(new RestApiError(req.path, 422, info));
     }
   })(req, res, next);
 });
