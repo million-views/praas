@@ -58,11 +58,9 @@ export const CheckBoxGroup = ({
   const handleChange = (data: any) => {
     const updatedList = [...selected];
     if (data.checked) {
-      updatedList.push(data.value);
-    } else {
-      updatedList.filter((item) => item !== data.value);
+      return [...updatedList, data.value];
     }
-    return updatedList;
+    return updatedList.filter((item) => item !== data.value);
   };
   return (
     <>
