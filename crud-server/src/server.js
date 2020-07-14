@@ -96,7 +96,7 @@ if (conf.production) {
     }
     res.json({ errors });
     // console.error(err);
-    next(res);
+    // next(res);
   });
 }
 
