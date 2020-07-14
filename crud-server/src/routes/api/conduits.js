@@ -43,7 +43,7 @@ router.post('/', auth.required, async function (req, res, next) {
 
   try { await conduit.save(); } catch (error) {
     if (error.name === 'SequelizeValidationError') {
-      return res.status(422).json({ error });
+      return next(new RestApiError(req.path, 422, error));
     }
     // In case the generated curi is a duplicate, we try once more
     if (error.name === 'SequelizeUniqueConstraintError') {
