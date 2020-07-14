@@ -1,8 +1,11 @@
+const fs = require('fs');
+const path = require('path');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
 const server = require('./server');
 const helpers = require('./lib/helpers');
+const dotEnv = require('dotenv-safe');
 
 const expect = chai.expect;
 chai.use(chaiHttp);
@@ -132,8 +135,8 @@ describe('Praas REST API', () => {
     let jakeUser = undefined;
     const dotEnvValues = dotEnv.config({
       allowEmptyValues: true,
-      example: path.resolve('../.env.conduit.example'),
-      path: path.resolve('../.env.conduit')
+      example: path.resolve('../.env.conduit-user.example'),
+      path: path.resolve('../.env.conduit-user')
     });
 
     before('login', async () => {
@@ -795,7 +798,7 @@ describe('Praas REST API', () => {
         await helpers.generateConduits(jakeUser.id, 20);
         const res = await Api()
           .get('/conduits')
-          .query({ start: '520', count: '10' })
+          .query({ start: '720', count: '10' })
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res.status).to.equal(200);
         expect(res.body.conduits.length).to.equal(10);
