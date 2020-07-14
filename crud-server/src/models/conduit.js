@@ -22,7 +22,10 @@ module.exports = (db, DataTypes) => {
       allowNull: false,
       validate: {
         notEmpty: true,
-        isIn: [SERVICE_ENUM]
+        isIn: {
+          args: [SERVICE_ENUM],
+          msg: 'unsupported'
+        }
       }
     },
     suriObjectKey: {
@@ -34,7 +37,10 @@ module.exports = (db, DataTypes) => {
       type: DataTypes.STRING(512),
       allowNull: false,
       validate: {
-        isUrl: true,
+        isUrl: {
+          args: true,
+          msg: 'invalid url'
+        }
       }
     },
     curi: {
@@ -84,7 +90,10 @@ module.exports = (db, DataTypes) => {
       allowNull: false,
       defaultValue: true,
       validate: {
-        isIn: [BOOLEAN_ENUM],
+        isIn: {
+          args: [BOOLEAN_ENUM],
+          msg: 'invalid value'
+        }
       }
     },
     status: {
@@ -92,7 +101,10 @@ module.exports = (db, DataTypes) => {
       allowNull: false,
       defaultValue: 'inactive',
       validate: {
-        isIn: [STATUS_ENUM]
+        isIn: {
+          args: [STATUS_ENUM],
+          msg: 'invalid status value'
+        }
       }
     },
     description: {

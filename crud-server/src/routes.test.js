@@ -21,6 +21,11 @@ const User = (res) => res.body.user;
 const apiServer = server.app.listen(server.port);
 const Api = () => chai.request(apiServer);
 
+// NOTE:
+// reword/rephrase resource-error messages to fit this pattern
+const ERROR_PATTERN =
+  /^invalid.*$|^missing.*$|^unsupported.*$|cannot be blank|cannot be null/;
+
 describe('Praas REST API', () => {
   before(async () => {
     console.log(`Praas API server is listening on port ${server.port}`);
@@ -314,7 +319,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.errors[0].suri).to.match(/^invalid.*$|^missing.*$|failed|cannot be blank|cannot be null/);
+            expect(res.body.errors[0].suri).to.match(ERROR_PATTERN);
           });
         });
 
@@ -371,7 +376,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.errors[0].suriType).to.match(/^invalid.*$|^missing.*$|failed|cannot be blank|cannot be null/);
+            expect(res.body.errors[0].suriType).to.match(ERROR_PATTERN);
           });
         });
 
@@ -441,7 +446,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.errors[0].status).to.match(/^invalid.*$|^missing.*$|failed|cannot be blank|cannot be null/);
+            expect(res.body.errors[0].status).to.match(ERROR_PATTERN);
           });
 
           it('should not allow empty status', async () => {
@@ -452,7 +457,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.errors[0].status).to.match(/^invalid.*$|^missing.*$|failed|cannot be blank|cannot be null/);
+            expect(res.body.errors[0].status).to.match(ERROR_PATTERN);
           });
 
           it('should allow only \'active\' or \'inactive\'', async () => {
@@ -463,7 +468,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.errors[0].status).to.match(/^invalid.*$|^missing.*$|failed|cannot be blank|cannot be null/);
+            expect(res.body.errors[0].status).to.match(ERROR_PATTERN);
           });
         });
 
@@ -476,7 +481,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.errors[0].throttle).to.match(/^invalid.*$|^missing.*$|failed|cannot be blank|cannot be null/);
+            expect(res.body.errors[0].throttle).to.match(ERROR_PATTERN);
           });
 
           it('should not allow empty throttle', async () => {
@@ -487,7 +492,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.errors[0].throttle).to.match(/^invalid.*$|^missing.*$|failed|cannot be blank|cannot be null/);
+            expect(res.body.errors[0].throttle).to.match(ERROR_PATTERN);
           });
 
           it('should allow only \'true\' or \'false\'', async () => {
@@ -510,7 +515,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.errors[0].racm).to.match(/^invalid.*$|^missing.*$|failed|cannot be blank|cannot be null/);
+            expect(res.body.errors[0].racm).to.match(ERROR_PATTERN);
           });
 
           it('should not allow empty racm', async () => {
@@ -521,7 +526,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.errors[0].racm).to.match(/^invalid.*$|^missing.*$|failed|cannot be blank|cannot be null/);
+            expect(res.body.errors[0].racm).to.match(ERROR_PATTERN);
           });
 
           it('should allow only valid HTTP methods', async () => {
@@ -532,7 +537,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.errors[0].racm).to.match(/^invalid.*$|^missing.*$|failed|cannot be blank|cannot be null/);
+            expect(res.body.errors[0].racm).to.match(ERROR_PATTERN);
           });
         });
 
@@ -545,7 +550,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.errors[0].allowlist).to.match(/^invalid.*$|^missing.*$|failed|cannot be blank|cannot be null/);
+            expect(res.body.errors[0].allowlist).to.match(ERROR_PATTERN);
           });
 
           it('should not allow empty allowlist', async () => {
@@ -556,7 +561,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.errors[0].allowlist).to.match(/^invalid.*$|^missing.*$|failed|cannot be blank|cannot be null/);
+            expect(res.body.errors[0].allowlist).to.match(ERROR_PATTERN);
           });
 
           it('should not allow invalid IP in allowlist', async function () {
@@ -570,7 +575,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: conduit });
             expect(res.status).to.equal(422);
-            expect(res.body.errors[0].allowlist).to.match(/^invalid.*$|^missing.*$|failed|cannot be blank|cannot be null/);
+            expect(res.body.errors[0].allowlist).to.match(ERROR_PATTERN);
           });
 
           it('should allow only valid allowlist properties', async () => {
@@ -581,7 +586,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.errors[0].allowlist).to.match(/^invalid.*$|^missing.*$|failed|cannot be blank|cannot be null/);
+            expect(res.body.errors[0].allowlist).to.match(ERROR_PATTERN);
           });
         });
 
