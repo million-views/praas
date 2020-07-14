@@ -81,10 +81,21 @@ if (conf.production) {
     //     error: err.errors
     //   }
     // });
-    res.json({
-      errors: err.errors
-    });
-    console.error(err.stack);
+
+    // FIXME!
+    // hack to keep going; revisit during a proper normalization phase.
+    // naive normalization follows to make the tests pass with minimal
+    // changes...
+
+    // what a mess!
+    let errors = err.errors;
+    if (!Array.isArray(errors)) {
+      if (errors.errors) {
+        errors = errors.errors;
+      }
+    }
+    res.json({ errors });
+    // console.error(err);
     next(res);
   });
 }
