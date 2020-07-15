@@ -15,6 +15,15 @@ TBD...
 >    where .env-example file can be found. Fill the values of .env file
 >    before you start the crud-server or the proxy-server.
 
+## Debugging
+
+Error responses and stack traces can be logged to the console by setting
+the `DUMP_ERROR_RESPONSE` and `DUMP_STACK_TRACE` environment variables.
+The features can be enabled by prepending the environment variable with
+the `npm` task command.
+
+`DUMP_ERROR_RESPONSE=1 DUMP_STACK_TRACE=1 npm run <task-name>`
+
 ## Developer Tasks
 |  task                                           | command line                        |
 |:------------------------------------------------|:------------------------------------|
