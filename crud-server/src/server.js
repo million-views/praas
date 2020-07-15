@@ -7,6 +7,8 @@ const dotenv = require('dotenv-safe');
 
 const conf = require('./config');
 const models = require('./models');
+const RestApiError = require('./lib/error');
+const { UnauthorizedError } = require('express-jwt');
 
 require('./passport');
 
@@ -54,25 +56,51 @@ app.use(require('./routes'));
 
 // error handling...
 // note: error handler should be registered after all routes have been registered
-console.log(`Conduits resource server is in ${conf.production ? 'production' : 'development'} mode...`);
+console.log(
+  `Conduits resource server is in ${conf.production ? 'production' : 'development'} mode...`
+);
 app.use(function (err, req, res, next) {
-  res.status(err.status || 500);
-  const errors = err.errors;
-  res.json({ errors });
+  // fail fast: unknown error types are unexpected here.
+  if (!(err instanceof RestApiError)) {
+    if (err instanceof UnauthorizedError) {
+      // NOTE: UnauthorizedError comes from JWT middleware which can
+      // only be intercepted here because it throws on error. The stack
+      // trace from it is pretty much useless, so we discard it. And add
+      // our own errors object. We copy because deleting .stack here doesn't
+      // work - most likely because UnauthorizedError is not defined by us?
+      err = {
+        ...err,
+        errors: { authorization: 'token not found or malformed' }
+      };
+    } else {
+      const cname = err.constructor.name;
+      console.error(
+        `expected RestApiError or UnauthorizedError, got ${cname}; bailing!`,
+        err
+      );
+      process.exit(1);
+    }
+  }
+
+  // make sure stack trace doesn't leak back to client
+  const stack = err.stack;
+  delete err.stack; // <- this works because RestApiError is ours?
 
   // on mac/linux run with:
   // DUMP_ERROR_RESPONSE=1 npm run `task`
-  const stack = err.stack;
   if (process.env.DUMP_ERROR_RESPONSE) {
-    delete err.stack;
     console.error(err);
   }
 
-  if (process.env.DUMP_STACK_TRACE) {
+  if (process.env.DUMP_STACK_TRACE && stack) {
     // on mac/linux run with:
     // DUMP_STACK_TRACE=1 npm run `task`
     console.error(stack);
   }
+
+  const errors = err.errors;
+  res.status(err.status || 500);
+  res.json({ errors });
 });
 
 // Returns proxy server user object (with credentials filled in from .env file)
@@ -90,7 +118,7 @@ function getProxyServerCredentials() {
     // console.log(proxy_credentials);
   } catch (e) {
     console.log('Unexpected... ', e);
-    process.exit(1);
+    process.exit(2);
   }
 
   return {
@@ -119,7 +147,7 @@ if (!module.parent) {
           user = await models.User.exists(proxyUser.email, proxyUser.password);
         } else {
           console.log(`Unexpected error: ${e.name}, aborting... ${e}`);
-          process.exit(2);
+          process.exit(3);
         }
       }
 
