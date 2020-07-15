@@ -26,7 +26,6 @@ router.use(function (err, req, res, next) {
     return next(new RestApiError(req.path, 422, errors));
   }
 
-  if (err.name === 'UnauthorizedError') return res.status(401).json(err);
   if (err.name === 'UnauthorizedError') return next(new RestApiError(req.path, 401, err));
 
   return next(err);
