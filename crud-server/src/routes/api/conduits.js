@@ -5,6 +5,7 @@ const auth = require('../auth');
 const helpers = require('../../lib/helpers');
 const { System } = require('../../models');
 const { Conduit } = require('../../models');
+const RestApiError = require('../../lib/error');
 
 const conduitReqdFields = [
   'suriApiKey',
@@ -38,11 +39,11 @@ router.post('/', auth.required, async function (req, res, next) {
     errors
   );
 
-  if (Object.keys(errors).length) return res.status(422).json({ errors });
+  if (Object.keys(errors).length) return next(new RestApiError(req.path, 422, errors));
 
   try { await conduit.save(); } catch (error) {
     if (error.name === 'SequelizeValidationError') {
-      return res.status(422).json({ error });
+      return next(new RestApiError(req.path, 422, error));
     }
     // In case the generated curi is a duplicate, we try once more
     if (error.name === 'SequelizeUniqueConstraintError') {
@@ -68,7 +69,7 @@ router.get('/:id', auth.required, async (req, res, next) => {
         userId: req.payload.id
       }
     });
-    if (!conduit) return res.sendStatus(404);
+    if (!conduit) return next(new RestApiError(req.path, 404, ['conduit not found']));
 
     return res.json({ conduit: conduit.toJSON() });
   } catch (error) { next(error); }
@@ -105,7 +106,7 @@ router.get('/', auth.required, async (req, res, next) => {
       }
     }
 
-    if (!conduits) return res.sendStatus(404);
+    if (!conduits) return next(new RestApiError(req.path, 404, ['conduit not found']));
 
     return res.json({ conduits: conduits.map(i => i.toJSON()) });
   } catch (error) { next(error); }
@@ -115,8 +116,8 @@ router.get('/', auth.required, async (req, res, next) => {
 router.put('/:id', auth.required, async (req, res, next) => {
   try {
     const conduit = await Conduit.findByPk(req.params.id);
-    if (!conduit) return res.sendStatus(404);
-    if (req.body.conduit.curi) return res.sendStatus(400);
+    if (!conduit) return next(new RestApiError(req.path, 404, ['conduit not found']));
+    if (req.body.conduit.curi) return next(new RestApiError(req.path, 400, ['cannot modify conduit URI']));
 
     const errors = {};
     const newCdt = new Conduit();
@@ -135,7 +136,7 @@ router.put('/:id', auth.required, async (req, res, next) => {
       errors
     );
 
-    if (Object.keys(errors).length) return res.status(422).json({ errors });
+    if (Object.keys(errors).length) return next(new RestApiError(req.path, 422, errors));
 
     await conduit.update(req.body.conduit);
     res.status(200).json({ conduit: conduit.toJSON() });
@@ -146,8 +147,8 @@ router.put('/:id', auth.required, async (req, res, next) => {
 router.patch('/:id', auth.required, async (req, res, next) => {
   try {
     const conduit = await Conduit.findByPk(req.params.id);
-    if (!conduit) return res.sendStatus(404);
-    if (req.body.conduit.curi) return res.sendStatus(400);
+    if (!conduit) return next(new RestApiError(req.path, 404, ['conduit not found']));
+    if (req.body.conduit.curi) return next(new RestApiError(req.path, 400, ['cannot modify conduit URI']));
 
     await conduit.update(await req.body.conduit);
     return res.status(200).json({ conduit: conduit.toJSON() });
@@ -158,19 +159,17 @@ router.patch('/:id', auth.required, async (req, res, next) => {
 router.delete('/:id', auth.required, async (req, res, next) => {
   try {
     const conduit = await Conduit.findOne({ where: { id: req.params.id } });
-    if (!conduit) {
-      return res.sendStatus(404); // not found
-    } 
-    
+    if (!conduit) return next(new RestApiError(req.path, 404, ['conduit not found']));
+
     if (conduit.status === 'active') {
-      return res.sendStatus(403); // should not be deleted when active
-    } 
+      return next(new RestApiError(req.path, 403, ['cannot delete an active conduit']));
+    }
 
     const count = await Conduit.destroy({ where: { id: req.params.id } });
     if (count === 1) {
       return res.status(200).json({ conduit: { id: req.params.id } });
-    } 
-    
+    }
+
     next(new Error('Unexpected error while removing an inactive conduit'));
   } catch (error) { return next(error); }
 });

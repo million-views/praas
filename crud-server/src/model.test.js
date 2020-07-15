@@ -144,13 +144,9 @@ describe('PraaS', () => {
       this.timeout(4000); // <- needed to prevent timeout exceeded mocha error
 
       // create test conduits for proxy server
-      let proxyBaseConduit,
-        proxyDropConduit,
-        proxyPassConduit,
-        proxyNoIncludeConduit,
-        curis = {};
+      const curis = {}; // <- store the conduits for proxy test
 
-      proxyBaseConduit = {
+      const proxyBaseConduit = {
         userId: user.id,
         suri: dotEnvValues.parsed.CONDUIT_SERVICE_URI,
         suriApiKey: dotEnvValues.parsed.CONDUIT_SERVICE_API_KEY,
@@ -163,9 +159,9 @@ describe('PraaS', () => {
         }],
         throttle: false,
         status: 'active',
-      }
+      };
 
-      proxyDropConduit = await models.Conduit.create({
+      const proxyDropConduit = await models.Conduit.create({
         description: 'test conduit with drop-if-filled HFF policy',
         curi: await helpers.makeCuri('td'),
         racm: ['POST'],
@@ -179,7 +175,7 @@ describe('PraaS', () => {
       });
       curis.dropConduit = proxyDropConduit.curi;
 
-      proxyPassConduit = await models.Conduit.create({
+      const proxyPassConduit = await models.Conduit.create({
         description: 'test conduit with pass-if-match HFF policy',
         curi: await helpers.makeCuri('td'),
         racm: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
@@ -193,7 +189,7 @@ describe('PraaS', () => {
       });
       curis.passConduit = proxyPassConduit.curi;
 
-      proxyNoIncludeConduit = await models.Conduit.create({
+      const proxyNoIncludeConduit = await models.Conduit.create({
         description: 'test conduit with HFF include = false',
         curi: await helpers.makeCuri('td'),
         racm: ['POST'],
