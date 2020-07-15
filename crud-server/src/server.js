@@ -60,18 +60,25 @@ console.log(
   `Conduits resource server is in ${conf.production ? 'production' : 'development'} mode...`
 );
 app.use(function (err, req, res, next) {
+  // request path is the flow origin that led to the error
+  err.path = req.path;
+
   // fail fast: unknown error types are unexpected here.
   if (!(err instanceof RestApiError)) {
     if (err instanceof UnauthorizedError) {
       // NOTE: UnauthorizedError comes from JWT middleware which can
       // only be intercepted here because it throws on error. The stack
       // trace from it is pretty much useless, so we discard it. And add
-      // our own errors object. We copy because deleting .stack here doesn't
-      // work - most likely because UnauthorizedError is not defined by us?
-      err = {
-        ...err,
+      // our own errors object.
+
+      // We copy out of it because deleting .stack here doesn't work... also
+      // for the sake of consistency we transform UnauthorizedError into
+      // RestApiError.
+      const { message, status, path } = err;
+      err = Object.setPrototypeOf({
+        message, status, path,
         errors: { authorization: 'token not found or malformed' }
-      };
+      }, Object.getPrototypeOf(new RestApiError(status)));
     } else {
       const cname = err.constructor.name;
       console.error(
