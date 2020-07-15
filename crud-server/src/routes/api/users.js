@@ -11,7 +11,7 @@ router.get('/user', auth.required, async (req, res, next) => {
     if (!user) return next(new RestApiError(req.path, 401, ['user not found']));
     return res.json({ user: user.toAuthJSON() });
   } catch (error) {
-    next(error);
+    next(new RestApiError(req.path, 500, error));
   }
 });
 
@@ -37,7 +37,7 @@ router.post('/users', async (req, res, next) => {
       return next(new RestApiError(req.path, 422, errors));
     } else {
       errors.unknown = `unknown error ${name}, please contact support`;
-      return next(errors);
+      return next(new RestApiError(req.path, 500, errors));
     }
   }
 });
@@ -64,7 +64,7 @@ router.post('/users/login', function (req, res, next) {
   passport.authenticate('local', { session: false }, function (err, user, info) {
     if (err) {
       console.log('err: ', err);
-      return next(err);
+      return next(new RestApiError(req.path, 500, err));
     }
 
     if (user) {
