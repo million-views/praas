@@ -63,11 +63,11 @@ app.use(function (err, req, res, next) {
 
   // on mac/linux run with:
   // DUMP_ERROR_RESPONSE=1 npm run `task`
-  if (env.DUMP_ERROR_RESPONSE) {
+  if (process.env.DUMP_ERROR_RESPONSE) {
     console.error(err);
   }
 
-  if (env.DUMP_STACK_TRACE) {
+  if (process.env.DUMP_STACK_TRACE) {
     // on mac/linux run with:
     // DUMP_STACK_TRACE=1 npm run `task`
     console.error(err.stack);
