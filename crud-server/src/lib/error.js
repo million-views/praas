@@ -1,3 +1,13 @@
+// Using appropriate response status code in a REST api can be a tricky
+// proposition. Most appropriate status code *may* disclose information
+// about the system disposition, which in turn can be used by bad actors
+// to do bad things.
+//
+// Read more on this:
+// - https://www.bennadel.com/blog/2400-handling-forbidden-restful-requests-401-vs-403-vs-404.htm
+// - https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_errors
+//
+
 const REST_API_ERRORS = {
   400: 'Bad Request',
   401: 'Unauthorized',
@@ -21,6 +31,8 @@ const REST_API_ERRORS = {
   511: 'Network Authentication Required',
 };
 
+// sanitize attempts to deal with variations of errors thrown by us
+// and lower layer dependencies such as sequelize...
 function sanitize(errors) {
   if (!Array.isArray(errors)) {
     if (errors.errors) {
@@ -40,11 +52,10 @@ function sanitize(errors) {
   return errors;
 }
 
-function RestApiError(path, statusCode, errors = {}, message = undefined) {
+function RestApiError(statusCode, errors = {}) {
   Error.captureStackTrace(this, RestApiError);
-  this.path = path;
   this.errors = sanitize(errors);
-  this.message = message || REST_API_ERRORS[statusCode];
+  this.message = REST_API_ERRORS[statusCode];
   this.status = statusCode;
 };
 

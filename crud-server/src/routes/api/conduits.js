@@ -35,20 +35,22 @@ router.post('/', auth.required, async function (req, res, next) {
     errors
   );
 
-  if (Object.keys(errors).length) { return next(new RestApiError(req.path, 422, errors)); }
+  if (Object.keys(errors).length) {
+    return next(new RestApiError(422, errors));
+  }
 
   try {
     await conduit.save();
   } catch (error) {
     if (error.name === 'SequelizeValidationError') {
-      return next(new RestApiError(req.path, 422, error));
+      return next(new RestApiError(422, error));
     }
     // In case the generated curi is a duplicate, we try once more
     if (error.name === 'SequelizeUniqueConstraintError') {
       conduit.curi = await helpers.makeCuri(System.cconf.settings.prefix);
       await conduit.save();
     } else {
-      return next(new RestApiError(req.path, 500, error));
+      return next(new RestApiError(500, error));
     }
   }
 
@@ -71,12 +73,12 @@ router.get('/:id', auth.required, async (req, res, next) => {
     });
 
     if (!conduit) {
-      return next(new RestApiError(req.path, 404, ['conduit not found']));
+      return next(new RestApiError(404, ['conduit not found']));
     }
 
     return res.json({ conduit: conduit.toJSON() });
   } catch (error) {
-    next(new RestApiError(req.path, 500, error));
+    next(new RestApiError(500, error));
   }
 });
 
@@ -114,12 +116,12 @@ router.get('/', auth.required, async (req, res, next) => {
     }
 
     if (!conduits) {
-      return next(new RestApiError(req.path, 404, ['conduit not found']));
+      return next(new RestApiError(404, ['conduit not found']));
     }
 
     return res.json({ conduits: conduits.map((i) => i.toJSON()) });
   } catch (error) {
-    next(new RestApiError(req.path, 500, error));
+    next(new RestApiError(500, error));
   }
 });
 
@@ -128,12 +130,12 @@ router.put('/:id', auth.required, async (req, res, next) => {
   try {
     const conduit = await Conduit.findByPk(req.params.id);
     if (!conduit) {
-      return next(new RestApiError(req.path, 404, ['conduit not found']));
+      return next(new RestApiError(404, ['conduit not found']));
     }
 
     if (req.body.conduit.curi) {
       return next(
-        new RestApiError(req.path, 400, ['cannot modify conduit URI'])
+        new RestApiError(400, ['cannot modify conduit URI'])
       );
     }
 
@@ -155,13 +157,13 @@ router.put('/:id', auth.required, async (req, res, next) => {
     );
 
     if (Object.keys(errors).length) {
-      return next(new RestApiError(req.path, 422, errors));
+      return next(new RestApiError(422, errors));
     }
 
     await conduit.update(req.body.conduit);
     res.status(200).json({ conduit: conduit.toJSON() });
   } catch (error) {
-    return next(new RestApiError(req.path, 500, error));
+    return next(new RestApiError(500, error));
   }
 });
 
@@ -170,19 +172,19 @@ router.patch('/:id', auth.required, async (req, res, next) => {
   try {
     const conduit = await Conduit.findByPk(req.params.id);
     if (!conduit) {
-      return next(new RestApiError(req.path, 404, ['conduit not found']));
+      return next(new RestApiError(404, ['conduit not found']));
     }
 
     if (req.body.conduit.curi) {
       return next(
-        new RestApiError(req.path, 400, ['cannot modify conduit URI'])
+        new RestApiError(403, ['cannot modify conduit URI'])
       );
     }
 
     await conduit.update(await req.body.conduit);
     return res.status(200).json({ conduit: conduit.toJSON() });
   } catch (error) {
-    return next(new RestApiError(req.path, 500, error));
+    return next(new RestApiError(500, error));
   }
 });
 
@@ -191,12 +193,12 @@ router.delete('/:id', auth.required, async (req, res, next) => {
   try {
     const conduit = await Conduit.findOne({ where: { id: req.params.id } });
     if (!conduit) {
-      return next(new RestApiError(req.path, 404, ['conduit not found']));
+      return next(new RestApiError(404, ['conduit not found']));
     }
 
     if (conduit.status === 'active') {
       return next(
-        new RestApiError(req.path, 403, ['cannot delete an active conduit'])
+        new RestApiError(403, ['cannot delete an active conduit'])
       );
     }
 
@@ -207,7 +209,7 @@ router.delete('/:id', auth.required, async (req, res, next) => {
 
     next(new Error('Unexpected error while removing an inactive conduit'));
   } catch (error) {
-    return next(new RestApiError(req.path, 500, error));
+    return next(new RestApiError(500, error));
   }
 });
 
