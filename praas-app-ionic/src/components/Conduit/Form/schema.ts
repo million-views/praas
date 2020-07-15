@@ -20,10 +20,25 @@ const conduitSchema = Yup.object().shape({
     )
     .min(0)
     .max(4),
-  racm: Yup.array()
-    .min(1, 'Select atleast on request method')
-    .required('Request methods is required'),
+  racm: Yup.object()
+    .shape({
+      GET: Yup.boolean(),
+      POST: Yup.boolean(),
+      PATCH: Yup.boolean(),
+      DELETE: Yup.boolean(),
+    })
+    .test('customCheckboxTest', '', (racm) => {
+      /* Can be extended later by iterating over the object keys */
+      if (racm.GET || racm.POST || racm.PATCH || racm.DELETE) {
+        return true;
+      }
+      return new Yup.ValidationError(
+        'Select atleast on request method',
+        null,
+        'racm'
+      );
+    }),
+
   description: Yup.string().required('Description is required'),
 });
-
 export default conduitSchema;
