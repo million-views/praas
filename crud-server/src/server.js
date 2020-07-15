@@ -8,7 +8,6 @@ const dotenv = require('dotenv-safe');
 
 const conf = require('./config');
 const models = require('./models');
-const { env } = require('process');
 
 require('./passport');
 
