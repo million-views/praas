@@ -837,7 +837,7 @@ describe('Praas REST API', () => {
           .put(`/conduits/${ctId1}`)
           .set('Authorization', `Token ${jakeUser.token}`)
           .send(conduit);
-        expect(res.status).to.equal(400);
+        expect(res.status).to.equal(403);
       });
     });
 

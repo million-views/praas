@@ -8,7 +8,7 @@ const RestApiError = require('../../lib/error');
 router.get('/user', auth.required, async (req, res, next) => {
   try {
     const user = await User.findOne({ where: { id: req.payload.id } });
-    if (!user) return next(new RestApiError(404, ['user not found']));
+    if (!user) return next(new RestApiError(404, { user: 'not found' }));
     return res.json({ user: user.toAuthJSON() });
   } catch (error) {
     next(new RestApiError(500, error));
@@ -48,7 +48,7 @@ router.post('/users', async (req, res, next) => {
 router.put('/user', auth.required, function (req, res, next) {
   User.findByPk(req.payload.id).then(function (user) {
     if (!user) {
-      return next(new RestApiError(404, ['user not found']));
+      return next(new RestApiError(404, { user: 'not found' }));
     }
 
     const userOptFields = ['firstName', 'lastName', 'password'];
@@ -58,8 +58,7 @@ router.put('/user', auth.required, function (req, res, next) {
       return res.json({ user: user.toAuthJSON() });
     });
   }).catch((reason) => {
-    console.log('error: ', reason);
-    next(reason);
+    next(new RestApiError(500, reason));
   });
 });
 
