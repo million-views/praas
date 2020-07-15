@@ -29,8 +29,17 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
   const onBack = () => {
     history.goBack();
   };
+  const parseRACM = (racm: any) => {
+    const racmList: string[] = [];
+    Object.keys(racm).forEach((key) => {
+      if (racm[key]) {
+        racmList.push(key);
+      }
+    });
+    return racmList;
+  };
   const onSubmit = (values: any) => {
-    onSave(values);
+    onSave({ ...values, racm: parseRACM(values.racm) });
   };
 
   return (
