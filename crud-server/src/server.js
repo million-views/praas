@@ -3,7 +3,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const cors = require('cors');
-// const errorhandler = require('errorhandler');
 const dotenv = require('dotenv-safe');
 
 const conf = require('./config');
@@ -63,14 +62,16 @@ app.use(function (err, req, res, next) {
 
   // on mac/linux run with:
   // DUMP_ERROR_RESPONSE=1 npm run `task`
+  const stack = err.stack;
   if (process.env.DUMP_ERROR_RESPONSE) {
+    delete err.stack;
     console.error(err);
   }
 
   if (process.env.DUMP_STACK_TRACE) {
     // on mac/linux run with:
     // DUMP_STACK_TRACE=1 npm run `task`
-    console.error(err.stack);
+    console.error(stack);
   }
 });
 
