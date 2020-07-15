@@ -860,7 +860,7 @@ describe('PraaS', () => {
     });
 
     context('testing racm field...', () => {
-      it('should set default racm to [] if no racm is set', done => {
+      it('should set default racm to ["GET"] if no racm is set', done => {
         helpers.makeCuri('td')
           .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
           .then(cdt => {
@@ -870,7 +870,7 @@ describe('PraaS', () => {
           .then(objCdt => {
             objCdt.save()
               .then(objCdt => {
-                expect(objCdt.racm).to.eql([]);
+                expect(objCdt.racm).to.eql(['GET']);
                 done();
               })
               .catch(_err => {
@@ -880,7 +880,7 @@ describe('PraaS', () => {
           .catch(e => done(e));
       });
 
-      it('should set default racm to [] if racm is undefined', done => {
+      it('should set default racm to ["GET"] if racm is undefined', done => {
         helpers.makeCuri('td')
           .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
           .then(cdt => {
@@ -890,7 +890,7 @@ describe('PraaS', () => {
           .then(objCdt => {
             objCdt.save()
               .then(objCdt => {
-                expect(objCdt.racm).to.eql([]);
+                expect(objCdt.racm).to.eql(['GET']);
                 done();
               })
               .catch(_err => {

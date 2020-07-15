@@ -76,7 +76,7 @@ module.exports = (db, DataTypes) => {
     racm: {
       type: DataTypes.JSON,
       allowNull: false,
-      defaultValue: [],
+      defaultValue: ['GET'],
       validate: {
         isValidHTTPMethod: value => {
           if (!value || !value.every(method => HTTP_METHODS_ENUM.includes(method))) {

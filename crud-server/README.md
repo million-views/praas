@@ -91,7 +91,10 @@ JSON: containing an array of objects with the following properties:
 
 #### racm
 JSON: containing an array of allowed HTTP methods. The accepted 
-methods are:  GET, PUT, POST, PATCH, DELETE.
+methods are:  GET, PUT, POST, PATCH, DELETE. 
+
+At least one method must be present in this array. The default value for
+this field is set to `['GET']` if this field is not present in the request.
 
 TBD: add reference to the conduits API here.
 

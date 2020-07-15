@@ -659,7 +659,7 @@ describe('Praas REST API', () => {
           expect(res2.body.conduit.throttle).to.equal(true);
         });
 
-        it('should set default racm to [] if no racm is set', async () => {
+        it('should set default racm to ["GET"] if no racm is set', async () => {
           const ct = await helpers.fakeConduit();
           delete ct.racm;
           const res = await Api()
@@ -672,10 +672,10 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`)
             .send();
           expect(res2.status).to.equal(200);
-          expect(res2.body.conduit.racm).to.eql([]);
+          expect(res2.body.conduit.racm).to.eql(['GET']);
         });
 
-        it('should set default racm to [] if racm is undefined', async () => {
+        it('should set default racm to ["GET"] if racm is undefined', async () => {
           const ct = await helpers.fakeConduit();
           ct.racm = undefined;
           const res = await Api()
@@ -688,7 +688,7 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`)
             .send();
           expect(res2.status).to.equal(200);
-          expect(res2.body.conduit.racm).to.eql([]);
+          expect(res2.body.conduit.racm).to.eql(['GET']);
         });
 
         it('should set default allowlist to [] if no allowlist is set', async () => {
