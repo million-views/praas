@@ -55,38 +55,24 @@ app.use(require('./routes'));
 
 // error handling...
 // note: error handler should be registered after all routes have been registered
-if (conf.production) {
-  app.use(function (err, req, res, next) {
-    // no stacktraces leaked to user in production mode
-    res.status(err.status || 500);
-    res.json({
-      errors: {
-        message: err.message,
-        error: {}
-      }
-    });
-  });
-} else {
-  // in development mode, use error handler and print stacktrace
-  console.log('Conduits resource server is in development mode...');
-  app.use(function (err, req, res, next) {
-    res.status(err.status || 500);
-    const errors = err.errors;
-    res.json({ errors });
+console.log(`Conduits resource server is in ${conf.production ? 'production' : 'development'} mode...`);
+app.use(function (err, req, res, next) {
+  res.status(err.status || 500);
+  const errors = err.errors;
+  res.json({ errors });
 
+  // on mac/linux run with:
+  // DUMP_ERROR_RESPONSE=1 npm run `task`
+  if (env.DUMP_ERROR_RESPONSE) {
+    console.error(err);
+  }
+
+  if (env.DUMP_STACK_TRACE) {
     // on mac/linux run with:
-    // DUMP_ERROR_RESPONSE=1 npm run `task`
-    if (process.env.DUMP_ERROR_RESPONSE) {
-      console.error(err);
-    }
-
-    if (process.env.DUMP_STACK_TRACE) {
-      // on mac/linux run with:
-      // DUMP_STACK_TRACE=1 npm run `task`
-      console.error(err.stack);
-    }
-  });
-}
+    // DUMP_STACK_TRACE=1 npm run `task`
+    console.error(err.stack);
+  }
+});
 
 // Returns proxy server user object (with credentials filled in from .env file)
 // TODO: move this to a common library accessible to both proxy and crud servers
