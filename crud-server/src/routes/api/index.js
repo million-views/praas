@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const RestApiError = require('../../lib/error');
 
 // v.a:
 // we mount users at root since it supports /user
@@ -16,19 +15,5 @@ router.use('/', require('./users'));
 // implies I could make a single change in the next
 // line and everything else should work as before.
 router.use('/conduits', require('./conduits'));
-
-router.use(function (err, req, res, next) {
-  if (err.name === 'ValidationError') {
-    const errors = Object.keys(err.errors).reduce(function (errors, key) {
-      errors[key] = err.errors[key].message;
-      return errors;
-    }, {});
-    return next(new RestApiError(req.path, 422, errors));
-  }
-
-  if (err.name === 'UnauthorizedError') return next(new RestApiError(req.path, 401, err));
-
-  return next(err);
-});
 
 module.exports = router;
