@@ -136,6 +136,7 @@ describe('Testing Proxy Server...', async () => {
                         .set('Host', passConduit)
                         .send(request3);
           expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('records');
           expect(res.body.records.length).to.equal(request3.records.length);
           for( let i = 0; i < res.body.records.length; i++ ) {
             expect(res.body.records[i].fields).to.eql(request3.records[i].fields);
@@ -147,6 +148,7 @@ describe('Testing Proxy Server...', async () => {
                         .set('Host', noIncludeConduit)
                         .send(request3);
           expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('records');
           expect(res.body.records.length).to.equal(request3.records.length);
           for( let i = 0; i < res.body.records.length; i++ ) {
             expect(res.body.records[i].fields).to.not.eql(request3.records[i].fields);
