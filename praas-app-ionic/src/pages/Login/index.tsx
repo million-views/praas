@@ -42,7 +42,9 @@ export const LoginPage: React.FC<Props> = (props) => {
   };
 
   useEffect(() => {
-    if (user.login.loggedIn) history.replace('/');
+    if (user.login.loggedIn) {
+      history.replace('/');
+    }
   }, [user, history]);
 
   return (

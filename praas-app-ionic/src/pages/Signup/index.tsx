@@ -36,14 +36,17 @@ const Signup: React.FC<Props> = ({ user, history, registerUser }) => {
     validationSchema: signupSchema,
   });
 
-  const { register, handleSubmit, errors } = formMethods;
+  const { handleSubmit, errors } = formMethods;
 
   const onSubmit = (values: any) => {
     registerUser({ user: values });
   };
 
   useEffect(() => {
-    if (user.login.loggedIn) history.replace('/');
+    if (user.login.loggedIn) {
+      console.log('OK');
+      history.replace('/');
+    }
   }, [user, history]);
 
   return (
