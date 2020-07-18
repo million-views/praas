@@ -50,7 +50,11 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
             <IonCol>
               <FormFieldWithError error={errors.suriApiKey}>
                 <IonLabel position="floating">API Key</IonLabel>
-                <Input name="suriApiKey" value={conduit?.suriApiKey} />
+                <Input
+                  name="suriApiKey"
+                  value={conduit?.suriApiKey}
+                  title="API Key"
+                />
               </FormFieldWithError>
             </IonCol>
           </IonRow>
@@ -70,7 +74,7 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
             <IonCol>
               <FormFieldWithError error={errors.suri}>
                 <IonLabel position="floating">Service endpoint uri</IonLabel>
-                <Input name="suri" value={conduit?.suri} />
+                <Input name="suri" value={conduit?.suri} title="SURI" />
               </FormFieldWithError>
             </IonCol>
           </IonRow>
@@ -84,7 +88,11 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
                 <IonLabel position="floating">
                   Description of the endpoint
                 </IonLabel>
-                <Input name="description" value={conduit?.description} />
+                <Input
+                  name="description"
+                  value={conduit?.description}
+                  title="Description"
+                />
               </FormFieldWithError>
             </IonCol>
           </IonRow>

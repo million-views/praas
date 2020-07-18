@@ -20,12 +20,16 @@ const AllowListItem = ({ index, item, prefix, onDelete }: Props) => {
       <IonRow>
         <FormFieldWithError error={errors.allowlist?.[index]?.ip}>
           <IonLabel position="floating">IP Address</IonLabel>
-          <Input name={`${prefix}.ip`} value={item.ip} />
+          <Input name={`${prefix}.ip`} value={item.ip} title="IP Address" />
         </FormFieldWithError>
 
         <FormFieldWithError error={errors.allowlist?.[index]?.comment}>
           <IonLabel position="floating">Comment</IonLabel>
-          <Input name={`${prefix}.comment`} value={item.comment} />
+          <Input
+            name={`${prefix}.comment`}
+            value={item.comment}
+            title="Comment"
+          />
         </FormFieldWithError>
         <IonButton type="button" onClick={() => onDelete(index)}>
           X
