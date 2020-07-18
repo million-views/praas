@@ -11,8 +11,8 @@ TBD...
 ### Prerequisites
 
 Two `.env` files are required to test **proxy-server**. Both of
-these files are supposed to be present at the root of the
-repository ( at the same location where the `.env-example`
+these files are supposed to be present in the backend folder relative to
+the root of the repository ( at the same location where the `.env-example`
 file can be found )
 1. A global `.env` file containing client credentials for the
    **proxy-server**
