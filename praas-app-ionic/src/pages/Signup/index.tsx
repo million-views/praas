@@ -44,7 +44,6 @@ const Signup: React.FC<Props> = ({ user, history, registerUser }) => {
 
   useEffect(() => {
     if (user.login.loggedIn) {
-      console.log('OK');
       history.replace('/');
     }
   }, [user, history]);
