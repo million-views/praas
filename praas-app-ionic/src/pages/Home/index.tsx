@@ -51,7 +51,6 @@ const Home: React.FC<Props> = ({ conduits, listConduits, deleteConduit }) => {
         )}
         {!!conduits.length && (
           <IonGrid fixed>
-            {' '}
             <IonCard>
               <IonCardHeader>
                 <IonCardTitle>
