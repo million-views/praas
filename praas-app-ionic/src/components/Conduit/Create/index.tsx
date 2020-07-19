@@ -1,5 +1,12 @@
 import React, { useCallback } from 'react';
-import { IonGrid, IonRow, IonCol, IonCard } from '@ionic/react';
+import {
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+} from '@ionic/react';
 import ConduitForm from '../Form';
 
 import { connect } from 'react-redux';
@@ -23,14 +30,15 @@ const ConduitCreate: React.FC<Props> = ({ addConduit }) => {
     [addConduit]
   );
   return (
-    <IonGrid>
-      <IonRow className="ion-justify-content-center">
-        <IonCol sizeXs="12" sizeXl="8">
-          <IonCard>
-            <ConduitForm onSave={handleCreate} conduit={conduit} />
-          </IonCard>
-        </IonCol>
-      </IonRow>
+    <IonGrid fixed>
+      <IonCard>
+        <IonCardHeader>
+          <IonCardTitle>
+            <h1>Create Conduit</h1>
+          </IonCardTitle>
+        </IonCardHeader>
+        <ConduitForm onSave={handleCreate} conduit={conduit} isCreating />
+      </IonCard>
     </IonGrid>
   );
 };
