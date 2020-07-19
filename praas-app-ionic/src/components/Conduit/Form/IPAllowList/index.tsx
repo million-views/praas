@@ -35,6 +35,7 @@ const IPAllowList: React.FC<Props> = ({ allowlist = [] }) => {
         const namePrefix = `allowlist[${index}]`;
         return (
           <AllowListItem
+            key={namePrefix}
             item={fieldGroup}
             index={index}
             prefix={namePrefix}

@@ -1,4 +1,5 @@
 import PraasAPI from '../../api/praas';
+import { createSuccessNotification } from '../../store/notification';
 
 // This is a create-conduit duck. A duck is a feature state container.
 
@@ -23,6 +24,11 @@ export const addConduit = (conduit) => {
     PraasAPI.conduit.add({ conduit }).then(
       (conduit) => {
         dispatch(addConduitSuccess(conduit));
+        dispatch(
+          createSuccessNotification({
+            message: 'Conduit successfully created',
+          })
+        );
       },
       (error) => {
         dispatch(addConduitFailure(error));
