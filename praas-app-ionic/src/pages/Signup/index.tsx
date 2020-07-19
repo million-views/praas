@@ -64,15 +64,30 @@ const Signup: React.FC<Props> = ({ user, history, registerUser }) => {
                     <form noValidate onSubmit={handleSubmit(onSubmit)}>
                       <FormFieldWithError error={errors.firstName}>
                         <IonLabel position="floating">Name</IonLabel>
-                        <Input type="text" name="firstName" value="" />
+                        <Input
+                          type="text"
+                          name="firstName"
+                          value=""
+                          title="First Name"
+                        />
                       </FormFieldWithError>
                       <FormFieldWithError error={errors?.email}>
                         <IonLabel position="floating">Email</IonLabel>
-                        <Input type="email" name="email" value="" />
+                        <Input
+                          type="email"
+                          name="email"
+                          value=""
+                          title="Email"
+                        />
                       </FormFieldWithError>
                       <FormFieldWithError error={errors?.password}>
                         <IonLabel position="floating">Password</IonLabel>
-                        <Input type="password" name="password" value="" />
+                        <Input
+                          type="password"
+                          name="password"
+                          value=""
+                          title="Password"
+                        />
                       </FormFieldWithError>
                       <IonButton type="submit" color="primary" expand="full">
                         Submit

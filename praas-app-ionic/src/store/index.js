@@ -15,7 +15,10 @@ const reducers = combineReducers({
 
 const logger = (_store) => (next) => (action) => {
   if (typeof action !== 'function') {
-    console.log('dispatching:', action);
+    /** TODO
+     * Use logger only for dev mode
+     */
+    // console.log('dispatching:', action);
   }
   return next(action);
 };
