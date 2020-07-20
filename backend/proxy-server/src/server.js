@@ -4,6 +4,7 @@ const multer = require('multer');
 const cors = require('cors');
 const fetch = require('node-fetch');
 
+const { RestApiError, RestApiErrorHandler } = require('../../lib/error');
 const conf = require('../../config').system.settings;
 const helpers = require('../../lib/helpers');
 const PraasAPI = require('../../lib/praas');
@@ -20,23 +21,23 @@ app.use(cors());
 app.locals.cmap = new Map();
 
 // we handle all requests to the proxy end point...
-app.all('/*', upload.none(), (req, res) => {
+app.all('/*', upload.none(), (req, res, next) => {
   // PUT, POST and PATCH operations have records in body
   if (['PUT', 'PATCH', 'POST'].includes(req.method) &&
     !(req.body.records)) {
-    return res.status(422).send('records not present');
+    return next(new RestApiError(422, { records: 'not present' }));
   }
 
   // PUT, POST and PATCH operations need fields data in body
   if (['PUT', 'PATCH', 'POST'].includes(req.method) &&
     req.body.records[0].fields === undefined) {
-    return res.status(422).send('Fields not present');
+    return next(new RestApiError(422, { fields: 'not present' }));
   }
 
   // PUT and PATCH operations need id field in body
   if (['PUT', 'PATCH'].includes(req.method) &&
     req.body.records[0].id === undefined) {
-    return res.status(422).send('id not provided');
+    return next(new RestApiError(422, { id: 'not provided' }));
   }
 
   const reqCuri = req.get('host');
@@ -45,12 +46,12 @@ app.all('/*', upload.none(), (req, res) => {
 
   // If conduit not found in Cache, send 404
   if (!conduit) {
-    return res.status(404).send(`${reqCuri} conduit not found`);
+    return next(new RestApiError(404, { conduit: `${reqCuri} not found` }));
   }
 
   // check racm for allowed methods
   if (conduit.racm.findIndex(method => method === req.method) === -1) {
-    return res.status(405).send(`${req.method} is not permitted`);
+    return next(new RestApiError(405, { [req.method]: 'not permitted' }));
   }
 
   // perform hidden form field validation (needed only for new record creation)
@@ -114,36 +115,17 @@ app.all('/*', upload.none(), (req, res) => {
         return resp.json();
       })
       .then(json => res.status(respStat).send(json))
-      .catch(err => res.status(500).send(err));
+      .catch(err => next(new RestApiError(500, err)));
   }
 });
 
-/// error handling...
+console.log(
+  `Gateway server is in ${conf.production ? 'production' : 'development'} mode...`
+);
+
+// error handling...
 // note: error handler should be registered after all routes have been registered
-if (conf.production) {
-  app.use(function (err, req, res, next) {
-    // no stacktraces leaked to user in production mode
-    res.status(err.status || 500);
-    res.json({
-      errors: {
-        message: err.message,
-        error: {},
-      },
-    });
-  });
-} else {
-  // in development mode, use error handler and print stacktrace
-  app.use(function (err, req, res, next) {
-    console.log(err.stack);
-    res.status(err.status || 500);
-    res.json({
-      errors: {
-        message: err.message,
-        error: err,
-      },
-    });
-  });
-}
+app.use(RestApiErrorHandler);
 
 async function fetchConduits(user) {
   // fetch a list of conduits... be sure to run test-model, test-rest in sequence
