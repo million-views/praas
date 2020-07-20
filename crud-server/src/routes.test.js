@@ -21,6 +21,11 @@ const User = (res) => res.body.user;
 const apiServer = server.app.listen(server.port);
 const Api = () => chai.request(apiServer);
 
+// NOTE:
+// reword/rephrase resource-error messages to fit this pattern
+const ERROR_PATTERN =
+  /^invalid.*$|^missing.*$|^unsupported.*$|cannot be blank|cannot be null/;
+
 describe('Praas REST API', () => {
   before(async () => {
     console.log(`Praas API server is listening on port ${server.port}`);
@@ -51,8 +56,12 @@ describe('Praas REST API', () => {
         // ... in order to test here!
         if (workingCorsResponse) {
           expect(workingCorsResponse).to.have.status(204);
-          // expect(workingCorsResponse).to.have.header('access-control-allow-credentials', 'true');
-          expect(workingCorsResponse).to.have.header('access-control-allow-methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+          expect(workingCorsResponse)
+            .to.have
+            .header(
+              'access-control-allow-methods',
+              'GET,HEAD,PUT,PATCH,POST,DELETE'
+            );
         }
       }
     });
@@ -63,7 +72,9 @@ describe('Praas REST API', () => {
       const { firstName, lastName, email, password } = jake.user;
       const res = await Api()
         .post('/users')
-        .send({ user: { firstName, lastName, email: email.toLowerCase(), password } });
+        .send({
+          user: { firstName, lastName, email: email.toLowerCase(), password }
+        });
       expect(User(res).email).to.equal(email.toLowerCase());
     });
 
@@ -71,7 +82,9 @@ describe('Praas REST API', () => {
       const { firstName, lastName, email, password } = jake.user;
       const res = await Api()
         .post('/users')
-        .send({ user: { firstName, lastName, email: email.toLowerCase(), password } });
+        .send({
+          user: { firstName, lastName, email: email.toLowerCase(), password }
+        });
       expect(res.status).to.equal(422);
       const errors = res.body.errors;
       for (const error of Object.keys(errors)) {
@@ -101,40 +114,35 @@ describe('Praas REST API', () => {
       const user = { ...jake.user };
       delete user.password;
       const res = await Api()
-                    .post('/users/login')
-                    .send({ user: user });
-       expect(res.status).to.equal(422);
-       expect(res.body.message).to.equal('Missing credentials');
+        .post('/users/login')
+        .send({ user: user });
+      expect(res.status).to.equal(422);
+      expect(res.body.errors.message).to.equal('Missing credentials');
     });
     it('should not authenticate without valid user credentials', async function () {
       const user = { ...jake.user };
       user.password = 'jake';
       const res = await Api()
-                    .post('/users/login')
-                    .send({ user: user });
-       expect(res.status).to.equal(422);
-       expect(res.body).to.have.property('errors');
-       expect(res.body.errors.credentials).to.equal('email or password is invalid');
+        .post('/users/login')
+        .send({ user: user });
+      expect(res.status).to.equal(422);
+      expect(res.body).to.have.property('errors');
+      expect(res.body.errors.credentials).to.equal('email or password is invalid');
     });
     it('should authenticate with valid user credentials', async function () {
       const res = await Api()
-                    .post('/users/login')
-                    .send(jake);
-       expect(res.status).to.equal(200);
-       expect(res.body.user).to.have.property('firstName');
-       expect(res.body.user).to.have.property('lastName');
-       expect(res.body.user).to.have.property('email');
-       expect(res.body.user).to.have.property('token');
+        .post('/users/login')
+        .send(jake);
+      expect(res.status).to.equal(200);
+      expect(res.body.user).to.have.property('firstName');
+      expect(res.body.user).to.have.property('lastName');
+      expect(res.body.user).to.have.property('email');
+      expect(res.body.user).to.have.property('token');
     });
   });
 
   context('When authenticated', () => {
     let jakeUser = undefined;
-    const dotEnvValues = dotEnv.config({
-      allowEmptyValues: true,
-      example: path.resolve('../.env.conduit.example'),
-      path: path.resolve('../.env.conduit')
-    });
 
     before('login', async () => {
       const res = await Api()
@@ -170,11 +178,11 @@ describe('Praas REST API', () => {
       const userName = {
         firstName: 'John',
         lastName: 'Doe'
-      }
+      };
       const res = await Api()
-                    .put('/user')
-                    .set('Authorization', `Token ${jakeUser.token}`)
-                    .send({ user: userName });
+        .put('/user')
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ user: userName });
       expect(res.body).to.have.property('user');
       expect(res.body.user).to.have.property('firstName');
       expect(res.body.user.firstName).to.equal(userName.firstName);
@@ -311,7 +319,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.error.errors[0].path).to.equal('suri');
+            expect(res.body.errors[0].suri).to.match(ERROR_PATTERN);
           });
         });
 
@@ -368,7 +376,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.error.errors[0].path).to.equal('suriType');
+            expect(res.body.errors[0].suriType).to.match(ERROR_PATTERN);
           });
         });
 
@@ -438,7 +446,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.error.errors[0].path).to.equal('status');
+            expect(res.body.errors[0].status).to.match(ERROR_PATTERN);
           });
 
           it('should not allow empty status', async () => {
@@ -449,7 +457,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.error.errors[0].path).to.equal('status');
+            expect(res.body.errors[0].status).to.match(ERROR_PATTERN);
           });
 
           it('should allow only \'active\' or \'inactive\'', async () => {
@@ -460,7 +468,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.error.errors[0].path).to.equal('status');
+            expect(res.body.errors[0].status).to.match(ERROR_PATTERN);
           });
         });
 
@@ -473,7 +481,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.error.errors[0].path).to.equal('throttle');
+            expect(res.body.errors[0].throttle).to.match(ERROR_PATTERN);
           });
 
           it('should not allow empty throttle', async () => {
@@ -484,7 +492,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.error.errors[0].path).to.equal('throttle');
+            expect(res.body.errors[0].throttle).to.match(ERROR_PATTERN);
           });
 
           it('should allow only \'true\' or \'false\'', async () => {
@@ -507,7 +515,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.error.errors[0].path).to.equal('racm');
+            expect(res.body.errors[0].racm).to.match(ERROR_PATTERN);
           });
 
           it('should not allow empty racm', async () => {
@@ -518,7 +526,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.error.errors[0].path).to.equal('racm');
+            expect(res.body.errors[0].racm).to.match(ERROR_PATTERN);
           });
 
           it('should allow only valid HTTP methods', async () => {
@@ -529,7 +537,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.error.errors[0].path).to.equal('racm');
+            expect(res.body.errors[0].racm).to.match(ERROR_PATTERN);
           });
         });
 
@@ -542,7 +550,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.error.errors[0].path).to.equal('allowlist');
+            expect(res.body.errors[0].allowlist).to.match(ERROR_PATTERN);
           });
 
           it('should not allow empty allowlist', async () => {
@@ -553,7 +561,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.error.errors[0].path).to.equal('allowlist');
+            expect(res.body.errors[0].allowlist).to.match(ERROR_PATTERN);
           });
 
           it('should not allow invalid IP in allowlist', async function () {
@@ -567,9 +575,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: conduit });
             expect(res.status).to.equal(422);
-            expect(res.body.error.name).to.equal('SequelizeValidationError');
-            expect(res.body.error.errors[0].path).to.equal('allowlist');
-            expect(res.body.error.errors[0].message).to.equal('Invalid ip address specified in allowlist');
+            expect(res.body.errors[0].allowlist).to.match(ERROR_PATTERN);
           });
 
           it('should allow only valid allowlist properties', async () => {
@@ -580,7 +586,7 @@ describe('Praas REST API', () => {
               .set('Authorization', `Token ${jakeUser.token}`)
               .send({ conduit: ct });
             expect(res.status).to.equal(422);
-            expect(res.body.error.errors[0].path).to.equal('allowlist');
+            expect(res.body.errors[0].allowlist).to.match(ERROR_PATTERN);
           });
         });
 
@@ -653,7 +659,7 @@ describe('Praas REST API', () => {
           expect(res2.body.conduit.throttle).to.equal(true);
         });
 
-        it('should set default racm to [] if no racm is set', async () => {
+        it('should set default racm to ["GET"] if no racm is set', async () => {
           const ct = await helpers.fakeConduit();
           delete ct.racm;
           const res = await Api()
@@ -666,10 +672,10 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`)
             .send();
           expect(res2.status).to.equal(200);
-          expect(res2.body.conduit.racm).to.eql([]);
+          expect(res2.body.conduit.racm).to.eql(['GET']);
         });
 
-        it('should set default racm to [] if racm is undefined', async () => {
+        it('should set default racm to ["GET"] if racm is undefined', async () => {
           const ct = await helpers.fakeConduit();
           ct.racm = undefined;
           const res = await Api()
@@ -682,7 +688,7 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`)
             .send();
           expect(res2.status).to.equal(200);
-          expect(res2.body.conduit.racm).to.eql([]);
+          expect(res2.body.conduit.racm).to.eql(['GET']);
         });
 
         it('should set default allowlist to [] if no allowlist is set', async () => {
@@ -795,7 +801,7 @@ describe('Praas REST API', () => {
         await helpers.generateConduits(jakeUser.id, 20);
         const res = await Api()
           .get('/conduits')
-          .query({ start: '520', count: '10' })
+          .query({ start: '720', count: '10' })
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res.status).to.equal(200);
         expect(res.body.conduits.length).to.equal(10);
@@ -805,40 +811,33 @@ describe('Praas REST API', () => {
     context('the PUT method', async function () {
       it('should overwrite an existing record', async function () {
         const conduit = await Api()
-                          .get('/conduits/' + ctId1)
-                          .set('Authorization', `Token ${jakeUser.token}`);
+          .get('/conduits/' + ctId1)
+          .set('Authorization', `Token ${jakeUser.token}`);
         expect(conduit.body).to.haveOwnProperty('conduit');
 
-        const putData = {
-          suri: dotEnvValues.parsed.CONDUIT_SERVICE_URI,
-          suriApiKey: dotEnvValues.parsed.CONDUIT_SERVICE_API_KEY,
-          suriObjectKey: dotEnvValues.parsed.CONDUIT_SERVICE_OBJECT_KEY,
-          suriType: 'Airtable',
-        }
+        const putData = await helpers.fakeConduit();
 
         const res = await Api()
-                      .put('/conduits/' + ctId1)
-                      .set('Authorization', `Token ${jakeUser.token}`)
-                      .send({ conduit: putData });
+          .put('/conduits/' + ctId1)
+          .set('Authorization', `Token ${jakeUser.token}`)
+          .send({ conduit: putData });
         expect(res.status).to.equal(200);
         expect(res.body.conduit).to.not.eql(conduit.body.conduit);
         expect(res.body.conduit.suri).to.equal(putData.suri);
         expect(res.body.conduit.suriApiKey).to.equal(putData.suriApiKey);
         expect(res.body.conduit.suriObjectKey).to.equal(putData.suriObjectKey);
         expect(res.body.conduit.suriType).to.equal(putData.suriType);
-        expect(
-          res.body.conduit.allowlist,
-          res.body.conduit.racm,
-          res.body.conduit.hiddenFormField
-        ).to.be.empty;
+        expect(res.body.conduit.allowlist).to.eql(putData.allowlist);
+        expect(res.body.conduit.racm).to.eql(putData.racm);
+        expect(res.body.conduit.hiddenFormField).to.eql(putData.hiddenFormField);
       });
       it('should not allow CURI to be updated', async function () {
         const conduit = { conduit: { curi: 'td-12345.trickle.cc' } };
         const res = await Api()
-                      .put(`/conduits/${ctId1}`)
-                      .set('Authorization', `Token ${jakeUser.token}`)
-                      .send(conduit);
-        expect(res.status).to.equal(400);
+          .put(`/conduits/${ctId1}`)
+          .set('Authorization', `Token ${jakeUser.token}`)
+          .send(conduit);
+        expect(res.status).to.equal(403);
       });
     });
 
@@ -877,7 +876,7 @@ describe('Praas REST API', () => {
           .patch(`/conduits/${ctId1}`)
           .set('Authorization', `Token ${jakeUser.token}`)
           .send(ct);
-        expect(res.status).to.equal(400);
+        expect(res.status).to.equal(403);
       });
     });
 

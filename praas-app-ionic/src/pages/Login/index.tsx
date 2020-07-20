@@ -28,7 +28,8 @@ interface Props extends RouteComponentProps {
   loginUser: (data: any) => void;
 }
 
-const LoginPage: React.FC<Props> = ({ user, loginUser, history }) => {
+export const LoginPage: React.FC<Props> = (props) => {
+  const { user, loginUser, history } = props;
   const formMethods = useForm({
     defaultValues: { email: '', password: '' },
     validationSchema: signinSchema,
@@ -41,7 +42,9 @@ const LoginPage: React.FC<Props> = ({ user, loginUser, history }) => {
   };
 
   useEffect(() => {
-    if (user.login.loggedIn) history.replace('/');
+    if (user.login.loggedIn) {
+      history.replace('/');
+    }
   }, [user, history]);
 
   return (
@@ -63,11 +66,21 @@ const LoginPage: React.FC<Props> = ({ user, loginUser, history }) => {
                           <IonCol>
                             <FormFieldWithError error={errors.email}>
                               <IonLabel position="floating">Email</IonLabel>
-                              <Input type="email" name="email" value="" />
+                              <Input
+                                type="email"
+                                name="email"
+                                value=""
+                                title="Email"
+                              />
                             </FormFieldWithError>
                             <FormFieldWithError error={errors.password}>
                               <IonLabel position="floating">Password</IonLabel>
-                              <Input type="password" name="password" value="" />
+                              <Input
+                                type="password"
+                                name="password"
+                                value=""
+                                title="Password"
+                              />
                             </FormFieldWithError>
                             <IonButton
                               type="submit"

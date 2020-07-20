@@ -125,13 +125,13 @@ const fakeConduit = (overrides = {}) => {
 
 const processInput = (inp, req, opt, out, err) => {
   if (!inp) {
-    err.conduit = 'Conduit object not provided';
+    err.conduit = 'is required';
     return;
   }
   for (let i = 0; i < req.length; i++) {
     if (typeof inp[req[i]] === 'undefined' || inp[req[i]] === null ||
       ('' + inp[req[i]]).trim() === '') {
-      err[req[i]] = `${req[i]} can't be blank`;
+      err[req[i]] = `${req[i]} cannot be blank`;
     } else {
       out[req[i]] = inp[req[i]];
     };

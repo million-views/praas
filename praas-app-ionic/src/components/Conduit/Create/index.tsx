@@ -37,7 +37,7 @@ const ConduitCreate: React.FC<Props> = ({ addConduit }) => {
             <h1>Create Conduit</h1>
           </IonCardTitle>
         </IonCardHeader>
-        <ConduitForm onSave={handleCreate} conduit={conduit} isCreating />
+        <ConduitForm onSave={handleCreate} conduit={conduit} />
       </IonCard>
     </IonGrid>
   );

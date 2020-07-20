@@ -39,6 +39,26 @@ file can be found )
 follow all steps in [crud-server#Tasks] before you start the
 crud-server), then start the **proxy-server**.
 
+### Testing
+
+Currently, only Airtable functionality is present in the application.
+Hence, the tests depend on some configuration on Airtable for the tests
+to work. Unfortunately, the Airtable API only allows to operate on an
+existing Base and does not allow use to create, update or delete a
+Base itself. So, the following assumptions are made that the tester has
+to have as a pre-requisite to running the test suite.
+
+- tester has an Airtable account
+- tester has setup a Base on their account
+- required details, viz, Airtable API Endpoint, API Key, Service
+  Object URI are entered correctly in the `.env.conduit-user` file
+  ( Refer to the `.env.conduit-user.example` file for example /
+  reference of the keys to be used in `.env.conduit-user` )
+- `SERVICE_OBJECT_KEY` value corresponds to the Airtable Base
+- Airtable Base has at least 3 fields with names - `name`, `email`,
+  `hiddenFormField` ( all field names are case sensitive since they are
+  hard-coded into the test data )
+
 ### Tasks
 
 | task     | command line       | notes                      |

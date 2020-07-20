@@ -21,6 +21,7 @@ import { listConduits } from '../../store/conduit/list';
 import './style.scss';
 import ListItem from '../../components/Conduit/List/ListItem';
 import { deleteConduit } from '../../store/conduit/del';
+import conduit from '../../store/conduit';
 
 interface Props {
   conduits: Array<Conduit>;
@@ -32,7 +33,6 @@ const Home: React.FC<Props> = ({ conduits, listConduits, deleteConduit }) => {
   useEffect(() => {
     listConduits();
   }, []);
-
   return (
     <IonPage>
       <Header />

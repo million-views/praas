@@ -16,19 +16,4 @@ router.use('/', require('./users'));
 // line and everything else should work as before.
 router.use('/conduits', require('./conduits'));
 
-router.use(function (err, req, res, next) {
-  if (err.name === 'ValidationError') {
-    return res.status(422).json({
-      errors: Object.keys(err.errors).reduce(function (errors, key) {
-        errors[key] = err.errors[key].message;
-        return errors;
-      }, {})
-    });
-  }
-
-  if (err.name === 'UnauthorizedError') return res.status(401).json(err);
-
-  return next(err);
-});
-
 module.exports = router;

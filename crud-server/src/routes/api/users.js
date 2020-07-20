@@ -3,14 +3,15 @@ const User = require('../../models').User;
 const auth = require('../auth');
 const helpers = require('../../lib/helpers');
 const passport = require('passport');
+const RestApiError = require('../../lib/error');
 
 router.get('/user', auth.required, async (req, res, next) => {
   try {
     const user = await User.findOne({ where: { id: req.payload.id } });
-    if (!user) return res.sendStatus(401);
+    if (!user) return next(new RestApiError(404, { user: 'not found' }));
     return res.json({ user: user.toAuthJSON() });
   } catch (error) {
-    next(error);
+    next(new RestApiError(500, error));
   }
 });
 
@@ -22,7 +23,9 @@ router.post('/users', async (req, res, next) => {
   const userReqFields = ['firstName', 'email', 'password'];
   const userOptFields = ['lastName'];
   helpers.processInput(req.body.user, userReqFields, userOptFields, user, errors);
-  if (Object.keys(errors).length) return res.status(422).json({ errors });
+  if (Object.keys(errors).length) {
+    return next(new RestApiError(422, errors));
+  }
 
   try {
     const result = await user.save();
@@ -33,10 +36,10 @@ router.post('/users', async (req, res, next) => {
       for (let i = 0; i < fields.length; i++) {
         errors[fields[i]] = dberrors[i].message;
       }
-      return res.status(422).json({ errors });
+      return next(new RestApiError(422, errors));
     } else {
       errors.unknown = `unknown error ${name}, please contact support`;
-      next(errors);
+      return next(new RestApiError(500, errors));
     }
   }
 });
@@ -44,7 +47,9 @@ router.post('/users', async (req, res, next) => {
 // Update User
 router.put('/user', auth.required, function (req, res, next) {
   User.findByPk(req.payload.id).then(function (user) {
-    if (!user) return res.sendStatus(401);
+    if (!user) {
+      return next(new RestApiError(404, { user: 'not found' }));
+    }
 
     const userOptFields = ['firstName', 'lastName', 'password'];
     helpers.processInput(req.body.user, [], userOptFields, user, {});
@@ -53,8 +58,7 @@ router.put('/user', auth.required, function (req, res, next) {
       return res.json({ user: user.toAuthJSON() });
     });
   }).catch((reason) => {
-    console.log('error: ', reason);
-    next(reason);
+    next(new RestApiError(500, reason));
   });
 });
 
@@ -63,7 +67,7 @@ router.post('/users/login', function (req, res, next) {
   passport.authenticate('local', { session: false }, function (err, user, info) {
     if (err) {
       console.log('err: ', err);
-      return next(err);
+      return next(new RestApiError(500, err));
     }
 
     if (user) {
@@ -71,7 +75,7 @@ router.post('/users/login', function (req, res, next) {
       // console.log('user.with.jwt; ', userWithJwt);
       return res.json({ user: userWithJwt });
     } else {
-      return res.status(422).json(info);
+      return next(new RestApiError(422, info));
     }
   })(req, res, next);
 });

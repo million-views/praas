@@ -15,6 +15,15 @@ TBD...
 >    where .env-example file can be found. Fill the values of .env file
 >    before you start the crud-server or the proxy-server.
 
+## Debugging
+
+Error responses and stack traces can be logged to the console by setting
+the `DUMP_ERROR_RESPONSE` and `DUMP_STACK_TRACE` environment variables.
+The features can be enabled by prepending the environment variable with
+the `npm` task command.
+
+`DUMP_ERROR_RESPONSE=1 DUMP_STACK_TRACE=1 npm run <task-name>`
+
 ## Developer Tasks
 |  task                                           | command line                        |
 |:------------------------------------------------|:------------------------------------|
@@ -82,7 +91,10 @@ JSON: containing an array of objects with the following properties:
 
 #### racm
 JSON: containing an array of allowed HTTP methods. The accepted 
-methods are:  GET, PUT, POST, PATCH, DELETE.
+methods are:  GET, PUT, POST, PATCH, DELETE. 
+
+At least one method must be present in this array. The default value for
+this field is set to `['GET']` if this field is not present in the request.
 
 TBD: add reference to the conduits API here.
 
