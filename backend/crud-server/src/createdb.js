@@ -1,4 +1,4 @@
-const { db, User } = require('../models');
+const { db, User } = require('./models');
 
 db.sync({ force: true }).then(() => {
   const user = new User();

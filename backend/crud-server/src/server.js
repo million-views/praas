@@ -5,9 +5,11 @@ const session = require('express-session');
 const cors = require('cors');
 const dotenv = require('dotenv-safe');
 
-const conf = require('./config');
+const conf = require('../../config').system.settings;
 const models = require('./models');
-const RestApiError = require('./lib/error');
+const RestApiError = require('../../lib/error');
+const helpers = require('../../lib/helpers');
+
 const { UnauthorizedError } = require('express-jwt');
 
 require('./passport');
@@ -62,6 +64,7 @@ console.log(
 app.use(function (err, req, res, next) {
   // request path is the flow origin that led to the error
   err.path = req.path;
+  err.query = req.query;
 
   // fail fast: unknown error types are unexpected here.
   if (!(err instanceof RestApiError)) {
@@ -110,39 +113,12 @@ app.use(function (err, req, res, next) {
   res.json({ errors });
 });
 
-// Returns proxy server user object (with credentials filled in from .env file)
-// TODO: move this to a common library accessible to both proxy and crud servers
-function getProxyServerCredentials() {
-  let proxy_credentials = undefined;
-  try {
-    // add proxy-server user... this is temporary and will go away when we
-    // integrate with OAuth2 and support client credentials grant flow...
-    proxy_credentials = dotenv.config({
-      allowEmptyValues: true,
-      example: path.resolve('../.env-example'),
-      path: path.resolve('../.env'),
-    });
-    // console.log(proxy_credentials);
-  } catch (e) {
-    console.log('Unexpected... ', e);
-    process.exit(2);
-  }
-
-  return {
-    user: {
-      firstName: 'Proxy',
-      lastName: 'Server',
-      email: proxy_credentials.parsed.PROXY_SERVER_EMAIL,
-      password: proxy_credentials.parsed.PROXY_SERVER_PASSWORD
-    }
-  };
-}
 
 // launch the server and listen only when running as a standalone process
 if (!module.parent) {
   models.db.sync({ force: false }).then(
     async () => {
-      const proxyUser = getProxyServerCredentials().user;
+      const proxyUser = helpers.getProxyServerCredentials().user;
       let user = new models.User();
       Object.assign(user, proxyUser);
       try {
@@ -161,15 +137,19 @@ if (!module.parent) {
       // set this user as a privileged client (i.e our proxy server) in app local
       // so we can check for privileged access in the routes...
       app.locals.proxyUser = user;
-      console.log('app.locals.proxyUser -> email: ', app.locals.proxyUser.email, ' id: ', app.locals.proxyUser.id);
+      console.log(
+        'app.locals.proxyUser -> email: ', 
+        app.locals.proxyUser.email, ' id: ', 
+        app.locals.proxyUser.id
+      );
 
       // start listening iff all good... we get here only if the database exists
       // and proxy user is either created anew or already exists.
-      app.listen(conf.port, async () => {
-        console.log(`Praas API server is listening on port ${conf.port}`);
+      app.listen(conf.apiServerPort, async () => {
+        console.log(`Conduits API server is listening on port ${conf.apiServerPort}`);
       });
     }
   );
 }
 
-module.exports = { app, port: conf.port, models }; // for testing
+module.exports = { app, port: conf.apiServerPort }; // for testing

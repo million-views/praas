@@ -1,6 +1,0 @@
-# We remain on the bleeding edge until we get closer
-# to beta ready
-package-lock.json
-
-# VSCode IDE settings
-.vscode

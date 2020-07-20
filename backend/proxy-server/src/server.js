@@ -2,12 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const cors = require('cors');
-const errorhandler = require('errorhandler');
 const fetch = require('node-fetch');
 
-const conf = require('./config');
-const helpers = require('./lib/helpers');
-const PraasAPI = require('./lib/praas');
+const conf = require('../../config').system.settings;
+const helpers = require('../../lib/helpers');
+const PraasAPI = require('../../lib/praas');
 
 const upload = multer();
 const app = express();
@@ -134,7 +133,6 @@ if (conf.production) {
   });
 } else {
   // in development mode, use error handler and print stacktrace
-  app.use(errorhandler());
   app.use(function (err, req, res, next) {
     console.log(err.stack);
     res.status(err.status || 500);
@@ -167,7 +165,12 @@ async function fetchConduits(user) {
       app.locals.cmap.set(conduit.curi, conduit);
     }
 
-    console.log(`${helpers.printTime()} : ${app.locals.cmap.size} active conduits`);
+    const timestamp = new Date()
+      .toISOString()
+      .replace('T', ' ')
+      .substring(0, 19);
+
+    console.log(`${timestamp} : ${app.locals.cmap.size} active conduits`);
   } catch (e) {
     console.log('unexpected... ', e);
   }
@@ -192,9 +195,10 @@ if (!module.parent) {
 
   // start listening only after logging in to the resource server...
   // if we can't login then there's no point in running the proxy
-  app.listen(conf.port, () => {
-    console.log(`Conduits proxy server is listening on port ${conf.port}`);
-  });
+  app.listen(
+    conf.gwServerPort, 
+    () => console.log(`Conduits proxy server is listening on port ${conf.gwServerPort}`)
+  );
 }
 
 module.exports = { app };

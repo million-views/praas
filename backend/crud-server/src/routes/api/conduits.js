@@ -2,10 +2,10 @@ const router = require('express').Router();
 const { Op } = require('sequelize');
 
 const auth = require('../auth');
-const helpers = require('../../lib/helpers');
-const { System } = require('../../models');
+const helpers = require('../../../../lib/helpers');
+const conf = require('../../../../config');
 const { Conduit } = require('../../models');
-const RestApiError = require('../../lib/error');
+const RestApiError = require('../../../../lib/error');
 
 const conduitReqdFields = ['suriApiKey', 'suriType', 'suri'];
 
@@ -25,7 +25,7 @@ router.post('/', auth.required, async function (req, res, next) {
   const errors = {};
 
   conduit.userId = req.payload.id;
-  conduit.curi = await helpers.makeCuri(System.cconf.settings.prefix);
+  conduit.curi = await helpers.makeCuri(conf.conduit.settings.prefix);
 
   helpers.processInput(
     await req.body.conduit,
@@ -47,7 +47,7 @@ router.post('/', auth.required, async function (req, res, next) {
     }
     // In case the generated curi is a duplicate, we try once more
     if (error.name === 'SequelizeUniqueConstraintError') {
-      conduit.curi = await helpers.makeCuri(System.cconf.settings.prefix);
+      conduit.curi = await helpers.makeCuri(conf.conduit.settings.prefix);
       await conduit.save();
     } else {
       return next(new RestApiError(500, error));
@@ -83,31 +83,30 @@ router.get('/:id', auth.required, async (req, res, next) => {
 });
 
 // Get all conduits + batch (start & count)
-// TODO: add ACL/scope check when integrated with OAuth2
-// For now we are hacking to support proxy-server functionality
-// without adding complexity
+// TODO:
+// - add ACL/scope check when integrated with OAuth2; for now we are hacking
+//   to support proxy-server functionality without adding complexity
+// - revisit to make sure we catch all nuances of proper pagination
+// - should we add a limit when there is no start or count?
 router.get('/', auth.required, async (req, res, next) => {
+  const query = req.query;
   try {
     let conduits = undefined;
-    if (
-      typeof req.query.start !== 'undefined' &&
-      typeof req.query.count !== 'undefined'
-    ) {
+    const start = Number(query.start), count = Number(query.count);
+    const proxyUser = req.app.locals.proxyUser;
+
+    if (Number.isSafeInteger(start) && Number.isSafeInteger(count)) {
       conduits = await Conduit.findAll({
         where: {
           id: {
-            [Op.gte]: req.query.start,
-            // sgk: Prefix + to convert from string to number
-            [Op.lt]: +req.query.start + +req.query.count,
+            [Op.gte]: start,
+            [Op.lt]: start + count,
           },
           userId: req.payload.id,
         },
       });
     } else {
-      if (
-        req.app.locals.proxyUser &&
-        req.app.locals.proxyUser.id === req.payload.id
-      ) {
+      if (proxyUser && proxyUser.id === req.payload.id) {
         // fetch conduits in active status; check status enums in model.js
         conduits = await Conduit.findAll({ where: { status: 'active' } });
       } else {

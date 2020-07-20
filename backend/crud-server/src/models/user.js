@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const config = require('../config');
+const config = require('../../../config');
 
 module.exports = (db, DataTypes) => {
   const User = db.define('user', {
@@ -57,12 +57,13 @@ module.exports = (db, DataTypes) => {
     const today = new Date();
     const exp = new Date(today);
     exp.setDate(today.getDate() + 60);
-
-    return jwt.sign({
+    const payload = {
       id: this.id,
       email: this.email,
       exp: parseInt(exp.getTime() / 1000),
-    }, config.secret);
+    };
+
+    return jwt.sign(payload, config.system.settings.secret);
   };
 
   User.prototype.toAuthJSON = function () {

@@ -2,7 +2,8 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
 const server = require('./server');
-const helpers = require('./lib/helpers');
+const helpers = require('../../lib/helpers');
+const conf = require('../../config').test.settings;
 
 const expect = chai.expect;
 chai.use(chaiHttp);
@@ -756,28 +757,23 @@ describe('Praas REST API', () => {
         });
       });
 
-      it('should allow user to add new service endpoint', async () => {
-        // Create two conduits, one for update and one for delete
-        // as tests are running async, update fails if record is deleted ahead
-        const ct1 = helpers.fakeConduit();
-        const res1 = await Api()
-          .post('/conduits')
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send({ conduit: ct1 });
-        expect(res1.status).to.equal(201);
-        expect(res1.body.conduit).to.have.property('id');
-        ctId1 = res1.body.conduit.id;
-        expect(ctId1).to.be.not.null;
+      it('should allow user to add new conduits', async () => {
+        // Add 25 conduits for testing: update, delete and pagination.. since
+        // a REST layer test should be isolated from the DATA layer, we don't
+        // directly access the model to insert these records.
+        const conduits = [];
+        for (let i = 0, imax=conf.conduitsCount; i < imax; i++) {
+          const res = await Api()
+            .post('/conduits')
+            .set('Authorization', `Token ${jakeUser.token}`)
+            .send({ conduit: helpers.fakeConduit() });
+          expect(res.status).to.equal(201);
+          expect(res.body.conduit).to.have.property('id');
+          expect(res.body.conduit.id).to.be.not.null;
+          conduits.push(res.body.conduit.id);
+        }
 
-        const ct2 = helpers.fakeConduit();
-        const res2 = await Api()
-          .post('/conduits')
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send({ conduit: ct2 });
-        expect(res2.status).to.equal(201);
-        expect(res2.body.conduit).to.have.property('id');
-        ctId2 = res2.body.conduit.id;
-        expect(ctId2).to.be.not.null;
+        [ctId1, ctId2] = conduits;
       });
     });
 
@@ -798,13 +794,12 @@ describe('Praas REST API', () => {
       });
 
       it('should allow user to fetch multiple service endpoints', async () => {
-        await helpers.generateConduits(jakeUser.id, 20);
         const res = await Api()
           .get('/conduits')
-          .query({ start: '720', count: '10' })
+          .query({ start: ctId2+1, count: conf.conduitsPerPage })
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res.status).to.equal(200);
-        expect(res.body.conduits.length).to.equal(10);
+        expect(res.body.conduits.length).to.equal(conf.conduitsPerPage);
       });
     });
 
@@ -831,6 +826,7 @@ describe('Praas REST API', () => {
         expect(res.body.conduit.racm).to.eql(putData.racm);
         expect(res.body.conduit.hiddenFormField).to.eql(putData.hiddenFormField);
       });
+
       it('should not allow CURI to be updated', async function () {
         const conduit = { conduit: { curi: 'td-12345.trickle.cc' } };
         const res = await Api()

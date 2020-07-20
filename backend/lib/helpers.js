@@ -1,6 +1,9 @@
+const path = require('path');
+const dotenv = require('dotenv-safe');
 const faker = require('faker');
+
+
 const config = require('../config');
-const models = require('../models');
 
 const customAlphabet = require('nanoid/async').customAlphabet;
 
@@ -23,10 +26,47 @@ const customAlphabet = require('nanoid/async').customAlphabet;
 //
 
 const nanoid = customAlphabet(
-  models.System.cconf.settings.alphabet,
-  models.System.cconf.settings.uccount
+  config.conduit.settings.alphabet,
+  config.conduit.settings.uccount
 );
-const domain = models.System.cconf.settings.domain;
+const domain = config.conduit.settings.domain;
+
+// Given an array of strings, this function returns all unique combinations
+// of the input array elements. More generally this is a powerset generator
+// minus the empty subset.
+// 
+// See:
+// - https://www.mathsisfun.com/sets/power-set.html
+// - https://codereview.stackexchange.com/questions/7001/generating-all-combinations-of-an-array
+//
+// function powerset(array) {   
+//   const result = [];
+//   const f = function(prefix=[], array) {
+//     for (var i = 0; i < array.length; i++) {
+//       result.push([...prefix,array[i]]);
+//       f([...prefix,array[i]], array.slice(i + 1));
+//     }
+//    }   
+//    f('', array);   
+//    return result;
+// }
+
+function powerset( list ){
+  const set = [],
+      listSize = list.length,
+      combinationsCount = (1 << listSize);
+
+  for (let i = 1; i < combinationsCount ; i++ ){
+      const combination = [];
+      for (var j=0;j<listSize;j++){
+          if ((i & (1 << j))){
+              combination.push(list[j]);
+          }
+      }
+      set.push(combination);
+  }
+  return set;
+}
 
 // Construct a custom uri...
 // Note once a low level function is asynchronous there is no reasonable way
@@ -43,22 +83,6 @@ const makeCuri = async (prefix) => {
   return uri;
 };
 
-const generateUsers = async (count = 5) => {
-  const fups = [];
-  for (let i = 0; i < count; i++) fups.push(fakeUserProfile());
-  return models.User.bulkCreate(fups);
-};
-
-const generateConduits = async (userId, count = 50) => {
-  const fcts = [];
-  for (let i = 0; i < count; i++) {
-    const curi = await makeCuri('td');
-    fcts.push(fakeConduit({ curi }));
-  }
-  for (const fct of fcts) fct.userId = userId;
-  return models.Conduit.bulkCreate(fcts);
-};
-
 const fakeUserProfile = (overrides = {}) => {
   const firstName = faker.name.firstName();
   const lastName = faker.name.lastName();
@@ -71,37 +95,27 @@ const fakeUserProfile = (overrides = {}) => {
     ...overrides,
   };
 
-  const password = baseUser.password || firstName + config.testPwdSuffix;
+  const password = baseUser.password || firstName + config.passwordSuffix;
 
   return {
     ...baseUser, password
   };
 };
 
+// frequently used
+const typesArr = ['Google Sheets', 'Airtable', 'Smartsheet'];
+const ipstatArr = ['active', 'inactive'];
+const hfffieldArr = ['partner', 'campaign', 'userName', 'department', 'accountName'];
+const hffPolicyArr = ['drop-if-filled', 'pass-if-match'];
+const accessArrSrc = powerset(['GET', 'POST', 'DELETE', 'PUT', 'PATCH']);
+
 const fakeConduit = (overrides = {}) => {
-  const typesArr = ['Google Sheets', 'Airtable', 'Smartsheet'];
-  const ipstatArr = ['active', 'inactive'];
-  const hfffieldArr = ['partner', 'campaign', 'userName', 'department', 'accountName'];
-  const hffPolicyArr = ['drop-if-filled', 'pass-if-match'];
-  const accessArrSrc = [
-    ['GET'], ['POST'], ['DELETE'], ['PUT'], ['PATCH'],
-    ['GET', 'POST'], ['GET', 'DELETE'], ['GET', 'PUT'], ['GET', 'PATCH'],
-    ['POST', 'DELETE'], ['POST', 'PUT'], ['POST', 'PATCH'],
-    ['DELETE', 'PUT'], ['DELETE', 'PATCH'], ['PUT', 'PATCH'],
-    ['GET', 'POST', 'DELETE'], ['GET', 'POST', 'PUT'], ['GET', 'POST', 'PATCH'],
-    ['GET', 'DELETE', 'PUT'], ['GET', 'DELETE', 'PATCH'], ['GET', 'PUT', 'PATCH'],
-    ['POST', 'DELETE', 'PUT'], ['POST', 'DELETE', 'PATCH'], ['POST', 'PUT', 'PATCH'],
-    ['DELETE', 'PUT', 'PATCH'], ['GET', 'POST', 'DELETE', 'PUT'],
-    ['GET', 'POST', 'DELETE', 'PATCH'], ['GET', 'POST', 'PUT', 'PATCH'],
-    ['GET', 'DELETE', 'PUT', 'PATCH'], ['POST', 'DELETE', 'PUT', 'PATCH'],
-    ['GET', 'POST', 'DELETE', 'PUT', 'PATCH']];
   const accessArr = accessArrSrc[Math.floor(Math.random() * accessArrSrc.length)];
   const conduit = {
     suriApiKey: faker.random.uuid(),
     suriType: typesArr[Math.floor(Math.random() * typesArr.length)],
     suriObjectKey: faker.lorem.word(),
     suri: faker.internet.url(),
-    // curi: 'td',
     allowlist: [{
       ip: faker.internet.ip(),
       status: ipstatArr[Math.floor(Math.random() * ipstatArr.length)],
@@ -143,6 +157,35 @@ const processInput = (inp, req, opt, out, err) => {
   };
 };
 
+// Returns proxy server user object (with credentials filled in from .env
+// file). Aborts on error by design. NOTE: do not fix to recover!
+function getProxyServerCredentials() {
+  let proxy_credentials = undefined;
+  try {
+    // add proxy-server user... this is temporary and will go away when we
+    // integrate with OAuth2 and support client credentials grant flow...
+    proxy_credentials = dotenv.config({
+      allowEmptyValues: true,
+      example: path.resolve('.env-example'),
+      path: path.resolve('.env'),
+    });
+    // console.log(proxy_credentials);
+  } catch (e) {
+    console.log('unexpected... ', e);
+    process.exit(100);
+  }
+
+  return {
+    user: {
+      firstName: 'Proxy',
+      lastName: 'Server',
+      email: proxy_credentials.parsed.PROXY_SERVER_EMAIL,
+      password: proxy_credentials.parsed.PROXY_SERVER_PASSWORD
+    }
+  };
+}
+
 module.exports = {
-  fakeUserProfile, fakeConduit, generateUsers, generateConduits, processInput, makeCuri
+  fakeUserProfile, fakeConduit, processInput, 
+  makeCuri, getProxyServerCredentials
 };

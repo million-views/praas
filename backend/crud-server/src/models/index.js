@@ -51,6 +51,4 @@ const db = new Sequelize('development', null, null, {
 
 const User = require('./user')(db, Sequelize.DataTypes);
 const Conduit = require('./conduit')(db, Sequelize.DataTypes);
-const System = require('./system');
-
-module.exports = { db, User, Conduit, System };
+module.exports = { db, User, Conduit };

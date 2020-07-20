@@ -2,16 +2,32 @@ const fs = require('fs');
 const path = require('path');
 const expect = require('chai').expect;
 const jwt = require('jsonwebtoken');
-const config = require('./config');
+const config = require('../../config');
 const models = require('./models');
-const helpers = require('./lib/helpers');
+const helpers = require('../../lib/helpers');
 const dotEnv = require('dotenv-safe');
 
 const dotEnvValues = dotEnv.config({
   allowEmptyValues: true,
-  example: path.resolve('../.env.conduit-user.example'),
-  path: path.resolve('../.env.conduit-user')
+  example: path.resolve('.env.conduit-user.example'),
+  path: path.resolve('.env.conduit-user')
 });
+
+const generateUsers = async (count = 5) => {
+  const fups = [];
+  for (let i = 0; i < count; i++) fups.push(helpers.fakeUserProfile());
+  return models.User.bulkCreate(fups);
+};
+
+const generateConduits = async (userId, count = 50) => {
+  const fcts = [];
+  for (let i = 0; i < count; i++) {
+    const curi = await helpers.makeCuri('td');
+    fcts.push(helpers.fakeConduit({ curi }));
+  }
+  for (const fct of fcts) fct.userId = userId;
+  return models.Conduit.bulkCreate(fcts);
+};
 
 /**
  * Unit tests for the database model
@@ -45,7 +61,9 @@ describe('PraaS', () => {
 
     it('includes checks for not null constraints of critical fields', async () => {
       try {
-        const fakeUserProfile2 = helpers.fakeUserProfile({ firstName: null, lastName: null, email: null, password: null });
+        const fakeUserProfile2 = helpers.fakeUserProfile({
+          firstName: null, lastName: null, email: null, password: null
+        });
         const user2 = models.User.build({ ...fakeUserProfile2 });
         await user2.save();
       } catch ({ name, ...rest }) {
@@ -120,7 +138,7 @@ describe('PraaS', () => {
       const authJSON = user.toAuthJSON();
       expect(authJSON).to.have.property('token');
 
-      const jwtDecoded = jwt.verify(authJSON.token, config.secret);
+      const jwtDecoded = jwt.verify(authJSON.token, config.system.settings.secret);
       expect(jwtDecoded.email).to.equal(user.email);
       expect(jwtDecoded.id).to.equal(user.id);
     });
@@ -204,17 +222,17 @@ describe('PraaS', () => {
       curis.noIncludeConduit = proxyNoIncludeConduit.curi;
 
       fs.writeFileSync(
-        path.resolve('../.test-data-curi.json'),
+        path.resolve('.test-data-curi.json'),
         JSON.stringify(curis, null, 2)
       );
 
       // flood user with random conduits
-      helpers.generateConduits(user.id, 200);
+      generateConduits(user.id, 200);
 
       // generate random users and conduits for integration test
-      users = await helpers.generateUsers(10);
+      users = await generateUsers(10);
       for (let i = 0; i < 10; i++) {
-        await helpers.generateConduits(users[i].id);
+        await generateConduits(users[i].id);
       }
     });
 
@@ -227,7 +245,7 @@ describe('PraaS', () => {
       expect(objCdt).to.be.an('object');
       expect(objCdt).to.have.property('suriApiKey');
       expect(objCdt).to.have.property('suriType');
-      expect(objCdt.curi.length).to.equal(models.System.cconf.settings.curiLen);
+      expect(objCdt.curi.length).to.equal(config.conduit.settings.curiLen);
     });
 
     context('testing curi field...', () => {

@@ -11,7 +11,7 @@ const proxyServerURL = 'http://localhost:5000';
 const proxyServer = () => chai.request(proxyServerURL);
 
 // Test Data
-const testConduits = JSON.parse(fs.readFileSync(path.resolve('../.test-data-curi.json')));
+const testConduits = JSON.parse(fs.readFileSync(path.resolve('.test-data-curi.json')));
 const dropConduit = testConduits.dropConduit;
 const passConduit = testConduits.passConduit;
 const noIncludeConduit = testConduits.noIncludeConduit;
@@ -247,7 +247,7 @@ describe('Testing Proxy Server...', async () => {
               email: 'third@last.com',
               hiddenFormField: 'hidden-form-field-value',
             }
-          }
+          },
         ]
       };
       const res = await proxyServer()

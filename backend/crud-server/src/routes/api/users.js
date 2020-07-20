@@ -1,9 +1,9 @@
 const router = require('express').Router();
 const User = require('../../models').User;
 const auth = require('../auth');
-const helpers = require('../../lib/helpers');
+const helpers = require('../../../../lib/helpers');
 const passport = require('passport');
-const RestApiError = require('../../lib/error');
+const RestApiError = require('../../../../lib/error');
 
 router.get('/user', auth.required, async (req, res, next) => {
   try {
