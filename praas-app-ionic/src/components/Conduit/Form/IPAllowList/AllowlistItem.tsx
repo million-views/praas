@@ -10,12 +10,15 @@ import {
   IonCardHeader,
   IonCardContent,
   IonCardSubtitle,
+  IonRippleEffect,
+  IonIcon,
+  IonItem,
 } from '@ionic/react';
-import { FieldError } from 'react-hook-form';
 import Input from '../../../../components/Form/Input';
 import RadioGroup from '../../../../components/Form/RadioGroup';
 import FormFieldWithError from '../../../../components/FormFieldWithError';
 import { useFormContext } from 'react-hook-form';
+import { closeOutline } from 'ionicons/icons';
 
 type Props = {
   index: number;
@@ -28,6 +31,10 @@ const AllowListItem = ({ index, item, prefix, onDelete }: Props) => {
 
   return (
     <IonCard className="ion-no-margin ion-margin-bottom">
+      <IonItem lines="none" className="ion-activatable ion-float-right">
+        <IonIcon icon={closeOutline} onClick={() => onDelete(index)} />
+      </IonItem>
+
       <IonCardHeader>
         <IonCardSubtitle>IP Details</IonCardSubtitle>
       </IonCardHeader>
@@ -48,9 +55,6 @@ const AllowListItem = ({ index, item, prefix, onDelete }: Props) => {
                 title="Comment"
               />
             </FormFieldWithError>
-            <IonButton type="button" onClick={() => onDelete(index)}>
-              X
-            </IonButton>
           </IonCol>
         </IonRow>
         <IonRow className="ip-allowlist-status">

@@ -57,7 +57,7 @@ const Group = ({
               <Radio
                 value={option.value}
                 label={option.label}
-                className={labelClassName}
+                className={`ion-padding-start ${labelClassName}`}
               />
             </IonCol>
           );
