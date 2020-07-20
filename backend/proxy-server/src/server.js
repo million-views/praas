@@ -196,7 +196,7 @@ if (!module.parent) {
   // start listening only after logging in to the resource server...
   // if we can't login then there's no point in running the proxy
   app.listen(
-    conf.gwServerPort, 
+    conf.gwServerPort,
     () => console.log(`Conduits proxy server is listening on port ${conf.gwServerPort}`)
   );
 }

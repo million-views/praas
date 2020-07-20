@@ -5,7 +5,7 @@ const auth = require('../auth');
 const helpers = require('../../../../lib/helpers');
 const conf = require('../../../../config');
 const { Conduit } = require('../../models');
-const RestApiError = require('../../../../lib/error');
+const { RestApiError } = require('../../../../lib/error');
 
 const conduitReqdFields = ['suriApiKey', 'suriType', 'suri'];
 

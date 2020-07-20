@@ -10,8 +10,8 @@ module.exports = {
     description: 'Test configuration settings',
     settings: {
       passwordSuffix: '123', // a test user's is name+suffix
-      conduitsCount: 25,     // create N conduits for integration test
-      conduitsPerPage: 10,   // expect M conduits in response
+      conduitsCount: 25, // create N conduits for integration test
+      conduitsPerPage: 10, // expect M conduits in response
     }
   },
   system: {

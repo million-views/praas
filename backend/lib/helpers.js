@@ -2,7 +2,6 @@ const path = require('path');
 const dotenv = require('dotenv-safe');
 const faker = require('faker');
 
-
 const config = require('../config');
 
 const customAlphabet = require('nanoid/async').customAlphabet;
@@ -34,36 +33,36 @@ const domain = config.conduit.settings.domain;
 // Given an array of strings, this function returns all unique combinations
 // of the input array elements. More generally this is a powerset generator
 // minus the empty subset.
-// 
+//
 // See:
 // - https://www.mathsisfun.com/sets/power-set.html
 // - https://codereview.stackexchange.com/questions/7001/generating-all-combinations-of-an-array
 //
-// function powerset(array) {   
+// function powerset(array) {
 //   const result = [];
 //   const f = function(prefix=[], array) {
 //     for (var i = 0; i < array.length; i++) {
 //       result.push([...prefix,array[i]]);
 //       f([...prefix,array[i]], array.slice(i + 1));
 //     }
-//    }   
-//    f('', array);   
+//    }
+//    f('', array);
 //    return result;
 // }
 
-function powerset( list ){
+function powerset(list) {
   const set = [],
-      listSize = list.length,
-      combinationsCount = (1 << listSize);
+    listSize = list.length,
+    combinationsCount = (1 << listSize);
 
-  for (let i = 1; i < combinationsCount ; i++ ){
-      const combination = [];
-      for (var j=0;j<listSize;j++){
-          if ((i & (1 << j))){
-              combination.push(list[j]);
-          }
+  for (let i = 1; i < combinationsCount; i++) {
+    const combination = [];
+    for (let j=0; j<listSize; j++) {
+      if ((i & (1 << j))) {
+        combination.push(list[j]);
       }
-      set.push(combination);
+    }
+    set.push(combination);
   }
   return set;
 }
@@ -186,6 +185,6 @@ function getProxyServerCredentials() {
 }
 
 module.exports = {
-  fakeUserProfile, fakeConduit, processInput, 
+  fakeUserProfile, fakeConduit, processInput,
   makeCuri, getProxyServerCredentials
 };

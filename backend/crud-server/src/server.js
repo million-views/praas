@@ -3,14 +3,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const cors = require('cors');
-const dotenv = require('dotenv-safe');
 
 const conf = require('../../config').system.settings;
 const models = require('./models');
-const RestApiError = require('../../lib/error');
+const { RestApiErrorHandler } = require('../../lib/error');
 const helpers = require('../../lib/helpers');
-
-const { UnauthorizedError } = require('express-jwt');
 
 require('./passport');
 
@@ -56,63 +53,13 @@ app.use(require('./routes'));
 //   next(err);
 // });
 
-// error handling...
-// note: error handler should be registered after all routes have been registered
 console.log(
   `Conduits resource server is in ${conf.production ? 'production' : 'development'} mode...`
 );
-app.use(function (err, req, res, next) {
-  // request path is the flow origin that led to the error
-  err.path = req.path;
-  err.query = req.query;
 
-  // fail fast: unknown error types are unexpected here.
-  if (!(err instanceof RestApiError)) {
-    if (err instanceof UnauthorizedError) {
-      // NOTE: UnauthorizedError comes from JWT middleware which can
-      // only be intercepted here because it throws on error. The stack
-      // trace from it is pretty much useless, so we discard it. And add
-      // our own errors object.
-
-      // We copy out of it because deleting .stack here doesn't work... also
-      // for the sake of consistency we transform UnauthorizedError into
-      // RestApiError.
-      const { message, status, path } = err;
-      err = Object.setPrototypeOf({
-        message, status, path,
-        errors: { authorization: 'token not found or malformed' }
-      }, Object.getPrototypeOf(new RestApiError(status)));
-    } else {
-      const cname = err.constructor.name;
-      console.error(
-        `expected RestApiError or UnauthorizedError, got ${cname}; bailing!`,
-        err
-      );
-      process.exit(1);
-    }
-  }
-
-  // make sure stack trace doesn't leak back to client
-  const stack = err.stack;
-  delete err.stack; // <- this works because RestApiError is ours?
-
-  // on mac/linux run with:
-  // DUMP_ERROR_RESPONSE=1 npm run `task`
-  if (process.env.DUMP_ERROR_RESPONSE) {
-    console.error(err);
-  }
-
-  if (process.env.DUMP_STACK_TRACE && stack) {
-    // on mac/linux run with:
-    // DUMP_STACK_TRACE=1 npm run `task`
-    console.error(stack);
-  }
-
-  const errors = err.errors;
-  res.status(err.status || 500);
-  res.json({ errors });
-});
-
+// error handling...
+// note: error handler should be registered after all routes have been registered
+app.use(RestApiErrorHandler);
 
 // launch the server and listen only when running as a standalone process
 if (!module.parent) {
@@ -138,8 +85,8 @@ if (!module.parent) {
       // so we can check for privileged access in the routes...
       app.locals.proxyUser = user;
       console.log(
-        'app.locals.proxyUser -> email: ', 
-        app.locals.proxyUser.email, ' id: ', 
+        'app.locals.proxyUser -> email: ',
+        app.locals.proxyUser.email, ' id: ',
         app.locals.proxyUser.id
       );
 
