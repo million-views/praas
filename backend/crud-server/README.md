@@ -1,51 +1,14 @@
-# PraaS Back end
-REST server to manage *conduits*. A conduit is a handle to a RESTful 
-service endpoint.
+# PraaS Resource Server
+REST server to manage *users* and *conduits*. 
 
-# Features
-TBD...
-
-# Development
-> NOTE: <br>
-> 1. Integration tests require bootstrap data created by unit tests. So,
->    `npm run test-model` first before testing the REST api. Alternatively
->    you can also run `npm run createdb`.
->
-> 2. Create .env file at the root of praas folder, at the same location
->    where .env-example file can be found. Fill the values of .env file
->    before you start the crud-server or the proxy-server.
-
-## Debugging
-
-Error responses and stack traces can be logged to the console by setting
-the `DUMP_ERROR_RESPONSE` and `DUMP_STACK_TRACE` environment variables.
-The features can be enabled by prepending the environment variable with
-the `npm` task command.
-
-`DUMP_ERROR_RESPONSE=1 DUMP_STACK_TRACE=1 npm run <task-name>`
-
-## Developer Tasks
-|  task                                           | command line                        |
-|:------------------------------------------------|:------------------------------------|
-| Install dependencies                            |`npm install`                        |
-| Run linter on `src`                             |`npm run lint`                       |
-| Fix lint errors                                 |`npm run lint:fix`                   |
-| Run data layer tests                            |`npm run test-model`                 |
-| Run data layer tests with code coverage         |`npm run test-model-with-coverage`   |
-| Run REST api tests                              |`npm run test-rest`                  |
-| Run REST api tests with code coverage           |`npm run test-rest-with-coverage`    |
-| Run conduits resource server                    |`npm run start`                      |
-| Init db with user: admin@praas.com, pwd: praas  |`npm run createdb`                   |
-
-# Praas Data Model
+# Data Model
 Consists of the three entities: System, User, Conduit. These entities are
 currently not normalized and subject to breaking design changes.
 
 ## System Table
 System stores all configuration related settings and their values.
-For now storing the config in json format as there are
-only few values. Will store as database entity when more values need
-to be stored.
+For now storing the config is stored in a js file for convenience. At some
+point we may move this information into a database.
 
 ## User Table
 User stores details of registered users. Users can have zero or more conduits.
