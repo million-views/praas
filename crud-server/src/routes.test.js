@@ -142,9 +142,10 @@ describe('Praas REST API', () => {
   });
 
   context('When authenticated', () => {
-    let jakeUser = undefined;
+    let jakeUser, ctId1, ctId2 = undefined;
 
-    before('login', async () => {
+    before('login and add new service endpoints for PUT, PATCH and DELETE', async function () {
+      // login
       const res = await Api()
         .post('/users/login')
         .send({
@@ -161,6 +162,29 @@ describe('Praas REST API', () => {
       const jwtDecoded = jwt.decode(jakeUser.token);
       expect(jwtDecoded.email).to.equal(jakeUser.email);
       expect(jwtDecoded.id).to.equal(jakeUser.id);
+
+      // create two conduits service endpoints
+      const ct1 = helpers.fakeConduit();
+      const res1 = await Api()
+        .post('/conduits')
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ conduit: ct1 });
+      expect(res1.status).to.equal(201);
+      expect(res1.body).to.have.property('conduit');
+      expect(res1.body.conduit).to.have.property('id');
+      ctId1 = res1.body.conduit.id;
+      expect(ctId1).to.be.not.null;
+
+      const ct2 = helpers.fakeConduit();
+      const res2 = await Api()
+        .post('/conduits')
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ conduit: ct2 });
+      expect(res2.status).to.equal(201);
+      expect(res2.body).to.have.property('conduit');
+      expect(res2.body.conduit).to.have.property('id');
+      ctId2 = res2.body.conduit.id;
+      expect(ctId2).to.be.not.null;
     });
 
     after('logout', async () => {
@@ -189,8 +213,6 @@ describe('Praas REST API', () => {
       expect(res.body.user).to.have.property('lastName');
       expect(res.body.user.lastName).to.equal(userName.lastName);
     });
-
-    let ctId1, ctId2;
 
     context('testing conduit creation (POST)...', () => {
       it('should not allow creating conduit when unauthorized', async function () {
@@ -312,32 +334,6 @@ describe('Praas REST API', () => {
         expect(res.status).to.equal(201);
         expect(res.body).to.have.property('conduit');
         expect(res.body.conduit).to.have.property('id');
-      });
-
-      after('add new service endpoints for PUT, PATCH and DELETE', async function () {
-        // Create two conduits, one for update and one for delete
-        // as tests are running async, update fails if record is deleted ahead
-        const ct1 = helpers.fakeConduit();
-        const res1 = await Api()
-          .post('/conduits')
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send({ conduit: ct1 });
-        expect(res1.status).to.equal(201);
-        expect(res1.body).to.have.property('conduit');
-        expect(res1.body.conduit).to.have.property('id');
-        ctId1 = res1.body.conduit.id;
-        expect(ctId1).to.be.not.null;
-
-        const ct2 = helpers.fakeConduit();
-        const res2 = await Api()
-          .post('/conduits')
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send({ conduit: ct2 });
-        expect(res2.status).to.equal(201);
-        expect(res2.body).to.have.property('conduit');
-        expect(res2.body.conduit).to.have.property('id');
-        ctId2 = res2.body.conduit.id;
-        expect(ctId2).to.be.not.null;
       });
     });
 
