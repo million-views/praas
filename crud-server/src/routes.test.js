@@ -757,6 +757,16 @@ describe('Praas REST API', () => {
       });
 
       it('should allow user to add new service endpoint', async () => {
+        const res = await Api()
+          .post('/conduits')
+          .set('Authorization', `Token ${jakeUser.token}`)
+          .send({ conduit: helpers.fakeConduit() });
+        expect(res.status).to.equal(201);
+        expect(res.body).to.have.property('conduit');
+        expect(res.body.conduit).to.have.property('id');
+      });
+
+      after('add new service endpoints for PUT, PATCH and DELETE', async function () {
         // Create two conduits, one for update and one for delete
         // as tests are running async, update fails if record is deleted ahead
         const ct1 = helpers.fakeConduit();
@@ -765,6 +775,7 @@ describe('Praas REST API', () => {
           .set('Authorization', `Token ${jakeUser.token}`)
           .send({ conduit: ct1 });
         expect(res1.status).to.equal(201);
+        expect(res1.body).to.have.property('conduit');
         expect(res1.body.conduit).to.have.property('id');
         ctId1 = res1.body.conduit.id;
         expect(ctId1).to.be.not.null;
@@ -775,6 +786,7 @@ describe('Praas REST API', () => {
           .set('Authorization', `Token ${jakeUser.token}`)
           .send({ conduit: ct2 });
         expect(res2.status).to.equal(201);
+        expect(res2.body).to.have.property('conduit');
         expect(res2.body.conduit).to.have.property('id');
         ctId2 = res2.body.conduit.id;
         expect(ctId2).to.be.not.null;
