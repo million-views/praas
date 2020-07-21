@@ -76,8 +76,8 @@ it('should add two numbers' () => {
 route.get('/foo', (req, res) => {
   const a = req.query.a;
   const b = req.query.b;
-  // res.status(200).send(a+b); //<- this is bad
-  const c = foo(a, b); //<- you are using a unit tested function
+  // res.status(200).send(a+b); //<- bad: adhoc untested logic
+  const c = foo(a, b);          //<- good: using a unit tested function
 
   res.status(200).send(c);
 });

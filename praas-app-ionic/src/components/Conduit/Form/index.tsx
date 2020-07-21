@@ -14,7 +14,6 @@ import Select from '../../../components/Form/Select';
 import FormFieldWithError from '../../../components/FormFieldWithError';
 import RadioGroup from '../../../components/Form/RadioGroup';
 
-import IPAllowList from './IPAllowList';
 import RequestMethods from './RequestMethods';
 import { conduitTypes } from '../options';
 import conduitSchema from './schema';
@@ -95,8 +94,6 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
               </FormFieldWithError>
             </IonCol>
           </IonRow>
-
-          <IPAllowList allowlist={conduit?.allowlist} />
           <IonRow>
             <IonCol>
               <IonLabel className="ion-padding-top">
