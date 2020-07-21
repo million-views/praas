@@ -328,13 +328,21 @@ describe('Praas REST API', () => {
       });
 
       it('should allow user to add new service endpoint', async () => {
-        const res = await Api()
-          .post('/conduits')
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send({ conduit: helpers.fakeConduit() });
-        expect(res.status).to.equal(201);
-        expect(res.body).to.have.property('conduit');
-        expect(res.body.conduit).to.have.property('id');
+        // Add 25 conduits for testing: update, delete and pagination.. since
+        // a REST layer test should be isolated from the DATA layer, we don't
+        // directly access the model to insert these records.
+        const conduits = [];
+        for (let i = 0, imax=conf.conduitsCount; i < imax; i++) {
+          const res = await Api()
+            .post('/conduits')
+            .set('Authorization', `Token ${jakeUser.token}`)
+            .send({ conduit: helpers.fakeConduit() });
+          expect(res.status).to.equal(201);
+          expect(res.body).to.have.property('conduit');
+          expect(res.body.conduit).to.have.property('id');
+          expect(res.body.conduit.id).to.be.not.null;
+          conduits.push(res.body.conduit.id);
+        }
       });
     });
 
