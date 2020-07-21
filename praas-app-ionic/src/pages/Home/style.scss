@@ -15,15 +15,10 @@
       &:last-child {
         border-bottom: none;
       }
-      &:hover .table-col {
-        background-color: var(--ion-color-light-tint);
-      }
     }
   }
 
-  .icon {
-    &.delete {
-      color: var(--ion-color-danger);
-    }
+  &__icon--delete {
+    color: var(--ion-color-danger);
   }
 }
