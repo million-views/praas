@@ -35,7 +35,10 @@ type GroupProp = {
 
 const Radio = ({ value, label, className }: RadioProp) => {
   return (
-    <IonItem lines="none">
+    <IonItem
+      lines="none"
+      className="ion-item--no-padding ion-item--no-background"
+    >
       <IonRadio value={value}></IonRadio>
       <IonLabel className={className}>{label}</IonLabel>
     </IonItem>
