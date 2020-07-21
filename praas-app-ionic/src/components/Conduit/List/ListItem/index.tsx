@@ -16,7 +16,7 @@ type Props = {
 const ListItem = ({ conduit, onDelete }: Props) => {
   const [deletePrompt, setDeletePrompt] = useState(false);
   return (
-    <IonRow key={conduit.id} className="table-row">
+    <IonRow key={conduit.id} className="table-row ion-align-items-center">
       <IonCol className="table-col" size="3">
         {conduit.description}
       </IonCol>
@@ -26,7 +26,7 @@ const ListItem = ({ conduit, onDelete }: Props) => {
       <IonCol className="table-col" size="3">
         {conduit.curi}
       </IonCol>
-      <IonCol className="table-col" size="2">
+      <IonCol className="table-col ion-text-capitalize" size="2">
         {conduit.status}
       </IonCol>
       <IonCol className="table-col" size="2">
@@ -36,9 +36,9 @@ const ListItem = ({ conduit, onDelete }: Props) => {
             fill="clear"
             size="small"
             href={`conduit/${conduit.id}  `}
+            className="ion-button--round"
           >
-            <IonIcon className="icon edit" icon={createOutline} />
-            <i className="far fa-edit"></i>
+            <IonIcon icon={createOutline} slot="icon-only" />
           </IonButton>
           <IonButton
             type="button"
@@ -46,7 +46,11 @@ const ListItem = ({ conduit, onDelete }: Props) => {
             size="small"
             onClick={() => setDeletePrompt(true)}
           >
-            <IonIcon className="icon delete" icon={trashOutline} />
+            <IonIcon
+              className="home-page__icon--delete"
+              icon={trashOutline}
+              slot="icon-only"
+            />
           </IonButton>
           <IonAlert
             isOpen={deletePrompt}
