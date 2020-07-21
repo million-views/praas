@@ -36,7 +36,7 @@ const AllowListItem = ({ index, item, prefix, onDelete }: Props) => {
           fill="clear"
           color="dark"
           onClick={() => onDelete(index)}
-          className="ion-float-right ip-allowlist__close-button"
+          className="ip-allowlist__close-button"
         >
           <IonIcon icon={closeOutline} slot="icon-only" />
         </IonButton>
