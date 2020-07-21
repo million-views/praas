@@ -9,6 +9,8 @@ import {
 } from '@ionic/react';
 import { createOutline, trashOutline } from 'ionicons/icons';
 
+import './style.scss';
+
 type Props = {
   conduit: Conduit;
   onDelete: (id: string | number) => void;
@@ -62,6 +64,7 @@ const ListItem = ({ conduit, onDelete }: Props) => {
               {
                 text: 'Delete',
                 role: 'delete',
+                cssClass: 'list-item__alert-button--delete',
                 handler: () => onDelete(conduit.id),
               },
             ]}
