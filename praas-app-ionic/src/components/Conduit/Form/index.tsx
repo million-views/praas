@@ -47,7 +47,6 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
   const onSubmit = (values: any) => {
     onSave({ ...values, racm: parseRACM(values.racm) });
   };
-  console.log(conduit);
   return (
     <FormContext {...formMethods}>
       <form noValidate onSubmit={handleSubmit(onSubmit)}>
