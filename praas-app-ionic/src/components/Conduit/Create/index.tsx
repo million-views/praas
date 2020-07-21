@@ -10,9 +10,7 @@ interface Props {
 }
 
 const conduit = {
-  racm: [],
-  allowlist: [], // is optional
-  // allowlist: [{ ip: '', comment: '', status: 'inactive' }],
+  racm: []
 };
 
 const ConduitCreate: React.FC<Props> = ({ addConduit }) => {
