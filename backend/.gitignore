@@ -1,0 +1,24 @@
+# nodejs
+node_modules
+
+# sqlite database used in development only
+sqlite-praas-crud.db
+
+# we remain on the bleeding edge until we get closer to beta ready
+package-lock.json
+
+# Snaphot directory
+__snapshots__
+
+# VSCode IDE settings
+.vscode
+
+# istanbul
+.nyc_output
+
+# dotenv environment variables file
+.env
+.env.conduit-user
+
+# test-data
+.test-data-curi.json
