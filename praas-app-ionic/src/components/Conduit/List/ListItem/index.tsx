@@ -6,6 +6,7 @@ import {
   IonButton,
   IonIcon,
   IonAlert,
+  IonRouterLink,
 } from '@ionic/react';
 import { createOutline, trashOutline } from 'ionicons/icons';
 
@@ -33,15 +34,16 @@ const ListItem = ({ conduit, onDelete }: Props) => {
       </IonCol>
       <IonCol className="table-col" size="2">
         <IonButtons>
-          <IonButton
-            type="button"
-            fill="clear"
-            size="small"
-            href={`conduit/${conduit.id}  `}
-            className="ion-button--round"
-          >
-            <IonIcon icon={createOutline} slot="icon-only" />
-          </IonButton>
+          <IonRouterLink href={`conduit/${conduit.id}`} color="dark">
+            <IonButton
+              type="button"
+              fill="clear"
+              size="small"
+              className="ion-button--round"
+            >
+              <IonIcon icon={createOutline} slot="icon-only" />
+            </IonButton>
+          </IonRouterLink>
           <IonButton
             type="button"
             fill="clear"
