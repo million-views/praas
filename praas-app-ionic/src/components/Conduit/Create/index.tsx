@@ -11,7 +11,6 @@ interface Props {
 
 const conduit = {
   racm: [],
-  allowlist: [], // is optional
   status: 'inactive',
 };
 

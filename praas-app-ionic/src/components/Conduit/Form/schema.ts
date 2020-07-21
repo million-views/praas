@@ -10,16 +10,6 @@ const conduitSchema = Yup.object().shape({
     )
     .required('Service type required'),
   suri: Yup.string().required('Service Endpoint uri is required'),
-  allowlist: Yup.array()
-    .of(
-      Yup.object().shape({
-        ip: Yup.string().required('IP Address Required'),
-        comment: Yup.string().notRequired(),
-        status: Yup.string().required('IP status required'),
-      })
-    )
-    .min(0)
-    .max(4),
   racm: Yup.object()
     .shape({
       GET: Yup.boolean(),

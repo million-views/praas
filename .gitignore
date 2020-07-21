@@ -54,12 +54,6 @@ typings/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variables file
-.env
-.env.conduit-user
-
 # next.js build output
 .next
 
-# test-data
-.test-data-curi.json
