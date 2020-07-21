@@ -6,6 +6,7 @@ import {
   IonCard,
   IonCardHeader,
   IonCardTitle,
+  IonCardContent,
 } from '@ionic/react';
 import ConduitForm from '../Form';
 
@@ -17,7 +18,7 @@ interface Props {
 }
 
 const conduit = {
-  racm: []
+  racm: [],
 };
 
 const ConduitCreate: React.FC<Props> = ({ addConduit }) => {
@@ -35,7 +36,9 @@ const ConduitCreate: React.FC<Props> = ({ addConduit }) => {
             <h1>Create Conduit</h1>
           </IonCardTitle>
         </IonCardHeader>
-        <ConduitForm onSave={handleCreate} conduit={conduit} />
+        <IonCardContent>
+          <ConduitForm onSave={handleCreate} conduit={conduit} />
+        </IonCardContent>
       </IonCard>
     </IonGrid>
   );
