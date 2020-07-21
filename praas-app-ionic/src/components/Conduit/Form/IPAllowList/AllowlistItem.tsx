@@ -31,11 +31,15 @@ const AllowListItem = ({ index, item, prefix, onDelete }: Props) => {
 
   return (
     <IonCard className="ion-no-margin ion-margin-bottom">
-      <IonItem lines="none" className="ion-activatable ion-float-right">
-        <IonIcon icon={closeOutline} onClick={() => onDelete(index)} />
-      </IonItem>
-
       <IonCardHeader>
+        <IonButton
+          fill="clear"
+          color="dark"
+          onClick={() => onDelete(index)}
+          className="ion-float-right ip-allowlist__close-button"
+        >
+          <IonIcon icon={closeOutline} slot="icon-only" />
+        </IonButton>
         <IonCardSubtitle>IP Details</IonCardSubtitle>
       </IonCardHeader>
       <IonCardContent>
