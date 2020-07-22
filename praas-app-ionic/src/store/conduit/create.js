@@ -21,7 +21,7 @@ export const addConduitFailure = (error) => ({
 export const addConduit = (conduit) => {
   return (dispatch) => {
     dispatch({ type: ADD_CONDUIT_REQUEST, payload: conduit });
-    PraasAPI.conduit.add({ conduit }).then(
+    return PraasAPI.conduit.add({ conduit }).then(
       (conduit) => {
         dispatch(addConduitSuccess(conduit));
         dispatch(

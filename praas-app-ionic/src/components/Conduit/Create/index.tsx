@@ -4,6 +4,7 @@ import ConduitForm from '../Form';
 
 import { connect } from 'react-redux';
 import { addConduit } from '../../../store/conduit/create';
+import { useHistory } from 'react-router';
 
 interface Props {
   addConduit: (conduit: Conduit) => void;
@@ -15,9 +16,12 @@ const conduit = {
 };
 
 const ConduitCreate: React.FC<Props> = ({ addConduit }) => {
+  const history = useHistory();
+
   const handleCreate = useCallback(
-    (conduit) => {
-      addConduit(conduit);
+    async (conduit) => {
+      await addConduit(conduit);
+      history.replace('/');
     },
     [addConduit]
   );
