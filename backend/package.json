@@ -1,8 +1,8 @@
 {
-  "name": "conduits-backend",
-  "version": "0.1.0",
+  "name": "@conduits-xyz/backend",
+  "version": "0.2.1",
   "private": true,
-  "description": "Conduits backend services",
+  "description": "backend services of conduits.xyz",
   "author": "conduits.xyz",
   "license": "MIT",
   "scripts": {
