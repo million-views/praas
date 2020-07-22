@@ -13,39 +13,33 @@ class CreateConduitForm extends Component {
     const { changeMode, dispatch } = this.props;
     const initialValues = {
       suriApiKey: '',
-      suriType: '',
+      suriType: 'Airtable',
       suri: '',
-      allowlist: '',
       racm: [],
       description: '',
     };
     const conduitSchema = Yup.object({
-      suriApiKey: Yup.string()
-        .required('Service endpoint API key is required'),
-      suriType: Yup.string()
-        .required('Service endpoint type is required'),
-      suri: Yup.string()
-        .required('Service endpoint uri is required'),
-      allowlist: Yup.string()
-        .required('Allowlist (ip addresses) is required'),
-      // racm: Yup.string()
-      racm: Yup.array().of(Yup.string())
+      suriApiKey: Yup.string().required('Service endpoint API key is required'),
+      suriType: Yup.string().required('Service endpoint type is required'),
+      suri: Yup.string().required('Service endpoint uri is required'),
+      racm: Yup.array()
+        .of(Yup.string())
         .required('Request access control is required'),
-      description: Yup.string()
-        .required('Description is required'),
+      description: Yup.string().required('Description is required'),
     });
 
     return (
       <Formik
         initialValues={initialValues}
         validationSchema={conduitSchema}
-        render={props =>
+        render={(props) => (
           <ConduitForm
             {...props}
             buttonLabel="Create Conduit"
             changeMode={changeMode}
             status=""
-          />}
+          />
+        )}
         onSubmit={(values, actions) => {
           // console.log('in create form, values: ', values);
           dispatch(addConduit({ conduit: { ...values } }, actions, changeMode));
@@ -60,10 +54,8 @@ CreateConduitForm.propTypes = {
   dispatch: PropTypes.func.isRequired,
 };
 
-const mapDispatchToProps = (dispatch) => (
-  {
-    dispatch,
-  }
-);
+const mapDispatchToProps = (dispatch) => ({
+  dispatch,
+});
 
 export default connect(null, mapDispatchToProps)(CreateConduitForm);
