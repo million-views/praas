@@ -34,16 +34,17 @@ const ListItem = ({ conduit, onDelete }: Props) => {
       </IonCol>
       <IonCol className="table-col" size="2">
         <IonButtons>
-          <IonRouterLink href={`conduit/${conduit.id}`} color="dark">
-            <IonButton
-              type="button"
-              fill="clear"
-              size="small"
-              className="ion-button--round"
-            >
-              <IonIcon icon={createOutline} slot="icon-only" />
-            </IonButton>
-          </IonRouterLink>
+          <IonButton
+            type="button"
+            fill="clear"
+            size="small"
+            color="dark"
+            className="ion-button--round"
+            href={`conduit/${conduit.id}`}
+            routerDirection="forward"
+          >
+            <IonIcon icon={createOutline} slot="icon-only" />
+          </IonButton>
           <IonButton
             type="button"
             fill="clear"
