@@ -130,6 +130,23 @@ describe('Praas REST API', () => {
       expect(res.body).to.have.property('errors');
       expect(res.body.errors.credentials).to.equal('email or password is invalid');
     });
+    it('should not allow creating conduit', async function () {
+      const res = await Api()
+        .post('/conduits')
+        .send(helpers.fakeConduit());
+      expect(res.status).to.equal(401);
+      expect(res.error).to.not.be.false;
+      expect(res.body).to.have.property('errors');
+      expect(res.body.errors.authorization).to.equal('token not found or malformed');
+    });
+    it('should not GET conduit information', async function () {
+      const res = await Api()
+        .get('/conduits');
+      expect(res.status).to.equal(401);
+      expect(res.error).to.not.be.false;
+      expect(res.body).to.have.property('errors');
+      expect(res.body.errors.authorization).to.equal('token not found or malformed');
+    });
     it('should authenticate with valid user credentials', async function () {
       const res = await Api()
         .post('/users/login')
@@ -215,260 +232,250 @@ describe('Praas REST API', () => {
       expect(res.body.user.lastName).to.equal(userName.lastName);
     });
 
-    context('testing conduit creation (POST)...', () => {
-      it('should not allow creating conduit when unauthorized', async function () {
-        const res = await Api()
-          .post(`/conduits`)
-          .send(helpers.fakeConduit());
-        expect(res.status).to.equal(401);
-      });
+    // POST method
+    it('should create new service endpoints', async function () {
+      // empty request body
+      const empty = await Api()
+        .post('/conduits')
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send();
+      expect(empty.status).to.equal(422);
+      expect(empty.error).to.not.be.false;
+      expect(empty.body).to.have.property('errors');
+      expect(empty.body.errors).to.have.property('conduit');
+      expect(empty.body.errors.conduit).to.equal('is required');
 
-      it('should reject requests with an empty body', async function () {
+      // no conduit information
+      const emptyConduit = await Api()
+        .post('/conduits')
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ conduit: {} });
+      expect(emptyConduit.status).to.equal(422);
+      expect(emptyConduit.error).to.not.be.false;
+      expect(emptyConduit.body).to.have.property('errors');
+
+      // check for Service URI ( SURI )
+      const withoutSuri = helpers.fakeConduit();
+      delete withoutSuri.suri;
+      const noSuri = await Api()
+        .post('/conduits')
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ conduit: withoutSuri });
+      expect(noSuri.status).to.equal(422);
+      expect(noSuri.error).to.not.be.false;
+      expect(Object.keys(noSuri.body.errors)).to.include('suri');
+      expect(noSuri.body.errors.suri).to.match(ERROR_PATTERN);
+
+      // invalid service URI ( suri )
+      const withInvalidSuri = helpers.fakeConduit();
+      withInvalidSuri.suri = 'not-a-uri';
+      const invalidSuri = await Api()
+        .post(`/conduits`)
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ conduit: withInvalidSuri });
+      expect(invalidSuri.status).to.equal(422);
+      expect(invalidSuri.error).to.not.be.false;
+      expect(invalidSuri.body.errors[0].suri).to.match(ERROR_PATTERN);
+
+      // check for Service Type ( suriType )
+      const withoutSuriType = helpers.fakeConduit();
+      delete withoutSuriType.suriType;
+      const noSuriType = await Api()
+        .post('/conduits')
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ conduit: withoutSuriType });
+      expect(noSuriType.status).to.equal(422);
+      expect(noSuriType.error).to.not.be.false;
+      expect(Object.keys(noSuriType.body.errors)).to.include('suriType');
+      expect(noSuriType.body.errors.suriType).to.match(ERROR_PATTERN);
+
+      // check for Service API Key ( suriApiKey )
+      const withoutSuriApiKey = helpers.fakeConduit();
+      delete withoutSuriApiKey.suriApiKey;
+      const noSuriApiKey = await Api()
+        .post('/conduits')
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ conduit: withoutSuriApiKey });
+      expect(noSuriApiKey.status).to.equal(422);
+      expect(noSuriApiKey.error).to.not.be.false;
+      expect(Object.keys(noSuriApiKey.body.errors)).to.include('suriApiKey');
+      expect(noSuriApiKey.body.errors.suriApiKey).to.match(ERROR_PATTERN);
+
+      // unsupported external service
+      const forUnsupportedService = helpers.fakeConduit();
+      forUnsupportedService.suriType = 'random-service';
+      const unsupportedService = await Api()
+        .post(`/conduits`)
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ conduit: forUnsupportedService });
+      expect(unsupportedService.status).to.equal(422);
+      expect(unsupportedService.error).to.not.be.false;
+      expect(unsupportedService.body.errors[0].suriType).to.match(ERROR_PATTERN);
+
+      // invalid Resource Access Control Methods
+      const withInvalidRacm = helpers.fakeConduit();
+      withInvalidRacm.racm = ['HEAD', 'OPTIONS', 'CONNECT', 'TRACE'];
+      const invalidRacm = await Api()
+        .post(`/conduits`)
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ conduit: withInvalidRacm });
+      expect(invalidRacm.status).to.equal(422);
+      expect(invalidRacm.error).to.not.be.false;
+      expect(invalidRacm.body.errors[0].racm).to.match(ERROR_PATTERN);
+
+      // invalid allowList
+      const withInvalidAllowList = helpers.fakeConduit();
+      withInvalidAllowList.allowlist = [{ ip: '123.456.789.0' }];
+      const invalidAllowList = await Api()
+        .post(`/conduits`)
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ conduit: withInvalidAllowList });
+      expect(invalidAllowList.status).to.equal(422);
+      expect(invalidAllowList.error).to.not.be.false;
+      expect(invalidAllowList.body.errors[0].allowlist).to.match(ERROR_PATTERN);
+
+      // valid request
+      // Add 25 conduits for testing: update, delete and pagination.. since
+      // a REST layer test should be isolated from the DATA layer, we don't
+      // directly access the model to insert these records.
+      const conduits = [];
+      for (let i = 0, imax=conf.conduitsCount; i < imax; i++) {
         const res = await Api()
           .post('/conduits')
           .set('Authorization', `Token ${jakeUser.token}`)
-          .send();
-        expect(res.status).to.equal(422);
-        expect(res.error).to.not.be.false;
-      });
-
-      it('should reject requests without a conduit', async function () {
-        const res = await Api()
-          .post('/conduits')
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send({ conduit: {} });
-        expect(res.status).to.equal(422);
-        expect(res.error).to.not.be.false;
-      });
-
-      it('should reject requests without required fields', async function () {
-        // check for Service URI ( SURI )
-        const withoutSuri = helpers.fakeConduit();
-        delete withoutSuri.suri;
-        const res1 = await Api()
-          .post('/conduits')
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send({ conduit: withoutSuri });
-        expect(res1.status).to.equal(422);
-        expect(res1.error).to.not.be.false;
-        expect(Object.keys(res1.body.errors)).to.include('suri');
-        expect(res1.body.errors.suri).to.match(ERROR_PATTERN);
-
-        // check for Service Type ( suriType )
-        const withoutSuriType = helpers.fakeConduit();
-        delete withoutSuriType.suriType;
-        const res2 = await Api()
-          .post('/conduits')
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send({ conduit: withoutSuriType });
-        expect(res2.status).to.equal(422);
-        expect(res2.error).to.not.be.false;
-        expect(Object.keys(res2.body.errors)).to.include('suriType');
-        expect(res2.body.errors.suriType).to.match(ERROR_PATTERN);
-
-        // check for Service API Key ( suriApiKey )
-        const withoutSuriApiKey = helpers.fakeConduit();
-        delete withoutSuriApiKey.suriApiKey;
-        const res3 = await Api()
-          .post('/conduits')
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send({ conduit: withoutSuriApiKey });
-        expect(res3.status).to.equal(422);
-        expect(res3.error).to.not.be.false;
-        expect(Object.keys(res3.body.errors)).to.include('suriApiKey');
-        expect(res3.body.errors.suriApiKey).to.match(ERROR_PATTERN);
-      });
-
-      it('should reject invalid SURI', async function () {
-        const withInvalidSuri = helpers.fakeConduit();
-        withInvalidSuri.suri = 'not-a-url';
-        const res = await Api()
-          .post(`/conduits`)
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send({ conduit: withInvalidSuri });
-        expect(res.status).to.equal(422);
-        expect(res.error).to.not.be.false;
-        expect(res.body.errors[0].suri).to.match(ERROR_PATTERN);
-      });
-
-      it('should reject unsupported service types', async function () {
-        const forUnsupportedService = helpers.fakeConduit();
-        forUnsupportedService.suriType = 'random-service';
-        const res = await Api()
-          .post(`/conduits`)
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send({ conduit: forUnsupportedService });
-        expect(res.status).to.equal(422);
-        expect(res.error).to.not.be.false;
-        expect(res.body.errors[0].suriType).to.match(ERROR_PATTERN);
-      });
-
-      it('should allow only valid HTTP methods in RACM', async function () {
-        const withInvalidRacm = helpers.fakeConduit();
-        withInvalidRacm.racm = ['HEAD', 'OPTIONS', 'CONNECT', 'TRACE'];
-        const res = await Api()
-          .post(`/conduits`)
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send({ conduit: withInvalidRacm });
-        expect(res.status).to.equal(422);
-        expect(res.error).to.not.be.false;
-        expect(res.body.errors[0].racm).to.match(ERROR_PATTERN);
-      });
-
-      it('should reject invalid allowlist', async function () {
-        const withInvalidAllowList = helpers.fakeConduit();
-        withInvalidAllowList.allowlist = [{ ip: '123.456.789.0' }];
-        const res = await Api()
-          .post(`/conduits`)
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send({ conduit: withInvalidAllowList });
-        expect(res.status).to.equal(422);
-        expect(res.error).to.not.be.false;
-        expect(res.body.errors[0].allowlist).to.match(ERROR_PATTERN);
-      });
-
-      it('should allow user to add new service endpoint', async () => {
-        // Add 25 conduits for testing: update, delete and pagination.. since
-        // a REST layer test should be isolated from the DATA layer, we don't
-        // directly access the model to insert these records.
-        const conduits = [];
-        for (let i = 0, imax=conf.conduitsCount; i < imax; i++) {
-          const res = await Api()
-            .post('/conduits')
-            .set('Authorization', `Token ${jakeUser.token}`)
-            .send({ conduit: helpers.fakeConduit() });
-          expect(res.status).to.equal(201);
-          expect(res.body).to.have.property('conduit');
-          expect(res.body.conduit).to.have.property('id');
-          expect(res.body.conduit.id).to.be.not.null;
-          conduits.push(res.body.conduit.id);
-        }
-      });
+          .send({ conduit: helpers.fakeConduit() });
+        expect(res.status).to.equal(201);
+        expect(res.body).to.have.property('conduit');
+        expect(res.body.conduit).to.have.property('id');
+        expect(res.body.conduit.id).to.be.not.null;
+        conduits.push(res.body.conduit.id);
+      }
     });
 
-    context('testing conduit fetch (GET)...', () => {
-      it('should allow user to fetch a service endpoint', async () => {
-        const res = await Api()
-          .get(`/conduits/${ctId1}`)
-          .set('Authorization', `Token ${jakeUser.token}`);
-        expect(res.status).to.equal(200);
-        expect(res.body.conduit).to.have.property('suriApiKey');
-        expect(res.body.conduit).to.have.property('suriType');
-        expect(res.body.conduit).to.have.property('suri');
-        expect(res.body.conduit).to.have.property('curi');
-        expect(res.body.conduit).to.have.property('allowlist');
-        expect(res.body.conduit).to.have.property('racm');
-        expect(res.body.conduit).to.have.property('throttle');
-        expect(res.body.conduit).to.have.property('status');
-      });
+    // GET method
+    it('should GET service endpoints', async function () {
+      // single conduit
+      const singleConduit = await Api()
+        .get(`/conduits/${ctId1}`)
+        .set('Authorization', `Token ${jakeUser.token}`);
+      expect(singleConduit.status).to.equal(200);
+      expect(singleConduit.body.conduit).to.have.property('suriApiKey');
+      expect(singleConduit.body.conduit).to.have.property('suriType');
+      expect(singleConduit.body.conduit).to.have.property('suri');
+      expect(singleConduit.body.conduit).to.have.property('curi');
+      expect(singleConduit.body.conduit).to.have.property('allowlist');
+      expect(singleConduit.body.conduit).to.have.property('racm');
+      expect(singleConduit.body.conduit).to.have.property('throttle');
+      expect(singleConduit.body.conduit).to.have.property('status');
 
-      it('should allow user to fetch multiple service endpoints', async () => {
-        const res = await Api()
-          .get('/conduits')
-          .query({ start: ctId2+1, count: conf.conduitsPerPage })
-          .set('Authorization', `Token ${jakeUser.token}`);
-        expect(res.status).to.equal(200);
-        expect(res.body.conduits.length).to.equal(conf.conduitsPerPage);
-      });
+      // multiple conduits
+      const multipleConduits = await Api()
+        .get('/conduits')
+        .query({ start: ctId2+1, count: conf.conduitsPerPage })
+        .set('Authorization', `Token ${jakeUser.token}`);
+      expect(multipleConduits.status).to.equal(200);
+      expect(multipleConduits.body.conduits.length).to.equal(conf.conduitsPerPage);
     });
 
-    context('the PUT method', async function () {
-      it('should overwrite an existing record', async function () {
-        const conduit = await Api()
-          .get('/conduits/' + ctId1)
-          .set('Authorization', `Token ${jakeUser.token}`);
-        expect(conduit.body).to.haveOwnProperty('conduit');
+    // PUT method
+    it('should overwrite existing service endpoints', async function () {
+      const conduit = await Api()
+        .get('/conduits/' + ctId1)
+        .set('Authorization', `Token ${jakeUser.token}`);
+      expect(conduit.body).to.haveOwnProperty('conduit');
 
-        const putData = await helpers.fakeConduit();
+      const putData = await helpers.fakeConduit();
 
-        const res = await Api()
-          .put('/conduits/' + ctId1)
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send({ conduit: putData });
-        expect(res.status).to.equal(200);
-        expect(res.body.conduit).to.not.eql(conduit.body.conduit);
-        expect(res.body.conduit.suri).to.equal(putData.suri);
-        expect(res.body.conduit.suriApiKey).to.equal(putData.suriApiKey);
-        expect(res.body.conduit.suriObjectKey).to.equal(putData.suriObjectKey);
-        expect(res.body.conduit.suriType).to.equal(putData.suriType);
-        expect(res.body.conduit.allowlist).to.eql(putData.allowlist);
-        expect(res.body.conduit.racm).to.eql(putData.racm);
-        expect(res.body.conduit.hiddenFormField).to.eql(putData.hiddenFormField);
-      });
-
-      it('should not allow CURI to be updated', async function () {
-        const conduit = { conduit: { curi: 'td-12345.trickle.cc' } };
-        const res = await Api()
-          .put(`/conduits/${ctId1}`)
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send(conduit);
-        expect(res.status).to.equal(403);
-      });
+      const res = await Api()
+        .put('/conduits/' + ctId1)
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ conduit: putData });
+      expect(res.status).to.equal(200);
+      expect(res.body.conduit).to.not.eql(conduit.body.conduit);
+      expect(res.body.conduit.suri).to.equal(putData.suri);
+      expect(res.body.conduit.suriApiKey).to.equal(putData.suriApiKey);
+      expect(res.body.conduit.suriObjectKey).to.equal(putData.suriObjectKey);
+      expect(res.body.conduit.suriType).to.equal(putData.suriType);
+      expect(res.body.conduit.allowlist).to.eql(putData.allowlist);
+      expect(res.body.conduit.racm).to.eql(putData.racm);
+      expect(res.body.conduit.hiddenFormField).to.eql(putData.hiddenFormField);
     });
 
-    context('testing conduit update (PATCH)...', () => {
-      it('should allow user to update service endpoint', async () => {
-        const ctinactive = { conduit: { status: 'inactive' } };
-        const res = await Api()
-          .patch(`/conduits/${ctId2}`)
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send(ctinactive);
-        expect(res.status).to.equal(200);
+    // PATCH method
+    it('should update existing service endpoints', async function () {
+      // change status to inactive
+      const inactiveConduit = { conduit: { status: 'inactive' } };
+      const disableConduit = await Api()
+        .patch(`/conduits/${ctId2}`)
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send(inactiveConduit);
+      expect(disableConduit.status).to.equal(200);
 
-        const res2 = await Api()
-          .get(`/conduits/${ctId2}`)
-          .set('Authorization', `Token ${jakeUser.token}`);
-        expect(res2.status).to.equal(200);
-        expect(res2.body.conduit.status).to.equal('inactive');
+      const getInactiveConduit = await Api()
+        .get(`/conduits/${ctId2}`)
+        .set('Authorization', `Token ${jakeUser.token}`);
+      expect(getInactiveConduit.status).to.equal(200);
+      expect(getInactiveConduit.body.conduit.status).to.equal('inactive');
 
-        const ctactive = { conduit: { status: 'active' } };
-        const res3 = await Api()
-          .patch(`/conduits/${ctId1}`)
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send(ctactive);
-        expect(res3.status).to.equal(200);
+      // change status to active
+      const activeConduit = { conduit: { status: 'active' } };
+      const activateConduit = await Api()
+        .patch(`/conduits/${ctId1}`)
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send(activeConduit);
+      expect(activateConduit.status).to.equal(200);
 
-        const res4 = await Api()
-          .get(`/conduits/${ctId1}`)
-          .set('Authorization', `Token ${jakeUser.token}`);
-        expect(res4.status).to.equal(200);
-        expect(res4.body.conduit.status).to.equal('active');
-      });
+      const getActiveConduit = await Api()
+        .get(`/conduits/${ctId1}`)
+        .set('Authorization', `Token ${jakeUser.token}`);
+      expect(getActiveConduit.status).to.equal(200);
+      expect(getActiveConduit.body.conduit.status).to.equal('active');
 
-      it('should not allow curi to be updated by the service end point', async () => {
-        const ct = { conduit: { curi: 'td-12345.trickle.cc' } };
-        const res = await Api()
-          .patch(`/conduits/${ctId1}`)
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send(ct);
-        expect(res.status).to.equal(403);
-      });
+      // update conduit URI
+      const conduitUri = { conduit: { curi: 'td-12345.trickle.cc' } };
+      const updateCuri = await Api()
+        .patch(`/conduits/${ctId1}`)
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send(conduitUri);
+      expect(updateCuri.status).to.equal(403);
+      expect(updateCuri.error).to.not.be.false;
+      expect(updateCuri.body).to.have.property('errors');
+      expect(updateCuri.body.errors.conduit).to.equal('is immutable');
     });
 
-    context('testing conduit removal (DELETE)...', () => {
-      it('should allow user to remove inactive service endpoint', async () => {
-        const res = await Api()
-          .delete(`/conduits/${ctId2}`)
-          .set('Authorization', `Token ${jakeUser.token}`);
-        expect(res.status).to.equal(200);
+    // DELETE method
+    it('should DELETE service endpoints', async () => {
+      // inactive conduit
+      const deleteInactive = await Api()
+        .delete(`/conduits/${ctId2}`)
+        .set('Authorization', `Token ${jakeUser.token}`);
+      expect(deleteInactive.status).to.equal(200);
 
-        const res2 = await Api()
-          .get(`/conduits/${ctId2}`)
-          .set('Authorization', `Token ${jakeUser.token}`);
-        expect(res2.status).to.equal(404);
-      });
-      it('should not allow user to remove active service endpoint', async () => {
-        const res = await Api()
-          .delete(`/conduits/${ctId1}`)
-          .set('Authorization', `Token ${jakeUser.token}`);
-        expect(res.status).to.equal(403);
-      });
-      it('should not be able to DELETE non-existant conduits', async () => {
-        const res = await Api()
-          .delete('/conduits/non-existant')
-          .set('Authorization', `Token ${jakeUser.token}`);
-        expect(res.status).to.equal(404);
-      });
+      const getDeleted = await Api()
+        .get(`/conduits/${ctId2}`)
+        .set('Authorization', `Token ${jakeUser.token}`);
+      expect(getDeleted.status).to.equal(404);
+      expect(getDeleted.error).to.not.be.false;
+      expect(getDeleted.body).to.have.property('errors');
+      expect(getDeleted.body.errors.conduit).to.equal('not found');
+
+      // active conduit
+      const deleteActive = await Api()
+        .delete(`/conduits/${ctId1}`)
+        .set('Authorization', `Token ${jakeUser.token}`);
+      expect(deleteActive.status).to.equal(403);
+      expect(deleteActive.error).to.not.be.false;
+      expect(deleteActive.body).to.have.property('errors');
+      expect(deleteActive.body.errors.conduit).to.equal('cannot delete when active');
+
+      // non-existent conduit
+      const nonExistent = await Api()
+        .delete('/conduits/non-existent')
+        .set('Authorization', `Token ${jakeUser.token}`);
+      expect(nonExistent.status).to.equal(404);
+      expect(nonExistent.error).to.not.be.false;
+      expect(nonExistent.body).to.have.property('errors');
+      expect(nonExistent.body.errors.conduit).to.equal('not found');
     });
   });
 });
