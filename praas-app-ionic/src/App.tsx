@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
@@ -36,12 +36,10 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Switch>
-            <Route exact path="/signup" component={SignupPage} />
-            <Route exact path="/login" component={LoginPage} />
-            <AuthenticatedRoute path="/conduit" component={ConduitPage} />
-            <AuthenticatedRoute exact path="/" component={HomePage} />
-          </Switch>
+          <Route exact path="/signup" component={SignupPage} />
+          <Route exact path="/login" component={LoginPage} />
+          <AuthenticatedRoute path="/conduit" component={ConduitPage} />
+          <AuthenticatedRoute exact path="/" component={HomePage} />
         </IonRouterOutlet>
       </IonReactRouter>
       <Notification />
