@@ -14,7 +14,7 @@ const InlineCriticalCss = require('html-inline-css-webpack-plugin').default;
 const AnalyzerOptions = {
   analyzerMode: 'static',
   openAnalyzer: false,
-  reportFilename: 'bundle-analysis.html'
+  reportFilename: 'bundle-analysis.html',
 };
 
 const HtmlOptions = {
@@ -33,7 +33,7 @@ const HtmlOptions = {
   },
   manifest: {
     // TODO: figure out a better a way to manage this
-    theme_color: '#673AB8'
+    theme_color: '#673AB8',
   },
 };
 
@@ -43,12 +43,25 @@ const HtmlOptions = {
 // and any references to assets they in turn include that are known
 // to webpack.
 const assets = (wpc) => {
-  return [
-    { context: wpc.web, from: 'favicon.ico' },
-    { context: wpc.web, from: 'assets/branding/*.*', ignore: ['*.scss'] },
-    { context: wpc.web, from: 'assets/images/*.*' },
-    //    { context: wpc.lib, from: 'fonts/*.*', to: 'assets', ignore: ['*.scss'] },
-  ];
+  const globOptions = {
+    ignore: ['*.scss'],
+  };
+
+  const ifDev = true; // !wpc.isProd;
+
+  return {
+    patterns: [
+      { context: wpc.web, from: 'favicon.ico', noErrorOnMissing: ifDev },
+      {
+        context: wpc.web,
+        from: 'assets/branding/*.*',
+        noErrorOnMissing: ifDev,
+        globOptions,
+      },
+      { context: wpc.web, from: 'assets/images/*.*', noErrorOnMissing: ifDev },
+      //    { context: wpc.lib, from: 'fonts/*.*', to: 'assets', ignore: ['*.scss'] },
+    ],
+  };
 };
 
 // see https://webpack.js.org/configuration/ for bail
@@ -85,9 +98,9 @@ module.exports = (wpc) => {
 
   return {
     mode: wpc.mode,
-    bail: true, /* fail on first error instead of tolerating it */
+    bail: true /* fail on first error instead of tolerating it */,
     stats: {
-      children: false
+      children: false,
     },
 
     entry: {
@@ -108,12 +121,14 @@ module.exports = (wpc) => {
       path: wpc.build,
       filename: '[name].js',
       // filename: '[name].[hash].js',
-      publicPath: ''
+      publicPath: '',
     },
 
     resolve: {
-      extensions, alias
+      extensions,
+      alias,
     },
+
     optimization: {
       splitChunks: {
         chunks: 'all',
@@ -121,15 +136,15 @@ module.exports = (wpc) => {
         cacheGroups: {
           vendors: {
             test: /[\\/]node_modules[\\/]/,
-            priority: -10
+            priority: -10,
           },
           default: {
             minChunks: 20,
             priority: -20,
-            reuseExistingChunk: true
-          }
-        }
-      }
+            reuseExistingChunk: true,
+          },
+        },
+      },
     },
     plugins: [
       new webpack.ProvidePlugin({ React: 'react' }),
@@ -139,12 +154,11 @@ module.exports = (wpc) => {
       new InlineCriticalCss({
         position: 'after',
         filter(filename) {
-          return /^main.*.css/.test(filename) ||
-            /index.html/.test(filename);
-        }
+          return /^main.*.css/.test(filename) || /index.html/.test(filename);
+        },
       }),
       new Copy(assets(wpc)),
       new Analyze(AnalyzerOptions),
-    ]
+    ],
   };
 };
