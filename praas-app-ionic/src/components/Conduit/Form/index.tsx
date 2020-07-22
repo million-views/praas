@@ -65,6 +65,7 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
                   name="suriType"
                   value={conduit?.suriType}
                   options={conduitTypes}
+                  title="SURI Type"
                 />
               </FormFieldWithError>
             </IonCol>

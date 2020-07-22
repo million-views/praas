@@ -10,7 +10,8 @@ interface Props {
 }
 
 const conduit = {
-  racm: []
+  racm: [],
+  status: 'inactive',
 };
 
 const ConduitCreate: React.FC<Props> = ({ addConduit }) => {

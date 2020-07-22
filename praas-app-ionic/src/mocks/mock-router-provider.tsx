@@ -1,8 +1,10 @@
 import React from 'react';
-import { Router } from 'react-router-dom';
-import { createMemoryHistory } from 'history';
+import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouterProps } from 'react-router';
 
-export const MockRouterProvider: React.FC = ({ children }) => {
-  const history = createMemoryHistory();
-  return <Router history={history}>{children}</Router>;
+export const MockRouterProvider: React.FC<MemoryRouterProps> = ({
+  children,
+  ...restProps
+}) => {
+  return <MemoryRouter {...restProps}>{children}</MemoryRouter>;
 };

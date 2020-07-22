@@ -22,39 +22,43 @@ type Props = {
 };
 
 type RadioProp = {
+  name: string;
   value: string;
   label: string;
   className?: string;
 };
 
 type GroupProp = {
+  name: string;
   options: Array<OptionType>;
   className?: string;
   labelClassName?: string;
 };
 
-const Radio = ({ value, label, className }: RadioProp) => {
+const Radio = ({ name, value, label, className }: RadioProp) => {
   return (
     <IonItem lines="none">
-      <IonRadio value={value}></IonRadio>
+      <IonRadio name={name} value={value}></IonRadio>
       <IonLabel className={className}>{label}</IonLabel>
     </IonItem>
   );
 };
 
 const Group = ({
+  name,
   options,
   className,
   labelClassName,
   ...restProps
 }: GroupProp) => {
   return (
-    <IonRadioGroup className={className} {...restProps}>
+    <IonRadioGroup name={`group_${name}`} className={className} {...restProps}>
       <IonRow>
         {options.map((option: OptionType) => {
           return (
             <IonCol key={option.value}>
               <Radio
+                name={name}
                 value={option.value}
                 label={option.label}
                 className={labelClassName}
