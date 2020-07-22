@@ -91,7 +91,11 @@ const Home: React.FC<Props> = ({ conduits, listConduits, deleteConduit }) => {
           </IonGrid>
         )}
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton color="primary" href="/conduit/create">
+          <IonFabButton
+            color="primary"
+            href="/conduit/create"
+            routerDirection="forward"
+          >
             <IonIcon icon={add} />
           </IonFabButton>
         </IonFab>
