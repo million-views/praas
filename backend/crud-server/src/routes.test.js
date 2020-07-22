@@ -17,8 +17,6 @@ const jake = {
   }
 };
 
-const User = (res) => res.body.user;
-
 const apiServer = server.app.listen(server.port);
 const Api = () => chai.request(apiServer);
 
@@ -78,7 +76,7 @@ describe('Praas REST API', () => {
         });
       expect(res.status).to.equal(200);
       expect(res.body).to.have.property('user');
-      expect(User(res).email).to.equal(email.toLowerCase());
+      expect(res.body.user.email).to.equal(email.toLowerCase());
     });
 
     it('should disallow user registration with e-mail that is already in use', async () => {
@@ -157,7 +155,7 @@ describe('Praas REST API', () => {
             password: jake.user.password
           }
         });
-      jakeUser = User(res);
+      jakeUser = res.body.user;
       // console.log('jakeUser: ', jakeUser);
       // WARN: this is only for debugging, real code should use
       // jwt.verify(...) in order to validate the signature with
@@ -198,7 +196,7 @@ describe('Praas REST API', () => {
       const res = await Api()
         .get('/user')
         .set('Authorization', `Token ${jakeUser.token}`);
-      expect(User(res).email).to.equal(jake.user.email);
+      expect(res.body.user.email).to.equal(jake.user.email);
     });
 
     it('should allow the user to update their information', async function () {
