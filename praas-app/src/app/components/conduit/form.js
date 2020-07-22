@@ -17,14 +17,14 @@ const Racm = (props) => {
   const { push, remove, form } = props;
   return (
     <div>
-      {categories.map(category => (
+      {categories.map((category) => (
         <label key={category.id}>
           <input
             name="racm"
             type="checkbox"
             value={category.id}
             checked={form.values.racm.includes(category.id)}
-            onChange={e => {
+            onChange={(e) => {
               if (e.target.checked) {
                 push(category.id);
               } else {
@@ -36,121 +36,22 @@ const Racm = (props) => {
           <span className="checkable">{category.name}</span>
         </label>
       ))}
-      {
-        form.touched.racm && form.errors.racm &&
-          <div className="field-error">{form.errors.racm}</div>
-      }
+      {form.touched.racm && form.errors.racm && (
+        <div className="field-error">{form.errors.racm}</div>
+      )}
     </div>
-  );
-};
-
-const IpAddress = ({
-  field, form: { touched, errors }, ...props
-}) =>
-  (
-    <div className="col">
-      <input {...field} type="text" placeholder="IP Address" />
-      {
-        touched[field.name] && errors[field.name] &&
-          <div className="field-error">{errors[field.name]}</div>
-      }
-    </div>
-  );
-
-const Comment = ({
-  field, form: { touched, errors }, ...props
-}) =>
-  (
-    <div className="col">
-      <input {...field} type="text" placeholder="Comment" />
-      {
-        touched[field.name] && errors[field.name] &&
-          <div className="field-error">{errors[field.name]}</div>
-      }
-    </div>
-  );
-
-const IpStatus = ({
-  field, form: { touched, errors }, ...props
-}) => {
-  const details = props.details;
-  return (
-    <span>
-      <label>
-        <input
-          {...field} type="radio"
-          defaultChecked={details.status === 'active'}
-          value="active"
-        />
-        <span className="checkable">Active</span>
-      </label>
-      <label>
-        <input
-          {...field} type="radio"
-          defaultChecked={details.status === 'inactive'}
-          value="inactive"
-        />
-        <span className="checkable">Inactive</span>
-      </label>
-      {
-        touched[field.name] && errors[field.name] &&
-          <div className="field-error">{errors[field.name]}</div>
-      }
-    </span>
-  );
-};
-
-const Allowlist = (props) => {
-  const { push, remove, form } = props;
-  return (
-    <>
-      {form.values.allowlist &&
-        form.values.allowlist.length > 0 &&
-        form.values.allowlist.map((ip, index) => {
-          return (
-            <div className="flex four" key={index}>
-              <Field name={`allowlist[${index}].ip`} component={IpAddress} />
-              <Field name={`allowlist[${index}].comment`} component={Comment} />
-              <Field
-                name={`allowlist[${index}].status`}
-                details={ip}
-                component={IpStatus}
-              />
-              <div className="col">
-                <button type="button" onClick={() => remove(index)}>
-                  X
-                </button>
-              </div>
-            </div>
-          );
-        }
-        )}
-      <button
-        onClick={() => push({ ip: '', comment: '', status: '' })}
-        className="secondary"
-      >
-        Add IP Address
-      </button>
-    </>
   );
 };
 
 function ConduitForm(props) {
   console.log('props in form: ', props);
-  const {
-    buttonLabel,
-    changeMode,
-    isSubmitting,
-    status,
-  } = props;
+  const { buttonLabel, changeMode, isSubmitting, status } = props;
   const classes = cx(['submit', { spinner: isSubmitting }]);
 
   return (
     <Form>
       <h2>{buttonLabel}</h2>
-      {
-        status && <Alert klass="alert-danger" message={status.errors} />
-      }
+      {status && <Alert klass="alert-danger" message={status.errors} />}
       <Field
         name="suriApiKey"
         placeholder="Service endpoint API Key"
@@ -178,8 +79,6 @@ function ConduitForm(props) {
         required
       />
       <ErrorMessage name="suri" component="div" className="error" />
-
-      <FieldArray name="allowlist" component={Allowlist} />
       <FieldArray name="racm" component={Racm} />
 
       <Field
@@ -190,15 +89,23 @@ function ConduitForm(props) {
       />
       <ErrorMessage name="description" component="div" className="error" />
 
-      <button type="submit" disabled={isSubmitting === true} className={classes}>
+      <button
+        type="submit"
+        disabled={isSubmitting === true}
+        className={classes}
+      >
         {buttonLabel}
       </button>
-      <button type="button" onClick={() => changeMode('list')} className={classes}>
+      <button
+        type="button"
+        onClick={() => changeMode('list')}
+        className={classes}
+      >
         Cancel
       </button>
     </Form>
   );
-};
+}
 
 ConduitForm.propTypes = {
   buttonLabel: PropTypes.string.isRequired,

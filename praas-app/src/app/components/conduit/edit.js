@@ -16,23 +16,17 @@ class EditConduitForm extends Component {
       suriApiKey: conduit.suriApiKey,
       suriType: conduit.suriType,
       suri: conduit.suri,
-      allowlist: conduit.allowlist,
       racm: conduit.racm,
       description: conduit.description,
     };
     const conduitSchema = Yup.object({
-      suriApiKey: Yup.string()
-        .required('Service endpoint API key is required'),
-      suriType: Yup.string()
-        .required('Service endpoint type is required'),
-      suri: Yup.string()
-        .required('Service endpoint uri is required'),
-      allowlist: Yup.string()
-        .required('Allowlist (ip addresses) is required'),
-      racm: Yup.array().of(Yup.string())
+      suriApiKey: Yup.string().required('Service endpoint API key is required'),
+      suriType: Yup.string().required('Service endpoint type is required'),
+      suri: Yup.string().required('Service endpoint uri is required'),
+      racm: Yup.array()
+        .of(Yup.string())
         .required('Request access control is required'),
-      description: Yup.string()
-        .required('Description is required'),
+      description: Yup.string().required('Description is required'),
     });
 
     return (
@@ -40,18 +34,26 @@ class EditConduitForm extends Component {
         initialValues={initialValues}
         validationSchema={conduitSchema}
         enableReinitialize
-        render={props =>
+        render={(props) => (
           <ConduitForm
             {...props}
             buttonLabel="Save Conduit"
             changeMode={changeMode}
             conduit={conduit}
-            handleFieldUpdates onChange={this.handleFieldUpdates}
+            handleFieldUpdates
+            onChange={this.handleFieldUpdates}
             status=""
-          />}
+          />
+        )}
         onSubmit={(values, actions) => {
           console.log('in edit form, values: ', values);
-          dispatch(updateConduit({ conduit: { ...values, id: conduit.id } }, actions, changeMode));
+          dispatch(
+            updateConduit(
+              { conduit: { ...values, id: conduit.id } },
+              actions,
+              changeMode
+            )
+          );
         }}
       />
     );
@@ -66,14 +68,12 @@ EditConduitForm.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    conduit: getConduit(state, ownProps.cid)
+    conduit: getConduit(state, ownProps.cid),
   };
 };
 
-const mapDispatchToProps = (dispatch) => (
-  {
-    dispatch,
-  }
-);
+const mapDispatchToProps = (dispatch) => ({
+  dispatch,
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditConduitForm);
