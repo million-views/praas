@@ -1,5 +1,5 @@
 import React from 'react';
-import { IonCol, IonRow } from '@ionic/react';
+import { IonCol, IonRow, IonText } from '@ionic/react';
 import { CheckBoxGroup } from '../../../../components/Form/Checkbox';
 
 import './style.scss';
@@ -32,7 +32,7 @@ const RequestMethods: React.FC<Props> = ({ defaultChecked }) => {
       </IonRow>
       <IonRow className="request-methods ion-justify-content-center">
         <IonCol>
-          <div className="error">{errors['racm']?.message}</div>
+          <IonText color="danger">{errors['racm']?.message}</IonText>
         </IonCol>
       </IonRow>
     </>

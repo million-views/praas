@@ -109,7 +109,7 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
                 <RadioGroup
                   labelClassName="status__label"
                   name="status"
-                  value={conduit.status}
+                  value={conduit?.status || 'inactive'}
                   options={[
                     { value: 'active', label: 'Active' },
                     { value: 'inactive', label: 'Inactive' },
