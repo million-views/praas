@@ -103,6 +103,7 @@ const fakeUserProfile = (overrides = {}) => {
 
 // frequently used
 const typesArr = ['Google Sheets', 'Airtable', 'Smartsheet'];
+const baseUrl = ['https://api.airtable.com/v0/', 'https://docs.google.com/spreadsheets/d/', 'https://api.smartsheet.com/2.0/sheets'];
 const ipstatArr = ['active', 'inactive'];
 const hfffieldArr = ['partner', 'campaign', 'userName', 'department', 'accountName'];
 const hffPolicyArr = ['drop-if-filled', 'pass-if-match'];
@@ -114,7 +115,8 @@ const fakeConduit = (overrides = {}) => {
     suriApiKey: faker.random.uuid(),
     suriType: typesArr[Math.floor(Math.random() * typesArr.length)],
     suriObjectKey: faker.lorem.word(),
-    suri: faker.internet.url(),
+    // suri: faker.internet.url(),
+    suri: baseUrl[Math.floor(Math.random() * baseUrl.length)],
     allowlist: [{
       ip: faker.internet.ip(),
       status: ipstatArr[Math.floor(Math.random() * ipstatArr.length)],

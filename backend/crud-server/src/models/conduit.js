@@ -4,6 +4,7 @@ const validator = require('validator');
 const HFF_PROPS = ['fieldName', 'include', 'policy', 'value'].join('');
 const HFF_POLICY = ['drop-if-filled', 'pass-if-match'];
 const SERVICE_ENUM = ['Airtable', 'Google Sheets', 'Smartsheet'];
+const SERVICE__BASE_ENUM = ['https://api.airtable.com/v0/', 'https://docs.google.com/spreadsheets/d/', 'https://api.smartsheet.com/2.0/sheets'];
 const STATUS_ENUM = ['active', 'inactive'];
 const HTTP_METHODS_ENUM = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
 const BOOLEAN_ENUM = [true, false];
@@ -34,11 +35,11 @@ module.exports = (db, DataTypes) => {
     },
 
     suri: {
-      type: DataTypes.STRING(512),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        isUrl: {
-          args: true,
+        isIn: {
+          args: [SERVICE__BASE_ENUM],
           msg: 'invalid url'
         }
       }

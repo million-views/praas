@@ -286,6 +286,22 @@ describe('Praas REST API', () => {
           .post(`/conduits`)
           .set('Authorization', `Token ${jakeUser.token}`)
           .send({ conduit: withInvalidSuri });
+        console.debug(res.body, res.status, res.error);
+        expect(res.status).to.equal(422);
+        expect(res.error).to.not.be.false;
+        expect(res.body.errors[0].suri).to.match(ERROR_PATTERN);
+      });
+
+      it('should reject invalid SURI base url', async function () {
+        const withInvalidSuri = helpers.fakeConduit();
+        console.log('new suri:1:', withInvalidSuri.suri);
+        withInvalidSuri.suri = 'https://api.mytable.com/v0/';
+        console.log('new suri:2:', withInvalidSuri.suri);
+        const res = await Api()
+          .post(`/conduits`)
+          .set('Authorization', `Token ${jakeUser.token}`)
+          .send({ conduit: withInvalidSuri });
+        console.debug(res.body, res.status, res.error);
         expect(res.status).to.equal(422);
         expect(res.error).to.not.be.false;
         expect(res.body.errors[0].suri).to.match(ERROR_PATTERN);
