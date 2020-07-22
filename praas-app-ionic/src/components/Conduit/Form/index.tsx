@@ -51,7 +51,7 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
     <FormContext {...formMethods}>
       <form noValidate onSubmit={handleSubmit(onSubmit)}>
         <IonGrid>
-          <IonRow className="ion-margin-bottom">
+          <IonRow className="ion-margin-bottom ion-align-items-end">
             <IonCol size="12" sizeMd="6">
               <FormFieldWithError error={errors.suriApiKey}>
                 <IonLabel position="stacked">API Key</IonLabel>
