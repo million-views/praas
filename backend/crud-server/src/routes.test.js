@@ -156,6 +156,11 @@ describe('Praas REST API', () => {
       expect(res.body.user).to.have.property('lastName');
       expect(res.body.user).to.have.property('email');
       expect(res.body.user).to.have.property('token');
+      const userConduits = await Api()
+        .get('/conduits')
+        .set('Authorization', `Token ${res.body.user.token}`);
+      expect(userConduits.status).to.equal(200);
+      expect(userConduits.body).to.have.property('conduits');
     });
   });
 
@@ -334,6 +339,17 @@ describe('Praas REST API', () => {
       expect(invalidAllowList.error).to.not.be.false;
       expect(invalidAllowList.body.errors[0].allowlist).to.match(ERROR_PATTERN);
 
+      // invalid hiddenFormField
+      const withInvalidHiddenFormField = helpers.fakeConduit();
+      withInvalidHiddenFormField.hiddenFormField = [{}];
+      const invalidHiddenFormField = await Api()
+        .post(`/conduits`)
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ conduit: withInvalidHiddenFormField });
+      expect(invalidHiddenFormField.status).to.equal(422);
+      expect(invalidHiddenFormField.error).to.not.be.false;
+      expect(invalidHiddenFormField.body).to.have.property('errors');
+
       // valid request
       // Add 25 conduits for testing: update, delete and pagination.. since
       // a REST layer test should be isolated from the DATA layer, we don't
@@ -379,6 +395,7 @@ describe('Praas REST API', () => {
 
     // PUT method
     it('should overwrite existing service endpoints', async function () {
+      // existing conduit
       const conduit = await Api()
         .get('/conduits/' + ctId1)
         .set('Authorization', `Token ${jakeUser.token}`);
@@ -386,19 +403,52 @@ describe('Praas REST API', () => {
 
       const putData = await helpers.fakeConduit();
 
-      const res = await Api()
+      const putConduit = await Api()
         .put('/conduits/' + ctId1)
         .set('Authorization', `Token ${jakeUser.token}`)
         .send({ conduit: putData });
-      expect(res.status).to.equal(200);
-      expect(res.body.conduit).to.not.eql(conduit.body.conduit);
-      expect(res.body.conduit.suri).to.equal(putData.suri);
-      expect(res.body.conduit.suriApiKey).to.equal(putData.suriApiKey);
-      expect(res.body.conduit.suriObjectKey).to.equal(putData.suriObjectKey);
-      expect(res.body.conduit.suriType).to.equal(putData.suriType);
-      expect(res.body.conduit.allowlist).to.eql(putData.allowlist);
-      expect(res.body.conduit.racm).to.eql(putData.racm);
-      expect(res.body.conduit.hiddenFormField).to.eql(putData.hiddenFormField);
+      expect(putConduit.status).to.equal(200);
+      expect(putConduit.body.conduit).to.not.eql(conduit.body.conduit);
+      expect(putConduit.body.conduit.suri).to.equal(putData.suri);
+      expect(putConduit.body.conduit.suriApiKey).to.equal(putData.suriApiKey);
+      expect(putConduit.body.conduit.suriObjectKey).to.equal(putData.suriObjectKey);
+      expect(putConduit.body.conduit.suriType).to.equal(putData.suriType);
+      expect(putConduit.body.conduit.allowlist).to.eql(putData.allowlist);
+      expect(putConduit.body.conduit.racm).to.eql(putData.racm);
+      expect(putConduit.body.conduit.hiddenFormField).to.eql(putData.hiddenFormField);
+
+      // invalid conduit
+      const invalidConduit = await helpers.fakeConduit();
+      delete invalidConduit.suri;
+
+      const putInvalidConduit = await Api()
+        .put('/conduits/' + ctId1)
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send({ conduit: invalidConduit });
+      expect(putInvalidConduit.status).to.equal(422);
+      expect(putInvalidConduit.error).to.not.be.false;
+      expect(Object.keys(putInvalidConduit.body.errors)).to.include('suri');
+      expect(putInvalidConduit.body.errors.suri).to.match(ERROR_PATTERN);
+
+      // conduit URI
+      const conduitUri = { conduit: { curi: 'td-12345.trickle.cc' } };
+      const putCuri = await Api()
+        .put(`/conduits/${ctId1}`)
+        .set('Authorization', `Token ${jakeUser.token}`)
+        .send(conduitUri);
+      expect(putCuri.status).to.equal(403);
+      expect(putCuri.error).to.not.be.false;
+      expect(putCuri.body).to.have.property('errors');
+      expect(putCuri.body.errors.conduit).to.equal('is immutable');
+
+      // non-existent conduit
+      const nonExistent = await Api()
+        .put('/conduits/non-existent')
+        .set('Authorization', `Token ${jakeUser.token}`);
+      expect(nonExistent.status).to.equal(404);
+      expect(nonExistent.error).to.not.be.false;
+      expect(nonExistent.body).to.have.property('errors');
+      expect(nonExistent.body.errors.conduit).to.equal('not found');
     });
 
     // PATCH method
@@ -441,6 +491,15 @@ describe('Praas REST API', () => {
       expect(updateCuri.error).to.not.be.false;
       expect(updateCuri.body).to.have.property('errors');
       expect(updateCuri.body.errors.conduit).to.equal('is immutable');
+
+      // non-existent conduit
+      const nonExistent = await Api()
+        .patch('/conduits/non-existent')
+        .set('Authorization', `Token ${jakeUser.token}`);
+      expect(nonExistent.status).to.equal(404);
+      expect(nonExistent.error).to.not.be.false;
+      expect(nonExistent.body).to.have.property('errors');
+      expect(nonExistent.body.errors.conduit).to.equal('not found');
     });
 
     // DELETE method
