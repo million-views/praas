@@ -76,6 +76,8 @@ describe('Praas REST API', () => {
         .send({
           user: { firstName, lastName, email: email.toLowerCase(), password }
         });
+      expect(res.status).to.equal(200);
+      expect(res.body).to.have.property('user');
       expect(User(res).email).to.equal(email.toLowerCase());
     });
 
