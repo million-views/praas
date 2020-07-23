@@ -166,10 +166,12 @@ describe('Praas REST API', () => {
 
       // create two conduits service endpoints
       const ct1 = helpers.fakeConduit();
+      console.log('[1]:', ct1);
       const res1 = await Api()
         .post('/conduits')
         .set('Authorization', `Token ${jakeUser.token}`)
         .send({ conduit: ct1 });
+      console.debug(res1.body, res1.status, res1.error);
       expect(res1.status).to.equal(201);
       expect(res1.body).to.have.property('conduit');
       expect(res1.body.conduit).to.have.property('id');
@@ -277,16 +279,30 @@ describe('Praas REST API', () => {
         expect(res3.error).to.not.be.false;
         expect(Object.keys(res3.body.errors)).to.include('suriApiKey');
         expect(res3.body.errors.suriApiKey).to.match(ERROR_PATTERN);
+
+        // check for Service Object Key ( suriObjectKey )
+        const withoutSuriObjectKey = helpers.fakeConduit();
+        delete withoutSuriObjectKey.suriObjectKey;
+        const res4 = await Api()
+          .post('/conduits')
+          .set('Authorization', `Token ${jakeUser.token}`)
+          .send({ conduit: withoutSuriObjectKey });
+        expect(res4.status).to.equal(422);
+        expect(res4.error).to.not.be.false;
+        expect(Object.keys(res4.body.errors)).to.include('suriObjectKey');
+        expect(res4.body.errors.suriObjectKey).to.match(ERROR_PATTERN);
       });
 
       it('should reject invalid SURI', async function () {
         const withInvalidSuri = helpers.fakeConduit();
+        console.log('before 1:', withInvalidSuri.suri);
         withInvalidSuri.suri = 'not-a-url';
+        console.log('after 2:', withInvalidSuri.suri);
         const res = await Api()
           .post(`/conduits`)
           .set('Authorization', `Token ${jakeUser.token}`)
           .send({ conduit: withInvalidSuri });
-        console.debug(res.body, res.status, res.error);
+        // console.debug(res.body, res.status, res.error);
         expect(res.status).to.equal(422);
         expect(res.error).to.not.be.false;
         expect(res.body.errors[0].suri).to.match(ERROR_PATTERN);
@@ -294,9 +310,9 @@ describe('Praas REST API', () => {
 
       it('should reject invalid SURI base url', async function () {
         const withInvalidSuri = helpers.fakeConduit();
-        console.log('new suri:1:', withInvalidSuri.suri);
+        // console.log('new suri:1:', withInvalidSuri.suri);
         withInvalidSuri.suri = 'https://api.mytable.com/v0/';
-        console.log('new suri:2:', withInvalidSuri.suri);
+        // console.log('new suri:2:', withInvalidSuri.suri);
         const res = await Api()
           .post(`/conduits`)
           .set('Authorization', `Token ${jakeUser.token}`)
@@ -343,6 +359,27 @@ describe('Praas REST API', () => {
         expect(res.body.errors[0].allowlist).to.match(ERROR_PATTERN);
       });
 
+      it('should reject unmatched service type and service base url', async () => {
+        const withUnmatchSuri = helpers.fakeConduit();
+        console.log('new suri:1:', withUnmatchSuri.suriType);
+        if (withUnmatchSuri.suriType === 'Airtable') {
+          withUnmatchSuri.suri = 'https://api.mytable.com/v0/';
+        } else if (withUnmatchSuri.suriType === 'Google Sheets') {
+          withUnmatchSuri.suri = 'https://docs.doodle.com/spreadsheets/d/';
+        } else if (withUnmatchSuri.suriType === 'Smartsheet') {
+          withUnmatchSuri.suri = 'https://api.quicksheet.com/2.0/sheets';
+        }
+        console.log('new suri:2:', withUnmatchSuri.suri);
+        const res = await Api()
+          .post(`/conduits`)
+          .set('Authorization', `Token ${jakeUser.token}`)
+          .send({ conduit: withUnmatchSuri });
+        console.debug(res.body, res.status, res.error);
+        expect(res.status).to.equal(422);
+        expect(res.error).to.not.be.false;
+        expect(res.body.errors[0].suri).to.match(ERROR_PATTERN);
+      });
+
       it('should allow user to add new service endpoint', async () => {
         // Add 25 conduits for testing: update, delete and pagination.. since
         // a REST layer test should be isolated from the DATA layer, we don't
@@ -371,6 +408,7 @@ describe('Praas REST API', () => {
         expect(res.body.conduit).to.have.property('suriApiKey');
         expect(res.body.conduit).to.have.property('suriType');
         expect(res.body.conduit).to.have.property('suri');
+        expect(res.body.conduit).to.have.property('suriObjectKey');
         expect(res.body.conduit).to.have.property('curi');
         expect(res.body.conduit).to.have.property('allowlist');
         expect(res.body.conduit).to.have.property('racm');
