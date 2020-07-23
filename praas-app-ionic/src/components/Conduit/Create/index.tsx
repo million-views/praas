@@ -19,9 +19,12 @@ const ConduitCreate: React.FC<Props> = ({ addConduit }) => {
   const history = useHistory();
 
   const handleCreate = useCallback(
-    async (conduit) => {
-      await addConduit(conduit);
-      history.replace('/');
+    (conduit) => {
+      (addConduit(conduit) as any).then((response: any) => {
+        if (response.conduit) {
+          history.replace('/');
+        }
+      });
     },
     [addConduit]
   );
