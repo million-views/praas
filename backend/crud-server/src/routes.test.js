@@ -188,12 +188,10 @@ describe('Praas REST API', () => {
 
       // create two conduits service endpoints
       const ct1 = helpers.fakeConduit();
-      // console.log('[1]:', ct1);
       const res1 = await Api()
         .post('/conduits')
         .set('Authorization', `Token ${jakeUser.token}`)
         .send({ conduit: ct1 });
-      // console.debug(res1.body, res1.status, res1.error);
       expect(res1.status).to.equal(201);
       expect(res1.body).to.have.property('conduit');
       expect(res1.body.conduit).to.have.property('id');
@@ -386,7 +384,6 @@ describe('Praas REST API', () => {
           .post(`/conduits`)
           .set('Authorization', `Token ${jakeUser.token}`)
           .send({ conduit: withUnmatchSuri });
-        // console.debug(res.body, res.status, res.error);
         expect(res.status).to.equal(422);
         expect(res.error).to.not.be.false;
         expect(res.body.errors.suri).to.match(ERROR_PATTERN);

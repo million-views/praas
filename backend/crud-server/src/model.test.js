@@ -1,4 +1,4 @@
-// const fs = require('fs');
+const fs = require('fs');
 const path = require('path');
 const expect = require('chai').expect;
 const jwt = require('jsonwebtoken');
@@ -174,9 +174,9 @@ describe('PraaS', () => {
       this.timeout(4000); // <- needed to prevent timeout exceeded mocha error
 
       // create test conduits for proxy server
-      // const curis = {}; // <- store the conduits for proxy test
+      const curis = {}; // <- store the conduits for proxy test
 
-      /* const proxyBaseConduit = {
+      const proxyBaseConduit = {
         userId: user.id,
         suri: dotEnvValues.parsed.CONDUIT_SERVICE_URI,
         suriApiKey: dotEnvValues.parsed.CONDUIT_SERVICE_API_KEY,
@@ -236,7 +236,7 @@ describe('PraaS', () => {
       fs.writeFileSync(
         path.resolve('.test-data-curi.json'),
         JSON.stringify(curis, null, 2)
-      ); */
+      );
 
       // flood user with random conduits
       generateConduits(user.id, 200);
