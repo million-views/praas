@@ -43,6 +43,34 @@ const Racm = (props) => {
   );
 };
 
+const Status = ({ field, form: { values, touched, errors }, ...props }) => {
+  return (
+    <span>
+      <label>
+        <input
+          {...field}
+          type="radio"
+          defaultChecked={values.status === 'active'}
+          value="active"
+        />
+        <span className="checkable">Active</span>
+      </label>
+      <label>
+        <input
+          {...field}
+          type="radio"
+          defaultChecked={values.status === 'inactive'}
+          value="inactive"
+        />
+        <span className="checkable">Inactive</span>
+      </label>
+      {touched[field.name] && errors[field.name] && (
+        <div className="field-error">{errors[field.name]}</div>
+      )}
+    </span>
+  );
+};
+
 function ConduitForm(props) {
   console.log('props in form: ', props);
   const { buttonLabel, changeMode, isSubmitting, status } = props;
@@ -79,7 +107,18 @@ function ConduitForm(props) {
         required
       />
       <ErrorMessage name="suri" component="div" className="error" />
-      <FieldArray name="racm" component={Racm} />
+
+      <div style={{ display: 'flex' }}>
+        <div style={{ flexGrow: 3 }} className="card">
+          <h4>Allowed operations: </h4>
+          <FieldArray name="racm" component={Racm} />
+        </div>
+        <span style={{ flexGrow: 1 }}> </span>
+        <div className="card" style={{ flexGrow: 1 }}>
+          <h4>Status:</h4>
+          <Field name="status" component={Status} />
+        </div>
+      </div>
 
       <Field
         name="description"

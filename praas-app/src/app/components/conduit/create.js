@@ -17,7 +17,9 @@ class CreateConduitForm extends Component {
       suri: '',
       racm: [],
       description: '',
+      status: 'inactive',
     };
+
     const conduitSchema = Yup.object({
       suriApiKey: Yup.string().required('Service endpoint API key is required'),
       suriType: Yup.string().required('Service endpoint type is required'),
@@ -26,6 +28,7 @@ class CreateConduitForm extends Component {
         .of(Yup.string())
         .required('Request access control is required'),
       description: Yup.string().required('Description is required'),
+      status: Yup.string().oneOf(['active', 'inactive']),
     });
 
     return (

@@ -2,7 +2,7 @@
 // $card-shadow: $shadow !default;
 $card-border: $border !default;
 $card-radius: $radius !default;
-// $card-margin: 0 0.3rem 0 0.3rem !default;
+$card-margin: 0.3rem !default;
 $card-top-padding: 0.6rem 0.6rem !default;
 $card-bottom-padding: 0.6rem !default;
 
@@ -15,7 +15,7 @@ $card-bottom-padding: 0.6rem !default;
   overflow: hidden;
   text-align: left;
   background: $white;
-  margin-bottom: $separation;
+  margin: $card-margin;
   padding: 0;
 
   // prevent overflows in descendents

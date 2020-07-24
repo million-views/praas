@@ -3,22 +3,23 @@ import PropTypes from 'prop-types';
 
 // See https://uxdesign.cc/the-microcopyist-cancellation-confirmation-conflagration-8a6047a4cf9
 // for an overview on writing copy for destructive actions.
-const Modal = ({ deleteConduit }) => {
+const Modal = ({ deleteConduit, conduit }) => {
+  console.log('===========> conduit:', conduit.id);
   return (
     <div className="modal">
       <input id="confirm-conduit-delete" type="checkbox" />
       <label htmlFor="confirm-conduit-delete" className="overlay" />
       <article>
         <header>
-          <h3>Delete Conduit</h3>
+          <h3>Delete {conduit.curi}, (id: {conduit.id})?</h3>
           {/* <label htmlFor="confirm-conduit-delete" className="close">×</label> */}
         </header>
         <section>
           <p>
-            Deleting a conduit will deactivate and remove the endpoint. You won't
-            be able to access your data store using this endpoint after this
-            operation. Data will remain accessible through the interface provided
-            by the service provider for your data store.
+            Deleting a conduit will deactivate and remove the endpoint. You
+            won't be able to access your data store using this endpoint after
+            this operation. Data will remain accessible through the interface
+            provided by the service provider for your data store.
           </p>
           <p>Are you sure you want to delete?</p>
         </section>
@@ -26,7 +27,11 @@ const Modal = ({ deleteConduit }) => {
           <label htmlFor="confirm-conduit-delete" className="button">
             Never mind
           </label>
-          <label htmlFor="confirm-conduit-delete" onClick={deleteConduit} className="button dangerous">
+          <label
+            htmlFor="confirm-conduit-delete"
+            onClick={() => deleteConduit(conduit.id)}
+            className="button dangerous"
+          >
             Delete
           </label>
         </footer>
@@ -37,21 +42,39 @@ const Modal = ({ deleteConduit }) => {
 
 Modal.propTypes = {
   deleteConduit: PropTypes.func,
+  conduit: PropTypes.object
 };
 
 const List = (props) => {
   const conduits = props.conduits.map((conduit, index) => {
-    const deleteConduit = () => props.deleteConduit(conduit.id);
     return (
       <tr key={index}>
-        <td>{conduit.description}</td>
+        <td>{conduit.id}</td>
         <td>{conduit.suriType}</td>
         <td>{conduit.curi}</td>
-        <td>{conduit.status}</td>
-        <td>
-          <button onClick={() => { props.changeMode('edit'); props.setConduitId(conduit.id); }}>Edit</button>
-          <label htmlFor="confirm-conduit-delete" className="button">Delete</label>
-          <Modal deleteConduit={deleteConduit} />
+        <td>{conduit.description}</td>
+        <td style={{ textTransform: 'capitalize' }}>{conduit.status}</td>
+        <td style={{ display: 'flex' }}>
+          <button
+            onClick={() => {
+              props.setConduitId(conduit.id);
+              props.changeMode('edit');
+            }}
+            style={{ background: 0 }}
+            className="icon-cog"
+          />
+          <label
+            disabled={conduit.status === 'active'}
+            htmlFor={
+              conduit.status === 'inactive' ? 'confirm-conduit-delete' : null
+            }
+            className="button icon-trash"
+            style={{ background: 0 }}
+          />
+          {
+            conduit.status === 'inactive' &&
+              <Modal deleteConduit={props.deleteConduit} conduit={conduit} />
+          }
         </td>
       </tr>
     );
@@ -65,16 +88,15 @@ const List = (props) => {
       <table>
         <thead>
           <tr>
-            <th>Description</th>
+            <th>ID</th>
             <th>Type</th>
-            <th>Conduit Endpoint</th>
+            <th>Conduit</th>
+            <th>Description</th>
             <th>Status</th>
-            <th>Action</th>
+            <th style={{ textAlign: 'center' }}>Action</th>
           </tr>
         </thead>
-        <tbody>
-          {conduits}
-        </tbody>
+        <tbody>{conduits}</tbody>
       </table>
     </>
   );

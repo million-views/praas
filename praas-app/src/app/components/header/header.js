@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { navigate } from '@reach/router';
 
 const Header = ({
-  title = 'Conduit data in and out',
+  title = 'conduits.xyz',
   loggedIn, logout, ...rest
 }) => {
   const Menu = () => {

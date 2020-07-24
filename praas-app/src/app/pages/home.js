@@ -4,7 +4,11 @@ import { connect } from 'react-redux';
 import { Redirect, navigate } from '@reach/router';
 
 import { Header } from 'components';
-import { ConduitList, CreateConduitForm, EditConduitForm } from 'components/conduit';
+import {
+  ConduitList,
+  CreateConduitForm,
+  EditConduitForm
+} from 'components/conduit';
 
 import { listConduits } from 'store/conduit/list';
 import { deleteConduit } from 'store/conduit/del';
@@ -22,7 +26,7 @@ class Home extends React.Component {
 
   setConduitId(cid) {
     this.setState({
-      cid
+      cid,
     });
   }
 
@@ -33,6 +37,7 @@ class Home extends React.Component {
   }
 
   deleteConduit(cid) {
+    console.log('--------------- cid', cid);
     this.props.deleteConduit(cid);
     this._fetchConduits();
   }
@@ -47,40 +52,38 @@ class Home extends React.Component {
 
   changeMode(mode = 'list') {
     this.setState({
-      mode
+      mode,
     });
 
     if (mode === 'list') {
       this._fetchConduits();
     }
-  };
+  }
 
   render() {
     const { user, logout } = this.props;
     if (user.loggedIn) {
       return (
         <>
-          <Header
-            loggedIn={user.loggedIn}
-            logout={logout}
-          />
+          <Header loggedIn={user.loggedIn} logout={logout} />
           <main className="page">
-            {this.state.mode === 'list' &&
+            {this.state.mode === 'list' && (
               <ConduitList
                 setConduitId={(cid) => this.setConduitId(cid)}
                 changeMode={(mode) => this.changeMode(mode)}
                 deleteConduit={(cid) => this.deleteConduit(cid)}
                 conduits={this.props.conduits}
-              />}
-            {this.state.mode === 'add' &&
-              <CreateConduitForm
-                changeMode={(mode) => this.changeMode(mode)}
-              />}
-            {this.state.mode === 'edit' &&
+              />
+            )}
+            {this.state.mode === 'add' && (
+              <CreateConduitForm changeMode={(mode) => this.changeMode(mode)} />
+            )}
+            {this.state.mode === 'edit' && (
               <EditConduitForm
                 cid={this.state.cid}
                 changeMode={(mode) => this.changeMode(mode)}
-              />}
+              />
+            )}
           </main>
         </>
       );
@@ -88,7 +91,7 @@ class Home extends React.Component {
       return <Redirect to="login" noThrow />;
     }
   }
-};
+}
 
 Home.propTypes = {
   user: PropTypes.object,
@@ -105,12 +108,10 @@ const mapStateToProps = (state, _ownProps) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => (
-  {
-    logout: () => dispatch(logoutUser()),
-    listConduits: () => dispatch(listConduits()),
-    deleteConduit: (cid) => dispatch(deleteConduit(cid)),
-  }
-);
+const mapDispatchToProps = (dispatch) => ({
+  logout: () => dispatch(logoutUser()),
+  listConduits: () => dispatch(listConduits()),
+  deleteConduit: (cid) => dispatch(deleteConduit(cid)),
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
