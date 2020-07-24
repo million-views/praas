@@ -3,8 +3,8 @@
 // be used only on stylesheets found under components.
 //
 main.page {
-  padding: 10px;
-  max-width: 720px;
+  padding: 6px;
+  max-width: 800px;
   margin: 4rem auto; // <- chack nav height (default is 3rem)
 }
 
@@ -12,13 +12,14 @@ main.page {
 // bundler is able to resolve the icon font file.
 @font-face {
   font-family: 'fontello';
-  src: url('~web/assets/fonts/fontello.eot?66688527');
+  src: url('~web/assets/fonts/fontello.eot?b1ef7e47');
   src:
-    url('~web/assets/fonts/fontello.eot?66688527#iefix') format('embedded-opentype'),
-    url('~web/assets/fonts/fontello.woff2?66688527') format('woff2'),
-    url('~web/assets/fonts/fontello.woff?66688527') format('woff'),
-    url('~web/assets/fonts/fontello.ttf?66688527') format('truetype'),
-    url('~web/assets/fonts/fontello.svg?66688527#plugin') format('svg');
+    url('~web/assets/fonts/fontello.eot?b1ef7e47#iefix')
+    format('embedded-opentype'),
+    url('~web/assets/fonts/fontello.woff2?b1ef7e47') format('woff2'),
+    url('~web/assets/fonts/fontello.woff?b1ef7e47') format('woff'),
+    url('~web/assets/fonts/fontello.ttf?b1ef7e47') format('truetype'),
+    url('~web/assets/fonts/fontello.svg?b1ef7e47#plugin') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -26,35 +27,130 @@ main.page {
 // Go to fontello.com or similar sites and add the icons you want.
 // Place the icon font file in a public folder. Next enumerate
 // the and pre-define the icons that exist in your fontello here.
-.icon-puzzle::before { content: '\e800'; }
-.icon-login::before { content: '\e801'; }
-.icon-logout::before { content: '\e802'; }
-.icon-user-add::before { content: '\e803'; }
-.icon-user-remove::before { content: '\e804'; }
-.icon-cog::before { content: '\e805'; }
-.icon-doc::before { content: '\e806'; }
-.icon-docs::before { content: '\e807'; }
-.icon-leaf::before { content: '\e808'; }
-.icon-paper-plane::before { content: '\e809'; }
-.icon-mobile::before { content: '\e80a'; }
-.icon-picture::before { content: '\e80b'; }
-.icon-help::before { content: '\e80c'; }
-.icon-globe::before { content: '\e80d'; }
-.icon-ellipsis::before { content: '\e80e'; }
-.icon-ellipsis-vert::before { content: '\e80f'; }
-.icon-menu::before { content: '\e810'; }
-.icon-list::before { content: '\e811'; }
-.icon-doc-remove::before { content: '\e812'; }
-.icon-doc-add::before { content: '\e813'; }
-.icon-link::before { content: '\e814'; }
-.icon-cloud::before { content: '\e815'; }
-.icon-home::before { content: '\e816'; }
-.icon-heart::before { content: '\e817'; }
-.icon-sort::before { content: '\e818'; }
-.icon-videocam::before { content: '\e819'; }
-.icon-play::before { content: '\e81a'; }
-.icon-stop::before { content: '\e81b'; }
-.icon-pause::before { content: '\e81c'; }
-.icon-spin-1::before { content: '\e81d'; }
-.icon-spin-2::before { content: '\e81e'; }
-.icon-spin-3::before { content: '\e81f'; }
+.icon-puzzle::before {
+  content: '\e810';
+}
+
+.icon-login::before {
+  content: '\e811';
+}
+
+.icon-logout::before {
+  content: '\e812';
+}
+
+.icon-user-add::before {
+  content: '\e813';
+}
+
+.icon-user-remove::before {
+  content: '\e814';
+}
+
+.icon-cog::before {
+  content: '\e815';
+}
+
+.icon-doc::before {
+  content: '\e816';
+}
+
+.icon-docs::before {
+  content: '\e817';
+}
+
+.icon-trash::before {
+  content: '\e818';
+}
+
+.icon-list-add::before {
+  content: '\e819';
+}
+
+.icon-edit::before {
+  content: '\e81a';
+}
+
+.icon-help::before {
+  content: '\e81b';
+}
+
+.icon-globe::before {
+  content: '\e81c';
+}
+
+.icon-ellipsis::before {
+  content: '\e81d';
+}
+
+.icon-ellipsis-vert::before {
+  content: '\e81e';
+}
+
+.icon-menu::before {
+  content: '\e81f';
+}
+
+.icon-list::before {
+  content: '\e820';
+}
+
+.icon-doc-remove::before {
+  content: '\e821';
+}
+
+.icon-doc-add::before {
+  content: '\e822';
+}
+
+.icon-link::before {
+  content: '\e823';
+}
+
+.icon-cloud::before {
+  content: '\e824';
+}
+
+.icon-home::before {
+  content: '\e825';
+}
+
+.icon-heart-empty::before {
+  content: '\e826';
+}
+
+.icon-sort-name-up::before {
+  content: '\e827';
+}
+
+.icon-mail::before {
+  content: '\e828';
+}
+
+.icon-key::before {
+  content: '\e829';
+}
+
+.icon-filter::before {
+  content: '\e82a';
+}
+
+.icon-plus::before {
+  content: '\e82b';
+}
+
+.icon-minus::before {
+  content: '\e82c';
+}
+
+.icon-picture::before {
+  content: '\e82d';
+}
+
+.icon-spin-1::before {
+  content: '\e82e';
+}
+
+.icon-spin-2::before {
+  content: '\e82f';
+}

@@ -16,8 +16,8 @@
     "conduit"
   ],
   "scripts": {
-    "lint": "eslint src --cache",
-    "lint:fix": "eslint --fix src",
+    "lint": "stylelint src/**/*.{css,scss} --cache && eslint src --cache",
+    "lint:fix": "stylelint src/**/*.{css,scss} --fix && eslint --fix src",
     "build": "webpack --colors --progress -p --env.production --config src/cfg/webpack",
     "watch": "webpack-dev-server --progress --config src/cfg/webpack",
     "start": "npm run build && live-server build/"

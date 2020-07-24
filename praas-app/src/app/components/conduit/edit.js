@@ -11,13 +11,13 @@ import { updateConduit, getConduit } from 'store/conduit/edit';
 class EditConduitForm extends Component {
   render() {
     const { changeMode, dispatch, conduit } = this.props;
-    console.log('conduit in render-editform: ', conduit);
     const initialValues = {
       suriApiKey: conduit.suriApiKey,
       suriType: conduit.suriType,
       suri: conduit.suri,
       racm: conduit.racm,
       description: conduit.description,
+      status: conduit.status,
     };
     const conduitSchema = Yup.object({
       suriApiKey: Yup.string().required('Service endpoint API key is required'),
@@ -27,6 +27,7 @@ class EditConduitForm extends Component {
         .of(Yup.string())
         .required('Request access control is required'),
       description: Yup.string().required('Description is required'),
+      status: Yup.string().oneOf(['active', 'inactive']),
     });
 
     return (
