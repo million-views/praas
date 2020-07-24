@@ -166,12 +166,12 @@ describe('Praas REST API', () => {
 
       // create two conduits service endpoints
       const ct1 = helpers.fakeConduit();
-      console.log('[1]:', ct1);
+      // console.log('[1]:', ct1);
       const res1 = await Api()
         .post('/conduits')
         .set('Authorization', `Token ${jakeUser.token}`)
         .send({ conduit: ct1 });
-      console.debug(res1.body, res1.status, res1.error);
+      // console.debug(res1.body, res1.status, res1.error);
       expect(res1.status).to.equal(201);
       expect(res1.body).to.have.property('conduit');
       expect(res1.body.conduit).to.have.property('id');
@@ -295,14 +295,13 @@ describe('Praas REST API', () => {
 
       it('should reject invalid SURI', async function () {
         const withInvalidSuri = helpers.fakeConduit();
-        console.log('before 1:', withInvalidSuri.suri);
+        // console.log('before 1:', withInvalidSuri.suri);
         withInvalidSuri.suri = 'not-a-url';
-        console.log('after 2:', withInvalidSuri.suri);
+        // console.log('after 2:', withInvalidSuri.suri);
         const res = await Api()
           .post(`/conduits`)
           .set('Authorization', `Token ${jakeUser.token}`)
           .send({ conduit: withInvalidSuri });
-        // console.debug(res.body, res.status, res.error);
         expect(res.status).to.equal(422);
         expect(res.error).to.not.be.false;
         expect(res.body.errors[0].suri).to.match(ERROR_PATTERN);
@@ -317,7 +316,7 @@ describe('Praas REST API', () => {
           .post(`/conduits`)
           .set('Authorization', `Token ${jakeUser.token}`)
           .send({ conduit: withInvalidSuri });
-        console.debug(res.body, res.status, res.error);
+        // console.debug(res.body, res.status, res.error);
         expect(res.status).to.equal(422);
         expect(res.error).to.not.be.false;
         expect(res.body.errors[0].suri).to.match(ERROR_PATTERN);
@@ -361,7 +360,7 @@ describe('Praas REST API', () => {
 
       it('should reject unmatched service type and service base url', async () => {
         const withUnmatchSuri = helpers.fakeConduit();
-        console.log('new suri:1:', withUnmatchSuri.suriType);
+        // ('new suri:1:', withUnmatchSuri.suriType);
         if (withUnmatchSuri.suriType === 'Airtable') {
           withUnmatchSuri.suri = 'https://api.mytable.com/v0/';
         } else if (withUnmatchSuri.suriType === 'Google Sheets') {
@@ -369,12 +368,12 @@ describe('Praas REST API', () => {
         } else if (withUnmatchSuri.suriType === 'Smartsheet') {
           withUnmatchSuri.suri = 'https://api.quicksheet.com/2.0/sheets';
         }
-        console.log('new suri:2:', withUnmatchSuri.suri);
+        // console.log('new suri:2:', withUnmatchSuri.suri);
         const res = await Api()
           .post(`/conduits`)
           .set('Authorization', `Token ${jakeUser.token}`)
           .send({ conduit: withUnmatchSuri });
-        console.debug(res.body, res.status, res.error);
+        // console.debug(res.body, res.status, res.error);
         expect(res.status).to.equal(422);
         expect(res.error).to.not.be.false;
         expect(res.body.errors[0].suri).to.match(ERROR_PATTERN);
@@ -385,7 +384,7 @@ describe('Praas REST API', () => {
         // a REST layer test should be isolated from the DATA layer, we don't
         // directly access the model to insert these records.
         const conduits = [];
-        for (let i = 0, imax=conf.conduitsCount; i < imax; i++) {
+        for (let i = 0, imax = conf.conduitsCount; i < imax; i++) {
           const res = await Api()
             .post('/conduits')
             .set('Authorization', `Token ${jakeUser.token}`)
@@ -419,7 +418,7 @@ describe('Praas REST API', () => {
       it('should allow user to fetch multiple service endpoints', async () => {
         const res = await Api()
           .get('/conduits')
-          .query({ start: ctId2+1, count: conf.conduitsPerPage })
+          .query({ start: ctId2 + 1, count: conf.conduitsPerPage })
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res.status).to.equal(200);
         expect(res.body.conduits.length).to.equal(conf.conduitsPerPage);
