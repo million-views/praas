@@ -43,13 +43,13 @@ router.post('/', auth.required, async function (req, res, next) {
   // console.log('Inside conduits POST 3- suriObjectKey:', conduit.suriObjectKey);
 
   if (conduit.suriType === 'Airtable' && conduit.suri !== 'https://api.airtable.com/v0/') {
-    return next(new RestApiError(422, [{ suri: 'unsupported' }]));
+    return next(new RestApiError(422, { suri: 'unsupported' }));
   }
   if (conduit.suriType === 'Google Sheets' && conduit.suri !== 'https://docs.google.com/spreadsheets/d/') {
-    return next(new RestApiError(422, [{ suri: 'unsupported' }]));
+    return next(new RestApiError(422, { suri: 'unsupported' }));
   }
   if (conduit.suriType === 'Smartsheet' && conduit.suri !== 'https://api.smartsheet.com/2.0/sheets') {
-    return next(new RestApiError(422, [{ suri: 'unsupported' }]));
+    return next(new RestApiError(422, { suri: 'unsupported' }));
   }
 
   try {

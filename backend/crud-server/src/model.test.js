@@ -93,6 +93,18 @@ describe('PraaS', () => {
       expect(newUser.firstName).to.equal(fup.firstName);
     });
 
+    it('should validate whether user exists', async function () {
+      // valid user
+      const validUser = await models.User.exists(fup.email, fup.password);
+      expect(validUser).to.be.an('object');
+      expect(validUser).to.have.property('email');
+      expect(validUser.email).to.equal(fup.email);
+
+      // non-existent user
+      const nonExistentUser = await models.User.exists('test.user@example.com', 't3$TP@ssw0rd');
+      expect(nonExistentUser).to.be.undefined;
+    });
+
     it('should validate if email is unique', async () => {
       const fup1 = helpers.fakeUserProfile();
       const user1 = models.User.build({ ...fup1 });
@@ -241,11 +253,12 @@ describe('PraaS', () => {
       cdt = helpers.fakeConduit({ userId: user.id, curi });
       const objCdt = models.Conduit.build(cdt);
       await objCdt.save();
+      const createdConduit = objCdt.toJSON();
 
-      expect(objCdt).to.be.an('object');
-      expect(objCdt).to.have.property('suriApiKey');
-      expect(objCdt).to.have.property('suriType');
-      expect(objCdt.curi.length).to.equal(config.conduit.settings.curiLen);
+      expect(createdConduit).to.be.an('object');
+      expect(createdConduit).to.have.property('suriApiKey');
+      expect(createdConduit).to.have.property('suriType');
+      expect(createdConduit.curi.length).to.equal(config.conduit.settings.curiLen);
     });
 
     context('testing curi field...', () => {
