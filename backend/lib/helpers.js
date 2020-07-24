@@ -57,7 +57,7 @@ function powerset(list) {
 
   for (let i = 1; i < combinationsCount; i++) {
     const combination = [];
-    for (let j=0; j<listSize; j++) {
+    for (let j = 0; j < listSize; j++) {
       if ((i & (1 << j))) {
         combination.push(list[j]);
       }
@@ -152,7 +152,7 @@ const processInput = (inp, req, opt, out, err) => {
   for (let i = 0; i < req.length; i++) {
     if (typeof inp[req[i]] === 'undefined' || inp[req[i]] === null ||
       ('' + inp[req[i]]).trim() === '') {
-      err[req[i]] = `${req[i]} cannot be blank`;
+      err[req[i]] = 'cannot be blank';
     } else {
       out[req[i]] = inp[req[i]];
     };
