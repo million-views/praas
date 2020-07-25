@@ -5,11 +5,12 @@ import { Controller } from 'react-hook-form';
 type OptionType = { value: string; label: string };
 type Props = {
   name: string;
+  title: string;
   value: string;
   options: Array<OptionType>;
   multiple?: boolean;
 };
-const Select = ({ name, value, options, multiple = false }: Props) => {
+const Select = ({ name, title, value, options, multiple = false }: Props) => {
   return (
     <Controller
       as={
@@ -22,6 +23,7 @@ const Select = ({ name, value, options, multiple = false }: Props) => {
         </IonSelect>
       }
       name={name}
+      title={title}
       value={value}
       multiple={multiple}
       onChangeName="onIonChange"

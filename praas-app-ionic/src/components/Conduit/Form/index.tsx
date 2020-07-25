@@ -69,6 +69,7 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
                   name="suriType"
                   value={conduit?.suriType}
                   options={conduitTypes}
+                  title="SURI Type"
                 />
               </FormFieldWithError>
             </IonCol>
@@ -109,7 +110,7 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
                 <RadioGroup
                   labelClassName="status__label"
                   name="status"
-                  value={conduit?.status || 'inactive'}
+                  value={conduit.status}
                   options={[
                     { value: 'active', label: 'Active' },
                     { value: 'inactive', label: 'Inactive' },

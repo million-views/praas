@@ -40,7 +40,6 @@ export default function list(state = initialState, { type, payload }) {
         inflight: true,
       };
     case GET_CONDUIT_SUCCESS:
-      console.log(payload);
       return {
         inflight: false,
         item: payload.conduit,
