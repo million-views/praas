@@ -4,9 +4,9 @@ import ConduitForm from '../Form';
 
 import { connect } from 'react-redux';
 import { addConduit } from '../../../store/conduit/create';
-import { useHistory } from 'react-router';
+import { RouteComponentProps } from 'react-router';
 
-interface Props {
+interface Props extends RouteComponentProps {
   addConduit: (conduit: Conduit) => void;
 }
 
@@ -15,9 +15,7 @@ const conduit = {
   status: 'inactive',
 };
 
-const ConduitCreate: React.FC<Props> = ({ addConduit }) => {
-  const history = useHistory();
-
+const ConduitCreate: React.FC<Props> = ({ history, addConduit }) => {
   const handleCreate = useCallback(
     (conduit) => {
       (addConduit(conduit) as any).then((response: any) => {
