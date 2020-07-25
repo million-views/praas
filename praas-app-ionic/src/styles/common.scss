@@ -17,3 +17,22 @@ ion-content {
   font-size: 12px;
   text-align: left;
 }
+
+.ion-item--no-padding {
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --inner-padding-start: 0;
+  --inner-padding-end: 0;
+  --inner-padding-top: 0;
+  --inner-padding-bottom: 0;
+}
+
+.ion-item--no-background {
+  --background: none;
+  --background-activated: none;
+  --background-focused: none;
+  --background-hover: none;
+  --ripple-color: transparent;
+}

@@ -1,6 +1,14 @@
 import React, { useEffect, useCallback } from 'react';
-import { IonGrid, IonRow, IonCol, IonCard } from '@ionic/react';
-import { RouteComponentProps } from 'react-router';
+import {
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
+} from '@ionic/react';
+import { RouteComponentProps, Redirect } from 'react-router';
 import { connect } from 'react-redux';
 import { getConduit } from '../../../store/conduit/get';
 import { updateConduit } from '../../../store/conduit/edit';
@@ -37,15 +45,18 @@ const Conduit: React.FC<Props> = ({
   );
 
   return (
-    <IonGrid>
+    <IonGrid fixed>
       {conduit?.id ? (
-        <IonRow className="ion-justify-content-center">
-          <IonCol sizeXs="12" sizeXl="8">
-            <IonCard>
-              <ConduitForm onSave={handleUpdate} conduit={conduit} />
-            </IonCard>
-          </IonCol>
-        </IonRow>
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>
+              <h1>Edit Conduit</h1>
+            </IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            <ConduitForm onSave={handleUpdate} conduit={conduit} />
+          </IonCardContent>
+        </IonCard>
       ) : null}
     </IonGrid>
   );

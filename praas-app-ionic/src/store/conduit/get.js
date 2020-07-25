@@ -30,7 +30,7 @@ export const getConduit = (conduitId) => {
     );
   };
 };
-const initialState = { inflight: false, conduits: [{}] };
+const initialState = { inflight: false, conduits: [] };
 
 export default function list(state = initialState, { type, payload }) {
   switch (type) {

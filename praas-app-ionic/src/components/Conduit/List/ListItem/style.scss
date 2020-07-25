@@ -1,0 +1,7 @@
+.list-item {
+  &__alert-button--delete {
+    &#{&} {
+      color: var(--ion-color-danger);
+    }
+  }
+}

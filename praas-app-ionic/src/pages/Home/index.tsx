@@ -9,6 +9,10 @@ import {
   IonFab,
   IonFabButton,
   IonText,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
 } from '@ionic/react';
 import { add, createOutline, trashOutline } from 'ionicons/icons';
 import { connect } from 'react-redux';
@@ -17,6 +21,7 @@ import { listConduits } from '../../store/conduit/list';
 import './style.scss';
 import ListItem from '../../components/Conduit/List/ListItem';
 import { deleteConduit } from '../../store/conduit/del';
+import conduit from '../../store/conduit';
 
 interface Props {
   conduits: Array<Conduit>;
@@ -28,7 +33,6 @@ const Home: React.FC<Props> = ({ conduits, listConduits, deleteConduit }) => {
   useEffect(() => {
     listConduits();
   }, []);
-
   return (
     <IonPage>
       <Header />
@@ -46,28 +50,52 @@ const Home: React.FC<Props> = ({ conduits, listConduits, deleteConduit }) => {
           </IonRow>
         )}
         {!!conduits.length && (
-          <IonGrid fixed className="table">
-            <IonRow className="table-header">
-              <IonCol className="table-header-col">Description</IonCol>
-              <IonCol className="table-header-col">Type</IonCol>
-              <IonCol className="table-header-col">Conduit Endpoint</IonCol>
-              <IonCol className="table-header-col">Status</IonCol>
-              <IonCol className="table-header-col">Action</IonCol>
-            </IonRow>
-
-            {conduits.map((conduit) => {
-              return (
-                <ListItem
-                  key={conduit.id}
-                  conduit={conduit}
-                  onDelete={deleteConduit}
-                />
-              );
-            })}
+          <IonGrid fixed>
+            <IonCard>
+              <IonCardHeader>
+                <IonCardTitle>
+                  <h1>Conduits</h1>
+                </IonCardTitle>
+              </IonCardHeader>
+              <IonCardContent>
+                <IonGrid className="table">
+                  <IonRow className="table-header">
+                    <IonCol className="table-header-col" size="3">
+                      <h2>Description</h2>
+                    </IonCol>
+                    <IonCol className="table-header-col" size="2">
+                      <h2>Type</h2>
+                    </IonCol>
+                    <IonCol className="table-header-col" size="3">
+                      <h2>Conduit Endpoint</h2>
+                    </IonCol>
+                    <IonCol className="table-header-col" size="2">
+                      <h2>Status</h2>
+                    </IonCol>
+                    <IonCol className="table-header-col" size="2">
+                      <h2>Actions</h2>
+                    </IonCol>
+                  </IonRow>
+                  {conduits.map((conduit) => {
+                    return (
+                      <ListItem
+                        key={conduit.id}
+                        conduit={conduit}
+                        onDelete={deleteConduit}
+                      />
+                    );
+                  })}
+                </IonGrid>
+              </IonCardContent>
+            </IonCard>
           </IonGrid>
         )}
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton color="primary" href="/conduit/create">
+          <IonFabButton
+            color="primary"
+            href="/conduit/create"
+            routerDirection="forward"
+          >
             <IonIcon icon={add} />
           </IonFabButton>
         </IonFab>
