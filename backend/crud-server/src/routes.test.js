@@ -307,7 +307,7 @@ describe('Praas REST API', () => {
             .send({ conduit: withInvalidSuri });
           expect(invalidSuri.status).to.equal(422);
           expect(invalidSuri.error).to.not.be.false;
-          expect(invalidSuri.body.errors[0].suri).to.match(ERROR_PATTERN);
+          expect(invalidSuri.body.errors.suri).to.match(ERROR_PATTERN);
 
           // check for Service API Key ( suriApiKey )
           const withoutSuriApiKey = helpers.fakeConduit();
@@ -320,6 +320,18 @@ describe('Praas REST API', () => {
           expect(noSuriApiKey.error).to.not.be.false;
           expect(Object.keys(noSuriApiKey.body.errors)).to.include('suriApiKey');
           expect(noSuriApiKey.body.errors.suriApiKey).to.match(ERROR_PATTERN);
+
+          // check for Service Object Key ( suriObjectKey )
+          const withoutSuriObjectKey = helpers.fakeConduit();
+          delete withoutSuriObjectKey.suriObjectKey;
+          const noSuriObjectKey = await Api()
+            .post('/conduits')
+            .set('Authorization', `Token ${jakeUser.token}`)
+            .send({ conduit: withoutSuriObjectKey });
+          expect(noSuriObjectKey.status).to.equal(422);
+          expect(noSuriObjectKey.error).to.not.be.false;
+          expect(Object.keys(noSuriObjectKey.body.errors)).to.include('suriObjectKey');
+          expect(noSuriObjectKey.body.errors.suriObjectKey).to.match(ERROR_PATTERN);
         });
 
         it('should validate Resource Access Control Methods', async function () {
@@ -359,12 +371,30 @@ describe('Praas REST API', () => {
         });
       });
 
+      it('should reject unmatched service type and service base url', async () => {
+        const withUnmatchSuri = helpers.fakeConduit();
+        if (withUnmatchSuri.suriType === 'Airtable') {
+          withUnmatchSuri.suri = 'https://api.mytable.com/v0/';
+        } else if (withUnmatchSuri.suriType === 'Google Sheets') {
+          withUnmatchSuri.suri = 'https://docs.doodle.com/spreadsheets/d/';
+        } else if (withUnmatchSuri.suriType === 'Smartsheet') {
+          withUnmatchSuri.suri = 'https://api.quicksheet.com/2.0/sheets';
+        }
+        const res = await Api()
+          .post(`/conduits`)
+          .set('Authorization', `Token ${jakeUser.token}`)
+          .send({ conduit: withUnmatchSuri });
+        expect(res.status).to.equal(422);
+        expect(res.error).to.not.be.false;
+        expect(res.body.errors.suri).to.match(ERROR_PATTERN);
+      });
+
       it('should create new service endpoint for a valid request', async function () {
         // Add 25 conduits for testing: update, delete and pagination.. since
         // a REST layer test should be isolated from the DATA layer, we don't
         // directly access the model to insert these records.
         const conduits = [];
-        for (let i = 0, imax=conf.conduitsCount; i < imax; i++) {
+        for (let i = 0, imax = conf.conduitsCount; i < imax; i++) {
           const res = await Api()
             .post('/conduits')
             .set('Authorization', `Token ${jakeUser.token}`)
@@ -388,6 +418,7 @@ describe('Praas REST API', () => {
         expect(res.body.conduit).to.have.property('suriApiKey');
         expect(res.body.conduit).to.have.property('suriType');
         expect(res.body.conduit).to.have.property('suri');
+        expect(res.body.conduit).to.have.property('suriObjectKey');
         expect(res.body.conduit).to.have.property('curi');
         expect(res.body.conduit).to.have.property('allowlist');
         expect(res.body.conduit).to.have.property('racm');
@@ -398,7 +429,7 @@ describe('Praas REST API', () => {
       it('should GET multiple service endpoints', async function () {
         const res = await Api()
           .get('/conduits')
-          .query({ start: ctId2+1, count: conf.conduitsPerPage })
+          .query({ start: ctId2 + 1, count: conf.conduitsPerPage })
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res.status).to.equal(200);
         expect(res.body.conduits.length).to.equal(conf.conduitsPerPage);

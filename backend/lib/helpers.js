@@ -102,19 +102,27 @@ const fakeUserProfile = (overrides = {}) => {
 };
 
 // frequently used
-const typesArr = ['Google Sheets', 'Airtable', 'Smartsheet'];
+// const typesArr = ['Google Sheets', 'Airtable', 'Smartsheet'];
+// const baseUrl = ['https://docs.google.com/spreadsheets/d/', 'https://api.airtable.com/v0/', 'https://api.smartsheet.com/2.0/sheets'];
 const ipstatArr = ['active', 'inactive'];
 const hfffieldArr = ['partner', 'campaign', 'userName', 'department', 'accountName'];
 const hffPolicyArr = ['drop-if-filled', 'pass-if-match'];
 const accessArrSrc = powerset(['GET', 'POST', 'DELETE', 'PUT', 'PATCH']);
+const suriTypeBase = [['Google Sheets', 'https://docs.google.com/spreadsheets/d/'], ['Airtable', 'https://api.airtable.com/v0/'], ['Smartsheet', 'https://api.smartsheet.com/2.0/sheets']];
 
 const fakeConduit = (overrides = {}) => {
   const accessArr = accessArrSrc[Math.floor(Math.random() * accessArrSrc.length)];
+  const randomSuriTypeBase = suriTypeBase[Math.floor(Math.random() * suriTypeBase.length)];
+  // console.log('multidimientional array value 1:', randomSuriTypeBase[0]);
+  // console.log('multidimientional array value 2:', randomSuriTypeBase[1]);
   const conduit = {
     suriApiKey: faker.random.uuid(),
-    suriType: typesArr[Math.floor(Math.random() * typesArr.length)],
+    // suriType: typesArr[Math.floor(Math.random() * typesArr.length)],
+    // suri: faker.internet.url(),
+    // suri: baseUrl[Math.floor(Math.random() * baseUrl.length)],
+    suriType: randomSuriTypeBase[0],
+    suri: randomSuriTypeBase[1],
     suriObjectKey: faker.lorem.word(),
-    suri: faker.internet.url(),
     allowlist: [{
       ip: faker.internet.ip(),
       status: ipstatArr[Math.floor(Math.random() * ipstatArr.length)],
