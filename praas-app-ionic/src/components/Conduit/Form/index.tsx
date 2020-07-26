@@ -1,5 +1,12 @@
 import React from 'react';
-import { IonGrid, IonRow, IonCol, IonLabel, IonButton } from '@ionic/react';
+import {
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonLabel,
+  IonButton,
+  IonItem,
+} from '@ionic/react';
 import { useHistory } from 'react-router';
 import { useForm, FormContext } from 'react-hook-form';
 import Input from '../../../components/Form/Input';
@@ -40,15 +47,14 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
   const onSubmit = (values: any) => {
     onSave({ ...values, racm: parseRACM(values.racm) });
   };
-
   return (
     <FormContext {...formMethods}>
       <form noValidate onSubmit={handleSubmit(onSubmit)}>
         <IonGrid>
-          <IonRow>
-            <IonCol>
+          <IonRow className="ion-margin-bottom ion-align-items-end">
+            <IonCol size="12" sizeMd="6">
               <FormFieldWithError error={errors.suriApiKey}>
-                <IonLabel position="floating">API Key</IonLabel>
+                <IonLabel position="stacked">API Key</IonLabel>
                 <Input
                   name="suriApiKey"
                   value={conduit?.suriApiKey}
@@ -56,11 +62,9 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
                 />
               </FormFieldWithError>
             </IonCol>
-          </IonRow>
-          <IonRow>
-            <IonCol>
+            <IonCol size="12" sizeMd="6">
               <FormFieldWithError error={errors.suriType}>
-                <IonLabel position="floating">Select Type</IonLabel>
+                <IonLabel position="stacked">Select Type</IonLabel>
                 <Select
                   name="suriType"
                   value={conduit?.suriType}
@@ -70,20 +74,16 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
               </FormFieldWithError>
             </IonCol>
           </IonRow>
-          <IonRow>
-            <IonCol>
+          <IonRow className="ion-margin-bottom">
+            <IonCol size="12" sizeMd="6">
               <FormFieldWithError error={errors.suri}>
-                <IonLabel position="floating">Service endpoint uri</IonLabel>
+                <IonLabel position="stacked">Service endpoint uri</IonLabel>
                 <Input name="suri" value={conduit?.suri} title="SURI" />
               </FormFieldWithError>
             </IonCol>
-          </IonRow>
-
-          <RequestMethods defaultChecked={conduit?.racm} />
-          <IonRow>
-            <IonCol>
+            <IonCol size="12" sizeMd="6">
               <FormFieldWithError error={errors.description}>
-                <IonLabel position="floating">
+                <IonLabel position="stacked">
                   Description of the endpoint
                 </IonLabel>
                 <Input
@@ -94,21 +94,40 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
               </FormFieldWithError>
             </IonCol>
           </IonRow>
-          <IonRow className="ip-allowlist-status">
-            <RadioGroup
-              labelClassName="status__label"
-              name={`status`}
-              value={conduit.status}
-              options={[
-                { value: 'active', label: 'Active' },
-                { value: 'inactive', label: 'Inactive' },
-              ]}
-            />
-          </IonRow>
           <IonRow>
             <IonCol>
+              <IonLabel className="ion-padding-top">
+                Request Methods
+                <RequestMethods defaultChecked={conduit?.racm} />
+              </IonLabel>
+            </IonCol>
+          </IonRow>
+
+          <IonRow className="ip-allowlist-status">
+            <IonCol size="auto">
+              <IonLabel>
+                Conduit Status
+                <RadioGroup
+                  labelClassName="status__label"
+                  name="status"
+                  value={conduit.status}
+                  options={[
+                    { value: 'active', label: 'Active' },
+                    { value: 'inactive', label: 'Inactive' },
+                  ]}
+                />
+              </IonLabel>
+            </IonCol>
+          </IonRow>
+          <IonRow className="ion-margin-top">
+            <IonCol>
               <IonButton type="submit">Submit</IonButton>
-              <IonButton type="button" fill="outline" onClick={onBack}>
+              <IonButton
+                type="button"
+                fill="outline"
+                onClick={onBack}
+                className="ion-margin-start"
+              >
                 Back
               </IonButton>
             </IonCol>

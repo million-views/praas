@@ -84,7 +84,7 @@ app.all('/*', upload.none(), (req, res, next) => {
   let url = conduit.suri;
   if (conduit.suriObjectKey) {
     // mdn strongly recommends + or += operator for performance
-    url += `/${conduit.suriObjectKey}`;
+    url += `${conduit.suriObjectKey}`;
   }
   url += req.path;
 

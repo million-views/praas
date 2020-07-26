@@ -6,8 +6,11 @@ import {
   IonButton,
   IonIcon,
   IonAlert,
+  IonRouterLink,
 } from '@ionic/react';
 import { createOutline, trashOutline } from 'ionicons/icons';
+
+import './style.scss';
 
 type Props = {
   conduit: Conduit;
@@ -16,21 +19,31 @@ type Props = {
 const ListItem = ({ conduit, onDelete }: Props) => {
   const [deletePrompt, setDeletePrompt] = useState(false);
   return (
-    <IonRow key={conduit.id} className="table-row">
-      <IonCol className="table-col">{conduit.description}</IonCol>
-      <IonCol className="table-col">{conduit.suriType}</IonCol>
-      <IonCol className="table-col">{conduit.curi}</IonCol>
-      <IonCol className="table-col">{conduit.status}</IonCol>
-      <IonCol className="table-col">
+    <IonRow key={conduit.id} className="table-row ion-align-items-center">
+      <IonCol className="table-col" size="3">
+        {conduit.description}
+      </IonCol>
+      <IonCol className="table-col" size="2">
+        {conduit.suriType}
+      </IonCol>
+      <IonCol className="table-col" size="3">
+        {conduit.curi}
+      </IonCol>
+      <IonCol className="table-col ion-text-capitalize" size="2">
+        {conduit.status}
+      </IonCol>
+      <IonCol className="table-col" size="2">
         <IonButtons>
           <IonButton
             type="button"
             fill="clear"
             size="small"
-            href={`conduit/${conduit.id}  `}
+            color="dark"
+            className="ion-button--round"
+            href={`conduit/${conduit.id}`}
+            routerDirection="forward"
           >
-            <IonIcon className="icon edit" icon={createOutline} />
-            <i className="far fa-edit"></i>
+            <IonIcon icon={createOutline} slot="icon-only" />
           </IonButton>
           <IonButton
             type="button"
@@ -38,7 +51,11 @@ const ListItem = ({ conduit, onDelete }: Props) => {
             size="small"
             onClick={() => setDeletePrompt(true)}
           >
-            <IonIcon className="icon delete" icon={trashOutline} />
+            <IonIcon
+              className="home-page__icon--delete"
+              icon={trashOutline}
+              slot="icon-only"
+            />
           </IonButton>
           <IonAlert
             isOpen={deletePrompt}
@@ -50,6 +67,7 @@ const ListItem = ({ conduit, onDelete }: Props) => {
               {
                 text: 'Delete',
                 role: 'delete',
+                cssClass: 'list-item__alert-button--delete',
                 handler: () => onDelete(conduit.id),
               },
             ]}
