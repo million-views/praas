@@ -42,7 +42,17 @@ function EditConduitForm ({ changeView, cid }) {
       initialValues={initialValues}
       validationSchema={conduitSchema}
       enableReinitialize
-      render={(props) => (
+      onSubmit={(values, actions) => {
+        dispatch(
+          updateConduit(
+            { conduit: { ...values, id: conduit.id } },
+            actions,
+            changeView
+          )
+        );
+      }}
+    >
+      {(props) => (
         <ConduitForm
           {...props}
           buttonLabel="Save Conduit"
@@ -53,17 +63,7 @@ function EditConduitForm ({ changeView, cid }) {
           status=""
         />
       )}
-      onSubmit={(values, actions) => {
-        console.log('in edit form, values: ', values);
-        dispatch(
-          updateConduit(
-            { conduit: { ...values, id: conduit.id } },
-            actions,
-            changeView
-          )
-        );
-      }}
-    />
+    </Formik>
   );
 }
 
