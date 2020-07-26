@@ -21,7 +21,7 @@ class Home extends React.Component {
       mode: 'list',
       cid: undefined,
     };
-    this.changeMode = this.changeMode.bind(this);
+    this.changeView = this.changeView.bind(this);
   }
 
   setConduitId(cid) {
@@ -50,10 +50,10 @@ class Home extends React.Component {
     }
   }
 
-  changeMode(mode = 'list') {
-    this.setState({
-      mode,
-    });
+  changeView(mode = 'list', cid) {
+    console.log('view: ', mode, ' cid:', cid);
+
+    this.setState((prev) => ({ mode, cid: cid || prev.cid }));
 
     if (mode === 'list') {
       this._fetchConduits();
@@ -69,19 +69,18 @@ class Home extends React.Component {
           <main className="page">
             {this.state.mode === 'list' && (
               <ConduitList
-                setConduitId={(cid) => this.setConduitId(cid)}
-                changeMode={(mode) => this.changeMode(mode)}
+                changeView={(mode, cid) => this.changeView(mode, cid)}
                 deleteConduit={(cid) => this.deleteConduit(cid)}
                 conduits={this.props.conduits}
               />
             )}
             {this.state.mode === 'add' && (
-              <CreateConduitForm changeMode={(mode) => this.changeMode(mode)} />
+              <CreateConduitForm changeView={(mode) => this.changeView(mode)} />
             )}
             {this.state.mode === 'edit' && (
               <EditConduitForm
                 cid={this.state.cid}
-                changeMode={(mode) => this.changeMode(mode)}
+                changeView={(mode, cid) => this.changeView(mode, cid)}
               />
             )}
           </main>

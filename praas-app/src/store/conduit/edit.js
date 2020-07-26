@@ -8,30 +8,28 @@ const UPDATE_CONDUIT_SUCCESS = 'conduit/UPDATE_CONDUIT_SUCCESS';
 const UPDATE_CONDUIT_FAILURE = 'conduit/UPDATE_CONDUIT_FAILURE';
 
 // Sync action creators
-export const updateConduitSuccess = (conduit) => ({
-  type: UPDATE_CONDUIT_SUCCESS, payload: conduit
+export const updateConduitSuccess = (payload) => ({
+  type: UPDATE_CONDUIT_SUCCESS, payload
 });
 
 export const updateConduitFailure = (error) => ({
   type: UPDATE_CONDUIT_FAILURE, payload: error
 });
 
-export const updateConduit = (conduit, actions, changeMode) => {
-  console.log('in update Conduit:', conduit);
+export const updateConduit = (conduit, actions, changeView) => {
   return (dispatch) => {
     dispatch({ type: UPDATE_CONDUIT_REQUEST, payload: conduit });
     PraasAPI.conduit.update(conduit).then(
-      (conduit) => {
-        // console.log('update successful, conduit: ', conduit);
-        changeMode('list');
-        dispatch(updateConduitSuccess(conduit));
+      (payload) => {
+        console.log('updateConduit, successs: ', payload.conduit.id);
         actions.setSubmitting(false);
+        dispatch(updateConduitSuccess(payload));
+        changeView('list', payload.conduit.id);
       },
       (error) => {
-        // console.log('update not successful, error: ', error);
-        dispatch(updateConduitFailure(error));
         actions.setSubmitting(false);
         actions.setStatus({ errors: { ...error.errors } });
+        dispatch(updateConduitFailure(error));
       }
     );
   };
@@ -62,4 +60,5 @@ export default function create(state = initialState, { type, payload }) {
   };
 };
 
-export const getConduit = (state, cid) => state.conduit.list.conduits.find((conduit) => conduit.id === cid);
+export const getConduit =
+  (state, cid) => state.conduit.list.conduits.find((conduit) => conduit.id === cid);

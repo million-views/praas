@@ -1,18 +1,70 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 // See https://uxdesign.cc/the-microcopyist-cancellation-confirmation-conflagration-8a6047a4cf9
 // for an overview on writing copy for destructive actions.
-const Modal = ({ deleteConduit, conduit }) => {
-  console.log('===========> conduit:', conduit.id);
+
+// const Modal = ({ open, closeModal, children }) => {
+//   return (
+//     <ModalBehind open={open} onClick={closeModal}>
+//       <ModalDiv onClick={event => event.stopPropagation()}>
+//         <Close onClick={closeModal} />
+//         {children}
+//       </ModalDiv>
+//     </ModalBehind>
+//   );
+// };
+
+// Hook from https://usehooks.com
+function useEventListener(eventName, handler, element = window) {
+  // Create a ref that stores handler
+  const savedHandler = useRef();
+
+  // Update ref.current value if handler changes.
+  // This allows our effect below to always get latest handler ...
+  // ... without us needing to pass it in effect deps array ...
+  // ... and potentially cause effect to re-run every render.
+  useEffect(() => {
+    savedHandler.current = handler;
+  }, [handler]);
+
+  useEffect(
+    () => {
+      // Make sure element supports addEventListener
+      // On
+      const isSupported = element && element.addEventListener;
+      if (!isSupported) return;
+
+      // Create event listener that calls handler function stored in ref
+      const eventListener = event => savedHandler.current(event);
+
+      // Add event listener
+      element.addEventListener(eventName, eventListener);
+
+      // Remove event listener on cleanup
+      return () => {
+        element.removeEventListener(eventName, eventListener);
+      };
+    },
+    [eventName, element] // Re-run if eventName or element changes
+  );
+};
+
+const handleArrowKeys = setModal => event => {
+  if (event && event.key === 'Escape') setModal();
+};
+
+const Modal = ({ open, setModal, deleteConduit, conduit, modalId }) => {
+  console.log('===========> conduit:', conduit.id, open);
+  useEventListener('keydown', handleArrowKeys(setModal));
   return (
-    <div className="modal">
-      <input id="confirm-conduit-delete" type="checkbox" />
-      <label htmlFor="confirm-conduit-delete" className="overlay" />
+    <div className="modal" onClick={event => event.stopPropagation()}>
+      <input id={modalId} type="checkbox" checked={open} />
+      <label htmlFor={modalId} className="overlay" />
       <article>
         <header>
           <h3>Delete {conduit.curi}, (id: {conduit.id})?</h3>
-          {/* <label htmlFor="confirm-conduit-delete" className="close">×</label> */}
+          {/* <label htmlFor={modalId} className="close">×</label> */}
         </header>
         <section>
           <p>
@@ -24,11 +76,11 @@ const Modal = ({ deleteConduit, conduit }) => {
           <p>Are you sure you want to delete?</p>
         </section>
         <footer>
-          <label htmlFor="confirm-conduit-delete" className="button">
+          <label htmlFor={modalId} className="button" onClick={() => setModal()}>
             Never mind
           </label>
           <label
-            htmlFor="confirm-conduit-delete"
+            htmlFor={modalId}
             onClick={() => deleteConduit(conduit.id)}
             className="button dangerous"
           >
@@ -42,11 +94,16 @@ const Modal = ({ deleteConduit, conduit }) => {
 
 Modal.propTypes = {
   deleteConduit: PropTypes.func,
-  conduit: PropTypes.object
+  conduit: PropTypes.object,
+  modalId: PropTypes.string,
+  open: PropTypes.bool,
+  setModal: PropTypes.func
 };
 
 const List = (props) => {
+  const [modal, setModal] = useState();
   const conduits = props.conduits.map((conduit, index) => {
+    const modalId = `confirm-conduit-${conduit.id}-delete`;
     return (
       <tr key={index}>
         <td>{conduit.id}</td>
@@ -57,8 +114,7 @@ const List = (props) => {
         <td style={{ display: 'flex' }}>
           <button
             onClick={() => {
-              props.setConduitId(conduit.id);
-              props.changeMode('edit');
+              props.changeView('edit', conduit.id);
             }}
             style={{ background: 0 }}
             className="icon-cog"
@@ -66,14 +122,21 @@ const List = (props) => {
           <label
             disabled={conduit.status === 'active'}
             htmlFor={
-              conduit.status === 'inactive' ? 'confirm-conduit-delete' : null
+              conduit.status === 'inactive' ? { modalId } : null
             }
             className="button icon-trash"
             style={{ background: 0 }}
+            onClick={() => setModal(conduit.id)}
           />
           {
             conduit.status === 'inactive' &&
-              <Modal deleteConduit={props.deleteConduit} conduit={conduit} />
+              <Modal
+                open={conduit.id === modal}
+                setModal={setModal}
+                modalId={modalId}
+                deleteConduit={props.deleteConduit}
+                conduit={conduit}
+              />
           }
         </td>
       </tr>
@@ -84,7 +147,7 @@ const List = (props) => {
     <>
       <h1>List Conduits</h1>
       <h2>A conduit is a handle to a RESTful service endpoint</h2>
-      <button onClick={() => props.changeMode('add')}>Add conduit</button>
+      <button onClick={(e) => props.changeView('add', e.target.id)}>Add conduit</button>
       <table>
         <thead>
           <tr>
@@ -103,8 +166,7 @@ const List = (props) => {
 };
 
 List.propTypes = {
-  setConduitId: PropTypes.func.isRequired,
-  changeMode: PropTypes.func.isRequired,
+  changeView: PropTypes.func.isRequired,
   deleteConduit: PropTypes.func,
   conduits: PropTypes.arrayOf(PropTypes.object),
 };

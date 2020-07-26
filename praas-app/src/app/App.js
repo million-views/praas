@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { Router, globalHistory } from '@reach/router';
 
 import Home from './pages/home';
@@ -26,4 +25,4 @@ class App extends React.Component {
   }
 }
 
-export default connect()(App);
+export default App;

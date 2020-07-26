@@ -69,13 +69,9 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
       // we can dispatch both success and non-success action creators
       // from here...
       if (response.ok) {
-        console.log('server response is ok *************');
-        console.log('response.json: ', response);
         return response.json();
       } else {
         const errors = await response.json();
-
-        console.log('error: ', errors);
         if (response.status === 401) {
           // token expired? clear our view of logged in status
           invalidateSession();
@@ -137,14 +133,12 @@ const praas = {
         body: JSON.stringify(data)
       });
     },
-    list(id) {
+    list() {
       return afetch('/conduits', {
         method: 'GET',
-        body: JSON.stringify(id),
       });
     },
     delete(data) {
-      console.log('data: ', data);
       const cid = data;
       return afetch(`/conduits/${cid}`, {
         method: 'DELETE',
