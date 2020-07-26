@@ -1,6 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
@@ -34,40 +33,6 @@ const signupSchema = Yup.object({
   })
 });
 
-const Signup = ({ user, dispatch }) => {
-  return (
-    <>
-      <Header
-        loggedIn={user.loggedIn}
-        logout={() => dispatch(logoutUser())}
-      />
-      <main className="page">
-        <Formik
-          initialValues={initialValues}
-          validationSchema={signupSchema}
-          render={SignupForm}
-          onSubmit={(values, actions) => {
-            const user = values.user;
-            dispatch(registerUser({ user }, actions));
-          }}
-        />
-      </main>
-    </>
-  );
-};
-
-Signup.propTypes = {
-  dispatch: PropTypes.func.isRequired
-};
-
-const mapStateToProps = (state, _ownProps) => {
-  return {
-    user: state.user.login
-  };
-};
-
-export default connect(mapStateToProps)(Signup);
-
 function SignupForm(props) {
   const { isSubmitting, status } = props;
   return (
@@ -95,3 +60,30 @@ function SignupForm(props) {
     </Form>
   );
 };
+
+function Signup() {
+  const user = useSelector(state => state.user.login);
+  const dispatch = useDispatch();
+
+  return (
+    <>
+      <Header
+        loggedIn={user.loggedIn}
+        logout={() => dispatch(logoutUser())}
+      />
+      <main className="page">
+        <Formik
+          initialValues={initialValues}
+          validationSchema={signupSchema}
+          render={SignupForm}
+          onSubmit={(values, actions) => {
+            const user = values.user;
+            dispatch(registerUser({ user }, actions));
+          }}
+        />
+      </main>
+    </>
+  );
+};
+
+export default Signup;

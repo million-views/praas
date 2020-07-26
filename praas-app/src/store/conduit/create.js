@@ -8,9 +8,8 @@ const ADD_CONDUIT_SUCCESS = 'conduit/ADD_CONDUIT_SUCCESS';
 const ADD_CONDUIT_FAILURE = 'conduit/ADD_CONDUIT_FAILURE';
 
 // Sync action creators
-export const addConduitSuccess = (conduit) => ({
-  type: ADD_CONDUIT_SUCCESS,
-  payload: conduit,
+export const addConduitSuccess = (payload) => ({
+  type: ADD_CONDUIT_SUCCESS, payload,
 });
 
 export const addConduitFailure = (error) => ({
@@ -18,22 +17,21 @@ export const addConduitFailure = (error) => ({
   payload: error,
 });
 
-export const addConduit = (conduit, actions, changeMode) => {
-  console.log('in addConduit:', conduit);
+export const addConduit = (conduit, actions, changeView) => {
   return (dispatch) => {
     dispatch({ type: ADD_CONDUIT_REQUEST, payload: conduit });
     PraasAPI.conduit.add(conduit).then(
-      (conduit) => {
-        console.log('conduit: ', conduit);
-        dispatch(addConduitSuccess(conduit));
+      (payload) => {
+        console.log('addConduit,: ', payload.conduit.id);
         actions.setSubmitting(false);
-        changeMode('list');
+        dispatch(addConduitSuccess(payload));
+        changeView('list', payload.conduit.id);
       },
       (error) => {
         console.log('error: ', error);
-        dispatch(addConduitFailure(error));
         actions.setSubmitting(false);
         actions.setStatus({ errors: { ...error.errors } });
+        dispatch(addConduitFailure(error));
       }
     );
   };

@@ -43,7 +43,7 @@ const Racm = (props) => {
   );
 };
 
-const Status = ({ field, form: { values, touched, errors }, ...props }) => {
+const Status = ({ field, form: { values, touched, errors } }) => {
   return (
     <span>
       <label>
@@ -72,8 +72,8 @@ const Status = ({ field, form: { values, touched, errors }, ...props }) => {
 };
 
 function ConduitForm(props) {
-  console.log('props in form: ', props);
-  const { buttonLabel, changeMode, isSubmitting, status } = props;
+  // console.log('props in form: ', props);
+  const { buttonLabel, changeView, isSubmitting, status } = props;
   const classes = cx(['submit', { spinner: isSubmitting }]);
 
   return (
@@ -137,7 +137,7 @@ function ConduitForm(props) {
       </button>
       <button
         type="button"
-        onClick={() => changeMode('list')}
+        onClick={() => changeView('list')}
         className={classes}
       >
         Cancel
@@ -148,7 +148,7 @@ function ConduitForm(props) {
 
 ConduitForm.propTypes = {
   buttonLabel: PropTypes.string.isRequired,
-  changeMode: PropTypes.func,
+  changeView: PropTypes.func,
   isSubmitting: PropTypes.bool.isRequired,
   status: PropTypes.string.isRequired,
 };
