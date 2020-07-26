@@ -15,7 +15,7 @@ const reducers = combineReducers({
 
 const logger = (_store) => (next) => (action) => {
   if (typeof action !== 'function') {
-    console.log('dispatching:', action);
+    // console.log('dispatching:', action);
   }
   return next(action);
 };

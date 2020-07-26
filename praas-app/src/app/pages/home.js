@@ -11,7 +11,6 @@ import {
 } from 'components/conduit';
 
 import { listConduits } from 'store/conduit/list';
-import { deleteConduit } from 'store/conduit/del';
 import { logoutUser } from 'store/user/login';
 
 class Home extends React.Component {
@@ -24,22 +23,9 @@ class Home extends React.Component {
     this.changeView = this.changeView.bind(this);
   }
 
-  setConduitId(cid) {
-    this.setState({
-      cid,
-    });
-  }
-
   _fetchConduits() {
-    console.log('fetching conduits....');
     const uid = this.props.user.id;
     this.props.listConduits(uid);
-  }
-
-  deleteConduit(cid) {
-    console.log('--------------- cid', cid);
-    this.props.deleteConduit(cid);
-    this._fetchConduits();
   }
 
   componentDidMount() {
@@ -50,12 +36,17 @@ class Home extends React.Component {
     }
   }
 
-  changeView(mode = 'list', cid) {
-    console.log('view: ', mode, ' cid:', cid);
+  // mode: list, edit, add
+  // reason: cancel, form, refresh
+  // cid: conduit-id, undefined
+  changeView(mode, reason, cid) {
+    console.log(
+      'changeView:', this.state.mode, ' -> ', mode, reason, cid)
+    ;
 
-    this.setState((prev) => ({ mode, cid: cid || prev.cid }));
+    this.setState((_prev) => ({ mode, cid }));
 
-    if (mode === 'list') {
+    if (mode === 'list' && reason !== 'cancel') {
       this._fetchConduits();
     }
   }
@@ -63,24 +54,26 @@ class Home extends React.Component {
   render() {
     const { user, logout } = this.props;
     if (user.loggedIn) {
+      const viewChanger = (mode, reason, cid) => this.changeView(mode, reason, cid);
       return (
         <>
           <Header loggedIn={user.loggedIn} logout={logout} />
           <main className="page">
             {this.state.mode === 'list' && (
               <ConduitList
-                changeView={(mode, cid) => this.changeView(mode, cid)}
-                deleteConduit={(cid) => this.deleteConduit(cid)}
+                changeView={viewChanger}
                 conduits={this.props.conduits}
               />
             )}
             {this.state.mode === 'add' && (
-              <CreateConduitForm changeView={(mode) => this.changeView(mode)} />
+              <CreateConduitForm
+                changeView={viewChanger}
+              />
             )}
             {this.state.mode === 'edit' && (
               <EditConduitForm
                 cid={this.state.cid}
-                changeView={(mode, cid) => this.changeView(mode, cid)}
+                changeView={viewChanger}
               />
             )}
           </main>
@@ -96,7 +89,6 @@ Home.propTypes = {
   user: PropTypes.object,
   logout: PropTypes.func.isRequired,
   listConduits: PropTypes.func.isRequired,
-  deleteConduit: PropTypes.func,
   conduits: PropTypes.arrayOf(PropTypes.object),
 };
 
@@ -110,7 +102,6 @@ const mapStateToProps = (state, _ownProps) => {
 const mapDispatchToProps = (dispatch) => ({
   logout: () => dispatch(logoutUser()),
   listConduits: () => dispatch(listConduits()),
-  deleteConduit: (cid) => dispatch(deleteConduit(cid)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

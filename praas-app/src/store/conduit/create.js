@@ -22,10 +22,10 @@ export const addConduit = (conduit, actions, changeView) => {
     dispatch({ type: ADD_CONDUIT_REQUEST, payload: conduit });
     PraasAPI.conduit.add(conduit).then(
       (payload) => {
-        console.log('addConduit,: ', payload.conduit.id);
+        console.log('addConduit, success: ', payload.conduit.id);
         actions.setSubmitting(false);
         dispatch(addConduitSuccess(payload));
-        changeView('list', payload.conduit.id);
+        changeView('list', 'refresh', payload.conduit.id);
       },
       (error) => {
         console.log('error: ', error);

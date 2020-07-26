@@ -73,7 +73,7 @@ const Status = ({ field, form: { values, touched, errors } }) => {
 
 function ConduitForm(props) {
   // console.log('props in form: ', props);
-  const { buttonLabel, changeView, isSubmitting, status } = props;
+  const { buttonLabel, changeView, isSubmitting, status, cid } = props;
   const classes = cx(['submit', { spinner: isSubmitting }]);
 
   return (
@@ -137,7 +137,7 @@ function ConduitForm(props) {
       </button>
       <button
         type="button"
-        onClick={() => changeView('list')}
+        onClick={() => changeView('list', 'cancel', cid)}
         className={classes}
       >
         Cancel

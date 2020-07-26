@@ -39,7 +39,12 @@ function CreateConduitForm({ changeView }) {
     <Formik
       initialValues={initialValues}
       validationSchema={conduitSchema}
-      render={(props) => (
+      onSubmit={(values, actions) => {
+        console.log('in create form, values: ', values);
+        dispatch(addConduit({ conduit: { ...values } }, actions, changeView));
+      }}
+    >
+      {(props) => (
         <ConduitForm
           {...props}
           buttonLabel="Create Conduit"
@@ -47,11 +52,7 @@ function CreateConduitForm({ changeView }) {
           status=""
         />
       )}
-      onSubmit={(values, actions) => {
-        console.log('in create form, values: ', values);
-        dispatch(addConduit({ conduit: { ...values } }, actions, changeView));
-      }}
-    />
+    </Formik>
   );
 };
 

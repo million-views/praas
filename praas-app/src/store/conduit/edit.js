@@ -24,7 +24,7 @@ export const updateConduit = (conduit, actions, changeView) => {
         console.log('updateConduit, successs: ', payload.conduit.id);
         actions.setSubmitting(false);
         dispatch(updateConduitSuccess(payload));
-        changeView('list', payload.conduit.id);
+        changeView('list', 'refresh', payload.conduit.id);
       },
       (error) => {
         actions.setSubmitting(false);

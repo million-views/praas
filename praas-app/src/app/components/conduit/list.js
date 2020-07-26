@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+
+import { deleteConduit } from 'store/conduit/del';
 
 // See https://uxdesign.cc/the-microcopyist-cancellation-confirmation-conflagration-8a6047a4cf9
 // for an overview on writing copy for destructive actions.
@@ -54,16 +57,20 @@ const handleArrowKeys = setModal => event => {
   if (event && event.key === 'Escape') setModal();
 };
 
-const Modal = ({ open, setModal, deleteConduit, conduit, modalId }) => {
-  console.log('===========> conduit:', conduit.id, open);
+const Modal = ({ open, setModal, conduit, changeView }) => {
+  // console.log('===========> conduit:', conduit.id, open);
   useEventListener('keydown', handleArrowKeys(setModal));
+  const dispatch = useDispatch();
+  const modalId = `confirm-conduit-${conduit.id}-delete`;
+
   return (
-    <div className="modal" onClick={event => event.stopPropagation()}>
-      <input id={modalId} type="checkbox" checked={open} />
+    <div className="modal">
+      <input id={modalId} type="checkbox" readOnly checked={open} />
       <label htmlFor={modalId} className="overlay" />
       <article>
         <header>
-          <h3>Delete {conduit.curi}, (id: {conduit.id})?</h3>
+          <h3>Delete {conduit.curi}?</h3><br />
+          <h5>{conduit.id} | {conduit.suriType} | {conduit.suriObjectKey}</h5>
           {/* <label htmlFor={modalId} className="close">×</label> */}
         </header>
         <section>
@@ -81,7 +88,7 @@ const Modal = ({ open, setModal, deleteConduit, conduit, modalId }) => {
           </label>
           <label
             htmlFor={modalId}
-            onClick={() => deleteConduit(conduit.id)}
+            onClick={() => dispatch(deleteConduit(conduit.id, changeView))}
             className="button dangerous"
           >
             Delete
@@ -93,17 +100,16 @@ const Modal = ({ open, setModal, deleteConduit, conduit, modalId }) => {
 };
 
 Modal.propTypes = {
-  deleteConduit: PropTypes.func,
+  changeView: PropTypes.func,
   conduit: PropTypes.object,
-  modalId: PropTypes.string,
   open: PropTypes.bool,
   setModal: PropTypes.func
 };
 
 const List = (props) => {
   const [modal, setModal] = useState();
+
   const conduits = props.conduits.map((conduit, index) => {
-    const modalId = `confirm-conduit-${conduit.id}-delete`;
     return (
       <tr key={index}>
         <td>{conduit.id}</td>
@@ -114,16 +120,13 @@ const List = (props) => {
         <td style={{ display: 'flex' }}>
           <button
             onClick={() => {
-              props.changeView('edit', conduit.id);
+              props.changeView('edit', 'form', conduit.id);
             }}
             style={{ background: 0 }}
             className="icon-cog"
           />
           <label
             disabled={conduit.status === 'active'}
-            htmlFor={
-              conduit.status === 'inactive' ? { modalId } : null
-            }
             className="button icon-trash"
             style={{ background: 0 }}
             onClick={() => setModal(conduit.id)}
@@ -133,8 +136,7 @@ const List = (props) => {
               <Modal
                 open={conduit.id === modal}
                 setModal={setModal}
-                modalId={modalId}
-                deleteConduit={props.deleteConduit}
+                changeView={props.changeView}
                 conduit={conduit}
               />
           }
@@ -147,7 +149,7 @@ const List = (props) => {
     <>
       <h1>List Conduits</h1>
       <h2>A conduit is a handle to a RESTful service endpoint</h2>
-      <button onClick={(e) => props.changeView('add', e.target.id)}>Add conduit</button>
+      <button onClick={() => props.changeView('add', 'form')}>Add conduit</button>
       <table>
         <thead>
           <tr>
@@ -167,7 +169,6 @@ const List = (props) => {
 
 List.propTypes = {
   changeView: PropTypes.func.isRequired,
-  deleteConduit: PropTypes.func,
   conduits: PropTypes.arrayOf(PropTypes.object),
 };
 

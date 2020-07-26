@@ -7,8 +7,8 @@ const LIST_CONDUIT_SUCCESS = 'conduit/LIST_CONDUIT_SUCCESS';
 const LIST_CONDUIT_FAILURE = 'conduit/LIST_CONDUIT_FAILURE';
 
 // Sync action creators
-export const listConduitSuccess = (conduits) => ({
-  type: LIST_CONDUIT_SUCCESS, payload: conduits
+export const listConduitSuccess = (payload) => ({
+  type: LIST_CONDUIT_SUCCESS, payload
 });
 
 export const listConduitFailure = (error) => ({
@@ -19,14 +19,12 @@ export const listConduits = (userId) => {
   return (dispatch) => {
     dispatch({ type: LIST_CONDUIT_REQUEST, payload: userId });
     PraasAPI.conduit.list().then(
-      (conduits) => {
-        dispatch(listConduitSuccess(conduits));
+      (payload) => {
+        dispatch(listConduitSuccess(payload));
         // actions.setSubmitting(false);
       },
       (error) => {
         dispatch(listConduitFailure(error));
-        // actions.setSubmitting(false);
-        // actions.setStatus({ errors: { ...error.errors } });
       }
     );
   };
