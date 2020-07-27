@@ -84,29 +84,14 @@ function fetch_loopback_interface {
 	fi
 }
 
-function add {
+function action {
 	if [ "${command}" == "ip" ]; then
 		for ip in ${ip_list[@]}; do
-			sudo ${command_path} address add ${ip} dev ${interface}
+			sudo ${command_path} address ${action} ${ip} dev ${interface}
 		done
 	elif [ "${command}" == "ifconfig" ]; then
 		for ip in ${ip_list[@]}; do
-			sudo ${command_path} ${interface} add ${ip}
-		done
-	else
-		echo 'function called without command to be run'
-		exit 1
-	fi
-}
-
-function del {
-	if [ "${command}" == "ip" ]; then
-		for ip in ${ip_list[@]}; do
-			sudo ${command_path} address del ${ip} dev ${interface}
-		done
-	elif [ "${command}" == "ifconfig" ]; then
-		for ip in ${ip_list[@]}; do
-			sudo ${command_path} ${interface} del ${ip}
+			sudo ${command_path} ${interface} ${action} ${ip}
 		done
 	else
 		echo 'function called without command to be run'
@@ -119,5 +104,5 @@ set_command
 parse_ip_list
 fetch_loopback_interface
 echo 'since this script changes system settings, it requires `sudo` to run'
-[ -n "${action}" ] && ${action}
+[ -n "${action}" ] && action
 echo "${interface} : successfully ${action}ed ${#ip_list[@]} IPs"
