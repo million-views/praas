@@ -108,6 +108,14 @@ function ConduitForm(props) {
       />
       <ErrorMessage name="suri" component="div" className="error" />
 
+      <Field
+        name="suriObjectKey"
+        placeholder="Service endpoint object path"
+        type="text"
+        required
+      />
+      <ErrorMessage name="suriObjectKey" component="div" className="error" />
+
       <div style={{ display: 'flex' }}>
         <div style={{ flexGrow: 3 }} className="card">
           <h4>Allowed operations: </h4>

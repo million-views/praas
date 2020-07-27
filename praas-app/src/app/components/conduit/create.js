@@ -12,6 +12,7 @@ const conduitSchema = Yup.object({
   suriApiKey: Yup.string().required('Service endpoint API key is required'),
   suriType: Yup.string().required('Service endpoint type is required'),
   suri: Yup.string().required('Service endpoint uri is required'),
+  suriObjectKey: Yup.string().required('Service endpoint object path is required'),
   racm: Yup.array()
     .of(Yup.string())
     .required('Request access control is required'),
@@ -27,6 +28,7 @@ function CreateConduitForm({ changeView }) {
   const initialValues = {
     suriApiKey: '',
     suriType: 'Airtable',
+    suriObjectKey: '',
     suri: '',
     racm: ['GET'],
     description: '',
