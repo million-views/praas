@@ -118,4 +118,6 @@ function del {
 set_command
 parse_ip_list
 fetch_loopback_interface
-[ -n ${action} ] && ${action}
+echo 'since this script changes system settings, it requires `sudo` to run'
+[ -n "${action}" ] && ${action}
+echo "${interface} : successfully ${action}ed ${#ip_list[@]} IPs"
