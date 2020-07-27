@@ -60,5 +60,6 @@ export default function create(state = initialState, { type, payload }) {
   };
 };
 
+// selector
 export const getConduit =
   (state, cid) => state.conduit.list.conduits.find((conduit) => conduit.id === cid);
