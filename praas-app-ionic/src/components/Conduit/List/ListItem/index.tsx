@@ -8,9 +8,10 @@ import {
   IonAlert,
   IonRouterLink,
 } from '@ionic/react';
-import { createOutline, trashOutline } from 'ionicons/icons';
+import { createOutline, trashOutline, copyOutline } from 'ionicons/icons';
 
 import './style.scss';
+import copyToClipboard from '../../../../utils/copyToClipboard';
 
 type Props = {
   conduit: Conduit;
@@ -34,6 +35,14 @@ const ListItem = ({ conduit, onDelete }: Props) => {
       </IonCol>
       <IonCol className="table-col" size="2">
         <IonButtons>
+          <IonButton
+            type="button"
+            fill="clear"
+            size="small"
+            onClick={() => copyToClipboard(conduit.curi)}
+          >
+            <IonIcon icon={copyOutline} slot="icon-only" />
+          </IonButton>
           <IonButton
             type="button"
             fill="clear"
