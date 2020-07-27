@@ -3,8 +3,8 @@
 #        Author : Shine Nelson <shine@m5nv.com>
 #  Organization : Million Views LLC
 #       Created : 2020-07-27
-#       Comment : This script adds pre-defined IP addresses to the loopback
-#                 interface to enable testing of allow lists feature
+#       Comment : This script adds pre-defined pseduo-random IP addresses to
+#                 the loopback interface to enable testing of allow lists
 # ============================================================================ #
 
 # Set POSIX compatibility
