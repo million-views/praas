@@ -66,14 +66,14 @@ function parse_ip_list {
 function fetch_loopback_interface {
 	if [ "${command}" == "ip" ]; then
 		interface=$( \
-			sudo ${command_path} link show | \
+			${command_path} link show | \
 			grep 'LOOPBACK' | \
 			awk -F : '{ print $2 }' | \
 			sed -e 's/ //g'
 		)
 	elif [ "${command}" == "ifconfig" ]; then
 		interface=$( \
-			sudo ${command_path} | \
+			${command_path} | \
 			grep 'LOOPBACK' | \
 			awk -F : '$2 ~ "flags*" { print $1 }' | \
 			sed -e 's/ //g'
