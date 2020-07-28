@@ -94,7 +94,7 @@ router.get('/:id', auth.required, async (req, res, next) => {
 //   to support proxy-server functionality without adding complexity
 // - revisit to make sure we catch all nuances of proper pagination
 // - should we add a limit when there is no start or count?
-router.get('/', auth.required, async (req, res, next) => {
+/* router.get('/', auth.required, async (req, res, next) => {
   const query = req.query;
   try {
     let conduits = undefined;
@@ -118,6 +118,52 @@ router.get('/', auth.required, async (req, res, next) => {
       } else {
         conduits = await Conduit.findAll({ where: { userId: req.payload.id } });
       }
+    }
+
+    if (!conduits) {
+      return next(new RestApiError(404, { conduit: 'not found' }));
+    }
+
+    return res.json({ conduits: conduits.map((i) => i.toJSON()) });
+  } catch (error) {
+    next(new RestApiError(500, error));
+  }
+}); */
+
+router.get('/', auth.required, async (req, res, next) => {
+  const query = req.query;
+
+  try {
+    let conduits = undefined;
+    const start = Number(query.start), count = Number(query.count);
+
+    if (Number.isSafeInteger(start) && Number.isSafeInteger(count)) {
+      if (req.query.order) {
+        conduits = await Conduit.findAll({
+          where: {
+            id: {
+              [Op.gte]: start,
+              [Op.lt]: start + count,
+            },
+            userId: req.payload.id,
+          },
+          order: [
+            [req.query.order, 'ASC'],
+          ],
+        });
+      } else if (req.query) {
+        conduits = await Conduit.findAll({
+          where: {
+            id: {
+              [Op.gte]: start,
+              [Op.lt]: start + count,
+            },
+            userId: req.payload.id,
+          },
+        });
+      }
+    } else {
+      conduits = await Conduit.findAll({ where: { userId: req.payload.id } });
     }
 
     if (!conduits) {

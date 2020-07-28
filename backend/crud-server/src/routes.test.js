@@ -436,6 +436,16 @@ describe('Praas REST API', () => {
         expect(res.status).to.equal(200);
         expect(res.body.conduits.length).to.equal(conf.conduitsPerPage);
       });
+
+      it('should GET multiple service endpoints sorted by id (ASC)', async function () {
+        const by = 'id';
+        const res1 = await Api()
+          .get(`/conduits?order=${by}`)
+          .query({ start: ctId2 + 1, count: conf.conduitsPerPage })
+          .set('Authorization', `Token ${jakeUser.token}`);
+        expect(res1.status).to.equal(200);
+        expect(res1.body.conduits.length).to.equal(conf.conduitsPerPage);
+      });
     });
 
     // PUT method
