@@ -355,7 +355,8 @@ describe('Praas REST API', () => {
             .send({ conduit: withInvalidAllowList });
           expect(res.status).to.equal(422);
           expect(res.error).to.not.be.false;
-          expect(res.body.errors[0].allowlist).to.match(ERROR_PATTERN);
+          expect(res.body).to.have.property('errors');
+          res.body.errors.forEach(error => expect(error.allowlist).to.match(ERROR_PATTERN));
         });
 
         it('should validate hiddenFormField', async function () {
@@ -368,6 +369,7 @@ describe('Praas REST API', () => {
           expect(res.status).to.equal(422);
           expect(res.error).to.not.be.false;
           expect(res.body).to.have.property('errors');
+          res.body.errors.forEach(error => expect(error.hiddenFormField).to.match(ERROR_PATTERN));
         });
       });
 
