@@ -94,12 +94,58 @@ router.get('/:id', auth.required, async (req, res, next) => {
 //   to support proxy-server functionality without adding complexity
 // - revisit to make sure we catch all nuances of proper pagination
 // - should we add a limit when there is no start or count?
-/* router.get('/', auth.required, async (req, res, next) => {
+const sortable = [
+  'createdAt', 'modifiedAt', 'description', 'status', 'id', 'curi',
+];
+
+router.get('/', auth.required, async (req, res, next) => {
   const query = req.query;
   try {
     let conduits = undefined;
     const start = Number(query.start), count = Number(query.count);
     const proxyUser = req.app.locals.proxyUser;
+    console.log('sort  --->>>', query.sort, 'type', typeof query.sort);
+    // 1. what fields are sortable
+    // 2. how to create the order clause from query parameters
+    // 3. how should the query parameters be designed for DX
+    //  - we support array form and string form as below
+    //  -- GET /users?sort=last modified:asc&sort=email address:desc
+    //  -- GET /users?sort=last modified:asc,email address:desc
+    //  -- chai/super-agent array form:
+    //  ---- .query({sort: ['description:desc', 'id:asc']})
+    // 4.1 how to transmit the sort query parameters in a test
+    // 4.2 how to test the response
+    let order = undefined;
+
+    if (query.sort) {
+      if (typeof query.sort === 'string') {
+        query.sort = query.sort.split(',');
+      }
+
+      if (Array.isArray(query.sort)) {
+        // TODO:
+        // - check if `f` is in sortable list (see #1)
+        // - check that 'value' after ':' is in ['asc', 'desc']
+        // - if both are valid then return [fname, order]
+        // - else return empty array
+        // - reduce out empty arrays out from map
+        order = query.sort.map(f => {
+          const check = f.trim().split(':');
+          if (sortable.includes(check[0]) && check[1].match(/asc|desc/i)) {
+            return check;
+          }
+          console.log('unknown or bad sortable: ', check);
+          return [];
+        });
+      }
+
+      order = order.filter(f => f.length);
+
+      // CODING CHALLENGE:
+      // - replace map and filter with a single for-loop
+    }
+
+    console.log('order --->>>', order);
 
     if (Number.isSafeInteger(start) && Number.isSafeInteger(count)) {
       conduits = await Conduit.findAll({
@@ -110,60 +156,18 @@ router.get('/:id', auth.required, async (req, res, next) => {
           },
           userId: req.payload.id,
         },
+        order
       });
     } else {
       if (proxyUser && proxyUser.id === req.payload.id) {
         // fetch conduits in active status; check status enums in model.js
         conduits = await Conduit.findAll({ where: { status: 'active' } });
       } else {
-        conduits = await Conduit.findAll({ where: { userId: req.payload.id } });
-      }
-    }
-
-    if (!conduits) {
-      return next(new RestApiError(404, { conduit: 'not found' }));
-    }
-
-    return res.json({ conduits: conduits.map((i) => i.toJSON()) });
-  } catch (error) {
-    next(new RestApiError(500, error));
-  }
-}); */
-
-router.get('/', auth.required, async (req, res, next) => {
-  const query = req.query;
-
-  try {
-    let conduits = undefined;
-    const start = Number(query.start), count = Number(query.count);
-
-    if (Number.isSafeInteger(start) && Number.isSafeInteger(count)) {
-      if (req.query.order) {
         conduits = await Conduit.findAll({
-          where: {
-            id: {
-              [Op.gte]: start,
-              [Op.lt]: start + count,
-            },
-            userId: req.payload.id,
-          },
-          order: [
-            [req.query.order, 'ASC'],
-          ],
-        });
-      } else if (req.query) {
-        conduits = await Conduit.findAll({
-          where: {
-            id: {
-              [Op.gte]: start,
-              [Op.lt]: start + count,
-            },
-            userId: req.payload.id,
-          },
+          where: { userId: req.payload.id },
+          order
         });
       }
-    } else {
-      conduits = await Conduit.findAll({ where: { userId: req.payload.id } });
     }
 
     if (!conduits) {
