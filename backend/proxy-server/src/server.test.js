@@ -59,13 +59,76 @@ describe('Testing Proxy Server...', async () => {
       const res = await proxyServer().post('/').set('Host', dropConduit);
       expect(res.status).to.equal(422);
     });
-    context.skip('validate allowList', () => {
+    context('validate allowList', function () {
+      const ips = require('../../lib/fake-ips');
+      const net = require('net');
+
+      const randomlyPickFrom = (choices) => {
+        const rollDice = Math.floor(Math.random() * choices.length);
+        return choices[rollDice];
+      };
+
+/*
+      const http = require('http');
+      const httpRequestOptions = {
+        port: 5000,
+        method: 'POST',
+        path: '/conduits',
+        headers: {},
+      }
+*/
+
       it('should reject requests from IPs not in AllowList', async function () {
+/*
+        // original request with proxyServer
         const res = await proxyServer()
           .post('/')
           .set('Host', dropConduit)
           .send(request1);
         expect(res.status).to.equal(403);
+
+        // experimenting with http
+        httpRequestOptions.localAddress = randomlyPickFrom(ips.allowed);
+        httpRequestOptions.headers.host = dropConduit;
+        const req = http.request(httpRequestOptions, (res) => {
+          res.on('data', (resp) => {
+            console.debug('response', resp);
+          });
+          res.on('error', (e) => {
+            console.debug('error', e);
+          });
+        });
+        req.write(JSON.stringify(request1));
+        // req.end();
+*/
+
+        // net.Socket TCP connection
+        const socket = await net.createConnection({
+          port: 5000,
+          // host: 'localhost',
+          localAddress: randomlyPickFrom(ips.allowed),
+        });
+
+        socket.on('data', function(data) {
+          console.log('RESPONSE: ' + data);
+        }).on('connect', function() {
+          // Manually write an HTTP request.
+          // socket.write(`POST / HTTP/1.1\r\nHost: ${dropConduit}\r\nContent-Type: application/json\r\nBody: ${JSON.stringify(request1)}\r\n\r\n${JSON.stringify(request1)}`);
+          // NOTE: the lack of indentation in multi-line body
+          // is because HTTP request is space-sensitive. This
+          // was done to validate whether the single-line
+          // request above was correct.
+          socket.write(`
+ POST / HTTP/1.1
+ Host: ${dropConduit}
+ Content-Type: application/json
+ Body: ${JSON.stringify(request1)}
+
+ ${JSON.stringify(request1)}
+          `);
+        }).on('end', function () {
+          console.log('DONE');
+        });
       });
       it('should allow requests from IPs in AllowList', async function () {
         const res = await proxyServer()
