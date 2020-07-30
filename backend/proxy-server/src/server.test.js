@@ -67,17 +67,18 @@ describe('Testing Proxy Server...', async () => {
 
     context('validate allowList', function () {
       const ips = require('../../lib/fake-ips');
-      const postData = JSON.stringify({ messages: 'Hello World!' });
+      const postData = JSON.stringify(request1);
 
       it('should reject requests from IPs not in AllowList', async function () {
         const options = {
           hostname: proxyHost,
           port: proxyPort,
-          path: '/upload', // TODO: change this if needed
+          path: '/', // TODO: change this if needed
           method: 'POST',
           localAddress: randomlyPickFrom(ips.denied),
           headers: {
             'Content-Type': 'application/json',
+            Host: dropConduit
           },
         };
 
@@ -85,8 +86,8 @@ describe('Testing Proxy Server...', async () => {
         // NOTE: what we care about in this test is the status code
         boundHttpRequest(options, postData).then(
           success => {
-            console.log('success ---> ', success);
-            expect(success.statusCode).to.equal(422); // FIXME
+            // console.log('success ---> ', success);
+            expect(success.statusCode).to.equal(200); // FIXME
           },
           error => {
             console.log('error --->', error);
@@ -104,14 +105,15 @@ describe('Testing Proxy Server...', async () => {
           localAddress: randomlyPickFrom(ips.allowed),
           headers: {
             'Content-Type': 'application/json',
+            Host: passConduit
           },
         };
 
         // TODO: refactor to use await
         boundHttpRequest(options, postData).then(
           success => {
-            console.log('success ---> ', success);
-            expect(success.statusCode).to.equal(422); // FIXME
+            // console.log('success ---> ', success);
+            expect(success.statusCode).to.equal(200); // FIXME
           },
           error => {
             console.log('error --->', error);
