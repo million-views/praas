@@ -95,7 +95,7 @@ router.get('/:id', auth.required, async (req, res, next) => {
 // - revisit to make sure we catch all nuances of proper pagination
 // - should we add a limit when there is no start or count?
 const sortable = [
-  'createdAt', 'modifiedAt', 'description', 'status', 'id', 'curi',
+  'createdAt', 'createdAt', 'description', 'status', 'id', 'curi',
 ];
 
 router.get('/', auth.required, async (req, res, next) => {
@@ -104,7 +104,7 @@ router.get('/', auth.required, async (req, res, next) => {
     let conduits = undefined;
     const start = Number(query.start), count = Number(query.count);
     const proxyUser = req.app.locals.proxyUser;
-    console.log('sort  --->>>', query.sort, 'type', typeof query.sort);
+    // console.log('sort  --->>>', query.sort, 'type', typeof query.sort);
     // 1. what fields are sortable
     // 2. how to create the order clause from query parameters
     // 3. how should the query parameters be designed for DX
@@ -145,8 +145,6 @@ router.get('/', auth.required, async (req, res, next) => {
       // - replace map and filter with a single for-loop
     }
 
-    console.log('order --->>>', order);
-
     if (Number.isSafeInteger(start) && Number.isSafeInteger(count)) {
       conduits = await Conduit.findAll({
         where: {
@@ -158,14 +156,28 @@ router.get('/', auth.required, async (req, res, next) => {
         },
         order
       });
+    } else if (Number.isSafeInteger(start) && Number.isSafeInteger(count) && order !== undefined) {
+      conduits = await Conduit.findAll({
+        where: {
+          id: {
+            [Op.gte]: start,
+            [Op.lt]: start + count,
+          },
+          userId: req.payload.id,
+        },
+      });
     } else {
       if (proxyUser && proxyUser.id === req.payload.id) {
         // fetch conduits in active status; check status enums in model.js
         conduits = await Conduit.findAll({ where: { status: 'active' } });
-      } else {
+      } else if (order !== undefined) {
         conduits = await Conduit.findAll({
           where: { userId: req.payload.id },
           order
+        });
+      } else {
+        conduits = await Conduit.findAll({
+          where: { userId: req.payload.id }
         });
       }
     }

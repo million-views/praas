@@ -437,22 +437,19 @@ describe('Praas REST API', () => {
         expect(res.body.conduits.length).to.equal(conf.conduitsPerPage);
       });
 
-      it('should support sorting)', async function () {
-        const by = 'id';
-
+      it('should support sorting', async function () {
         // sort by allowed fields
         const res1 = await Api()
-          .get(`/conduits?order=${by}`)
+          .get('/conduits')
           .query({
             start: ctId2 + 1,
             count: conf.conduitsPerPage,
-            // sort: ['description:desc', 'id:asc']
-            sort: 'last name:desc,id:asc,created at:asc, createdAt:foo'
+            sort: ['description:desc', 'id:asc']
+            // sort: 'last name:desc,ids:asc,created at:asc, createdAt:foo'
           })
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res1.status).to.equal(200);
         expect(res1.body.conduits.length).to.equal(conf.conduitsPerPage);
-
         // ignore unknown field
       });
     });
