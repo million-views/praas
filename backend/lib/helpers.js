@@ -270,13 +270,13 @@ function boundHttpRequest(options, body = null) {
       reject(error);
     });
 
-    // write request body if present.
     if (body) {
-      clientRequest.write(body);
+      // write request body if present and close
+      clientRequest.end(body);
+    } else {
+      // close HTTP connection.
+      clientRequest.end();
     }
-
-    // close HTTP connection.
-    clientRequest.end();
   });
 }
 

@@ -76,6 +76,9 @@ describe('Testing Proxy Server...', async () => {
           path: '/upload', // TODO: change this if needed
           method: 'POST',
           localAddress: randomlyPickFrom(ips.denied),
+          headers: {
+            'Content-Type': 'application/json',
+          },
         };
 
         // TODO: refactor to use await and fix expect codes
@@ -99,6 +102,9 @@ describe('Testing Proxy Server...', async () => {
           path: '/upload', // TODO: change this based on the test
           method: 'POST',
           localAddress: randomlyPickFrom(ips.allowed),
+          headers: {
+            'Content-Type': 'application/json',
+          },
         };
 
         // TODO: refactor to use await
