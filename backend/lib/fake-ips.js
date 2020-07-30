@@ -1,8 +1,5 @@
 // NOTE: these magic ip-addresses came from the following:
-// ```shell
-// for name in 'yahoo.com' 'google.com' 'facebook.com' 'amazon.com' 'ngrok.io' 'excalidraw.com' 'm5nv.com';
-//   do dig $name +short;
-// done
+// `dig +short amazon.in yahoo.com amazon.com`
 
 const allowed = [
   '52.95.116.115',
