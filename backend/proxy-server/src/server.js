@@ -22,31 +22,56 @@ app.locals.cmap = new Map();
 
 // we handle all requests to the proxy end point...
 app.all('/*', upload.none(), (req, res, next) => {
+  const reqCuri = req.get('host');
+  const conduit = app.locals.cmap.get(reqCuri);
+  if (!conduit) {
+    // If conduit not found in Cache, send 404
+    // FIXME: per MDN, the statusCode should be 400
+    return next(new RestApiError(404, { conduit: `${reqCuri} not found` }));
+  }
+
+  // Top of the stack check is ip allow-list check
+  // - Only IPv4 is handled in v1
+  // - We implicitly allow loopback address (127.0.0.1)
+  // - empty allowlist implies all origins allowed
+  // - the code that follows may not be optimal.
+  const clientIp = req.connection.remoteAddress;
+  const allowlist = conduit.allowlist;
+  if (allowlist.length > 0 && clientIp !== '127.0.0.1') {
+    let allowed = false, inactive = 0;
+    for (let i=0, imax=allowlist.length; i < imax; i++) {
+      const item = allowlist[i];
+      if (item.status === 'active' && item.ip === clientIp) {
+        allowed = true; break;
+      }
+
+      if (item.status === 'inactive') {
+        inactive++;
+      }
+    }
+
+    if (!allowed && inactive !== allowlist.length) {
+      // console.log('---->', clientIp, allowlist, inactive);
+      return next(new RestApiError(403, { client: `${clientIp} restricted` }));
+    }
+  }
+
   // PUT, POST and PATCH operations have records in body
-  if (['PUT', 'PATCH', 'POST'].includes(req.method) &&
-    !(req.body.records)) {
+  if (['PUT', 'PATCH', 'POST'].includes(req.method)
+    && !(req.body.records)) {
     return next(new RestApiError(422, { records: 'not present' }));
   }
 
   // PUT, POST and PATCH operations need fields data in body
-  if (['PUT', 'PATCH', 'POST'].includes(req.method) &&
-    req.body.records[0].fields === undefined) {
+  if (['PUT', 'PATCH', 'POST'].includes(req.method)
+    && req.body.records[0].fields === undefined) {
     return next(new RestApiError(422, { fields: 'not present' }));
   }
 
   // PUT and PATCH operations need id field in body
-  if (['PUT', 'PATCH'].includes(req.method) &&
-    req.body.records[0].id === undefined) {
+  if (['PUT', 'PATCH'].includes(req.method)
+    && req.body.records[0].id === undefined) {
     return next(new RestApiError(422, { id: 'not provided' }));
-  }
-
-  const reqCuri = req.get('host');
-  // console.log(`reqCuri: ${reqCuri}`);
-  const conduit = app.locals.cmap.get(reqCuri);
-
-  // If conduit not found in Cache, send 404
-  if (!conduit) {
-    return next(new RestApiError(404, { conduit: `${reqCuri} not found` }));
   }
 
   // check racm for allowed methods
@@ -179,6 +204,7 @@ if (!module.parent) {
   // if we can't login then there's no point in running the proxy
   app.listen(
     conf.gwServerPort,
+    'localhost',
     () => console.log(`Conduits proxy server is listening on port ${conf.gwServerPort}`)
   );
 }

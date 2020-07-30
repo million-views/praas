@@ -4,16 +4,29 @@ const path = require('path');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
+const {
+  boundHttpRequest, randomlyPickFrom,
+  testAllowedIpList, testDeniedIpList
+} = require('../../lib/helpers');
+
 const expect = chai.expect;
 chai.use(chaiHttp);
 
-const proxyServerURL = 'http://localhost:5000';
+const proxyHost = 'localhost';
+const proxyPort = '5000';
+const proxyServerURL = `http://${proxyHost}:${proxyPort}`;
 const proxyServer = () => chai.request(proxyServerURL);
 
 // Test Data
 const testConduits = JSON.parse(fs.readFileSync(path.resolve('.test-data-curi.json')));
 const dropConduit = testConduits.dropConduit;
 const passConduit = testConduits.passConduit;
+
+// aor => accept or reject | based on client IP address
+const aorConduit1 = testConduits.aorConduit1; // GET-single-active
+const aorConduit2 = testConduits.aorConduit2; // GET-single-inactive | don't care
+const aorConduit3 = testConduits.aorConduit3; // POST-multi-mixed
+
 const noIncludeConduit = testConduits.noIncludeConduit;
 
 const request1 = {
@@ -55,33 +68,149 @@ describe('Testing Proxy Server...', async () => {
       const res = await proxyServer().get('/');
       expect(res.status).to.equal(404);
     });
+
     it('should have a body for PUT / PATCH / POST requests', async function () {
-      const res = await proxyServer().post('/').set('Host', dropConduit);
+      const res = await proxyServer().post('/').set('Host', dropConduit.host);
       expect(res.status).to.equal(422);
     });
-    context.skip('validate allowList', () => {
-      it('should reject requests from IPs not in AllowList', async function () {
-        const res = await proxyServer()
-          .post('/')
-          .set('Host', dropConduit)
-          .send(request1);
-        expect(res.status).to.equal(403);
+
+    context('validate allowList', function () {
+      const postData = JSON.stringify(request1);
+      const optionsBase = {
+        hostname: proxyHost,
+        port: proxyPort,
+        path: '/',
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+
+      it('should accept requests from * when ip is inactive', async function () {
+        const options2 = {
+          ...optionsBase,
+          localAddress: randomlyPickFrom(testDeniedIpList),
+          headers: { ...optionsBase.headers, Host: aorConduit2.host }
+        };
+        boundHttpRequest(options2).then(
+          success => {
+            // console.log('success ---> ', success);
+            expect(success.statusCode).to.equal(200);
+          },
+          error => {
+            console.log('error --->', error);
+            expect(true).to.equal(false); // This is not expected
+          }
+        );
+
+        options2.localAddress = randomlyPickFrom(testAllowedIpList);
+        boundHttpRequest(options2).then(
+          success => {
+            // console.log('success ---> ', success);
+            expect(success.statusCode).to.equal(200);
+          },
+          error => {
+            console.log('error --->', error);
+            expect(true).to.equal(false); // This is not expected
+          }
+        );
       });
+
+      it('should reject requests from IPs not in AllowList', async function () {
+        const options1 = {
+          ...optionsBase,
+          localAddress: randomlyPickFrom(testDeniedIpList),
+          headers: { ...optionsBase.headers, Host: aorConduit1.host }
+        };
+        boundHttpRequest(options1).then(
+          success => {
+            // console.log('success ---> ', success);
+            expect(success.statusCode).to.equal(403);
+          },
+          error => {
+            console.log('error --->', error);
+            expect(true).to.equal(false); // This is not expected
+          }
+        );
+
+        const options3 = {
+          ...optionsBase,
+          method: 'POST',
+          localAddress: randomlyPickFrom(testDeniedIpList),
+          headers: { ...optionsBase.headers, Host: aorConduit3.host }
+        };
+        boundHttpRequest(options3, postData).then(
+          success => {
+            // console.log('success ---> ', success);
+            expect(success.statusCode).to.equal(403);
+          },
+          error => {
+            console.log('error --->', error);
+            expect(true).to.equal(false); // This is not expected
+          }
+        );
+      });
+
       it('should allow requests from IPs in AllowList', async function () {
-        const res = await proxyServer()
-          .post('/')
-          .set('Host', passConduit)
-          .send(request1);
-        expect(res.status).to.equal(201);
+        const options1 = {
+          ...optionsBase,
+          localAddress: randomlyPickFrom(aorConduit1.allowlist).ip,
+          headers: { ...optionsBase.headers, Host: aorConduit1.host }
+        };
+        boundHttpRequest(options1).then(
+          success => {
+            // console.log('success ---> ', success);
+            expect(success.statusCode).to.equal(200);
+          },
+          error => {
+            console.log('error --->', error);
+            expect(true).to.equal(false); // This is not expected
+          }
+        );
+
+        const options2 = {
+          ...optionsBase,
+          localAddress: randomlyPickFrom(aorConduit2.allowlist).ip,
+          headers: { ...optionsBase.headers, Host: aorConduit2.host }
+        };
+        boundHttpRequest(options2).then(
+          success => {
+            // console.log('success ---> ', success);
+            expect(success.statusCode).to.equal(200);
+          },
+          error => {
+            console.log('error --->', error);
+            expect(true).to.equal(false); // This is not expected
+          }
+        );
+
+        const activeOnly = aorConduit3.allowlist.filter(ip => ip.status === 'active');
+        const options3 = {
+          ...optionsBase,
+          method: 'POST',
+          localAddress: randomlyPickFrom(activeOnly).ip,
+          headers: { ...optionsBase.headers, Host: aorConduit3.host }
+        };
+        boundHttpRequest(options3, postData).then(
+          success => {
+            // console.log('success ---> ', success);
+            expect(success.statusCode).to.equal(200);
+          },
+          error => {
+            console.log('error --->', error);
+            expect(true).to.equal(false); // This is not expected
+          }
+        );
       });
     });
+
     context('Validating RACM', () => {
       it('Should reject method not present in RACM list', async function () {
-        const res = await proxyServer().get('/').set('Host', dropConduit);
+        const res = await proxyServer().get('/').set('Host', dropConduit.host);
         expect(res.status).to.equal(405);
       });
       it('Should allow method present in RACM list', async function () {
-        const res = await proxyServer().get('/').set('Host', passConduit);
+        const res = await proxyServer().get('/').set('Host', passConduit.host);
         expect(res.status).to.not.equal(405);
       });
     });
@@ -90,21 +219,21 @@ describe('Testing Proxy Server...', async () => {
         it('should silently drop if value is not filled', async function () {
           const res = await proxyServer()
             .post('/')
-            .set('Host', passConduit)
+            .set('Host', passConduit.host)
             .send(request1);
           expect(res.status).to.equal(200);
         });
         it('should silently drop if value does not match', async function () {
           const res = await proxyServer()
             .post('/')
-            .set('Host', passConduit)
+            .set('Host', passConduit.host)
             .send(request2);
           expect(res.status).to.equal(200);
         });
         it('should process a valid request with value', async function () {
           const res = await proxyServer()
             .post('/')
-            .set('Host', passConduit)
+            .set('Host', passConduit.host)
             .send(request3);
           expect(res.status).to.equal(200);
         });
@@ -113,14 +242,14 @@ describe('Testing Proxy Server...', async () => {
         it('should process a request if value is not filled', async function () {
           const res = await proxyServer()
             .post('/')
-            .set('Host', dropConduit)
+            .set('Host', dropConduit.host)
             .send(request1);
           expect(res.status).to.equal(200);
         });
         it('should silently drop request if hiddenFormField is filled', async function () {
           const res = await proxyServer()
             .post('/')
-            .set('Host', dropConduit)
+            .set('Host', dropConduit.host)
             .send(request2);
           expect(res.status).to.equal(200);
         });
@@ -129,7 +258,7 @@ describe('Testing Proxy Server...', async () => {
         it('should send hiddenFormField if include = true', async function () {
           const res = await proxyServer()
             .post('/')
-            .set('Host', passConduit)
+            .set('Host', passConduit.host)
             .send(request3);
           expect(res.status).to.equal(200);
           expect(res.body).to.have.property('records');
@@ -141,7 +270,7 @@ describe('Testing Proxy Server...', async () => {
         it('should not send hiddenFormField if include = false', async function () {
           const res = await proxyServer()
             .post('/')
-            .set('Host', noIncludeConduit)
+            .set('Host', noIncludeConduit.host)
             .send(request3);
           expect(res.status).to.equal(200);
           expect(res.body).to.have.property('records');
@@ -158,7 +287,7 @@ describe('Testing Proxy Server...', async () => {
     before('create an arbitrary record', async function () {
       const res = await proxyServer()
         .post('/')
-        .set('Host', passConduit)
+        .set('Host', passConduit.host)
         .send(request3);
       if (res.body.records) {
         recordId = res.body.records[0].id;
@@ -169,18 +298,20 @@ describe('Testing Proxy Server...', async () => {
     it('should POST a new entry', async function () {
       const res = await proxyServer()
         .post('/')
-        .set('Host', passConduit)
+        .set('Host', passConduit.host)
         .send(request3);
       expect(res.status).to.equal(200);
       expect(res.body).to.haveOwnProperty('records');
     });
     it('should GET all entries', async function () {
-      const res = await proxyServer().get('/').set('Host', passConduit);
+      const res = await proxyServer().get('/').set('Host', passConduit.host);
       expect(res.status).to.equal(200);
       expect(res.body).to.haveOwnProperty('records');
     });
     it('should GET entry by ID', async function () {
-      const res = await proxyServer().get('/' + recordId).set('Host', passConduit);
+      const res = await proxyServer()
+        .get('/' + recordId)
+        .set('Host', passConduit.host);
       expect(res.status).to.equal(200);
       expect(res.body).to.haveOwnProperty('fields');
       expect(res.body.fields).to.eql(request3.records[0].fields);
@@ -196,7 +327,7 @@ describe('Testing Proxy Server...', async () => {
       };
       const res = await proxyServer()
         .patch('/')
-        .set('Host', passConduit)
+        .set('Host', passConduit.host)
         .send(req);
       expect(res.status).to.equal(200);
       expect(res.body).to.haveOwnProperty('records');
@@ -212,13 +343,15 @@ describe('Testing Proxy Server...', async () => {
       };
       const res = await proxyServer()
         .put('/')
-        .set('Host', passConduit)
+        .set('Host', passConduit.host)
         .send(req);
       expect(res.status).to.equal(200);
       expect(res.body).to.haveOwnProperty('records');
     });
     it('should DELETE a single entry', async function () {
-      const res = await proxyServer().delete('/' + recordId).set('Host', passConduit);
+      const res = await proxyServer()
+        .delete('/' + recordId)
+        .set('Host', passConduit.host);
       expect(res.status).to.equal(200);
       expect(res.body.deleted).to.be.true;
       expect(res.body.id).to.equal(recordId);
@@ -252,7 +385,7 @@ describe('Testing Proxy Server...', async () => {
       };
       const res = await proxyServer()
         .post('/')
-        .set('Host', passConduit)
+        .set('Host', passConduit.host)
         .send(req);
 
       // create list of records to be deleted
@@ -268,7 +401,7 @@ describe('Testing Proxy Server...', async () => {
       // actually send the `DELETE` request
       const del = await proxyServer()
         .delete('/')
-        .set('Host', passConduit)
+        .set('Host', passConduit.host)
         .query({ records });
       expect(del.status).to.equal(200);
       expect(del.body).to.haveOwnProperty('records');

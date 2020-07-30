@@ -40,7 +40,7 @@
     "space-infix-ops": "off",
     "operator-linebreak": [
       "error",
-      "after"
+      "before"
     ],
     "camelcase": 0,
     "object-property-newline": 0,

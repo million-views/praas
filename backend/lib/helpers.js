@@ -1,4 +1,5 @@
 const path = require('path');
+const http = require('http');
 const dotenv = require('dotenv-safe');
 const faker = require('faker');
 
@@ -102,7 +103,7 @@ const fakeUserProfile = (overrides = {}) => {
 };
 
 // frequently used
-const status = ['active', 'inactive'];
+const statuses = ['active', 'inactive'];
 const hiddenFields = ['partner', 'campaign', 'department', 'account'];
 const hiddenFieldPolicy = ['drop-if-filled', 'pass-if-match'];
 const racmCombo = powerset(['GET', 'POST', 'DELETE', 'PUT', 'PATCH']);
@@ -111,6 +112,11 @@ const supportedEndpoints = [
   { type: 'Airtable', base: 'https://api.airtable.com/v0/' },
   { type: 'Smartsheet', base: 'https://api.smartsheet.com/2.0/sheets' },
 ];
+const {
+  allowed: testAllowedIpList,
+  inactive: testInactiveIpList,
+  denied: testDeniedIpList
+} = require('../lib/fake-ips');
 
 const randomlyPickFrom = (choices) => {
   const rollDice = Math.floor(Math.random() * choices.length);
@@ -119,19 +125,23 @@ const randomlyPickFrom = (choices) => {
 
 const fakeConduit = (overrides = {}) => {
   const endpoint = randomlyPickFrom(supportedEndpoints);
+  const status = randomlyPickFrom(statuses);
+  const ip = (status === 'inactive')
+    ? randomlyPickFrom(testInactiveIpList)
+    : randomlyPickFrom(testAllowedIpList);
+
   const conduit = {
     suriApiKey: faker.random.uuid(),
     suriType: endpoint.type,
     suri: endpoint.base,
     suriObjectKey: faker.lorem.word(),
     allowlist: [{
-      ip: faker.internet.ip(),
-      status: randomlyPickFrom(status),
+      ip, status,
       comment: faker.lorem.words()
     }],
     racm: randomlyPickFrom(racmCombo),
     throttle: faker.random.boolean(),
-    status: randomlyPickFrom(status),
+    status: randomlyPickFrom(statuses),
     description: faker.lorem.sentence(),
     hiddenFormField: [{
       fieldName: randomlyPickFrom(hiddenFields),
@@ -151,8 +161,8 @@ const processInput = (inp, req, opt, out, err) => {
     return;
   }
   for (let i = 0; i < req.length; i++) {
-    if (typeof inp[req[i]] === 'undefined' || inp[req[i]] === null ||
-      ('' + inp[req[i]]).trim() === '') {
+    if (typeof inp[req[i]] === 'undefined' || inp[req[i]] === null
+      || ('' + inp[req[i]]).trim() === '') {
       err[req[i]] = 'cannot be blank';
     } else {
       out[req[i]] = inp[req[i]];
@@ -193,7 +203,94 @@ function getProxyServerCredentials() {
   };
 }
 
+// Low level HTTP request exclusively meant for testing
+// WARNING: DO NOT USE IN PRODUCTION CODE
+//
+// This function exists so that we can bind a specific local ip
+// address in order to be able to test ip allow/deny list filtering.
+//
+// The local ip address is passed in options. A sample options looks
+// as below. Note: headers is optional.
+//
+// const options = {
+//  hostname: 'localhost',
+//  port: 5000,
+//  path: '/upload',
+//  method: 'POST',
+//  localAddress: '52.95.116.115',
+//  headers: {
+//    // 'Content-Type': 'application/x-www-form-urlencoded',
+//    // 'Content-Length': Buffer.byteLength(postData)
+//  }
+// };
+
+function boundHttpRequest(options, body = null) {
+  const methods = ['OPTIONS', 'HEAD', 'GET', 'POST', 'PUT', 'PATCH'];
+  options.method = options.method ? options.method.toUpperCase() : 'GET';
+
+  if (!methods.includes(options.method)) {
+    throw new Error(`Invalid method: ${options.method}`);
+  }
+
+  if (body && options.method !== 'POST') {
+    throw new Error(`Body not allowed in ${options.method}.`);
+  }
+
+  if (body) {
+    options.headers = {
+      ...options.headers,
+      'Content-Length': Buffer.byteLength(body)
+    };
+  }
+
+  return new Promise((resolve, reject) => {
+    const clientRequest = http.request(options, incomingMessage => {
+      // response object.
+      const response = {
+        statusCode: incomingMessage.statusCode,
+        headers: incomingMessage.headers,
+        body: []
+      };
+
+      // collect response body data.
+      incomingMessage.on('data', chunk => {
+        response.body.push(chunk);
+      });
+
+      // resolve on end.
+      incomingMessage.on('end', () => {
+        if (response.body.length) {
+          response.body = response.body.join();
+
+          try {
+            response.body = JSON.parse(response.body);
+          } catch (error) {
+            // silently fail if response is not JSON.
+          }
+        }
+
+        resolve(response);
+      });
+    });
+
+    // reject on request error.
+    clientRequest.on('error', error => {
+      reject(error);
+    });
+
+    if (body) {
+      // write request body if present and close
+      clientRequest.end(body);
+    } else {
+      // close HTTP connection.
+      clientRequest.end();
+    }
+  });
+}
+
 module.exports = {
   fakeUserProfile, fakeConduit, processInput,
-  makeCuri, getProxyServerCredentials
+  makeCuri, getProxyServerCredentials,
+  testAllowedIpList, testInactiveIpList, testDeniedIpList,
+  randomlyPickFrom, boundHttpRequest
 };
