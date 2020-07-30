@@ -89,12 +89,12 @@ describe('Testing Proxy Server...', async () => {
           },
         };
 
-        const acceptOption2 = {
+        const options1 = {
           ...optionsBase,
           localAddress: randomlyPickFrom(testDeniedIpList),
           headers: { Host: aorConduit1 }
         };
-        boundHttpRequest(acceptOption2).then(
+        boundHttpRequest(options1).then(
           success => {
             // console.log('success ---> ', success);
             expect(success.statusCode).to.equal(200); // FIXME
@@ -105,12 +105,12 @@ describe('Testing Proxy Server...', async () => {
           }
         );
 
-        const acceptOptions2 = {
+        const options2 = {
           ...optionsBase,
           localAddress: randomlyPickFrom(testDeniedIpList),
           headers: { Host: aorConduit2 }
         };
-        boundHttpRequest(acceptOptions2).then(
+        boundHttpRequest(options2).then(
           success => {
             // console.log('success ---> ', success);
             expect(success.statusCode).to.equal(200); // FIXME
@@ -121,13 +121,13 @@ describe('Testing Proxy Server...', async () => {
           }
         );
 
-        const acceptOptions3 = {
+        const options3 = {
           ...optionsBase,
           method: 'POST',
           localAddress: randomlyPickFrom(testDeniedIpList),
           headers: { Host: aorConduit3 }
         };
-        boundHttpRequest(acceptOptions3, postData).then(
+        boundHttpRequest(options3, postData).then(
           success => {
             // console.log('success ---> ', success);
             expect(success.statusCode).to.equal(422); // FIXME
@@ -151,12 +151,12 @@ describe('Testing Proxy Server...', async () => {
           },
         };
 
-        const acceptOption2 = {
+        const options1 = {
           ...optionsBase,
           localAddress: randomlyPickFrom(testAllowedIpList),
           headers: { Host: aorConduit1 }
         };
-        boundHttpRequest(acceptOption2).then(
+        boundHttpRequest(options1).then(
           success => {
             // console.log('success ---> ', success);
             expect(success.statusCode).to.equal(200); // FIXME
@@ -167,12 +167,12 @@ describe('Testing Proxy Server...', async () => {
           }
         );
 
-        const acceptOptions2 = {
+        const options2 = {
           ...optionsBase,
           localAddress: randomlyPickFrom(testAllowedIpList),
           headers: { Host: aorConduit2 }
         };
-        boundHttpRequest(acceptOptions2).then(
+        boundHttpRequest(options2).then(
           success => {
             // console.log('success ---> ', success);
             expect(success.statusCode).to.equal(200); // FIXME
@@ -183,13 +183,13 @@ describe('Testing Proxy Server...', async () => {
           }
         );
 
-        const acceptOptions3 = {
+        const options3 = {
           ...optionsBase,
           method: 'POST',
           localAddress: randomlyPickFrom(testAllowedIpList),
           headers: { Host: aorConduit3 }
         };
-        boundHttpRequest(acceptOptions3, postData).then(
+        boundHttpRequest(options3, postData).then(
           success => {
             // console.log('success ---> ', success);
             expect(success.statusCode).to.equal(422); // FIXME
