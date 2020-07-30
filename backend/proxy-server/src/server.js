@@ -23,6 +23,26 @@ app.locals.cmap = new Map();
 // we handle all requests to the proxy end point...
 app.all('/*', upload.none(), (req, res, next) => {
   console.log('----> ', req.query, req.headers, req.body);
+  const reqCuri = req.get('host');
+  const conduit = app.locals.cmap.get(reqCuri);
+  if (!conduit) {
+    // If conduit not found in Cache, send 404
+    // FIXME: per MDN, the statusCode should be 400
+    return next(new RestApiError(404, { conduit: `${reqCuri} not found` }));
+  }
+
+  // Top of the stack check is ip allow-list check
+  // - Only IPv4 is handled in v1
+  // - We implicitly allow loopback address (127.0.0.1)
+  // - empty allowlist implies all origins allowed
+  // - the code that follows may not be optimal.
+  const clientIp = req.connection.remoteAddress;
+  const allowlist = conduit.allowlist;
+  if (allowlist.length > 0) {
+
+  }
+  console.log('---->', clientIp, allowlist);
+
   // PUT, POST and PATCH operations have records in body
   if (['PUT', 'PATCH', 'POST'].includes(req.method) &&
     !(req.body.records)) {
@@ -39,15 +59,6 @@ app.all('/*', upload.none(), (req, res, next) => {
   if (['PUT', 'PATCH'].includes(req.method) &&
     req.body.records[0].id === undefined) {
     return next(new RestApiError(422, { id: 'not provided' }));
-  }
-
-  const reqCuri = req.get('host');
-  // console.log(`reqCuri: ${reqCuri}`);
-  const conduit = app.locals.cmap.get(reqCuri);
-
-  // If conduit not found in Cache, send 404
-  if (!conduit) {
-    return next(new RestApiError(404, { conduit: `${reqCuri} not found` }));
   }
 
   // check racm for allowed methods

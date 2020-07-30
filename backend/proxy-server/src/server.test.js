@@ -4,7 +4,10 @@ const path = require('path');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
-const { boundHttpRequest, randomlyPickFrom } = require('../../lib/helpers');
+const {
+  boundHttpRequest, randomlyPickFrom,
+  testAllowedIpList, testDeniedIpList
+} = require('../../lib/helpers');
 
 const expect = chai.expect;
 chai.use(chaiHttp);
@@ -18,6 +21,12 @@ const proxyServer = () => chai.request(proxyServerURL);
 const testConduits = JSON.parse(fs.readFileSync(path.resolve('.test-data-curi.json')));
 const dropConduit = testConduits.dropConduit;
 const passConduit = testConduits.passConduit;
+
+// aor => accept or reject | based on client IP address
+const aorConduit1 = testConduits.aorConduit1; // GET-single-active
+const aorConduit2 = testConduits.aorConduit2; // GET-single-inactive | don't care
+const aorConduit3 = testConduits.aorConduit3; // POST-multi-mixed
+
 const noIncludeConduit = testConduits.noIncludeConduit;
 
 const request1 = {
@@ -66,25 +75,26 @@ describe('Testing Proxy Server...', async () => {
     });
 
     context('validate allowList', function () {
-      const ips = require('../../lib/fake-ips');
       const postData = JSON.stringify(request1);
 
       it('should reject requests from IPs not in AllowList', async function () {
-        const options = {
+        const optionsBase = {
           hostname: proxyHost,
           port: proxyPort,
-          path: '/', // TODO: change this if needed
-          method: 'POST',
-          localAddress: randomlyPickFrom(ips.denied),
+          path: '/',
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Host: dropConduit
+            Host: aorConduit1
           },
         };
 
-        // TODO: refactor to use await and fix expect codes
-        // NOTE: what we care about in this test is the status code
-        boundHttpRequest(options, postData).then(
+        const acceptOption2 = {
+          ...optionsBase,
+          localAddress: randomlyPickFrom(testDeniedIpList),
+          headers: { Host: aorConduit1 }
+        };
+        boundHttpRequest(acceptOption2).then(
           success => {
             // console.log('success ---> ', success);
             expect(success.statusCode).to.equal(200); // FIXME
@@ -94,26 +104,95 @@ describe('Testing Proxy Server...', async () => {
             expect(true).to.equal(false); // This is not expected
           }
         );
-      });
 
-      it('should allow requests from IPs in AllowList', async function () {
-        const options = {
-          hostname: proxyHost,
-          port: proxyPort,
-          path: '/upload', // TODO: change this based on the test
-          method: 'POST',
-          localAddress: randomlyPickFrom(ips.allowed),
-          headers: {
-            'Content-Type': 'application/json',
-            Host: passConduit
-          },
+        const acceptOptions2 = {
+          ...optionsBase,
+          localAddress: randomlyPickFrom(testDeniedIpList),
+          headers: { Host: aorConduit2 }
         };
-
-        // TODO: refactor to use await
-        boundHttpRequest(options, postData).then(
+        boundHttpRequest(acceptOptions2).then(
           success => {
             // console.log('success ---> ', success);
             expect(success.statusCode).to.equal(200); // FIXME
+          },
+          error => {
+            console.log('error --->', error);
+            expect(true).to.equal(false); // This is not expected
+          }
+        );
+
+        const acceptOptions3 = {
+          ...optionsBase,
+          method: 'POST',
+          localAddress: randomlyPickFrom(testDeniedIpList),
+          headers: { Host: aorConduit3 }
+        };
+        boundHttpRequest(acceptOptions3, postData).then(
+          success => {
+            // console.log('success ---> ', success);
+            expect(success.statusCode).to.equal(422); // FIXME
+          },
+          error => {
+            console.log('error --->', error);
+            expect(true).to.equal(false); // This is not expected
+          }
+        );
+      });
+
+      it('should allow requests from IPs in AllowList', async function () {
+        const optionsBase = {
+          hostname: proxyHost,
+          port: proxyPort,
+          path: '/',
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Host: aorConduit1
+          },
+        };
+
+        const acceptOption2 = {
+          ...optionsBase,
+          localAddress: randomlyPickFrom(testAllowedIpList),
+          headers: { Host: aorConduit1 }
+        };
+        boundHttpRequest(acceptOption2).then(
+          success => {
+            // console.log('success ---> ', success);
+            expect(success.statusCode).to.equal(200); // FIXME
+          },
+          error => {
+            console.log('error --->', error);
+            expect(true).to.equal(false); // This is not expected
+          }
+        );
+
+        const acceptOptions2 = {
+          ...optionsBase,
+          localAddress: randomlyPickFrom(testAllowedIpList),
+          headers: { Host: aorConduit2 }
+        };
+        boundHttpRequest(acceptOptions2).then(
+          success => {
+            // console.log('success ---> ', success);
+            expect(success.statusCode).to.equal(200); // FIXME
+          },
+          error => {
+            console.log('error --->', error);
+            expect(true).to.equal(false); // This is not expected
+          }
+        );
+
+        const acceptOptions3 = {
+          ...optionsBase,
+          method: 'POST',
+          localAddress: randomlyPickFrom(testAllowedIpList),
+          headers: { Host: aorConduit3 }
+        };
+        boundHttpRequest(acceptOptions3, postData).then(
+          success => {
+            // console.log('success ---> ', success);
+            expect(success.statusCode).to.equal(422); // FIXME
           },
           error => {
             console.log('error --->', error);

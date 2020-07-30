@@ -112,7 +112,9 @@ const supportedEndpoints = [
   { type: 'Airtable', base: 'https://api.airtable.com/v0/' },
   { type: 'Smartsheet', base: 'https://api.smartsheet.com/2.0/sheets' },
 ];
-const allowedIps = require('../lib/fake-ips').allowed;
+const {
+  allowed: testAllowedIpList, denied: testDeniedIpList
+} = require('../lib/fake-ips');
 
 const randomlyPickFrom = (choices) => {
   const rollDice = Math.floor(Math.random() * choices.length);
@@ -127,7 +129,7 @@ const fakeConduit = (overrides = {}) => {
     suri: endpoint.base,
     suriObjectKey: faker.lorem.word(),
     allowlist: [{
-      ip: randomlyPickFrom(allowedIps),
+      ip: randomlyPickFrom(testAllowedIpList),
       status: randomlyPickFrom(status),
       comment: faker.lorem.words()
     }],
@@ -283,5 +285,6 @@ function boundHttpRequest(options, body = null) {
 module.exports = {
   fakeUserProfile, fakeConduit, processInput,
   makeCuri, getProxyServerCredentials,
+  testAllowedIpList, testDeniedIpList,
   randomlyPickFrom, boundHttpRequest
 };
