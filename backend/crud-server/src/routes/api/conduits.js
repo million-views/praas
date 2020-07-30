@@ -104,17 +104,8 @@ router.get('/', auth.required, async (req, res, next) => {
     let conduits = undefined;
     const start = Number(query.start), count = Number(query.count);
     const proxyUser = req.app.locals.proxyUser;
-    // console.log('sort  --->>>', query.sort, 'type', typeof query.sort);
-    // 1. what fields are sortable
-    // 2. how to create the order clause from query parameters
-    // 3. how should the query parameters be designed for DX
-    //  - we support array form and string form as below
-    //  -- GET /users?sort=last modified:asc&sort=email address:desc
-    //  -- GET /users?sort=last modified:asc,email address:desc
-    //  -- chai/super-agent array form:
-    //  ---- .query({sort: ['description:desc', 'id:asc']})
-    // 4.1 how to transmit the sort query parameters in a test
-    // 4.2 how to test the response
+
+    // sorting
     let order = undefined;
 
     if (query.sort) {
@@ -123,26 +114,12 @@ router.get('/', auth.required, async (req, res, next) => {
       }
 
       if (Array.isArray(query.sort)) {
-        // TODO:
-        // - check if `f` is in sortable list (see #1)
-        // - check that 'value' after ':' is in ['asc', 'desc']
-        // - if both are valid then return [fname, order]
-        // - else return empty array
-        // - reduce out empty arrays out from map
         order = query.sort.map(f => {
-          const check = f.trim().split(':');
-          if (sortable.includes(check[0]) && check[1].match(/asc|desc/i)) {
-            return check;
-          }
-          console.log('unknown or bad sortable: ', check);
+          f = f.trim().split(':');
+          if (f[0].includes(sortable) && f[1].match(/asc|desc/i)) return f;
           return [];
-        });
+        }).filter(f => f.length);
       }
-
-      order = order.filter(f => f.length);
-
-      // CODING CHALLENGE:
-      // - replace map and filter with a single for-loop
     }
 
     if (Number.isSafeInteger(start) && Number.isSafeInteger(count)) {

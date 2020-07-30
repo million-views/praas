@@ -444,8 +444,10 @@ describe('Praas REST API', () => {
           .query({
             start: ctId2 + 1,
             count: conf.conduitsPerPage,
-            sort: ['description:desc', 'id:asc']
-            // sort: 'last name:desc,ids:asc,created at:asc, createdAt:foo'
+            // sort: ['description:desc', 'id:asc']
+            sort: 'last name:desc,id:asc,created at:asc, createdAt:foo'
+            // sort: 'last name:desc'
+            // sort: 'last name'
           })
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res1.status).to.equal(200);
