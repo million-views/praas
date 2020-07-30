@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 # ============================================================================ #
-#        Author : Shine Nelson <shine@m5nv.com>
-#  Organization : Million Views LLC
-#       Created : 2020-07-27
 #       Comment : This script adds pre-defined pseduo-random IP addresses to
 #                 the loopback interface to enable testing of allow lists
 # ============================================================================ #
@@ -29,6 +26,9 @@ elif [ $1 != 'add' ] && [ $1 != 'del' ]; then
 	exit 1
 else
 	action=$1
+  if [[ "$OSTYPE" == "darwin"* ]] && [ "$action" == 'del' ]; then
+		action='delete'
+	fi
 fi
 
 
@@ -36,21 +36,28 @@ function set_command {
 	if command -v ip > /dev/null; then
 		command=ip
 		command_path=$( command -v ip )
-	elif command -v ifconfig > /dev/null; then
+	elif command -v '/sbin/ifconfig' > /dev/null; then
+	  # on mac there is a dumbed down version of iconfig that does jack
+		# which makes the script fail
 		command=ifconfig
-		command_path=$( command -v ifconfig )
+		command_path=$( command -v /sbin/ifconfig )
 	else
 		echo 'no command found to parse network interfaces'
 	fi
 }
 
 function parse_ip_list {
+	if ! command -v node > /dev/null; then
+		echo 'node is required to run this script'
+		exit 1
+	fi
+
 	ips_file="${script_dir}/../lib/fake-ips.js"
 	if [ -f ${ips_file} ]; then
 		ip_list=( $( \
-			awk -F '[][]' '{ print $2 }' ${ips_file} | \
-			sed -e 's/"//g' -e 's/,//g' ) \
-			)
+			node ${ips_file} | tr -d ':' | cut -d' ' -f2- | tr -s ',' ' '
+		));
+
 		# conform IP list to CIDR notation
 		if [ "${command}" == "ip" ]; then
 			for index in ${!ip_list[@]}; do

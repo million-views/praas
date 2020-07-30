@@ -179,6 +179,7 @@ if (!module.parent) {
   // if we can't login then there's no point in running the proxy
   app.listen(
     conf.gwServerPort,
+    'localhost',
     () => console.log(`Conduits proxy server is listening on port ${conf.gwServerPort}`)
   );
 }

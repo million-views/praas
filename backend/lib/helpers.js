@@ -1,4 +1,5 @@
 const path = require('path');
+const http = require('http');
 const dotenv = require('dotenv-safe');
 const faker = require('faker');
 
@@ -194,7 +195,93 @@ function getProxyServerCredentials() {
   };
 }
 
+// Low level HTTP request exclusively meant for testing
+// WARNING: DO NOT USE IN PRODUCTION CODE
+//
+// This function exists so that we can bind a specific local ip
+// address in order to be able to test ip allow/deny list filtering.
+//
+// The local ip address is passed in options. A sample options looks
+// as below. Note: headers is optional.
+//
+// const options = {
+//  hostname: 'localhost',
+//  port: 5000,
+//  path: '/upload',
+//  method: 'POST',
+//  localAddress: '52.95.116.115',
+//  headers: {
+//    // 'Content-Type': 'application/x-www-form-urlencoded',
+//    // 'Content-Length': Buffer.byteLength(postData)
+//  }
+// };
+
+function boundHttpRequest(options, body = null) {
+  const methods = ['OPTIONS', 'HEAD', 'GET', 'POST', 'PUT', 'PATCH'];
+  options.method = options.method ? options.method.toUpperCase() : 'GET';
+
+  if (!methods.includes(options.method)) {
+    throw new Error(`Invalid method: ${options.method}`);
+  }
+
+  if (body && options.method !== 'POST') {
+    throw new Error(`Body not allowed in ${options.method}.`);
+  }
+
+  if (body) {
+    options.headers = {
+      ...options.headers,
+      'Content-Length': Buffer.byteLength(body)
+    };
+  }
+
+  return new Promise((resolve, reject) => {
+    const clientRequest = http.request(options, incomingMessage => {
+      // response object.
+      const response = {
+        statusCode: incomingMessage.statusCode,
+        headers: incomingMessage.headers,
+        body: []
+      };
+
+      // collect response body data.
+      incomingMessage.on('data', chunk => {
+        response.body.push(chunk);
+      });
+
+      // resolve on end.
+      incomingMessage.on('end', () => {
+        if (response.body.length) {
+          response.body = response.body.join();
+
+          try {
+            response.body = JSON.parse(response.body);
+          } catch (error) {
+            // silently fail if response is not JSON.
+          }
+        }
+
+        resolve(response);
+      });
+    });
+
+    // reject on request error.
+    clientRequest.on('error', error => {
+      reject(error);
+    });
+
+    // write request body if present.
+    if (body) {
+      clientRequest.write(body);
+    }
+
+    // close HTTP connection.
+    clientRequest.end();
+  });
+}
+
 module.exports = {
   fakeUserProfile, fakeConduit, processInput,
-  makeCuri, getProxyServerCredentials
+  makeCuri, getProxyServerCredentials,
+  randomlyPickFrom, boundHttpRequest
 };

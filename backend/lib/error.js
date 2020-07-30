@@ -64,6 +64,7 @@ function RestApiError(statusCode, errors = {}) {
 function RestApiErrorHandler(err, req, res, next) {
   // request path is the flow origin that led to the error
   err.path = req.path;
+  err.senderIp = req.connection.remoteAddress;
 
   // fail fast: unknown error types are unexpected here.
   if (!(err instanceof RestApiError)) {
