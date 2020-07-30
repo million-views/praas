@@ -4,8 +4,8 @@ const conf = require('../../../config').system.settings;
 function getTokenFromHeader(req) {
   let token = null;
   const tokenPresent = (
-    (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Token') ||
-    (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer')
+    (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Token')
+    || (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer')
   );
 
   if (tokenPresent) {

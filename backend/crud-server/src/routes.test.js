@@ -22,8 +22,8 @@ const Api = () => chai.request(apiServer);
 
 // NOTE:
 // reword/rephrase resource-error messages to fit this pattern
-const ERROR_PATTERN =
-  /^invalid.*$|^missing.*$|^unsupported.*$|cannot be blank|cannot be null/;
+const ERROR_PATTERN
+  = /^invalid.*$|^missing.*$|^unsupported.*$|cannot be blank|cannot be null/;
 
 describe('Praas REST API', () => {
   before(async () => {

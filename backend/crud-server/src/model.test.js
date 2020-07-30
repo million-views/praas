@@ -198,7 +198,7 @@ describe('PraaS', () => {
           value: 'hiddenFormFieldValue'
         }],
       });
-      curis.dropConduit = proxyDropConduit.curi;
+      curis.dropConduit = { host: proxyDropConduit.curi };
 
       const proxyPassConduit = await models.Conduit.create({
         ...proxyBaseConduit,
@@ -212,7 +212,21 @@ describe('PraaS', () => {
           value: 'hidden-form-field-value'
         }],
       });
-      curis.passConduit = proxyPassConduit.curi;
+      curis.passConduit = { host: proxyPassConduit.curi };
+
+      const proxyNoIncludeConduit = await models.Conduit.create({
+        ...proxyBaseConduit,
+        description: 'test conduit with HFF include = false',
+        curi: await helpers.makeCuri('td'),
+        racm: ['POST'],
+        hiddenFormField: [{
+          fieldName: 'hiddenFormField',
+          policy: 'pass-if-match',
+          include: false,
+          value: 'hidden-form-field-value'
+        }],
+      });
+      curis.noIncludeConduit = { host: proxyNoIncludeConduit.curi };
 
       // loopback-network needs to be setup to test allow-list feature
       // aor => accept or reject | based on client ip address
@@ -227,7 +241,10 @@ describe('PraaS', () => {
           comment: 'clients with ip matching me should be be accepted'
         }],
       });
-      curis.aorConduit1 = proxyAorConduit1.curi;
+      curis.aorConduit1 = {
+        host: proxyAorConduit1.curi,
+        allowlist: proxyAorConduit1.allowlist
+      };
 
       const proxyAorConduit2 = await models.Conduit.create({
         ...proxyBaseConduit,
@@ -235,12 +252,15 @@ describe('PraaS', () => {
         curi: await helpers.makeCuri('td'),
         racm: ['GET'],
         allowlist: [{
-          ip: helpers.randomlyPickFrom(helpers.testAllowedIpList),
+          ip: helpers.randomlyPickFrom(helpers.testInactiveIpList),
           status: 'inactive',
           comment: 'I am practically not there coz I am inactive'
         }],
       });
-      curis.aorConduit2 = proxyAorConduit2.curi;
+      curis.aorConduit2 = {
+        host: proxyAorConduit2.curi,
+        allowlist: proxyAorConduit2.allowlist
+      };
 
       const proxyAorConduit3 = await models.Conduit.create({
         ...proxyBaseConduit,
@@ -259,27 +279,16 @@ describe('PraaS', () => {
             comment: 'clients with ip matching me should be be accepted'
           },
           {
-            ip: helpers.randomlyPickFrom(helpers.testAllowedIpList),
+            ip: helpers.randomlyPickFrom(helpers.testInactiveIpList),
             status: 'inactive',
             comment: 'I am practically not there coz I am inactive'
           },
         ],
       });
-      curis.aorConduit3 = proxyAorConduit3.curi;
-
-      const proxyNoIncludeConduit = await models.Conduit.create({
-        ...proxyBaseConduit,
-        description: 'test conduit with HFF include = false',
-        curi: await helpers.makeCuri('td'),
-        racm: ['POST'],
-        hiddenFormField: [{
-          fieldName: 'hiddenFormField',
-          policy: 'pass-if-match',
-          include: false,
-          value: 'hidden-form-field-value'
-        }],
-      });
-      curis.noIncludeConduit = proxyNoIncludeConduit.curi;
+      curis.aorConduit3 = {
+        host: proxyAorConduit3.curi,
+        allowlist: proxyAorConduit3.allowlist
+      };
 
       fs.writeFileSync(
         path.resolve('.test-data-curi.json'),

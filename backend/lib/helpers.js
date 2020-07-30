@@ -103,7 +103,7 @@ const fakeUserProfile = (overrides = {}) => {
 };
 
 // frequently used
-const status = ['active', 'inactive'];
+const statuses = ['active', 'inactive'];
 const hiddenFields = ['partner', 'campaign', 'department', 'account'];
 const hiddenFieldPolicy = ['drop-if-filled', 'pass-if-match'];
 const racmCombo = powerset(['GET', 'POST', 'DELETE', 'PUT', 'PATCH']);
@@ -113,7 +113,9 @@ const supportedEndpoints = [
   { type: 'Smartsheet', base: 'https://api.smartsheet.com/2.0/sheets' },
 ];
 const {
-  allowed: testAllowedIpList, denied: testDeniedIpList
+  allowed: testAllowedIpList,
+  inactive: testInactiveIpList,
+  denied: testDeniedIpList
 } = require('../lib/fake-ips');
 
 const randomlyPickFrom = (choices) => {
@@ -123,19 +125,23 @@ const randomlyPickFrom = (choices) => {
 
 const fakeConduit = (overrides = {}) => {
   const endpoint = randomlyPickFrom(supportedEndpoints);
+  const status = randomlyPickFrom(statuses);
+  const ip = (status === 'inactive')
+    ? randomlyPickFrom(testInactiveIpList)
+    : randomlyPickFrom(testAllowedIpList);
+
   const conduit = {
     suriApiKey: faker.random.uuid(),
     suriType: endpoint.type,
     suri: endpoint.base,
     suriObjectKey: faker.lorem.word(),
     allowlist: [{
-      ip: randomlyPickFrom(testAllowedIpList),
-      status: randomlyPickFrom(status),
+      ip, status,
       comment: faker.lorem.words()
     }],
     racm: randomlyPickFrom(racmCombo),
     throttle: faker.random.boolean(),
-    status: randomlyPickFrom(status),
+    status: randomlyPickFrom(statuses),
     description: faker.lorem.sentence(),
     hiddenFormField: [{
       fieldName: randomlyPickFrom(hiddenFields),
@@ -155,8 +161,8 @@ const processInput = (inp, req, opt, out, err) => {
     return;
   }
   for (let i = 0; i < req.length; i++) {
-    if (typeof inp[req[i]] === 'undefined' || inp[req[i]] === null ||
-      ('' + inp[req[i]]).trim() === '') {
+    if (typeof inp[req[i]] === 'undefined' || inp[req[i]] === null
+      || ('' + inp[req[i]]).trim() === '') {
       err[req[i]] = 'cannot be blank';
     } else {
       out[req[i]] = inp[req[i]];
@@ -285,6 +291,6 @@ function boundHttpRequest(options, body = null) {
 module.exports = {
   fakeUserProfile, fakeConduit, processInput,
   makeCuri, getProxyServerCredentials,
-  testAllowedIpList, testDeniedIpList,
+  testAllowedIpList, testInactiveIpList, testDeniedIpList,
   randomlyPickFrom, boundHttpRequest
 };

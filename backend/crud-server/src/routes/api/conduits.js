@@ -39,9 +39,9 @@ router.post('/', auth.required, async function (req, res, next) {
   }
 
   if (
-    (conduit.suriType === 'Airtable' && conduit.suri !== 'https://api.airtable.com/v0/') ||
-    (conduit.suriType === 'Google Sheets' && conduit.suri !== 'https://docs.google.com/spreadsheets/d/') ||
-    (conduit.suriType === 'Smartsheet' && conduit.suri !== 'https://api.smartsheet.com/2.0/sheets')) {
+    (conduit.suriType === 'Airtable' && conduit.suri !== 'https://api.airtable.com/v0/')
+    || (conduit.suriType === 'Google Sheets' && conduit.suri !== 'https://docs.google.com/spreadsheets/d/')
+    || (conduit.suriType === 'Smartsheet' && conduit.suri !== 'https://api.smartsheet.com/2.0/sheets')) {
     return next(new RestApiError(422, { suri: 'unsupported' }));
   }
 
@@ -166,9 +166,9 @@ router.put('/:id', auth.required, async (req, res, next) => {
     }
 
     if (
-      (conduit.suriType === 'Airtable' && conduit.suri !== 'https://api.airtable.com/v0/') ||
-      (conduit.suriType === 'Google Sheets' && conduit.suri !== 'https://docs.google.com/spreadsheets/d/') ||
-      (conduit.suriType === 'Smartsheet' && conduit.suri !== 'https://api.smartsheet.com/2.0/sheets')) {
+      (conduit.suriType === 'Airtable' && conduit.suri !== 'https://api.airtable.com/v0/')
+      || (conduit.suriType === 'Google Sheets' && conduit.suri !== 'https://docs.google.com/spreadsheets/d/')
+      || (conduit.suriType === 'Smartsheet' && conduit.suri !== 'https://api.smartsheet.com/2.0/sheets')) {
       return next(new RestApiError(422, { suri: 'unsupported' }));
     }
 
@@ -194,9 +194,9 @@ router.patch('/:id', auth.required, async (req, res, next) => {
     }
 
     if (
-      (conduit.suriType === 'Airtable' && conduit.suri !== 'https://api.airtable.com/v0/') ||
-      (conduit.suriType === 'Google Sheets' && conduit.suri !== 'https://docs.google.com/spreadsheets/d/') ||
-      (conduit.suriType === 'Smartsheet' && conduit.suri !== 'https://api.smartsheet.com/2.0/sheets')) {
+      (conduit.suriType === 'Airtable' && conduit.suri !== 'https://api.airtable.com/v0/')
+      || (conduit.suriType === 'Google Sheets' && conduit.suri !== 'https://docs.google.com/spreadsheets/d/')
+      || (conduit.suriType === 'Smartsheet' && conduit.suri !== 'https://api.smartsheet.com/2.0/sheets')) {
       return next(new RestApiError(422, { suri: 'unsupported' }));
     }
 

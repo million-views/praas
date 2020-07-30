@@ -7,6 +7,9 @@
 const allowed = [
   '52.95.116.115',
   '72.30.35.9',
+];
+
+const inactive = [
   '98.137.246.7',
   '98.138.219.231',
   '176.32.103.205',
@@ -37,8 +40,10 @@ if (require.main === module) {
     ':',
     allowed.join(','),
     ':',
+    inactive.join(','),
+    ':',
     denied.join(',')
   );
 }
 
-module.exports = { allowed, denied };
+module.exports = { allowed, inactive, denied };
