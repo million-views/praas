@@ -1,3 +1,25 @@
+# Sorting
+[31Jul2020]
+- Decided that the Resource server REST API will support requests to sort Conduits to one or more criteria
+  - Conduit endpoint supports requests to sort the primary data with a “sort” query parameter. The value for “sort” must represent sort fields of the below decided format
+    ` GET /users?sort=first name:asc `
+    ` GET /users?sort=first name:desc `
+
+  - Conduit endpoint support multiple sort fields with “comma-separated” sort fields and “colon-seperated” sort order.
+    ` GET /users?sort=first name:asc,email address:desc `
+
+  - 1. When the server gets the request from the client via query parameter “sort”, the server returns data array of the response ordered according to the criteria specified.
+  - 2. The server will apply default sorting to the data
+    - When the request parameter “sort” is not specified
+    - When “sort” does not have valid sort fields.
+
+# serviceObjectKey
+[25Jul2020]
+- Decided to change "suriObjectKey" from "optional field" to "required field" in Resource server.
+  - As the "suriType" and "suri" will be matched based on the selection of "suriType", which is constant.
+  - In Resource server Data layer, REST layer changes were made to support "suriObjectKey".
+  - To create a Conduit, UI need to support "suriObjectKey".
+
 # Service account, resource server, OAuth2
 [11MAY2020]
 ## How to get all conduits?
