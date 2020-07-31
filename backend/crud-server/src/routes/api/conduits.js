@@ -95,7 +95,7 @@ router.get('/:id', auth.required, async (req, res, next) => {
 // - revisit to make sure we catch all nuances of proper pagination
 // - should we add a limit when there is no start or count?
 const sortable = [
-  'createdAt', 'createdAt', 'description', 'status', 'id', 'curi',
+  'createdAt', 'updatedAt', 'description', 'status', 'id', 'curi',
 ];
 
 router.get('/', auth.required, async (req, res, next) => {
@@ -133,28 +133,14 @@ router.get('/', auth.required, async (req, res, next) => {
         },
         order
       });
-    } else if (Number.isSafeInteger(start) && Number.isSafeInteger(count) && order !== undefined) {
-      conduits = await Conduit.findAll({
-        where: {
-          id: {
-            [Op.gte]: start,
-            [Op.lt]: start + count,
-          },
-          userId: req.payload.id,
-        },
-      });
     } else {
       if (proxyUser && proxyUser.id === req.payload.id) {
         // fetch conduits in active status; check status enums in model.js
         conduits = await Conduit.findAll({ where: { status: 'active' } });
-      } else if (order !== undefined) {
+      } else {
         conduits = await Conduit.findAll({
           where: { userId: req.payload.id },
           order
-        });
-      } else {
-        conduits = await Conduit.findAll({
-          where: { userId: req.payload.id }
         });
       }
     }
