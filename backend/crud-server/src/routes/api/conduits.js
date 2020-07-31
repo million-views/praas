@@ -94,12 +94,33 @@ router.get('/:id', auth.required, async (req, res, next) => {
 //   to support proxy-server functionality without adding complexity
 // - revisit to make sure we catch all nuances of proper pagination
 // - should we add a limit when there is no start or count?
+const sortable = [
+  'createdAt', 'updatedAt', 'description', 'status', 'id', 'curi',
+];
+
 router.get('/', auth.required, async (req, res, next) => {
   const query = req.query;
   try {
     let conduits = undefined;
     const start = Number(query.start), count = Number(query.count);
     const proxyUser = req.app.locals.proxyUser;
+
+    // sorting
+    let order = undefined;
+
+    if (query.sort) {
+      if (typeof query.sort === 'string') {
+        query.sort = query.sort.split(',');
+      }
+
+      if (Array.isArray(query.sort)) {
+        order = query.sort.map(f => {
+          f = f.trim().split(':');
+          if (f[0].includes(sortable) && f[1].match(/asc|desc/i)) return f;
+          return [];
+        }).filter(f => f.length);
+      }
+    }
 
     if (Number.isSafeInteger(start) && Number.isSafeInteger(count)) {
       conduits = await Conduit.findAll({
@@ -110,13 +131,17 @@ router.get('/', auth.required, async (req, res, next) => {
           },
           userId: req.payload.id,
         },
+        order
       });
     } else {
       if (proxyUser && proxyUser.id === req.payload.id) {
         // fetch conduits in active status; check status enums in model.js
         conduits = await Conduit.findAll({ where: { status: 'active' } });
       } else {
-        conduits = await Conduit.findAll({ where: { userId: req.payload.id } });
+        conduits = await Conduit.findAll({
+          where: { userId: req.payload.id },
+          order
+        });
       }
     }
 
