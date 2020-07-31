@@ -145,7 +145,7 @@ function ConduitForm(props) {
       </button>
       <button
         type="button"
-        onClick={() => changeView('list', 'cancel', cid)}
+        onClick={() => changeView('list', 'cancel', cid, 'components/form')}
         className={classes}
       >
         Cancel

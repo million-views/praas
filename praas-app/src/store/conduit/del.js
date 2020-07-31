@@ -23,7 +23,7 @@ export const deleteConduit = (conduitId, changeView) => {
         console.log('deleteConduit, success: ', payload.conduit.id);
         // actions.setSubmitting(false);
         dispatch(deleteConduitSuccess(payload));
-        changeView('list', 'refresh', undefined);
+        changeView('list', 'refresh', undefined, 'store/delete');
       },
       (error) => {
         dispatch(deleteConduitFailure(error));

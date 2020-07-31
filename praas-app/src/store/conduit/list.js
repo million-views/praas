@@ -20,6 +20,7 @@ export const listConduits = () => {
     dispatch({ type: LIST_CONDUIT_REQUEST });
     PraasAPI.conduit.list().then(
       (payload) => {
+        console.log('listConduits, success: ', payload.conduits.length);
         dispatch(listConduitSuccess(payload));
         // actions.setSubmitting(false);
       },
@@ -29,7 +30,7 @@ export const listConduits = () => {
     );
   };
 };
-const initialState = { inflight: false, conduits: [{}] };
+const initialState = { inflight: false, conduits: [] };
 
 export default function list(state = initialState, { type, payload }) {
   switch (type) {

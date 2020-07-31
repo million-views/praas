@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { deleteConduit } from 'store/conduit/del';
 
@@ -88,7 +88,10 @@ const Modal = ({ open, setModal, conduit, changeView }) => {
           </label>
           <label
             htmlFor={modalId}
-            onClick={() => dispatch(deleteConduit(conduit.id, changeView))}
+            onClick={() => {
+              dispatch(deleteConduit(conduit.id, changeView));
+              setModal();
+            }}
             className="button dangerous"
           >
             Delete
@@ -108,8 +111,23 @@ Modal.propTypes = {
 
 const List = (props) => {
   const [modal, setModal] = useState();
+  const clist = useSelector(state => state.conduit.list);
 
-  const conduits = props.conduits.map((conduit, index) => {
+  const createModal = (conduit) => {
+    if (conduit.status === 'inactive') {
+      return (
+        <Modal
+          open={conduit.id === modal}
+          setModal={setModal}
+          changeView={props.changeView}
+          conduit={conduit}
+        />
+      );
+    }
+  };
+
+  const loading = clist.inflight && <span className="icon-spin-1 spin" />;
+  const conduits = clist.conduits.map((conduit, index) => {
     return (
       <tr key={index}>
         <td>{conduit.id}</td>
@@ -120,7 +138,7 @@ const List = (props) => {
         <td style={{ display: 'flex' }}>
           <button
             onClick={() => {
-              props.changeView('edit', 'form', conduit.id);
+              props.changeView('edit', 'form', conduit.id, 'components/list/row');
             }}
             style={{ background: 0 }}
             className="icon-cog"
@@ -132,13 +150,7 @@ const List = (props) => {
             onClick={() => setModal(conduit.id)}
           />
           {
-            conduit.status === 'inactive' &&
-              <Modal
-                open={conduit.id === modal}
-                setModal={setModal}
-                changeView={props.changeView}
-                conduit={conduit}
-              />
+            createModal(conduit)
           }
         </td>
       </tr>
@@ -147,9 +159,13 @@ const List = (props) => {
 
   return (
     <>
-      <h1>List Conduits</h1>
+      <h1>List Conduits {loading}</h1>
       <h2>A conduit is a handle to a RESTful service endpoint</h2>
-      <button onClick={() => props.changeView('add', 'form')}>Add conduit</button>
+      <button
+        onClick={() => props.changeView('add', 'form', undefined, 'components/list')}
+      >
+        Add conduit
+      </button>
       <table>
         <thead>
           <tr>
@@ -169,7 +185,6 @@ const List = (props) => {
 
 List.propTypes = {
   changeView: PropTypes.func.isRequired,
-  conduits: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default List;

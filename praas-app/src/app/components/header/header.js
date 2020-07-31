@@ -32,7 +32,7 @@ const Header = ({
 
   return (
     <nav>
-      <a href="#" className="brand">
+      <a className="brand">
         <span>{title}</span>
       </a>
       <input id="responsive-menu" type="checkbox" className="show" />

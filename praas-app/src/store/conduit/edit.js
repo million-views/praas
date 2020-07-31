@@ -24,7 +24,7 @@ export const updateConduit = (conduit, actions, changeView) => {
         console.log('updateConduit, successs: ', payload.conduit.id);
         actions.setSubmitting(false);
         dispatch(updateConduitSuccess(payload));
-        changeView('list', 'refresh', payload.conduit.id);
+        changeView('list', 'refresh', payload.conduit.id, 'store/list');
       },
       (error) => {
         actions.setSubmitting(false);
@@ -61,5 +61,5 @@ export default function create(state = initialState, { type, payload }) {
 };
 
 // selector
-export const getConduit =
-  (state, cid) => state.conduit.list.conduits.find((conduit) => conduit.id === cid);
+export const getConduit
+  = (state, cid) => state.conduit.list.conduits.find((conduit) => conduit.id === cid);
