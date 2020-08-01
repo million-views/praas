@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:4000';
+// const API_URL = 'http://localhost:4000';
+const API_URL = '.';
 
 // throws type error if parameters is not iterable and that is by design...
 // don't call this function when there are no query parameters.

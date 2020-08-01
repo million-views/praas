@@ -20,7 +20,7 @@
     "lint:fix": "stylelint src/**/*.{css,scss} --fix && eslint --fix src",
     "build": "webpack --colors --progress -p --env.production --config src/cfg/webpack",
     "watch": "webpack-dev-server --progress --config src/cfg/webpack",
-    "start": "npm run build && live-server build/"
+    "start": "npm run build && node ./live-server build"
   },
   "husky": {
     "hooks": {

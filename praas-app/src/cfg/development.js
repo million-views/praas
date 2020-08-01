@@ -15,7 +15,12 @@ module.exports = (wpc) => {
       inline: true,
       stats: 'errors-only',
       hot: true,
-      historyApiFallback: true
+      historyApiFallback: true,
+      disableHostCheck: true,
+      proxy: [{
+        context: ['/user', '/users', '/conduits'],
+        target: 'http://localhost:4000',
+      }]
     },
     plugins
   };
