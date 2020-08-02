@@ -7,20 +7,23 @@ const DELETE_CONDUIT_SUCCESS = 'conduit/DELETE_CONDUIT_SUCCESS';
 const DELETE_CONDUIT_FAILURE = 'conduit/DELETE_CONDUIT_FAILURE';
 
 // Sync action creators
-export const deleteConduitSuccess = (conduitId) => ({
-  type: DELETE_CONDUIT_SUCCESS, payload: { conduitId }
+export const deleteConduitSuccess = (payload) => ({
+  type: DELETE_CONDUIT_SUCCESS, payload
 });
 
 export const deleteConduitFailure = (error) => ({
   type: DELETE_CONDUIT_FAILURE, payload: error
 });
 
-export const deleteConduit = (conduitId) => {
+export const deleteConduit = (conduitId, changeView) => {
   return (dispatch) => {
     dispatch({ type: DELETE_CONDUIT_REQUEST });
     PraasAPI.conduit.delete(conduitId).then(
-      () => {
-        dispatch(deleteConduitSuccess(conduitId));
+      (payload) => {
+        console.log('deleteConduit, success: ', payload.conduit.id);
+        // actions.setSubmitting(false);
+        dispatch(deleteConduitSuccess(payload));
+        changeView('list', 'refresh', undefined, 'store/delete');
       },
       (error) => {
         dispatch(deleteConduitFailure(error));

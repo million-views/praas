@@ -22,8 +22,8 @@ const Api = () => chai.request(apiServer);
 
 // NOTE:
 // reword/rephrase resource-error messages to fit this pattern
-const ERROR_PATTERN =
-  /^invalid.*$|^missing.*$|^unsupported.*$|cannot be blank|cannot be null/;
+const ERROR_PATTERN
+  = /^invalid.*$|^missing.*$|^unsupported.*$|cannot be blank|cannot be null/;
 
 describe('Praas REST API', () => {
   before(async () => {
@@ -355,7 +355,8 @@ describe('Praas REST API', () => {
             .send({ conduit: withInvalidAllowList });
           expect(res.status).to.equal(422);
           expect(res.error).to.not.be.false;
-          expect(res.body.errors[0].allowlist).to.match(ERROR_PATTERN);
+          expect(res.body).to.have.property('errors');
+          res.body.errors.forEach(error => expect(error.allowlist).to.match(ERROR_PATTERN));
         });
 
         it('should validate hiddenFormField', async function () {
@@ -368,6 +369,7 @@ describe('Praas REST API', () => {
           expect(res.status).to.equal(422);
           expect(res.error).to.not.be.false;
           expect(res.body).to.have.property('errors');
+          res.body.errors.forEach(error => expect(error.hiddenFormField).to.match(ERROR_PATTERN));
         });
       });
 
@@ -433,6 +435,24 @@ describe('Praas REST API', () => {
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res.status).to.equal(200);
         expect(res.body.conduits.length).to.equal(conf.conduitsPerPage);
+      });
+
+      it('should support sorting', async function () {
+        // sort by allowed fields
+        const res1 = await Api()
+          .get('/conduits')
+          .query({
+            start: ctId2 + 1,
+            count: conf.conduitsPerPage,
+            // sort: ['description:desc', 'id:asc']
+            sort: 'last name:desc,id:asc,created at:asc, createdAt:foo'
+            // sort: 'last name:desc'
+            // sort: 'last name'
+          })
+          .set('Authorization', `Token ${jakeUser.token}`);
+        expect(res1.status).to.equal(200);
+        expect(res1.body.conduits.length).to.equal(conf.conduitsPerPage);
+        // ignore unknown field
       });
     });
 

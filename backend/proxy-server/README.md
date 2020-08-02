@@ -4,6 +4,35 @@ Follow [instructions to get the servers up](../README.md) before running
 gateway tests.
 
 ## Testing
+
+### AllowList
+
+There are a few hinderances to test the `allowList` feature since it is
+not possible to mock the remote address that is making a request. Hence,
+a set of [pre-defined pseudo-random IPs] are added to the local loopback
+network interface. Requests are then bound to these IPs and 'proxied'
+through the same network interface.
+
+The network can be set up and destroyed using the same [script].
+
+- to add the pseudo-random IP addresses to the loopback interface, run
+  ```sh
+  loopback-network.sh add
+  ```
+- to delete the IP addresses from the loopback interface, run
+  ```sh
+  loopback-network.sh del
+  ```
+
+The script has been tested with `ifconfig` ( `net-utils` ) and `ip`
+
+:warning: Since this changes system settings, the script requires
+elevated privileges ( `sudo` ) to run. The script will prompt for the
+administration password when it attempts to run commands that require
+elevated privileges
+
+### Airtable
+
 Currently, only Airtable functionality is present in the application.
 Hence, the tests depend on some configuration on Airtable for the tests
 to work. Unfortunately, the Airtable API only allows to operate on an
@@ -22,3 +51,6 @@ to have as a pre-requisite to running the test suite.
   - 3 fields named `name`, `email`, `hiddenFormField`
   - all field names are case sensitive for the purpose of testing
   - the fields **should** be of type `Single line text`
+
+[pre-defined pseudo-random IPs]: ../lib/fake-ips.js
+[script]: ../util/loopback-network.sh

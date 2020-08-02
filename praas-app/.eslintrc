@@ -15,7 +15,8 @@
   "extends": [
     "standard",
     "standard-jsx",
-    "standard-react"
+    "standard-react",
+    "plugin:react-hooks/recommended"
   ],
   "overrides": [
     {
@@ -46,13 +47,14 @@
         "ignoreEOLComments": true
       }
     ],
+    "operator-linebreak": [
+      "error",
+      "before"
+    ],
     "object-property-newline": 0,
     "brace-style": [
       "error",
-      "1tbs",
-      {
-        "allowSingleLine": true
-      }
+      "1tbs"
     ],
     "one-var": 0,
     "space-before-function-paren": 0,

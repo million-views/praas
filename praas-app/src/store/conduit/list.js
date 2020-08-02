@@ -7,31 +7,30 @@ const LIST_CONDUIT_SUCCESS = 'conduit/LIST_CONDUIT_SUCCESS';
 const LIST_CONDUIT_FAILURE = 'conduit/LIST_CONDUIT_FAILURE';
 
 // Sync action creators
-export const listConduitSuccess = (conduits) => ({
-  type: LIST_CONDUIT_SUCCESS, payload: conduits
+export const listConduitSuccess = (payload) => ({
+  type: LIST_CONDUIT_SUCCESS, payload
 });
 
 export const listConduitFailure = (error) => ({
   type: LIST_CONDUIT_FAILURE, payload: error
 });
 
-export const listConduits = (userId) => {
+export const listConduits = () => {
   return (dispatch) => {
-    dispatch({ type: LIST_CONDUIT_REQUEST, payload: userId });
-    PraasAPI.conduit.list(userId).then(
-      (conduits) => {
-        dispatch(listConduitSuccess(conduits));
+    dispatch({ type: LIST_CONDUIT_REQUEST });
+    PraasAPI.conduit.list().then(
+      (payload) => {
+        console.log('listConduits, success: ', payload.conduits.length);
+        dispatch(listConduitSuccess(payload));
         // actions.setSubmitting(false);
       },
       (error) => {
         dispatch(listConduitFailure(error));
-        // actions.setSubmitting(false);
-        // actions.setStatus({ errors: { ...error.errors } });
       }
     );
   };
 };
-const initialState = { inflight: false, conduits: [{}] };
+const initialState = { inflight: false, conduits: [] };
 
 export default function list(state = initialState, { type, payload }) {
   switch (type) {

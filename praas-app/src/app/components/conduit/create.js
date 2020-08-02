@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
@@ -8,62 +8,54 @@ import ConduitForm from './form';
 
 import { addConduit } from 'store/conduit/create';
 
-class CreateConduitForm extends Component {
-  render() {
-    const { changeMode, dispatch } = this.props;
-    const initialValues = {
-      suriApiKey: '',
-      suriType: '',
-      suri: '',
-      allowlist: '',
-      racm: [],
-      description: '',
-    };
-    const conduitSchema = Yup.object({
-      suriApiKey: Yup.string()
-        .required('Service endpoint API key is required'),
-      suriType: Yup.string()
-        .required('Service endpoint type is required'),
-      suri: Yup.string()
-        .required('Service endpoint uri is required'),
-      allowlist: Yup.string()
-        .required('Allowlist (ip addresses) is required'),
-      // racm: Yup.string()
-      racm: Yup.array().of(Yup.string())
-        .required('Request access control is required'),
-      description: Yup.string()
-        .required('Description is required'),
-    });
-
-    return (
-      <Formik
-        initialValues={initialValues}
-        validationSchema={conduitSchema}
-        render={props =>
-          <ConduitForm
-            {...props}
-            buttonLabel="Create Conduit"
-            changeMode={changeMode}
-            status=""
-          />}
-        onSubmit={(values, actions) => {
-          // console.log('in create form, values: ', values);
-          dispatch(addConduit({ conduit: { ...values } }, actions, changeMode));
-        }}
-      />
-    );
-  }
-}
+const conduitSchema = Yup.object({
+  suriApiKey: Yup.string().required('Service endpoint API key is required'),
+  suriType: Yup.string().required('Service endpoint type is required'),
+  suri: Yup.string().required('Service endpoint uri is required'),
+  suriObjectKey: Yup.string().required('Service endpoint object path is required'),
+  racm: Yup.array()
+    .of(Yup.string())
+    .required('Request access control is required'),
+  description: Yup.string().required('Description is required'),
+  status: Yup.string().oneOf(['active', 'inactive']),
+});
 
 CreateConduitForm.propTypes = {
-  changeMode: PropTypes.func.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  changeView: PropTypes.func.isRequired,
 };
 
-const mapDispatchToProps = (dispatch) => (
-  {
-    dispatch,
-  }
-);
+function CreateConduitForm({ changeView }) {
+  const initialValues = {
+    suriApiKey: '',
+    suriType: 'Airtable',
+    suriObjectKey: '',
+    suri: '',
+    racm: ['GET'],
+    description: '',
+    status: 'inactive',
+  };
 
-export default connect(null, mapDispatchToProps)(CreateConduitForm);
+  const dispatch = useDispatch();
+
+  return (
+    <Formik
+      initialValues={initialValues}
+      validationSchema={conduitSchema}
+      onSubmit={(values, actions) => {
+        console.log('in create form, values: ', values);
+        dispatch(addConduit({ conduit: { ...values } }, actions, changeView));
+      }}
+    >
+      {(props) => (
+        <ConduitForm
+          {...props}
+          buttonLabel="Create Conduit"
+          changeView={changeView}
+          status=""
+        />
+      )}
+    </Formik>
+  );
+};
+
+export default CreateConduitForm;

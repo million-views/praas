@@ -1,4 +1,4 @@
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const path = require('path');
 
 module.exports = (env, argv) => {
@@ -17,7 +17,7 @@ module.exports = (env, argv) => {
 
   // webpack based project configuration
   const options = {
-    inlineBelow: 4096 // inline assets whose size is below this many bytes
+    inlineBelow: 4096, // inline assets whose size is below this many bytes
   };
 
   const wpc = { isProd, argv, mode, root, app, cfg, web, lib, build, options };
@@ -30,7 +30,9 @@ module.exports = (env, argv) => {
   const Styles = require('./styles')(wpc);
 
   // NOTE: webpack configuration is code as well, so include Lint early on.
-  let merged = merge(Base, Lint, Babel, Assets, Styles, { devtool: 'source-map' });
+  let merged = merge(Base, Lint, Babel, Assets, Styles, {
+    devtool: 'source-map',
+  });
 
   if (isProd) {
     // production

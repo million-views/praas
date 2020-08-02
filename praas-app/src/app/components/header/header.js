@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { navigate } from '@reach/router';
 
 const Header = ({
-  title = 'Conduit data in and out',
+  title = 'conduits.xyz',
   loggedIn, logout, ...rest
 }) => {
   const Menu = () => {
@@ -32,7 +32,7 @@ const Header = ({
 
   return (
     <nav>
-      <a href="#" className="brand">
+      <a className="brand">
         <span>{title}</span>
       </a>
       <input id="responsive-menu" type="checkbox" className="show" />

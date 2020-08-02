@@ -1,116 +1,83 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Redirect, navigate } from '@reach/router';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Redirect } from '@reach/router';
 
 import { Header } from 'components';
-import { ConduitList, CreateConduitForm, EditConduitForm } from 'components/conduit';
+import {
+  ConduitList,
+  CreateConduitForm,
+  EditConduitForm
+} from 'components/conduit';
 
 import { listConduits } from 'store/conduit/list';
-import { deleteConduit } from 'store/conduit/del';
 import { logoutUser } from 'store/user/login';
 
-class Home extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      mode: 'list',
-      cid: undefined,
-    };
-    this.changeMode = this.changeMode.bind(this);
-  }
+const logit = (from, state) => {
+  const { lastSetBy, mode, reason, cid } = state;
+  console.log(
+    `${from}: ${lastSetBy} > (${mode}, ${reason}, ${cid})`
+  );
+};
 
-  setConduitId(cid) {
-    this.setState({
-      cid
-    });
-  }
+function Home(props) {
+  const user = useSelector(state => state.user.login);
+  const [state, setState] = useState({
+    lastSetBy: 'useState', mode: 'initial', reason: 'mount',
+    cid: undefined
+  });
 
-  _fetchConduits() {
-    console.log('fetching conduits....');
-    const uid = this.props.user.id;
-    this.props.listConduits(uid);
-  }
+  const dispatch = useDispatch();
+  const logout = () => dispatch(logoutUser());
 
-  deleteConduit(cid) {
-    this.props.deleteConduit(cid);
-    this._fetchConduits();
-  }
+  useEffect(() => {
+    // use effect invoked.
+    logit('ue', state);
+    const { mode, reason } = state;
+    const fetch = (
+      user.loggedIn
+    && (mode === 'list' || mode === 'initial')
+    && reason !== 'cancel'
+    );
 
-  componentDidMount() {
-    if (this.props.user.loggedIn) {
-      this._fetchConduits();
-    } else {
-      navigate('/login');
+    if (fetch) {
+      dispatch(listConduits());
     }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, user.loggedIn, dispatch]);
 
-  changeMode(mode = 'list') {
-    this.setState({
-      mode
-    });
-
-    if (mode === 'list') {
-      this._fetchConduits();
-    }
+  // mode: list|edit|add; reason: cancel|form|refresh; cid: id|undefined
+  const viewChanger = (mode, reason, cid, caller) => {
+    // view changer called
+    setState({ mode, reason, cid, lastSetBy: caller });
+    logit('vc', state);
   };
 
-  render() {
-    const { user, logout } = this.props;
-    if (user.loggedIn) {
-      return (
-        <>
-          <Header
-            loggedIn={user.loggedIn}
-            logout={logout}
-          />
-          <main className="page">
-            {this.state.mode === 'list' &&
-              <ConduitList
-                setConduitId={(cid) => this.setConduitId(cid)}
-                changeMode={(mode) => this.changeMode(mode)}
-                deleteConduit={(cid) => this.deleteConduit(cid)}
-                conduits={this.props.conduits}
-              />}
-            {this.state.mode === 'add' &&
-              <CreateConduitForm
-                changeMode={(mode) => this.changeMode(mode)}
-              />}
-            {this.state.mode === 'edit' &&
-              <EditConduitForm
-                cid={this.state.cid}
-                changeMode={(mode) => this.changeMode(mode)}
-              />}
-          </main>
-        </>
-      );
-    } else {
-      return <Redirect to="login" noThrow />;
-    }
+  // render cycle
+  logit('rc', state);
+
+  if (!user.loggedIn) {
+    return <Redirect to="login" noThrow />;
   }
-};
 
-Home.propTypes = {
-  user: PropTypes.object,
-  logout: PropTypes.func.isRequired,
-  listConduits: PropTypes.func.isRequired,
-  deleteConduit: PropTypes.func,
-  conduits: PropTypes.arrayOf(PropTypes.object),
-};
-
-const mapStateToProps = (state, _ownProps) => {
-  return {
-    user: state.user.login,
-    conduits: state.conduit.list.conduits,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => (
-  {
-    logout: () => dispatch(logoutUser()),
-    listConduits: () => dispatch(listConduits()),
-    deleteConduit: (cid) => dispatch(deleteConduit(cid)),
+  let view = null;
+  if (state.mode.match(/list|initial/)) {
+    view = <ConduitList changeView={viewChanger} />;
+  } else if (state.mode === 'add') {
+    view = <CreateConduitForm changeView={viewChanger} />;
+  } else if (state.mode === 'edit') {
+    view = <EditConduitForm cid={state.cid} changeView={viewChanger} />;
+  } else {
+    view = <h1>Oops. We seem to have lost our way!</h1>;
   }
-);
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+  return (
+    <>
+      <Header loggedIn={user.loggedIn} logout={logout} />
+      <main className="page">
+        {view}
+      </main>
+    </>
+  );
+}
+
+export default Home;

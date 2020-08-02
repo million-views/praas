@@ -17,8 +17,7 @@ and provide proper attribution which consists of:
 - name of the package
 - the origin of the source
 - author or entity that holds the copyright to the source
-- is it used as a dependency listed in package.json or imported in source form?
-- if imported in source form, is it used in its original form or modified?
+- was the source used as is or modified?
 - the license of the original source distribution
 
 CAUTION: use only ISC, MIT, BSD licensed source code as a dependency.
@@ -32,19 +31,22 @@ Sample Attribution
 - source-modified: yes
 - source-license: MIT
 
-NOTE: if you find any dependency (that was directly utilized via package.json)
-or in source form, please add the missing dependency here and send a PR.
+NOTE: packages used from any publicly available registries (such as npm)
+do not need to be listed in this file, but still need attribution.
+If you find code without attribution in our codebase please add it here
+and submit a PR.
 
 NOTE: you should list dependencies and code that gets shipped; which
-excludes having the need to list out tools such as webpack, gulp, etc.; unless
-some part of the code base as described in the introduction got used.
+excludes having the need to list out tools such as webpack, gulp, etc.;
+unless some part of the code base as described in the introduction got used.
 
 Code Attributions
 =================
-Classcat
+CX
 --------
 - package-name: classcat
-- source-origin: https://github.com/jorgebucaran/classcat
+- source-origin: 
+  - https://github.com/jorgebucaran/classcat
 - copyright-owner: Jorge Bucaran
 - used-how: in source form, renamed function name to cx
 - source-modified: yes
@@ -72,5 +74,3 @@ Font Attributions
    Author:    P.J. Onori
    License:   SIL (http://scripts.sil.org/OFL)
    Homepage:  http://somerandomdude.com/work/iconic/
-
-
