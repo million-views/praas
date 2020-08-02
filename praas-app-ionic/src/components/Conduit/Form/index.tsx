@@ -71,12 +71,9 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
   };
 
   useEffect(() => {
-    if (
-      watchFields.suriObjectKey &&
-      watchFields.suriObjectKey.match(/^https?:\/\//)
-    ) {
-      const suriObjectKey = watchFields.suriObjectKey;
-      const regexp = new RegExp(regexpList[watchFields.suriType]);
+    const { suriType, suriObjectKey } = watchFields;
+    if (suriObjectKey?.match(/^https?:\/\//)) {
+      const regexp = new RegExp(regexpList[suriType]);
       const match = suriObjectKey.match(regexp);
       if (!match) {
         setError(
