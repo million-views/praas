@@ -94,19 +94,11 @@ function ConduitForm(props) {
         component="select"
         required
       >
-        <option value="Google Sheets">Google Sheets</option>
-        <option value="Airtable">Airtable</option>
-        <option value="Smartsheet">Smartsheet</option>
+        <option value="googleSheets">Google Sheets</option>
+        <option value="airtable">Airtable</option>
+        <option value="email">Email</option>
       </Field>
       <ErrorMessage name="suriType" component="div" className="error" />
-
-      <Field
-        name="suri"
-        placeholder="Service endpoint uri"
-        type="text"
-        required
-      />
-      <ErrorMessage name="suri" component="div" className="error" />
 
       <Field
         name="suriObjectKey"

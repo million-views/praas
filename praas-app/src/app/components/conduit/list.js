@@ -4,19 +4,11 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { deleteConduit } from 'store/conduit/del';
 
-// See https://uxdesign.cc/the-microcopyist-cancellation-confirmation-conflagration-8a6047a4cf9
-// for an overview on writing copy for destructive actions.
-
-// const Modal = ({ open, closeModal, children }) => {
-//   return (
-//     <ModalBehind open={open} onClick={closeModal}>
-//       <ModalDiv onClick={event => event.stopPropagation()}>
-//         <Close onClick={closeModal} />
-//         {children}
-//       </ModalDiv>
-//     </ModalBehind>
-//   );
-// };
+const targetTypesMap = {
+  airtable: 'Airtable',
+  googleSheets: 'GSheets',
+  email: 'Email',
+};
 
 // Hook from https://usehooks.com
 function useEventListener(eventName, handler, element = window) {
@@ -70,7 +62,7 @@ const Modal = ({ open, setModal, conduit, changeView }) => {
       <article>
         <header>
           <h3>Delete {conduit.curi}?</h3><br />
-          <h5>{conduit.id} | {conduit.suriType} | {conduit.suriObjectKey}</h5>
+          <h5>{conduit.id} | {targetTypesMap[conduit.suriType]} | {conduit.suriObjectKey}</h5>
           {/* <label htmlFor={modalId} className="close">×</label> */}
         </header>
         <section>
@@ -131,7 +123,7 @@ const List = (props) => {
     return (
       <tr key={index}>
         <td>{conduit.id}</td>
-        <td>{conduit.suriType}</td>
+        <td>{targetTypesMap[conduit.suriType]}</td>
         <td>{conduit.curi}</td>
         <td>{conduit.description}</td>
         <td style={{ textTransform: 'capitalize' }}>{conduit.status}</td>

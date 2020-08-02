@@ -5,7 +5,9 @@ const cors = require('cors');
 const fetch = require('node-fetch');
 
 const { RestApiError, RestApiErrorHandler } = require('../../lib/error');
-const conf = require('../../config').system.settings;
+const config = require('../../config');
+const conf = config.system.settings;
+
 const helpers = require('../../lib/helpers');
 const PraasAPI = require('../../lib/praas');
 
@@ -19,6 +21,10 @@ app.use(cors());
 // store conduits indexed by curi in app.locals for lookup later...
 // Start with empty cache - this will be populated by fetchConduits
 app.locals.cmap = new Map();
+
+// cache frequently used objects
+const SURI = {};
+config.targets.settings.forEach(i => (SURI[i.type] = i.suri));
 
 // we handle all requests to the proxy end point...
 app.all('/*', upload.none(), (req, res, next) => {
@@ -106,7 +112,7 @@ app.all('/*', upload.none(), (req, res, next) => {
   }
 
   // Prepare request
-  let url = conduit.suri;
+  let url = SURI[conduit.suriType];
   if (conduit.suriObjectKey) {
     // mdn strongly recommends + or += operator for performance
     url += `${conduit.suriObjectKey}`;
@@ -133,7 +139,7 @@ app.all('/*', upload.none(), (req, res, next) => {
 
   // Send request
   let respStat;
-  if (conduit.suriType === 'Airtable') {
+  if (conduit.suriType === 'airtable') {
     fetch(url, options)
       .then(resp => {
         respStat = resp.status;
@@ -198,7 +204,9 @@ if (!module.parent) {
       fetchConduits(data.user);
       setInterval(() => fetchConduits(data.user), conf.cacheRefreshInterval);
     })
-    .catch((error) => { console.log('unexpected... ', error); process.exit(1); });
+    .catch((error) => {
+      console.log('unexpected... ', error); process.exit(1);
+    });
 
   // start listening only after logging in to the resource server...
   // if we can't login then there's no point in running the proxy

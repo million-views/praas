@@ -8,7 +8,8 @@ const port = 4000;
 // to have a similar idea done with webpack as well.
 
 const proxy = [
-  ['/user', `http://localhost:${port}/users`],
+  ['/user', `http://localhost:${port}/user`],
+  ['/users', `http://localhost:${port}/users`],
   ['/users/login', `http://localhost:${port}/users/login`],
   ['/conduits', `http://localhost:${port}/conduits`],
   ['/conduits', `http://localhost:${port}/conduits`],

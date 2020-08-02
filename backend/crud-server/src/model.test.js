@@ -178,10 +178,9 @@ describe('PraaS', () => {
 
       const proxyBaseConduit = {
         userId: user.id,
-        suri: dotEnvValues.parsed.CONDUIT_SERVICE_URI,
+        suriType: dotEnvValues.parsed.CONDUIT_SERVICE_TYPE,
         suriApiKey: dotEnvValues.parsed.CONDUIT_SERVICE_API_KEY,
         suriObjectKey: dotEnvValues.parsed.CONDUIT_SERVICE_OBJECT_KEY,
-        suriType: 'Airtable',
         throttle: false,
         status: 'active',
       };
@@ -413,113 +412,6 @@ describe('PraaS', () => {
             expect(e.errors[0].path).to.equal('curi');
             done();
           });
-      });
-    });
-
-    context('testing suri field...', () => {
-      it('should not allow no suri', done => {
-        helpers.makeCuri('td')
-          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-          .then(cdt => {
-            delete cdt.suri;
-            return models.Conduit.build(cdt);
-          })
-          .then(objCdt => {
-            objCdt.save()
-              .then(() => {
-                done(Error('Conduit was saved with no suri'));
-              })
-              .catch(e => {
-                expect(e.name).to.equal('SequelizeValidationError');
-                expect(e.errors[0].path).to.equal('suri');
-                done();
-              });
-          })
-          .catch(e => done(e));
-      });
-
-      it('should not allow undefined suri', done => {
-        helpers.makeCuri('td')
-          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-          .then(cdt => {
-            cdt.suri = undefined;
-            return models.Conduit.build(cdt);
-          })
-          .then(objCdt => {
-            objCdt.save()
-              .then(() => {
-                done(Error('Conduit was saved with undefined suri'));
-              })
-              .catch(e => {
-                expect(e.name).to.equal('SequelizeValidationError');
-                expect(e.errors[0].path).to.equal('suri');
-                done();
-              });
-          })
-          .catch(e => done(e));
-      });
-
-      it('should not allow null suri', done => {
-        helpers.makeCuri('td')
-          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-          .then(cdt => {
-            cdt.suri = null;
-            return models.Conduit.build(cdt);
-          })
-          .then(objCdt => {
-            objCdt.save()
-              .then(() => {
-                done(Error('Conduit was saved with null suri'));
-              })
-              .catch(e => {
-                expect(e.name).to.equal('SequelizeValidationError');
-                expect(e.errors[0].path).to.equal('suri');
-                done();
-              });
-          })
-          .catch(e => done(e));
-      });
-
-      it('should not allow empty suri', done => {
-        helpers.makeCuri('td')
-          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-          .then(cdt => {
-            cdt.suri = '';
-            return models.Conduit.build(cdt);
-          })
-          .then(objCdt => {
-            objCdt.save()
-              .then(() => {
-                done(Error('Conduit was saved with null suri'));
-              })
-              .catch(e => {
-                expect(e.name).to.equal('SequelizeValidationError');
-                expect(e.errors[0].path).to.equal('suri');
-                done();
-              });
-          })
-          .catch(e => done(e));
-      });
-
-      it('should not allow non-url suri', done => {
-        helpers.makeCuri('td')
-          .then(curi => helpers.fakeConduit({ userId: user.id, curi }))
-          .then(cdt => {
-            cdt.suri = 'not-in-url-format';
-            return models.Conduit.build(cdt);
-          })
-          .then(objCdt => {
-            objCdt.save()
-              .then(() => {
-                done(Error('Conduit was saved with non-url suri'));
-              })
-              .catch(e => {
-                expect(e.name).to.equal('SequelizeValidationError');
-                expect(e.errors[0].path).to.equal('suri');
-                done();
-              });
-          })
-          .catch(e => done(e));
       });
     });
 
