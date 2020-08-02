@@ -18,6 +18,7 @@ ion-content {
   text-align: left;
 }
 
+.ion-no-padding,
 .ion-item--no-padding {
   --padding-start: 0;
   --padding-end: 0;
@@ -27,6 +28,15 @@ ion-content {
   --inner-padding-end: 0;
   --inner-padding-top: 0;
   --inner-padding-bottom: 0;
+  --ion-safe-area-right: 0;
+}
+.ion-no-ripple {
+  --background-focused: transparent;
+  --background-hover: transparent;
+  --background-activated-opacity: 0;
+  --background-focused-opacity: 0;
+  --background-hover-opacity: 0;
+  --transition: none;
 }
 
 .ion-item--no-background {
@@ -35,4 +45,25 @@ ion-content {
   --background-focused: none;
   --background-hover: none;
   --ripple-color: transparent;
+}
+
+ion-item {
+  --ripple-color: transparent;
+  ion-label {
+    &.label-stacked {
+      &.label-stacked {
+        margin-bottom: 6px;
+      }
+    }
+  }
+  ion-select {
+    background-color: #dfeaf7;
+    height: 40px;
+  }
+  &.item-input {
+    ion-input {
+      --background: #dfeaf7;
+      width: 100%;
+    }
+  }
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   IonGrid,
   IonRow,
@@ -22,6 +22,19 @@ type Props = {
   onSave: (conduit: any) => void;
 };
 
+const prefixList: { [key: string]: string[] } = {
+  Airtable: ['https://api.airtable.com/v0/'],
+  'Google Sheets': [
+    'https://docs.google.com/spreadsheets/d/',
+    'https://sheets.googleapis.com/v4/spreadsheets/',
+  ],
+};
+const regexpList: { [key: string]: string } = {
+  Airtable: `^(${prefixList['Airtable'][0]})(?<objectKey>[^#?]*)`,
+  'Google Sheets': `^(${prefixList['Google Sheets'].join(
+    '|'
+  )})(?<objectKey>[^\/#?]*)`,
+};
 const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
   const formMethods = useForm({
     defaultValues: conduit,
@@ -30,7 +43,16 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
 
   const history = useHistory();
 
-  const { handleSubmit, errors } = formMethods;
+  const {
+    handleSubmit,
+    errors,
+    watch,
+    setValue,
+    setError,
+    clearError,
+  } = formMethods;
+
+  const watchFields = watch(['suriType', 'suriObjectKey']);
 
   const onBack = () => {
     history.goBack();
@@ -47,6 +69,30 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
   const onSubmit = (values: any) => {
     onSave({ ...values, racm: parseRACM(values.racm) });
   };
+
+  useEffect(() => {
+    if (
+      watchFields.suriObjectKey &&
+      watchFields.suriObjectKey.match(/^https?:\/\//)
+    ) {
+      const suriObjectKey = watchFields.suriObjectKey;
+      const regexp = new RegExp(regexpList[watchFields.suriType]);
+      const match = suriObjectKey.match(regexp);
+      if (!match) {
+        setError(
+          'suriObjectKey',
+          'manual',
+          'Object key domain does not match Resource type'
+        );
+        return;
+      } else {
+        clearError('suriObjectKey');
+      }
+
+      const newValue = match?.groups?.objectKey;
+      setValue('suriObjectKey', newValue);
+    }
+  }, [watchFields.suriObjectKey]);
   return (
     <FormContext {...formMethods}>
       <form noValidate onSubmit={handleSubmit(onSubmit)}>
@@ -76,9 +122,14 @@ const ConduitForm: React.FC<Props> = ({ conduit, onSave }) => {
           </IonRow>
           <IonRow className="ion-margin-bottom">
             <IonCol size="12" sizeMd="6">
-              <FormFieldWithError error={errors.suri}>
+              <FormFieldWithError error={errors.suriObjectKey}>
                 <IonLabel position="stacked">Service endpoint uri</IonLabel>
-                <Input name="suri" value={conduit?.suri} title="SURI" />
+                <Input
+                  name="suriObjectKey"
+                  value={conduit?.suriObjectKey}
+                  title="SURI Object Key"
+                  prefix={prefixList[watchFields.suriType]?.[0]}
+                />
               </FormFieldWithError>
             </IonCol>
             <IonCol size="12" sizeMd="6">

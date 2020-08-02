@@ -4,7 +4,7 @@ type Conduit = {
   id: number;
   suriApiKey: string;
   suriType: string;
-  suri: string;
+  suriOjbectKey: string;
   curi: string;
   racm: Array<RequestAccessMethods>;
   status: string;

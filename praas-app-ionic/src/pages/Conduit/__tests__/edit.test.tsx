@@ -17,8 +17,7 @@ const server = setupServer(
           id: 1,
           suriApiKey: 'SECRET',
           suriType: 'Airtable',
-          suriObjectKey: null,
-          suri: 'http://example.org',
+          suriObjectKey: 'asdf',
           curi: 'td-obj7u.trickle.cc',
           allowlist: [],
           racm: ['POST'],
@@ -84,7 +83,7 @@ describe('Conduit edit Page', () => {
 
     const apiKey = await screen.findByTitle('API Key');
     const suriType = await screen.findByTitle('SURI Type');
-    const suri = await screen.findByTitle('SURI');
+    const suriObjectKey = await screen.findByTitle('SURI Object Key');
 
     const description = await screen.findByTitle('Description');
     const statusRadio = document.querySelector('[name="group_status"]');
@@ -92,7 +91,7 @@ describe('Conduit edit Page', () => {
     expect(baseElement).toBeDefined();
     expect(apiKey.value).toBe('SECRET');
     expect(suriType.value).toBe('Airtable');
-    expect(suri.value).toBe('http://example.org');
+    expect(suriObjectKey.value).toBe('asdf');
     expect(description.value).toBe('Description');
     expect(statusRadio.value).toBe('active');
   });

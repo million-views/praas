@@ -9,7 +9,7 @@ type Props = {
 
 const FormFieldWithError = ({ children, error }: Props) => (
   <>
-    <IonItem className="ion-no-padding">{children}</IonItem>
+    <IonItem className="ion-no-padding ion-no-ripple">{children}</IonItem>
     {error && <IonText color="danger">{error.message}</IonText>}
   </>
 );

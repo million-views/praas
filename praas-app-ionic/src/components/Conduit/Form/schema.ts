@@ -9,7 +9,7 @@ const conduitSchema = Yup.object().shape({
       'Invalid service type'
     )
     .required('Service type required'),
-  suri: Yup.string().required('Service Endpoint uri is required'),
+  suriObjectKey: Yup.string().required('Service Identifier is required'),
   racm: Yup.object()
     .shape({
       GET: Yup.boolean(),
