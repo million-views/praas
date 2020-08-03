@@ -8,7 +8,7 @@ const path = require('path');
 module.exports = {
   process(_src, filename) {
     const assetFilename = JSON.stringify(path.basename(filename));
-
+    console.log('============>', assetFilename);
     if (filename.match(/\.svg$/)) {
       return `module.exports = {
         __esModule: true,

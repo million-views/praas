@@ -27,7 +27,7 @@ module.exports = (wpc) => {
 
   if (wpc.isProd) {
     plugins.push(
-      new UglifyJs({ uglifyOptions })
+      new UglifyJs({ test: /\.js(\?.*)?$/i, uglifyOptions })
     );
     plugins.push(
       new TerserJs({})

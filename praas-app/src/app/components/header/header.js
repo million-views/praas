@@ -1,18 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import { navigate } from '@reach/router';
+import { useNavigate } from 'react-router-dom';
 
 const Header = ({
   title = 'conduits.xyz',
   loggedIn, logout, ...rest
 }) => {
+  const navigate = useNavigate();
+
   const Menu = () => {
     if (loggedIn) {
       return (
         <ul className="menu">
           <li>
-            <a onClick={logout} className="icon-logout">Logout</a>
+            <a onClick={() => logout(navigate)} className="icon-logout">Logout</a>
           </li>
         </ul>
       );

@@ -4,7 +4,6 @@ const webpack = require('webpack');
 module.exports = (wpc) => {
   const plugins = [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NamedModulesPlugin(),
   ];
 
   return {

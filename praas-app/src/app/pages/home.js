@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Redirect } from '@reach/router';
+import { Navigate } from 'react-router-dom';
 
 import { Header } from 'components';
 import {
@@ -27,7 +27,7 @@ function Home(props) {
   });
 
   const dispatch = useDispatch();
-  const logout = () => dispatch(logoutUser());
+  const logout = (navigate) => dispatch(logoutUser(navigate));
 
   useEffect(() => {
     // use effect invoked.
@@ -56,7 +56,7 @@ function Home(props) {
   logit('rc', state);
 
   if (!user.loggedIn) {
-    return <Redirect to="login" noThrow />;
+    return <Navigate to="/login" noThrow />;
   }
 
   let view = null;

@@ -1,4 +1,4 @@
-const liveServer = require('live-server');
+import liveServer from 'live-server';
 const port = 4000;
 
 // Map of resource-server routes that need to be proxied in order to be

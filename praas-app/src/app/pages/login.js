@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 import { Header } from 'components';
 import Alert from 'components/alert';
 
+import { useNavigate } from 'react-router-dom';
 import { loginUser, logoutUser } from 'store/user/login';
 
 const initialValues = {
@@ -50,7 +51,7 @@ function LoginForm(props) {
         <Field name="user.password" placeholder="Password" type="password" required />
         <ErrorMessage name="user.password" component="div" className="error" />
       </div>
-      <button disabled={isSubmitting === true}>Submit</button>
+      <button type="submit" disabled={isSubmitting === true}>Submit</button>
     </Form>
   );
 };
@@ -58,6 +59,7 @@ function LoginForm(props) {
 function Login() {
   const user = useSelector(state => state.user.login);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   console.log('user: ', user);
   return (
@@ -70,12 +72,13 @@ function Login() {
         <Formik
           initialValues={initialValues}
           validationSchema={loginSchema}
-          render={LoginForm}
           onSubmit={(values, actions) => {
             const user = values.user;
-            dispatch(loginUser({ user }, actions));
+            dispatch(loginUser({ user }, actions, navigate));
           }}
-        />
+        >
+          {(props) => <LoginForm />}
+        </Formik>
       </main>
     </>
   );

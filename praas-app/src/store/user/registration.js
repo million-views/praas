@@ -1,5 +1,3 @@
-import { navigate } from '@reach/router';
-
 import PraasAPI from 'api/praas';
 
 // This is a user-registration duck. A duck is a feature state container.
@@ -17,7 +15,7 @@ export const registerFailure = (error) => ({
 });
 
 // Async action creators
-export const registerUser = (user, actions) => {
+export const registerUser = (user, actions, navigate) => {
   return (dispatch) => {
     dispatch({ type: REGISTER_REQUEST, user });
     PraasAPI.user.register(user).then(

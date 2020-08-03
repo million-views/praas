@@ -11,9 +11,19 @@ module.exports = {
   // Make calling deprecated APIs throw helpful error messages
   errorOnDeprecated: true,
 
-  modulePaths: [
-    '<rootDir>/src/app',
-  ],
+  // modulePaths: [
+  //   '<rootDir>/src/app',
+  //   '<rootDir>/src/store',
+  //   '<rootDir>/src/api',
+  // ],
+
+  moduleNameMapper: {
+    '^components(.*)$': '<rootDir>/src/app/components/$1',
+    '^api(.*)$': '<rootDir>/src/api/$1',
+    '^store(.*)$': '<rootDir>/src/store/$1',
+  },
+
+  displayName: 'conduits.app functional tests',
 
   // An array of file extensions your modules use
   moduleFileExtensions: [
@@ -24,6 +34,13 @@ module.exports = {
     'tsx',
     'node',
   ],
+
+  // The test environment that will be used for testing
+  testEnvironment: 'jsdom',
+
+  // A list of paths to modules that run some code to configure or set up
+  // the testing framework before each test
+  setupFilesAfterEnv: ['<rootDir>/src/scripts/setup-rtl.js'],
 
   // The glob patterns Jest uses to detect test files
   testMatch: [

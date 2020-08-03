@@ -1,4 +1,3 @@
-// import { navigate } from '@reach/router';
 import PraasAPI from 'api/praas';
 
 // This is a create-conduit duck. A duck is a feature state container.

@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 import { Header } from 'components';
 import Alert from 'components/alert';
 
+import { useNavigate } from 'react-router-dom';
 import { registerUser } from 'store/user/registration';
 import { logoutUser } from 'store/user/login';
 
@@ -56,7 +57,7 @@ function SignupForm(props) {
         <ErrorMessage name="user.password" component="div" className="error" />
       </div>
 
-      <button disabled={isSubmitting === true}>Submit</button>
+      <button type="submit" disabled={isSubmitting === true}>Submit</button>
     </Form>
   );
 };
@@ -64,6 +65,7 @@ function SignupForm(props) {
 function Signup() {
   const user = useSelector(state => state.user.login);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -75,12 +77,15 @@ function Signup() {
         <Formik
           initialValues={initialValues}
           validationSchema={signupSchema}
-          render={SignupForm}
           onSubmit={(values, actions) => {
             const user = values.user;
-            dispatch(registerUser({ user }, actions));
+            dispatch(registerUser({ user }, actions, navigate));
           }}
-        />
+        >
+          {
+            (props) => <SignupForm />
+          }
+        </Formik>
       </main>
     </>
   );

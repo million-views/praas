@@ -38,10 +38,7 @@ const HtmlOptions = {
 };
 
 // assets that are not detected by webpack as being part of the build
-// chain will need to be copied manually; notice that we do not copy
-// index.html and kitchen-sink.html since webpack knows about those
-// and any references to assets they in turn include that are known
-// to webpack.
+// chain will need to be copied manually.
 const assets = (wpc) => {
   const globOptions = {
     ignore: ['*.scss'],

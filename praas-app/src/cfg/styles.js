@@ -77,6 +77,12 @@ module.exports = (wpc) => {
   localCss.push(cssLoader(true, '[local]-[hash:base64:5]'));
   globalCss.push(cssLoader('global'));
 
+  if (!wpc.isProd) {
+    localCss.push({
+      loader: 'style-loader', options: { injectType: 'singletonStyleTag' }
+    });
+  }
+
   // NOTE: loaders are chained last-in-first-out
   localCss.push(sassLoader([wpc.components]));
   globalCss.push(sassLoader([wpc.app, wpc.lib]));

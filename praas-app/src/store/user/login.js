@@ -1,7 +1,4 @@
-import { navigate } from '@reach/router';
 import PraasAPI from 'api/praas';
-// import * as alertActions from 'store/alert';
-
 // This is a user-authentication duck. A duck is a feature state container.
 
 const LOGIN_REQUEST = 'user/LOGIN_REQUEST';
@@ -24,7 +21,7 @@ export const logoutSuccess = () => {
 };
 
 // Async action creators
-export const logoutUser = () => {
+export const logoutUser = (navigate) => {
   return (dispatch) => {
     PraasAPI.user.logout().then(
       (success) => {
@@ -41,7 +38,7 @@ export const logoutUser = () => {
   };
 };
 
-export const loginUser = (user, actions) => {
+export const loginUser = (user, actions, navigate) => {
   return (dispatch) => {
     dispatch({ type: LOGIN_REQUEST, payload: user });
     PraasAPI.user.login(user).then(

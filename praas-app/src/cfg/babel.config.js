@@ -1,12 +1,13 @@
 const presets = (wpc) => [
   ['@babel/preset-env', {
     loose: true,
-    modules: false,       /* don't transpile ES6 modules */
+    modules: wpc.isTest ? 'commonjs' : false,   /* transpile ES6 for Jest */
     useBuiltIns: 'usage', /* disable polyfills; target the latest and greatest! */
     // debug: true,
     targets: {
       chrome: 71,
-      esmodules: true
+      esmodules: true,
+      node: 'current',
     },
     corejs: {
       version: 3, proposals: true
