@@ -25,7 +25,7 @@ module.exports = {
     }
   },
   targets: { // supported by the gateway
-    description: 'Target service endpoints setings - READONLY',
+    description: 'Target service endpoints settings - READONLY',
     settings: [
       { type: 'googleSheets', name: 'Google Sheets', suri: 'https://docs.google.com/spreadsheets/d/' },
       { type: 'airtable', name: 'Airtable', suri: 'https://api.airtable.com/v0/' },
