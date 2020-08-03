@@ -17,15 +17,24 @@ type Props = {
   conduit: Conduit;
   onDelete: (id: string | number) => void;
 };
+
+type Dictionary = { [index: string]: string };
+const conduitTypeMap:Dictionary = {
+  airtable: 'Airtable',
+  googleSheets: 'GSheets',
+  email: 'Email'
+};
+
 const ListItem = ({ conduit, onDelete }: Props) => {
   const [deletePrompt, setDeletePrompt] = useState(false);
+  const suriType = conduitTypeMap[conduit.suriType];
   return (
     <IonRow key={conduit.id} className="table-row ion-align-items-center">
       <IonCol className="table-col" size="3">
         {conduit.description}
       </IonCol>
       <IonCol className="table-col" size="2">
-        {conduit.suriType}
+        {suriType}
       </IonCol>
       <IonCol className="table-col" size="3">
         {conduit.curi}

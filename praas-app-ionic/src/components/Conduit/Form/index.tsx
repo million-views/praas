@@ -23,15 +23,16 @@ type Props = {
 };
 
 const prefixList: { [key: string]: string[] } = {
-  Airtable: ['https://api.airtable.com/v0/'],
-  'Google Sheets': [
+  airtable: ['https://api.airtable.com/v0/'],
+  googleSheets: [
     'https://docs.google.com/spreadsheets/d/',
     'https://sheets.googleapis.com/v4/spreadsheets/',
   ],
+  email: ['']
 };
 const regexpList: { [key: string]: string } = {
-  Airtable: `^(${prefixList['Airtable'][0]})(?<objectKey>[^#?]*)`,
-  'Google Sheets': `^(${prefixList['Google Sheets'].join(
+  airtable: `^(${prefixList['airtable'][0]})(?<objectKey>[^#?]*)`,
+  'Google Sheets': `^(${prefixList['googleSheets'].join(
     '|'
   )})(?<objectKey>[^\/#?]*)`,
 };
