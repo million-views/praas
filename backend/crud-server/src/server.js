@@ -14,12 +14,12 @@ require('./passport');
 // Create global app object
 const app = express();
 
-app.use(cors());
-
 // Log all requests to console
 // const morgan = require('morgan');
 // app.use(morgan('dev'));
 // app.use(morgan('combined'));
+
+app.use(cors());
 
 // Normal express config defaults
 app.use(bodyParser.urlencoded({ extended: false }));
