@@ -40,7 +40,7 @@ describe('Conduit create Page', () => {
     });
     const apiKey = await screen.findByTitle('API Key');
     const suriType = await screen.findByTitle('SURI Type');
-    const suri = await screen.findByTitle('SURI');
+    const suriObjectKey = await screen.findByTitle('SURI Object Key');
     const racm = document.querySelectorAll('[name^="racm"][role="toggle"]');
     const description = await screen.findByTitle('Description');
     const statusRadio = document.querySelectorAll('[name="status"]');
@@ -50,7 +50,7 @@ describe('Conduit create Page', () => {
     expect(baseElement).toBeDefined();
     expect(apiKey).toBeInTheDocument();
     expect(suriType).toBeInTheDocument();
-    expect(suri).toBeInTheDocument();
+    expect(suriObjectKey).toBeInTheDocument();
     expect(racm).toHaveLength(4);
     expect(description).toBeInTheDocument();
     expect(statusRadio).toHaveLength(2);
@@ -71,8 +71,8 @@ describe('Conduit create Page', () => {
 
     const apiKeyError = await screen.findByText('Api key is required');
     const suriTypeError = await screen.findByText('Service type required');
-    const suriError = await screen.findByText(
-      'Service Endpoint uri is required'
+    const suriObjectKeyError = await screen.findByText(
+      'Service Identifier is required'
     );
     // const racmError = await screen.findByText(
     //   'Select atleast on request method'
@@ -81,12 +81,12 @@ describe('Conduit create Page', () => {
 
     expect(apiKeyError).toBeInTheDocument();
     expect(suriTypeError).toBeInTheDocument();
-    expect(suriError).toBeInTheDocument();
+    expect(suriObjectKeyError).toBeInTheDocument();
     // expect(racmError).toBeInTheDocument();
     expect(descriptionError).toBeInTheDocument();
   });
 
-  it('shoiuld show errors for invalid inputs', async () => {
+  it('should show errors for invalid inputs', async () => {
     render(<ConduitPage {...props} />, {
       wrapper: ProviderWrapper,
     });
@@ -105,6 +105,23 @@ describe('Conduit create Page', () => {
 
     expect(suriTypeError).toBeInTheDocument();
   });
+  it('should show errors for invalid suri object key', async () => {
+    render(<ConduitPage {...props} />, {
+      wrapper: ProviderWrapper,
+    });
+
+    const suriType = await screen.findByTitle('SURI Type');
+    const suriObjectKey = await screen.findByTitle('SURI Object Key');
+
+    fireEvent.ionChange(suriType, 'Airtable');
+    fireEvent.ionChange(suriObjectKey, 'https://example.org/sheet/id');
+
+    const suriObjectKeyError = await screen.findByText(
+      'Object key domain does not match Resource type'
+    );
+
+    expect(suriObjectKeyError).toBeInTheDocument();
+  });
 
   it('should submit form with valid values', async () => {
     const { container } = render(<ConduitPage {...props} />, {
@@ -115,7 +132,7 @@ describe('Conduit create Page', () => {
 
     const apiKey = await screen.findByTitle('API Key');
     const suriType = await screen.findByTitle('SURI Type');
-    const suri = await screen.findByTitle('SURI');
+    const suriObjectKey = await screen.findByTitle('SURI Object Key');
 
     const racm = document.querySelectorAll('[name^="racm"][role="toggle"]');
     const description = await screen.findByTitle('Description');
@@ -123,7 +140,10 @@ describe('Conduit create Page', () => {
 
     fireEvent.ionChange(apiKey, 'S3C23TK3Y');
     fireEvent.ionChange(suriType, 'Airtable');
-    fireEvent.ionChange(suri, 'http://example.com/235');
+    fireEvent.ionChange(
+      suriObjectKey,
+      'https://api.airtable.com/v0/appzAJinIgmuueaGd/Contacts'
+    );
 
     fireEvent.click(racm[1]);
     fireEvent.ionChange(description, 'Sample Description');

@@ -19,7 +19,8 @@ interface Props extends RouteComponentProps {
 }
 
 const conduit = {
-  racm: [],
+  racm: ['GET'],
+  suriType: 'airtable',
   status: 'inactive',
 };
 
