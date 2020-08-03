@@ -1,10 +1,10 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import * as Yup from 'yup';
 import { Formik } from 'formik';
 
 import ConduitForm from './form';
+import conduitSchema from './schema';
 
 import { updateConduit, getConduit } from 'store/conduit/edit';
 
@@ -13,25 +13,12 @@ EditConduitForm.propTypes = {
   changeView: PropTypes.func.isRequired,
 };
 
-const conduitSchema = Yup.object({
-  suriApiKey: Yup.string().required('Service endpoint API key is required'),
-  suriType: Yup.string().required('Service endpoint type is required'),
-  suri: Yup.string().required('Service endpoint uri is required'),
-  suriObjectKey: Yup.string().required('Service endpoint object path is required'),
-  racm: Yup.array()
-    .of(Yup.string())
-    .required('Request access control is required'),
-  description: Yup.string().required('Description is required'),
-  status: Yup.string().oneOf(['active', 'inactive']),
-});
-
 function EditConduitForm ({ changeView, cid }) {
   const conduit = useSelector(state => getConduit(state, cid));
   const dispatch = useDispatch();
   const initialValues = {
     suriApiKey: conduit.suriApiKey,
     suriType: conduit.suriType,
-    suri: conduit.suri,
     suriObjectKey: conduit.suriObjectKey,
     allowlist: conduit.allowlist,
     racm: conduit.racm,

@@ -23,7 +23,7 @@ const Api = () => chai.request(apiServer);
 // NOTE:
 // reword/rephrase resource-error messages to fit this pattern
 const ERROR_PATTERN
-  = /^invalid.*$|^missing.*$|^unsupported.*$|cannot be blank|cannot be null/;
+  = /^invalid.*$|^missing.*$|not found|unsupported|cannot be blank|cannot be null/;
 
 describe('Praas REST API', () => {
   before(async () => {
@@ -111,6 +111,7 @@ describe('Praas REST API', () => {
         .send();
       expect(res.status).to.equal(422);
     });
+
     it('should not authenticate when user credentials are missing', async function () {
       const user = { ...jake.user };
       delete user.password;
@@ -120,6 +121,7 @@ describe('Praas REST API', () => {
       expect(res.status).to.equal(422);
       expect(res.body.errors.message).to.equal('Missing credentials');
     });
+
     it('should not authenticate without valid user credentials', async function () {
       const user = { ...jake.user };
       user.password = 'jake';
@@ -130,23 +132,24 @@ describe('Praas REST API', () => {
       expect(res.body).to.have.property('errors');
       expect(res.body.errors.credentials).to.equal('email or password is invalid');
     });
+
     it('should not allow creating conduit', async function () {
       const res = await Api()
         .post('/conduits')
         .send(helpers.fakeConduit());
       expect(res.status).to.equal(401);
-      expect(res.error).to.not.be.false;
       expect(res.body).to.have.property('errors');
       expect(res.body.errors.authorization).to.equal('token not found or malformed');
     });
+
     it('should not GET conduit information', async function () {
       const res = await Api()
         .get('/conduits');
       expect(res.status).to.equal(401);
-      expect(res.error).to.not.be.false;
       expect(res.body).to.have.property('errors');
       expect(res.body.errors.authorization).to.equal('token not found or malformed');
     });
+
     it('should authenticate with valid user credentials', async function () {
       const res = await Api()
         .post('/users/login')
@@ -247,7 +250,6 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`)
             .send();
           expect(empty.status).to.equal(422);
-          expect(empty.error).to.not.be.false;
           expect(empty.body).to.have.property('errors');
           expect(empty.body.errors).to.have.property('conduit');
           expect(empty.body.errors.conduit).to.equal('is required');
@@ -258,11 +260,10 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`)
             .send({ conduit: {} });
           expect(emptyConduit.status).to.equal(422);
-          expect(emptyConduit.error).to.not.be.false;
           expect(emptyConduit.body).to.have.property('errors');
         });
 
-        it('should validate external service parameters', async function () {
+        it('should reject invalid target service parameters', async function () {
           // check for Service Type ( suriType )
           const withoutSuriType = helpers.fakeConduit();
           delete withoutSuriType.suriType;
@@ -271,43 +272,18 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`)
             .send({ conduit: withoutSuriType });
           expect(noSuriType.status).to.equal(422);
-          expect(noSuriType.error).to.not.be.false;
           expect(Object.keys(noSuriType.body.errors)).to.include('suriType');
           expect(noSuriType.body.errors.suriType).to.match(ERROR_PATTERN);
 
-          // unsupported external service ( suriType )
-          const forUnsupportedService = helpers.fakeConduit();
-          forUnsupportedService.suriType = 'random-service';
-          const unsupportedService = await Api()
+          // check for unsupported service type
+          const withUnmatchedService = helpers.fakeConduit();
+          withUnmatchedService.suriType = 'smartsheet is gone!';
+          const res = await Api()
             .post(`/conduits`)
             .set('Authorization', `Token ${jakeUser.token}`)
-            .send({ conduit: forUnsupportedService });
-          expect(unsupportedService.status).to.equal(422);
-          expect(unsupportedService.error).to.not.be.false;
-          expect(unsupportedService.body.errors[0].suriType).to.match(ERROR_PATTERN);
-
-          // check for Service URI ( suri )
-          const withoutSuri = helpers.fakeConduit();
-          delete withoutSuri.suri;
-          const noSuri = await Api()
-            .post('/conduits')
-            .set('Authorization', `Token ${jakeUser.token}`)
-            .send({ conduit: withoutSuri });
-          expect(noSuri.status).to.equal(422);
-          expect(noSuri.error).to.not.be.false;
-          expect(Object.keys(noSuri.body.errors)).to.include('suri');
-          expect(noSuri.body.errors.suri).to.match(ERROR_PATTERN);
-
-          // invalid service URI ( suri )
-          const withInvalidSuri = helpers.fakeConduit();
-          withInvalidSuri.suri = 'not-a-uri';
-          const invalidSuri = await Api()
-            .post(`/conduits`)
-            .set('Authorization', `Token ${jakeUser.token}`)
-            .send({ conduit: withInvalidSuri });
-          expect(invalidSuri.status).to.equal(422);
-          expect(invalidSuri.error).to.not.be.false;
-          expect(invalidSuri.body.errors.suri).to.match(ERROR_PATTERN);
+            .send({ conduit: withUnmatchedService });
+          expect(res.status).to.equal(422);
+          expect(res.body.errors.suriType).to.match(ERROR_PATTERN);
 
           // check for Service API Key ( suriApiKey )
           const withoutSuriApiKey = helpers.fakeConduit();
@@ -317,7 +293,6 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`)
             .send({ conduit: withoutSuriApiKey });
           expect(noSuriApiKey.status).to.equal(422);
-          expect(noSuriApiKey.error).to.not.be.false;
           expect(Object.keys(noSuriApiKey.body.errors)).to.include('suriApiKey');
           expect(noSuriApiKey.body.errors.suriApiKey).to.match(ERROR_PATTERN);
 
@@ -329,7 +304,6 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`)
             .send({ conduit: withoutSuriObjectKey });
           expect(noSuriObjectKey.status).to.equal(422);
-          expect(noSuriObjectKey.error).to.not.be.false;
           expect(Object.keys(noSuriObjectKey.body.errors)).to.include('suriObjectKey');
           expect(noSuriObjectKey.body.errors.suriObjectKey).to.match(ERROR_PATTERN);
         });
@@ -342,7 +316,6 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`)
             .send({ conduit: withInvalidRacm });
           expect(res.status).to.equal(422);
-          expect(res.error).to.not.be.false;
           expect(res.body.errors[0].racm).to.match(ERROR_PATTERN);
         });
 
@@ -354,9 +327,10 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`)
             .send({ conduit: withInvalidAllowList });
           expect(res.status).to.equal(422);
-          expect(res.error).to.not.be.false;
           expect(res.body).to.have.property('errors');
-          res.body.errors.forEach(error => expect(error.allowlist).to.match(ERROR_PATTERN));
+          res.body.errors.forEach(
+            error => expect(error.allowlist).to.match(ERROR_PATTERN)
+          );
         });
 
         it('should validate hiddenFormField', async function () {
@@ -367,32 +341,15 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`)
             .send({ conduit: withInvalidHiddenFormField });
           expect(res.status).to.equal(422);
-          expect(res.error).to.not.be.false;
           expect(res.body).to.have.property('errors');
-          res.body.errors.forEach(error => expect(error.hiddenFormField).to.match(ERROR_PATTERN));
+          res.body.errors.forEach(
+            error => expect(error.hiddenFormField).to.match(ERROR_PATTERN)
+          );
         });
       });
 
-      it('should reject unmatched service type and service base url', async () => {
-        const withUnmatchSuri = helpers.fakeConduit();
-        if (withUnmatchSuri.suriType === 'Airtable') {
-          withUnmatchSuri.suri = 'https://api.mytable.com/v0/';
-        } else if (withUnmatchSuri.suriType === 'Google Sheets') {
-          withUnmatchSuri.suri = 'https://docs.doodle.com/spreadsheets/d/';
-        } else if (withUnmatchSuri.suriType === 'Smartsheet') {
-          withUnmatchSuri.suri = 'https://api.quicksheet.com/2.0/sheets';
-        }
-        const res = await Api()
-          .post(`/conduits`)
-          .set('Authorization', `Token ${jakeUser.token}`)
-          .send({ conduit: withUnmatchSuri });
-        expect(res.status).to.equal(422);
-        expect(res.error).to.not.be.false;
-        expect(res.body.errors.suri).to.match(ERROR_PATTERN);
-      });
-
       it('should create new service endpoint for a valid request', async function () {
-        // Add 25 conduits for testing: update, delete and pagination.. since
+        // Add N conduits for testing: update, delete and pagination. Since
         // a REST layer test should be isolated from the DATA layer, we don't
         // directly access the model to insert these records.
         const conduits = [];
@@ -419,7 +376,6 @@ describe('Praas REST API', () => {
         expect(res.status).to.equal(200);
         expect(res.body.conduit).to.have.property('suriApiKey');
         expect(res.body.conduit).to.have.property('suriType');
-        expect(res.body.conduit).to.have.property('suri');
         expect(res.body.conduit).to.have.property('suriObjectKey');
         expect(res.body.conduit).to.have.property('curi');
         expect(res.body.conduit).to.have.property('allowlist');
@@ -472,7 +428,6 @@ describe('Praas REST API', () => {
           .send({ conduit: putData });
         expect(res.status).to.equal(200);
         expect(res.body.conduit).to.not.eql(conduit.body.conduit);
-        expect(res.body.conduit.suri).to.equal(putData.suri);
         expect(res.body.conduit.suriApiKey).to.equal(putData.suriApiKey);
         expect(res.body.conduit.suriObjectKey).to.equal(putData.suriObjectKey);
         expect(res.body.conduit.suriType).to.equal(putData.suriType);
@@ -483,16 +438,15 @@ describe('Praas REST API', () => {
 
       it('should reject an invalid service endpoint', async function () {
         const invalidConduit = await helpers.fakeConduit();
-        delete invalidConduit.suri;
+        delete invalidConduit.suriType;
 
         const res = await Api()
           .put('/conduits/' + ctId1)
           .set('Authorization', `Token ${jakeUser.token}`)
           .send({ conduit: invalidConduit });
         expect(res.status).to.equal(422);
-        expect(res.error).to.not.be.false;
-        expect(Object.keys(res.body.errors)).to.include('suri');
-        expect(res.body.errors.suri).to.match(ERROR_PATTERN);
+        expect(Object.keys(res.body.errors)).to.include('suriType');
+        expect(res.body.errors.suriType).to.match(ERROR_PATTERN);
       });
 
       it('should not update service endpoint URI', async function () {
@@ -502,7 +456,6 @@ describe('Praas REST API', () => {
           .set('Authorization', `Token ${jakeUser.token}`)
           .send(conduitUri);
         expect(res.status).to.equal(403);
-        expect(res.error).to.not.be.false;
         expect(res.body).to.have.property('errors');
         expect(res.body.errors.conduit).to.equal('is immutable');
       });
@@ -512,7 +465,6 @@ describe('Praas REST API', () => {
           .put('/conduits/non-existent')
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res.status).to.equal(404);
-        expect(res.error).to.not.be.false;
         expect(res.body).to.have.property('errors');
         expect(res.body.errors.conduit).to.equal('not found');
       });
@@ -557,7 +509,6 @@ describe('Praas REST API', () => {
           .set('Authorization', `Token ${jakeUser.token}`)
           .send(conduitUri);
         expect(res.status).to.equal(403);
-        expect(res.error).to.not.be.false;
         expect(res.body).to.have.property('errors');
         expect(res.body.errors.conduit).to.equal('is immutable');
       });
@@ -567,9 +518,8 @@ describe('Praas REST API', () => {
           .patch('/conduits/non-existent')
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res.status).to.equal(404);
-        expect(res.error).to.not.be.false;
         expect(res.body).to.have.property('errors');
-        expect(res.body.errors.conduit).to.equal('not found');
+        expect(res.body.errors.conduit).to.match(ERROR_PATTERN);
       });
     });
 
@@ -585,7 +535,6 @@ describe('Praas REST API', () => {
           .get(`/conduits/${ctId2}`)
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(getDeleted.status).to.equal(404);
-        expect(getDeleted.error).to.not.be.false;
         expect(getDeleted.body).to.have.property('errors');
         expect(getDeleted.body.errors.conduit).to.equal('not found');
       });
@@ -595,7 +544,6 @@ describe('Praas REST API', () => {
           .delete(`/conduits/${ctId1}`)
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res.status).to.equal(403);
-        expect(res.error).to.not.be.false;
         expect(res.body).to.have.property('errors');
         expect(res.body.errors.conduit).to.equal('cannot delete when active');
       });
@@ -605,7 +553,6 @@ describe('Praas REST API', () => {
           .delete('/conduits/non-existent')
           .set('Authorization', `Token ${jakeUser.token}`);
         expect(res.status).to.equal(404);
-        expect(res.error).to.not.be.false;
         expect(res.body).to.have.property('errors');
         expect(res.body.errors.conduit).to.equal('not found');
       });

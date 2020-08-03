@@ -49,6 +49,11 @@ be present in the backend folder relative to the root of the repository.
    the functioning of the conduit service. This includes
    information about the external service and user details.
    This is required for testing the proxy server.
+   ```code
+      CONDUIT_SERVICE_TYPE=one of {airtable|googleSheets|email}
+      CONDUIT_SERVICE_API_KEY=do not share your secrets
+      CONDUIT_SERVICE_OBJECT_KEY=variable portion that identifies the object
+   ```
 3. Integration tests require bootstrap data created by unit tests. So,
    `npm run test-model` first before testing the REST api. Alternatively
    you can also run `npm run createdb`.

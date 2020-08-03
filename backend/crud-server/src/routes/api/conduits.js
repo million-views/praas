@@ -7,7 +7,7 @@ const conf = require('../../../../config');
 const { Conduit } = require('../../models');
 const { RestApiError } = require('../../../../lib/error');
 
-const conduitReqdFields = ['suriApiKey', 'suriType', 'suri', 'suriObjectKey'];
+const conduitReqdFields = ['suriType', 'suriObjectKey', 'suriApiKey'];
 
 const conduitOptFields = [
   'throttle', // default: true
@@ -17,6 +17,9 @@ const conduitOptFields = [
   'allowlist', // default: []
   'racm', // default: []
 ];
+
+// cache frequently used objects
+const serviceTargets = conf.targets.settings.map(i => i.type);
 
 // add conduit
 router.post('/', auth.required, async function (req, res, next) {
@@ -38,11 +41,10 @@ router.post('/', auth.required, async function (req, res, next) {
     return next(new RestApiError(422, errors));
   }
 
-  if (
-    (conduit.suriType === 'Airtable' && conduit.suri !== 'https://api.airtable.com/v0/')
-    || (conduit.suriType === 'Google Sheets' && conduit.suri !== 'https://docs.google.com/spreadsheets/d/')
-    || (conduit.suriType === 'Smartsheet' && conduit.suri !== 'https://api.smartsheet.com/2.0/sheets')) {
-    return next(new RestApiError(422, { suri: 'unsupported' }));
+  if (serviceTargets.includes(conduit.suriType) === false) {
+    return next(
+      new RestApiError(422, { suriType: `'${conduit.suriType}' unsupported` })
+    );
   }
 
   try {
@@ -190,11 +192,10 @@ router.put('/:id', auth.required, async (req, res, next) => {
       return next(new RestApiError(422, errors));
     }
 
-    if (
-      (conduit.suriType === 'Airtable' && conduit.suri !== 'https://api.airtable.com/v0/')
-      || (conduit.suriType === 'Google Sheets' && conduit.suri !== 'https://docs.google.com/spreadsheets/d/')
-      || (conduit.suriType === 'Smartsheet' && conduit.suri !== 'https://api.smartsheet.com/2.0/sheets')) {
-      return next(new RestApiError(422, { suri: 'unsupported' }));
+    if (serviceTargets.includes(conduit.suriType) === false) {
+      return next(
+        new RestApiError(422, { suriType: `'${conduit.suriType}' unsupported` })
+      );
     }
 
     await conduit.update(req.body.conduit);
@@ -209,7 +210,9 @@ router.patch('/:id', auth.required, async (req, res, next) => {
   try {
     const conduit = await Conduit.findByPk(req.params.id);
     if (!conduit) {
-      return next(new RestApiError(404, { conduit: 'not found' }));
+      return next(
+        new RestApiError(404, { conduit: `'${req.params.id}' not found` })
+      );
     }
 
     if (req.body.conduit.curi) {
@@ -218,11 +221,10 @@ router.patch('/:id', auth.required, async (req, res, next) => {
       );
     }
 
-    if (
-      (conduit.suriType === 'Airtable' && conduit.suri !== 'https://api.airtable.com/v0/')
-      || (conduit.suriType === 'Google Sheets' && conduit.suri !== 'https://docs.google.com/spreadsheets/d/')
-      || (conduit.suriType === 'Smartsheet' && conduit.suri !== 'https://api.smartsheet.com/2.0/sheets')) {
-      return next(new RestApiError(422, { suri: 'unsupported' }));
+    if (serviceTargets.includes(conduit.suriType) === false) {
+      return next(
+        new RestApiError(422, { suriType: `'${conduit.suriType}' unsupported` })
+      );
     }
 
     await conduit.update(await req.body.conduit);

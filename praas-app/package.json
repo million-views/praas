@@ -1,6 +1,6 @@
 {
   "name": "@conduits-xyz/conduits.app",
-  "version": "0.2.1",
+  "version": "0.3.1",
   "description": "web.app for managing conduits to non-traditional storage",
   "author": "conduits.xyz",
   "license": "MIT",

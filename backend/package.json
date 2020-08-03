@@ -1,6 +1,6 @@
 {
   "name": "@conduits-xyz/backend",
-  "version": "0.2.1",
+  "version": "0.3.1",
   "private": true,
   "description": "backend services of conduits.xyz",
   "author": "conduits.xyz",

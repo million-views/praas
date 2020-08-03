@@ -214,6 +214,7 @@ describe('Testing Proxy Server...', async () => {
         expect(res.status).to.not.equal(405);
       });
     });
+
     context('Validating Hidden Form Field', () => {
       context('when hiddenFormField.policy is pass-if-match', () => {
         it('should silently drop if value is not filled', async function () {
@@ -223,6 +224,7 @@ describe('Testing Proxy Server...', async () => {
             .send(request1);
           expect(res.status).to.equal(200);
         });
+
         it('should silently drop if value does not match', async function () {
           const res = await proxyServer()
             .post('/')
@@ -230,6 +232,7 @@ describe('Testing Proxy Server...', async () => {
             .send(request2);
           expect(res.status).to.equal(200);
         });
+
         it('should process a valid request with value', async function () {
           const res = await proxyServer()
             .post('/')
@@ -238,6 +241,7 @@ describe('Testing Proxy Server...', async () => {
           expect(res.status).to.equal(200);
         });
       });
+
       context('when hiddenFormField.policy is drop-if-filled', () => {
         it('should process a request if value is not filled', async function () {
           const res = await proxyServer()
@@ -246,6 +250,7 @@ describe('Testing Proxy Server...', async () => {
             .send(request1);
           expect(res.status).to.equal(200);
         });
+
         it('should silently drop request if hiddenFormField is filled', async function () {
           const res = await proxyServer()
             .post('/')
@@ -254,6 +259,7 @@ describe('Testing Proxy Server...', async () => {
           expect(res.status).to.equal(200);
         });
       });
+
       context('for hiddenFormField.include', async function () {
         it('should send hiddenFormField if include = true', async function () {
           const res = await proxyServer()
@@ -267,6 +273,7 @@ describe('Testing Proxy Server...', async () => {
             expect(res.body.records[i].fields).to.eql(request3.records[i].fields);
           }
         });
+
         it('should not send hiddenFormField if include = false', async function () {
           const res = await proxyServer()
             .post('/')
@@ -282,6 +289,7 @@ describe('Testing Proxy Server...', async () => {
       });
     });
   });
+
   context('Testing Airtable Gateway', () => {
     let recordId;
     before('create an arbitrary record', async function () {
@@ -295,6 +303,7 @@ describe('Testing Proxy Server...', async () => {
         throw new Error('could not create arbitrary record');
       }
     });
+
     it('should POST a new entry', async function () {
       const res = await proxyServer()
         .post('/')
@@ -303,11 +312,13 @@ describe('Testing Proxy Server...', async () => {
       expect(res.status).to.equal(200);
       expect(res.body).to.haveOwnProperty('records');
     });
+
     it('should GET all entries', async function () {
       const res = await proxyServer().get('/').set('Host', passConduit.host);
       expect(res.status).to.equal(200);
       expect(res.body).to.haveOwnProperty('records');
     });
+
     it('should GET entry by ID', async function () {
       const res = await proxyServer()
         .get('/' + recordId)
@@ -316,6 +327,7 @@ describe('Testing Proxy Server...', async () => {
       expect(res.body).to.haveOwnProperty('fields');
       expect(res.body.fields).to.eql(request3.records[0].fields);
     });
+
     it('should PATCH entries (partial update)', async function () {
       const req = {
         records: [{
@@ -332,6 +344,7 @@ describe('Testing Proxy Server...', async () => {
       expect(res.status).to.equal(200);
       expect(res.body).to.haveOwnProperty('records');
     });
+
     it('should PUT into an existing entry (full update)', async function () {
       const req = {
         records: [{
@@ -348,6 +361,7 @@ describe('Testing Proxy Server...', async () => {
       expect(res.status).to.equal(200);
       expect(res.body).to.haveOwnProperty('records');
     });
+
     it('should DELETE a single entry', async function () {
       const res = await proxyServer()
         .delete('/' + recordId)
@@ -356,6 +370,7 @@ describe('Testing Proxy Server...', async () => {
       expect(res.body.deleted).to.be.true;
       expect(res.body.id).to.equal(recordId);
     });
+
     it('should DELETE multiple entries', async function () {
       // add some extra records to delete
       const req = {
@@ -412,6 +427,7 @@ describe('Testing Proxy Server...', async () => {
       }
     });
   });
+
   context.skip('Testing Google Sheets Gateway', () => {
     it('Should create Contacts (POST)', async () => {
     });

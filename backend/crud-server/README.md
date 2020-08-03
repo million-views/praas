@@ -30,8 +30,7 @@ Conduit stores data related to a non-traditional-storage service endpoint.
 |:----------------|:--------------------------------------------------|:-------------------------------|
 | suriApiKey      |Service URI API Key                                |not null                        |
 | suriType        |The type of conduit                                |not null                        |
-| suriObjectKey   |Key to locate an object at the NTS provider        |null                            |
-| suri            |Service URI (AirTable URI)                         |not null                        |
+| suriObjectKey   |Key to locate an object at the NTS provider        |not null                        |
 | curi            |System generated conduit URI                       |not null, unique                |
 | allowlist       |Allowed ip list                                    |not null                        |
 | racm            |Request Access Control Map |not null               |not null                        |
@@ -68,5 +67,5 @@ JSON blob: containing an array of objects with the following properties:
 |:----------|:-----------------------------------------------------------------|
 | fieldName | name of the field                                                |
 | policy    | `drop-if-filled` or `pass-if-match`                              |
-| include   | boolean indicating if the field should be sent to the suri       |
+| include   | boolean indicating if the field should be sent to target         |
 | value     | Value to be matched against the field in case of `pass-if-match` |

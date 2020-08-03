@@ -3,33 +3,14 @@ const http = require('http');
 const dotenv = require('dotenv-safe');
 const faker = require('faker');
 
-const config = require('../config');
+const conf = require('../config');
 
 const customAlphabet = require('nanoid/async').customAlphabet;
-
-// premature optimization is the root of all evil
-// ...
-// some time ago we decided to eliminate a few lines  of code by using
-// the setter method for 'curi' field in a conduit which at that point
-// in time seemed like a 'cool' idea. But now nanoid broke backward
-// compatibility by making the generate function a promise.
-//
-// Sequelize has no intent of supporting async getters
-// and setters. See:
-// - https://github.com/sequelize/sequelize/issues/1821#issuecomment-347801702
-// - https://stackoverflow.com/questions/50641526/async-getter-setter-in-sequelize-as-part-of-a-property
-// - https://stackoverflow.com/questions/14220321/how-do-i-return-the-response-from-an-asynchronous-call
-//
-// Now we have to twist and bend to make the whole thing work again.
-// Moral of the story, don't waste time eliminating a few lines of code
-// unless those few lines happen in a thousand different places!
-//
-
 const nanoid = customAlphabet(
-  config.conduit.settings.alphabet,
-  config.conduit.settings.uccount
+  conf.conduit.settings.alphabet,
+  conf.conduit.settings.uccount
 );
-const domain = config.conduit.settings.domain;
+const domain = conf.conduit.settings.domain;
 
 // Given an array of strings, this function returns all unique combinations
 // of the input array elements. More generally this is a powerset generator
@@ -38,19 +19,6 @@ const domain = config.conduit.settings.domain;
 // See:
 // - https://www.mathsisfun.com/sets/power-set.html
 // - https://codereview.stackexchange.com/questions/7001/generating-all-combinations-of-an-array
-//
-// function powerset(array) {
-//   const result = [];
-//   const f = function(prefix=[], array) {
-//     for (var i = 0; i < array.length; i++) {
-//       result.push([...prefix,array[i]]);
-//       f([...prefix,array[i]], array.slice(i + 1));
-//     }
-//    }
-//    f('', array);
-//    return result;
-// }
-
 function powerset(list) {
   const set = [],
     listSize = list.length,
@@ -95,7 +63,7 @@ const fakeUserProfile = (overrides = {}) => {
     ...overrides,
   };
 
-  const password = baseUser.password || firstName + config.passwordSuffix;
+  const password = baseUser.password || firstName + conf.passwordSuffix;
 
   return {
     ...baseUser, password
@@ -107,11 +75,8 @@ const statuses = ['active', 'inactive'];
 const hiddenFields = ['partner', 'campaign', 'department', 'account'];
 const hiddenFieldPolicy = ['drop-if-filled', 'pass-if-match'];
 const racmCombo = powerset(['GET', 'POST', 'DELETE', 'PUT', 'PATCH']);
-const supportedEndpoints = [
-  { type: 'Google Sheets', base: 'https://docs.google.com/spreadsheets/d/' },
-  { type: 'Airtable', base: 'https://api.airtable.com/v0/' },
-  { type: 'Smartsheet', base: 'https://api.smartsheet.com/2.0/sheets' },
-];
+const supportedServiceTargets = conf.targets.settings.map(i => i.type);
+
 const {
   allowed: testAllowedIpList,
   inactive: testInactiveIpList,
@@ -124,7 +89,6 @@ const randomlyPickFrom = (choices) => {
 };
 
 const fakeConduit = (overrides = {}) => {
-  const endpoint = randomlyPickFrom(supportedEndpoints);
   const status = randomlyPickFrom(statuses);
   const ip = (status === 'inactive')
     ? randomlyPickFrom(testInactiveIpList)
@@ -132,8 +96,7 @@ const fakeConduit = (overrides = {}) => {
 
   const conduit = {
     suriApiKey: faker.random.uuid(),
-    suriType: endpoint.type,
-    suri: endpoint.base,
+    suriType: randomlyPickFrom(supportedServiceTargets),
     suriObjectKey: faker.lorem.word(),
     allowlist: [{
       ip, status,

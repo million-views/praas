@@ -1,24 +1,12 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import * as Yup from 'yup';
 import { Formik } from 'formik';
 
 import ConduitForm from './form';
+import conduitSchema from './schema';
 
 import { addConduit } from 'store/conduit/create';
-
-const conduitSchema = Yup.object({
-  suriApiKey: Yup.string().required('Service endpoint API key is required'),
-  suriType: Yup.string().required('Service endpoint type is required'),
-  suri: Yup.string().required('Service endpoint uri is required'),
-  suriObjectKey: Yup.string().required('Service endpoint object path is required'),
-  racm: Yup.array()
-    .of(Yup.string())
-    .required('Request access control is required'),
-  description: Yup.string().required('Description is required'),
-  status: Yup.string().oneOf(['active', 'inactive']),
-});
 
 CreateConduitForm.propTypes = {
   changeView: PropTypes.func.isRequired,
@@ -27,9 +15,8 @@ CreateConduitForm.propTypes = {
 function CreateConduitForm({ changeView }) {
   const initialValues = {
     suriApiKey: '',
-    suriType: 'Airtable',
+    suriType: 'airtable',
     suriObjectKey: '',
-    suri: '',
     racm: ['GET'],
     description: '',
     status: 'inactive',

@@ -9,7 +9,7 @@ module.exports = {
   test: {
     description: 'Test configuration settings',
     settings: {
-      passwordSuffix: '123', // a test user's is name+suffix
+      passwordSuffix: '123', // a test user's password is name+suffix
       conduitsCount: 25, // create N conduits for integration test
       conduitsPerPage: 10, // expect M conduits in response
     }
@@ -23,6 +23,14 @@ module.exports = {
       gwServerPort: process.env.GW_SERVER_PORT || 5000,
       cacheRefreshInterval: 10 * 1000 // currently set to 10 seconds
     }
+  },
+  targets: { // supported by the gateway
+    description: 'Target service endpoints setings - READONLY',
+    settings: [
+      { type: 'googleSheets', name: 'Google Sheets', suri: 'https://docs.google.com/spreadsheets/d/' },
+      { type: 'airtable', name: 'Airtable', suri: 'https://api.airtable.com/v0/' },
+      { type: 'email', name: 'Email', suri: '' },
+    ]
   },
   conduit: {
     description: 'Conduit configuration settings',

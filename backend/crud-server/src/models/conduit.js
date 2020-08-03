@@ -1,13 +1,13 @@
 const validator = require('validator');
+const conf = require('../../../config');
 
 // cache frequently used objects and enumerations
 const HFF_PROPS = ['fieldName', 'include', 'policy', 'value'].join('');
 const HFF_POLICY = ['drop-if-filled', 'pass-if-match'];
-const SERVICE_ENUM = ['Airtable', 'Google Sheets', 'Smartsheet'];
-const SERVICE__BASE_ENUM = ['https://api.airtable.com/v0/', 'https://docs.google.com/spreadsheets/d/', 'https://api.smartsheet.com/2.0/sheets'];
 const STATUS_ENUM = ['active', 'inactive'];
 const HTTP_METHODS_ENUM = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
 const BOOLEAN_ENUM = [true, false];
+const SERVICE_TARGETS_ENUM = conf.targets.settings.map(i => i.type);
 
 module.exports = (db, DataTypes) => {
   const Conduit = db.define('conduit', {
@@ -24,7 +24,7 @@ module.exports = (db, DataTypes) => {
       validate: {
         notEmpty: true,
         isIn: {
-          args: [SERVICE_ENUM],
+          args: [SERVICE_TARGETS_ENUM],
           msg: 'unsupported'
         }
       }
@@ -34,17 +34,6 @@ module.exports = (db, DataTypes) => {
       allowNull: false,
       validate: {
         notEmpty: true
-      }
-    },
-
-    suri: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isIn: {
-          args: [SERVICE__BASE_ENUM],
-          msg: 'invalid url'
-        }
       }
     },
     curi: {
@@ -154,7 +143,6 @@ module.exports = (db, DataTypes) => {
       suriApiKey: this.suriApiKey,
       suriType: this.suriType,
       suriObjectKey: this.suriObjectKey,
-      suri: this.suri,
       curi: this.curi,
       allowlist: this.allowlist,
       racm: this.racm,
