@@ -29,6 +29,8 @@ const conduitSchema = Yup.object().shape({
       );
     }),
 
-  description: Yup.string().required('Description is required'),
+  description: Yup.string()
+    .required('Description is required')
+    .max(50, 'Description must not exceed 50 characters'),
 });
 export default conduitSchema;
