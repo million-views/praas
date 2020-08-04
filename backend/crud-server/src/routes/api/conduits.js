@@ -41,9 +41,11 @@ router.post('/', auth.required, async function (req, res, next) {
     return next(new RestApiError(422, errors));
   }
 
-  if (serviceTargets.includes(conduit.suriType) === false) {
+  if (serviceTargets.includes(req.body.conduit.suriType) === false) {
     return next(
-      new RestApiError(422, { suriType: `'${conduit.suriType}' unsupported` })
+      new RestApiError(422, {
+        suriType: `'${req.body.conduit.suriType}' unsupported`,
+      })
     );
   }
 
@@ -192,9 +194,11 @@ router.put('/:id', auth.required, async (req, res, next) => {
       return next(new RestApiError(422, errors));
     }
 
-    if (serviceTargets.includes(conduit.suriType) === false) {
+    if (serviceTargets.includes(req.body.conduit.suriType) === false) {
       return next(
-        new RestApiError(422, { suriType: `'${conduit.suriType}' unsupported` })
+        new RestApiError(422, {
+          suriType: `'${req.body.conduit.suriType}' unsupported`,
+        })
       );
     }
 
@@ -221,9 +225,11 @@ router.patch('/:id', auth.required, async (req, res, next) => {
       );
     }
 
-    if (serviceTargets.includes(conduit.suriType) === false) {
+    if (serviceTargets.includes(req.body.conduit.suriType) === false) {
       return next(
-        new RestApiError(422, { suriType: `'${conduit.suriType}' unsupported` })
+        new RestApiError(422, {
+          suriType: `'${req.body.conduit.suriType}' unsupported`,
+        })
       );
     }
 
