@@ -28,11 +28,11 @@ const prefixList: { [key: string]: string[] } = {
     'https://docs.google.com/spreadsheets/d/',
     'https://sheets.googleapis.com/v4/spreadsheets/',
   ],
-  email: ['']
+  email: [''],
 };
 const regexpList: { [key: string]: string } = {
   airtable: `^(${prefixList['airtable'][0]})(?<objectKey>[^#?]*)`,
-  'Google Sheets': `^(${prefixList['googleSheets'].join(
+  googleSheets: `^(${prefixList['googleSheets'].join(
     '|'
   )})(?<objectKey>[^\/#?]*)`,
 };
