@@ -5,8 +5,9 @@ label {
   font-family: sans-serif;
   font-size: 1.25rem;
 }
-input[type='text'],
-input[type='email'] {
+input[type="text"],
+input[type="email"],
+input[type="url"] {
   height: 40px;
   padding: 5px 10px;
   border-radius: 4px;
