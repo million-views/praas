@@ -23,11 +23,13 @@
       function handleCuriFocus() {
         basicFormIframe.contentWindow.postMessage("", "*");
         ajaxFormIframe.contentWindow.postMessage("", "*");
+        document.getElementById("curi-error").innerText = "";
       }
 
       function handleCuriBlur(value) {
         if (!curiRegex.test(value)) {
-          alert("Please enter a valid CURI");
+          document.getElementById("curi-error").innerText =
+            "please enter a valid curi";
           return;
         }
         basicFormIframe.contentWindow.postMessage(value, "*");
@@ -47,6 +49,7 @@
           onblur="handleCuriBlur(this.value)"
           required
         />
+        <div id="curi-error"></div>
       </div>
     </form>
     <iframe
