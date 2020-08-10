@@ -5,11 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Widgets Gallery</title>
     <link href="./style.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+      window.addEventListener(
+        "message",
+        function (event) {
+          document
+            .getElementById("widget-form")
+            .setAttribute("action", event.data);
+        },
+        false
+      );
+      window.onload = function () {
+        document
+          .getElementsByTagName("button")[0]
+          .addEventListener("click", function handleFormSubmit(event) {
+            const formAction = document
+              .getElementById("widget-form")
+              .getAttribute("action");
+            const curiRegex = RegExp(/(http(s)?:\/\/.)?(www\.)?.+.cc$/);
+            if (!curiRegex.test(formAction)) {
+              event.preventDefault();
+              alert("please enter a curi");
+            }
+          });
+      };
+    </script>
   </head>
-
   <body>
     <h3 class="title">Contact Form</h3>
-    <form action="http://td-yy5r2.trickle.cc" method="POST">
+    <form id="widget-form" method="POST">
       <div class="form-block">
         <label for="name">Name</label>
         <input type="text" id="name" name="records[0][fields][name]" />
@@ -19,7 +43,9 @@
         <input type="email" id="email" name="records[0][fields][email]" />
       </div>
       <div class="form-block">
-        <button class="primary" type="submit">Submit</button>
+        <button class="primary" type="submit">
+          Submit
+        </button>
       </div>
     </form>
   </body>

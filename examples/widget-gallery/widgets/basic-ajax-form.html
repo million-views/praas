@@ -6,16 +6,31 @@
     <title>Widgets Gallery</title>
     <link href="./style.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript">
-      var onSubmit = function (event) {
+      let curi = null;
+      window.addEventListener(
+        "message",
+        function (event) {
+          if (!event.data.length) {
+            curi = null;
+          }
+          curi = event.data;
+        },
+        false
+      );
+      const onSubmit = function (event) {
         event.preventDefault();
-        var formElement = event.target;
+        if (!curi) {
+          alert("please enter a curi");
+          return;
+        }
+        const formElement = event.target;
         /**
          * Data can be send as JSON also with appropriate headers and payload structure
          */
 
-        var formData = new FormData(formElement);
-        var request = new XMLHttpRequest();
-        request.open('POST', 'http://td-yy5r2.trickle.cc');
+        const formData = new FormData(formElement);
+        const request = new XMLHttpRequest();
+        request.open("POST", curi);
         request.send(formData);
       };
     </script>
@@ -23,7 +38,7 @@
 
   <body>
     <h3 class="title">Contact Form</h3>
-    <form id="contact-form" onsubmit="onSubmit(event)">
+    <form onsubmit="onSubmit(event)">
       <div class="form-block">
         <label for="name">Name</label>
         <input type="text" id="name" name="records[0][fields][name]" />

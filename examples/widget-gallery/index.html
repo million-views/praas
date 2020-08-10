@@ -4,16 +4,63 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Widget Gallery</title>
-    <style>
-      iframe {
-        display: block;
-        margin-bottom: 16px;
-        border: none;
+    <link href="./widgets/style.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+      const curiRegex = RegExp(/(http(s)?:\/\/.)?(www\.)?.+.cc$/);
+      let basicFormIframe = null;
+      let ajaxFormIframe = null;
+
+      window.onload = function () {
+        basicFormIframe = document.getElementById("basic-form-iframe");
+        ajaxFormIframe = document.getElementById("ajax-form-iframe");
+        const curiValue = document.getElementById("curi-input").value;
+        if (curiValue && curiRegex.test(curiValue)) {
+          basicFormIframe.contentWindow.postMessage(curiValue, "*");
+          ajaxFormIframe.contentWindow.postMessage(curiValue, "*");
+        }
+      };
+
+      function handleCuriFocus() {
+        basicFormIframe.contentWindow.postMessage("", "*");
+        ajaxFormIframe.contentWindow.postMessage("", "*");
+        document.getElementById("curi-error").innerText = "";
       }
-    </style>
+
+      function handleCuriBlur(value) {
+        if (!curiRegex.test(value)) {
+          document.getElementById("curi-error").innerText =
+            "please enter a valid curi";
+          return;
+        }
+        basicFormIframe.contentWindow.postMessage(value, "*");
+        ajaxFormIframe.contentWindow.postMessage(value, "*");
+      }
+    </script>
   </head>
   <body>
-    <iframe src="./widgets/basic-form.html" height="300px"></iframe>
-    <iframe src="./widgets/basic-ajax-form.html" height="300px"></iframe>
+    <form>
+      <div class="form-block">
+        <label for="name">URL</label>
+        <input
+          id="curi-input"
+          type="url"
+          placeholder="url"
+          onfocus="handleCuriFocus()"
+          onblur="handleCuriBlur(this.value)"
+          required
+        />
+        <div id="curi-error" class="error"></div>
+      </div>
+    </form>
+    <iframe
+      src="./widgets/basic-form.html"
+      id="basic-form-iframe"
+      height="400px"
+    ></iframe>
+    <iframe
+      src="./widgets/basic-ajax-form.html"
+      id="ajax-form-iframe"
+      height="400px"
+    ></iframe>
   </body>
 </html>
