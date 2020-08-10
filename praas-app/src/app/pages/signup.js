@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 
-import { Header } from 'components';
-import Alert from 'components/alert';
+import { Header, Alert } from 'components';
 import { signup as signupSchema } from 'app/schema';
 import { registerUser } from 'store/user/registration';
 import { logoutUser } from 'store/user/login';

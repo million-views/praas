@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Field, FieldArray, Form, ErrorMessage } from 'formik';
 
-import Alert from 'components/alert';
+import { Alert } from 'components';
 import { cx } from 'tiny';
 
 const categories = [

@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const flash = ({ _klass, message }) => {
+// Started with the intention of becoming a `Toast`. But for
+// now this component just displays a message or hides itself.
+const Alert = ({ _klass, message }) => {
   let items;
 
   if (message) {
@@ -32,9 +34,9 @@ const flash = ({ _klass, message }) => {
   }
 };
 
-flash.propTypes = {
+Alert.propTypes = {
   klass: PropTypes.string,
   message: PropTypes.object,
 };
 
-export default flash;
+export default Alert;
