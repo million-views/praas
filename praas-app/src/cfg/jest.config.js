@@ -18,9 +18,12 @@ module.exports = {
   // ],
 
   moduleNameMapper: {
+    '^app(.*)$': '<rootDir>/src/app/$1',
     '^components(.*)$': '<rootDir>/src/app/components/$1',
     '^api(.*)$': '<rootDir>/src/api/$1',
     '^store(.*)$': '<rootDir>/src/store/$1',
+    '^hooks(.*)$': '<rootDir>/src/hooks/$1',
+    '^mocks(.*)$': '<rootDir>/src/mocks/$1',
   },
 
   displayName: 'conduits.app functional tests',
@@ -35,12 +38,19 @@ module.exports = {
     'node',
   ],
 
+  // set the URL for the jsdom environment. It is reflected in properties
+  // such as location.href; allows us to use relative paths
   // The test environment that will be used for testing
+  testURL: 'http://not-a-tea-pot',
+
   testEnvironment: 'jsdom',
+
+  // fetch is not available in node, add it here
+  setupFiles: ['<rootDir>/src/mocks/test-setup.js'],
 
   // A list of paths to modules that run some code to configure or set up
   // the testing framework before each test
-  setupFilesAfterEnv: ['<rootDir>/src/scripts/setup-rtl.js'],
+  setupFilesAfterEnv: ['<rootDir>/src/mocks/test-setup-after.js'],
 
   // The glob patterns Jest uses to detect test files
   testMatch: [

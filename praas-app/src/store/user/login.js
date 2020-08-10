@@ -24,12 +24,12 @@ export const logoutSuccess = () => {
 export const logoutUser = (navigate) => {
   return (dispatch) => {
     PraasAPI.user.logout().then(
-      (success) => {
-        console.log('logout: ', success);
+      (_success) => {
+        // console.log('logout: ', success);
         navigate('/');
       },
-      (error) => {
-        console.log('logout: ', error);
+      (_error) => {
+        // console.log('logout: ', error);
         navigate('/');
       }
     ).then(() => {
@@ -77,7 +77,7 @@ export default function login(state = initialState, { type, payload }) {
         ...payload.user,
       };
     case LOGIN_FAILURE:
-      console.log('Deal with this:', payload);
+      // console.log('Deal with this:', payload);
       return {
         inflight: false,
         loggedIn: false,

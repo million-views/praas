@@ -72,7 +72,6 @@ const Status = ({ field, form: { values, touched, errors } }) => {
 };
 
 function ConduitForm(props) {
-  // console.log('props in form: ', props);
   const { buttonLabel, changeView, isSubmitting, status, cid } = props;
   const classes = cx(['submit', { spinner: isSubmitting }]);
 

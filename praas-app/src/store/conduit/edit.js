@@ -20,7 +20,7 @@ export const updateConduit = (conduit, actions, changeView) => {
     dispatch({ type: UPDATE_CONDUIT_REQUEST, payload: conduit });
     PraasAPI.conduit.update(conduit).then(
       (payload) => {
-        console.log('updateConduit, successs: ', payload.conduit.id);
+        // console.log('updateConduit, successs: ', payload.conduit.id);
         actions.setSubmitting(false);
         dispatch(updateConduitSuccess(payload));
         changeView('list', 'refresh', payload.conduit.id, 'store/list');
@@ -49,7 +49,7 @@ export default function create(state = initialState, { type, payload }) {
         ...payload.conduit,
       };
     case UPDATE_CONDUIT_FAILURE:
-      console.log('Deal with this:', payload);
+      // console.log('Deal with this:', payload);
       return {
         inflight: false,
         errors: { ...payload.errors }

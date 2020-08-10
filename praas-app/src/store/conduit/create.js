@@ -21,13 +21,13 @@ export const addConduit = (conduit, actions, changeView) => {
     dispatch({ type: ADD_CONDUIT_REQUEST, payload: conduit });
     PraasAPI.conduit.add(conduit).then(
       (payload) => {
-        console.log('addConduit, success: ', payload.conduit.id);
+        // console.log('addConduit, success: ', payload.conduit.id);
         actions.setSubmitting(false);
         dispatch(addConduitSuccess(payload));
         changeView('list', 'refresh', payload.conduit.id, 'store/add');
       },
       (error) => {
-        console.log('error: ', error);
+        // console.log('error: ', error);
         actions.setSubmitting(false);
         actions.setStatus({ errors: { ...error.errors } });
         dispatch(addConduitFailure(error));
@@ -51,7 +51,7 @@ export default function create(state = initialState, { type, payload }) {
         ...payload.conduit,
       };
     case ADD_CONDUIT_FAILURE:
-      console.log('Deal with this:', payload);
+      // console.log('Deal with this:', payload);
       return {
         inflight: false,
         errors: { ...payload.errors },

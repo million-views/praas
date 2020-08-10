@@ -1,11 +1,10 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import PropTypes from 'prop-types';
 import { Formik } from 'formik';
+import PropTypes from 'prop-types';
 
 import ConduitForm from './form';
-import conduitSchema from './schema';
-
+import { conduit as conduitSchema } from 'app/schema';
 import { addConduit } from 'store/conduit/create';
 
 CreateConduitForm.propTypes = {
@@ -29,7 +28,6 @@ function CreateConduitForm({ changeView }) {
       initialValues={initialValues}
       validationSchema={conduitSchema}
       onSubmit={(values, actions) => {
-        console.log('in create form, values: ', values);
         dispatch(addConduit({ conduit: { ...values } }, actions, changeView));
       }}
     >

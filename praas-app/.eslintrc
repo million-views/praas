@@ -10,13 +10,18 @@
     "sourceType": "module"
   },
   "plugins": [
-    "react"
+    "react",
+    "testing-library",
+    "jest-dom"
   ],
   "extends": [
     "standard",
     "standard-jsx",
     "standard-react",
-    "plugin:react-hooks/recommended"
+    "plugin:react-hooks/recommended",
+    "plugin:testing-library/recommended",
+    "plugin:testing-library/react",
+    "plugin:jest-dom/recommended"
   ],
   "overrides": [
     {
@@ -33,7 +38,8 @@
     "jest": true
   },
   "globals": {
-    "location": "writable"
+    "location": "writable",
+    "globalThis": "writable"
   },
   "settings": {
     "react": {

@@ -48,7 +48,7 @@ export default function registration(state = { inflight: false }, { type, payloa
         // ...payload.user,
       };
     case REGISTER_FAILURE:
-      console.log('Deal with this:', payload);
+      // console.log('Deal with this:', payload);
       return {
         inflight: false,
         errors: { ...payload.errors }

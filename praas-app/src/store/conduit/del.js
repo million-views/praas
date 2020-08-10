@@ -20,7 +20,7 @@ export const deleteConduit = (conduitId, changeView) => {
     dispatch({ type: DELETE_CONDUIT_REQUEST });
     PraasAPI.conduit.delete(conduitId).then(
       (payload) => {
-        console.log('deleteConduit, success: ', payload.conduit.id);
+        // console.log('deleteConduit, success: ', payload.conduit.id);
         // actions.setSubmitting(false);
         dispatch(deleteConduitSuccess(payload));
         changeView('list', 'refresh', undefined, 'store/delete');

@@ -1,110 +1,128 @@
 import React from 'react';
 
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
+import {
+  render, screen, waitFor, waitForElementToBeRemoved
+} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
-import { render, screen, fireEvent, act } from '@testing-library/react';
-// import userEvent from '@testing-library/user-event';
-
-import { MockProvider } from '../../mocks';
+import { MockProvider } from 'mocks';
 import Login from './login';
 
-const server = setupServer(
-  rest.post('http://localhost:4000/users/login', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        user: {
-          id: 5,
-          firstName: 'User',
-          lastName: null,
-          email: 'user@example.org',
-          token: 'header.payload.signature',
-        },
-      })
-    );
-  })
-);
-
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
-
+// TODO:
+// - revisit these tests after we redesign the UI to be ARIA compliant
+// - follow best practices and avoid common mistakes as outlined at:
+//  - https://testing-library.com/docs/guide-which-query
+//  - https://kentcdodds.com/blog/common-mistakes-with-react-testing-library
 describe('Login Page', () => {
-  it('should render the page', async () => {
-    const { baseElement } = render(<Login path="/login" />, { wrapper: MockProvider });
-    expect(baseElement).toBeDefined();
-    const email = await screen.findByTitle('Email');
-    const password = await screen.findByTitle('Password');
-    const submitButton = await screen.findByText('Submit');
+  const subjectsUnderTest = () => {
+    const heading = screen.getByRole('heading', {
+      name: /login to your account/i
+    });
+
+    const email = screen.getByPlaceholderText(/email - jane@test.com/i);
+    const password = screen.getByPlaceholderText(/password/i);
+    const submit = screen.getByRole('button', { name: /submit/i });
+    return { heading, email, password, submit };
+  };
+
+  it('should render login form', async () => {
+    render(<Login path="/login" />, { wrapper: MockProvider });
+    const { heading, email, password, submit } = subjectsUnderTest();
+
+    expect(heading).toBeInTheDocument();
     expect(email).toBeInTheDocument();
     expect(password).toBeInTheDocument();
-    expect(submitButton).toBeInTheDocument();
+    expect(submit).toBeInTheDocument();
+    expect(submit).toBeDisabled();
   });
 
-  it('should have required form errors', async () => {
+  // FIXME!
+  // At the moment Formik and Browser behaviours are not in sync. We have to
+  // type something and then press submit to see the error message.
+  it('should disallow form submit action on validation errors', async () => {
     render(<Login path="/login" />, { wrapper: MockProvider });
+    const { email, password, submit } = subjectsUnderTest();
+    // click on email, type anything, clear and tab out to trigger error(s)
+    userEvent.click(email);
+    expect(email).toHaveFocus();
+    userEvent.type(email, 'will be cleared{backspace}{backspace}');
+    userEvent.clear(email);
+    userEvent.tab();
 
-    const submitButton = await screen.findByText('Submit');
-
-    await act(async () => {
-      fireEvent.submit(submitButton);
+    await waitFor(() => {
+      const emailCheck = screen.getByText(/email is required/i);
+      expect(emailCheck).toBeInTheDocument();
+      expect(submit).toBeDisabled();
     });
 
-    const emailError = await screen.findByText('Email is required');
-    const passwordError = await screen.findByText(
-      'Must be longer than 8 characters'
-    );
-    expect(emailError).toBeInTheDocument();
-    expect(passwordError).toBeInTheDocument();
+    // type invalid email and tab out to trigger error(s)
+    userEvent.type(email, 'Hello, World!');
+    // FIXME! either formik or rtl is eatig space!
+    expect(email).toHaveAttribute('value', 'Hello,World!');
+    await waitFor(() => {
+      const emailCheck = screen.getByText(/invalid email address/i);
+      expect(emailCheck).toBeInTheDocument();
+      expect(emailCheck).toHaveClass('error');
+      expect(submit).toBeDisabled();
+    });
+
+    // type short password
+    userEvent.type(password, 'pas');
+    expect(password).toHaveAttribute('value', 'pas');
+    await waitFor(() => {
+      const passwordCheck = screen.getByText(/password too short/i);
+      expect(passwordCheck).toBeInTheDocument();
+      expect(passwordCheck).toHaveClass('error');
+      expect(submit).toBeDisabled();
+    });
+
+    // fill in correct details, submit button should be enabled
+    userEvent.clear(email);
+    userEvent.clear(password);
+
+    userEvent.type(email, 'tester@testing.paradise');
+    userEvent.type(password, 'password');
+
+    await waitFor(() => {
+      expect(email).toHaveAttribute('value', 'tester@testing.paradise');
+      expect(password).toHaveAttribute('value', 'password');
+      expect(submit).toBeEnabled();
+    });
   });
 
-  it('should have invalid form errors', async () => {
-    render(<Login path="/login" />, {
-      wrapper: MockProvider,
+  it('should display error message on login failure', async () => {
+    render(<Login path="/login" />, { wrapper: MockProvider });
+    const { email, password, submit } = subjectsUnderTest();
+
+    userEvent.type(email, 'tester@testing.paradise');
+    userEvent.type(password, 'password');
+    userEvent.click(submit);
+    await waitFor(() => {
+      const serverError = screen.getByText(/email or password is invalid/i);
+      expect(serverError).toBeInTheDocument();
     });
-
-    const email = await screen.findByTitle('Email');
-    const password = await screen.findByTitle('Password');
-    fireEvent.ionChange(email, 'invalid email');
-    fireEvent.ionChange(password, '1');
-    const submitButton = await screen.findByText('Submit');
-
-    await act(async () => {
-      fireEvent.submit(submitButton);
-    });
-
-    const emailError = await screen.findByText('Invalid email address');
-    const passwordError = await screen.findByText(
-      'Must be longer than 8 characters'
-    );
-    expect(emailError).toBeInTheDocument();
-    expect(passwordError).toBeInTheDocument();
   });
 
-  it('should have submit valid form', async () => {
-    const replaceMock = jest.fn();
-    const props = {
-      history: { replace: replaceMock },
-    };
-    render(<Login {...props} />, { wrapper: MockProvider });
+  it('should navigate to main view on login success', async () => {
+    render(<Login path="/login" />, { wrapper: MockProvider });
+    const { email, password, submit } = subjectsUnderTest();
 
-    const email = await screen.findByTitle('Email');
-    const password = await screen.findByTitle('Password');
-    fireEvent.ionChange(email, 'user@example.org');
-    fireEvent.ionChange(password, '709$3cR31');
+    userEvent.type(email, 'user@example.org');
+    userEvent.type(password, '709$3cR31');
 
-    expect(email).toHaveValue('user@example.org');
-    expect(password).toHaveValue('709$3cR31');
+    const signup = screen.getByText(/signup/i);
+    expect(signup).toBeInTheDocument();
+    userEvent.click(submit);
 
-    const submitButton = await screen.findByText('Submit');
+    await waitForElementToBeRemoved(signup);
+    // signup is gone from dom! instead of looking for its absence
+    // check for the presence of another element that appears due
+    // state transition
 
-    await act(async () => {
-      fireEvent.submit(submitButton);
+    await waitFor(() => {
+      const logout = screen.getByText(/logout/i);
+      expect(logout).toBeInTheDocument();
+      expect(logout).toHaveClass('icon-logout');
     });
-
-    await act(async () => {}); // required to force redux changes
-
-    expect(replaceMock).toBeCalledTimes(1);
-    expect(replaceMock).toBeCalledWith('/');
   });
 });

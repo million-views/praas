@@ -7,7 +7,6 @@
 
 // Try to be DRY, reused babel.conf for test setup
 const babel = require('./babel.config')({ isTest: true });
-// console.log('babel', babel);
 
 const transformer = require('babel-jest')
   .createTransformer(babel);

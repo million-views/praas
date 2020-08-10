@@ -1,12 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
 
 import { Header } from 'components';
 import Alert from 'components/alert';
-
-import { useNavigate } from 'react-router-dom';
+import { signup as signupSchema } from 'app/schema';
 import { registerUser } from 'store/user/registration';
 import { logoutUser } from 'store/user/login';
 
@@ -19,23 +18,13 @@ const initialValues = {
 };
 
 /* eslint react/prop-types: 0 */
-const signupSchema = Yup.object({
-  user: Yup.object({
-    firstName: Yup.string()
-      .min(2, 'Must be longer than 2 characters')
-      .max(20, 'Nice try, nobody has a first name that long')
-      .required("Don't be shy. Tell us your first name"),
-    email: Yup.string()
-      .email('Invalid email address')
-      .required('Email is required'),
-    password: Yup.string()
-      .min(2, 'Must be longer than 8 characters')
-      .required('Passphrase is required'),
-  })
-});
-
 function SignupForm(props) {
-  const { isSubmitting, status } = props;
+  const { status, dirty, isValid, isSubmitting } = props;
+  let disabled = true;
+  if (dirty && isValid && isSubmitting === false) {
+    disabled = false;
+  };
+
   return (
     <Form>
       <h2>Create your account</h2>
@@ -57,7 +46,7 @@ function SignupForm(props) {
         <ErrorMessage name="user.password" component="div" className="error" />
       </div>
 
-      <button type="submit" disabled={isSubmitting === true}>Submit</button>
+      <button type="submit" disabled={disabled}>Submit</button>
     </Form>
   );
 };
@@ -83,7 +72,7 @@ function Signup() {
           }}
         >
           {
-            (props) => <SignupForm />
+            (props) => <SignupForm {...props} />
           }
         </Formik>
       </main>

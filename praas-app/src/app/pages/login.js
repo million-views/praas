@@ -1,13 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-
 import { Formik, Field, Form, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
 
 import { Header } from 'components';
 import Alert from 'components/alert';
-
-import { useNavigate } from 'react-router-dom';
+import { login as loginSchema } from 'app/schema';
 import { loginUser, logoutUser } from 'store/user/login';
 
 const initialValues = {
@@ -18,24 +16,17 @@ const initialValues = {
 };
 
 /* eslint react/prop-types: 0 */
-const loginSchema = Yup.object({
-  user: Yup.object({
-    email: Yup.string()
-      .email('Invalid email address')
-      .required('Email is required'),
-    password: Yup.string()
-      .min(2, 'Must be longer than 8 characters')
-      .required('Passphrase is required'),
-  })
-});
-
 function LoginForm(props) {
-  const { isSubmitting, status } = props;
+  const { status, dirty, isValid, isSubmitting } = props;
 
   // clear stale data
   logoutUser();
 
-  console.log('status here is:', status ? status.errors : 'nada');
+  let disabled = true;
+  if (dirty && isValid && isSubmitting === false) {
+    disabled = false;
+  };
+
   return (
     <Form>
       <h2>Login to your account</h2>
@@ -44,14 +35,20 @@ function LoginForm(props) {
       }
 
       <div>
-        <Field name="user.email" placeholder="Email - jane@test.com" type="email" required />
+        <Field
+          name="user.email" placeholder="Email - jane@test.com" type="email"
+          required
+        />
         <ErrorMessage name="user.email" component="div" className="error" />
       </div>
       <div>
-        <Field name="user.password" placeholder="Password" type="password" required />
+        <Field
+          name="user.password" placeholder="Password" type="password"
+          required
+        />
         <ErrorMessage name="user.password" component="div" className="error" />
       </div>
-      <button type="submit" disabled={isSubmitting === true}>Submit</button>
+      <button type="submit" disabled={disabled}>Submit</button>
     </Form>
   );
 };
@@ -61,7 +58,6 @@ function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  console.log('user: ', user);
   return (
     <>
       <Header
@@ -77,7 +73,7 @@ function Login() {
             dispatch(loginUser({ user }, actions, navigate));
           }}
         >
-          {(props) => <LoginForm />}
+          {(props) => <LoginForm {...props} />}
         </Formik>
       </main>
     </>

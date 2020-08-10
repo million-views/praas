@@ -4,7 +4,7 @@ import configureStore from 'store';
 
 export function MockStoreProvider({ children }) {
   const mockStore = configureStore({
-    user: { login: {} },
+    /* test data, if any, goes here */
   });
   return <Provider store={mockStore}>{children}</Provider>;
 };

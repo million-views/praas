@@ -1,10 +1,10 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import PropTypes from 'prop-types';
 import { Formik } from 'formik';
+import PropTypes from 'prop-types';
 
 import ConduitForm from './form';
-import conduitSchema from './schema';
+import { conduit as conduitSchema } from 'app/schema';
 
 import { updateConduit, getConduit } from 'store/conduit/edit';
 

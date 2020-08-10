@@ -20,7 +20,7 @@ export const listConduits = () => {
     dispatch({ type: LIST_CONDUIT_REQUEST });
     PraasAPI.conduit.list().then(
       (payload) => {
-        console.log('listConduits, success: ', payload.conduits.length);
+        // console.log('listConduits, success: ', payload.conduits.length);
         dispatch(listConduitSuccess(payload));
         // actions.setSubmitting(false);
       },

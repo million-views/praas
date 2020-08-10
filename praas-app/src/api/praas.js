@@ -1,5 +1,4 @@
-// const API_URL = 'http://localhost:4000';
-const API_URL = '.';
+const { origin: API_URL } = (new URL(globalThis.location.href));
 
 // throws type error if parameters is not iterable and that is by design...
 // don't call this function when there are no query parameters.
@@ -58,9 +57,10 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
     Accept: 'application/json',
     'Content-Type': 'application/json',
   };
+  const urlWithParameters = urlize(url, parameters);
 
   return fetch(
-    urlize(url, parameters), {
+    urlWithParameters, {
       ...rest,
       headers,
     }
@@ -95,7 +95,11 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
       return Promise.reject({
         statusText: "I'm a teapot",
         status: 418, // Unable to contact server, can't make coffee,
-        errors: { offline: 'Check your network connection', network: error.message }
+        errors: {
+          offline: 'Check your network connection',
+          request: urlWithParameters,
+          network: error.message
+        }
       });
     }
   );

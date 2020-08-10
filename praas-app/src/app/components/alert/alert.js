@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 const flash = ({ _klass, message }) => {
   let items;
-  console.log('flash: ', message);
+
   if (message) {
     if (message === 'string' || message === 'number') {
       items = <li>{message}</li>;

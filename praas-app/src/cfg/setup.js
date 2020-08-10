@@ -70,6 +70,15 @@ module.exports = (wpc) => {
     // alias to api
     api: `${wpc.root}/api`,
 
+    // alias to app root
+    app: wpc.app,
+
+    // alias to 'custom' hooks
+    hooks: `${wpc.root}/hooks`,
+
+    // alias to mocks
+    mocks: `${wpc.root}/mocks`,
+
     // alias to components
     components: `${wpc.app}/components`,
 

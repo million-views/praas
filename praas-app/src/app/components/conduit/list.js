@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { useEventListener } from '../../../hooks';
+import { useEventListener } from 'hooks';
 import { deleteConduit } from 'store/conduit/del';
 
 const targetTypesMap = {
@@ -16,7 +16,6 @@ const handleArrowKeys = setModal => event => {
 };
 
 const Modal = ({ open, setModal, conduit, changeView }) => {
-  // console.log('===========> conduit:', conduit.id, open);
   useEventListener('keydown', handleArrowKeys(setModal));
   const dispatch = useDispatch();
   const modalId = `confirm-conduit-${conduit.id}-delete`;
