@@ -1,12 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 
 import { Header, Alert } from 'components';
 import { signup as signupSchema } from 'app/schema';
 import { registerUser } from 'store/user/registration';
-import { logoutUser } from 'store/user/login';
 
 const initialValues = {
   user: {
@@ -31,17 +30,26 @@ function SignupForm(props) {
         status && <Alert klass="alert-danger" message={status.errors} />
       }
       <div>
-        <Field name="user.firstName" placeholder="First name" type="text" required />
+        <Field
+          name="user.firstName" placeholder="First name" type="text"
+          required
+        />
         <ErrorMessage name="user.firstName" component="div" className="error" />
       </div>
 
       <div>
-        <Field name="user.email" placeholder="Email - jane@test.com" type="email" required />
+        <Field
+          name="user.email" placeholder="Email - jane@test.com" type="email"
+          required
+        />
         <ErrorMessage name="user.email" component="div" className="error" />
       </div>
 
       <div>
-        <Field name="user.password" placeholder="Password" type="password" required />
+        <Field
+          name="user.password" placeholder="Password" type="password"
+          required
+        />
         <ErrorMessage name="user.password" component="div" className="error" />
       </div>
 
@@ -51,16 +59,12 @@ function SignupForm(props) {
 };
 
 function Signup() {
-  const user = useSelector(state => state.user.login);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   return (
     <>
-      <Header
-        loggedIn={user.loggedIn}
-        logout={() => dispatch(logoutUser())}
-      />
+      <Header forPage="signup" />
       <main className="page">
         <Formik
           initialValues={initialValues}

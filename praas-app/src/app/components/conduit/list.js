@@ -83,7 +83,6 @@ const List = (props) => {
     }
   };
 
-  const loading = clist.inflight && <span className="icon-spin-1 spin" />;
   const conduits = clist.conduits.map((conduit, index) => {
     return (
       <tr key={index}>
@@ -116,7 +115,7 @@ const List = (props) => {
 
   return (
     <>
-      <h1>List Conduits {loading}</h1>
+      <h1>List Conduits</h1>
       <h2>A conduit is a handle to a RESTful service endpoint</h2>
       <button
         onClick={() => props.changeView('add', 'form', undefined, 'components/list')}

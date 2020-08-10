@@ -10,7 +10,6 @@ import {
 } from 'components/conduit';
 
 import { listConduits } from 'store/conduit/list';
-import { logoutUser } from 'store/user/login';
 
 const logit = (from, state) => {
   const { lastSetBy, mode, reason, cid } = state;
@@ -27,7 +26,6 @@ function Home(props) {
   });
 
   const dispatch = useDispatch();
-  const logout = (navigate) => dispatch(logoutUser(navigate));
 
   useEffect(() => {
     // use effect invoked.
@@ -72,7 +70,7 @@ function Home(props) {
 
   return (
     <>
-      <Header loggedIn={user.loggedIn} logout={logout} />
+      <Header forPage="home" />
       <main className="page">
         {view}
       </main>

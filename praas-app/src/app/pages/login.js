@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 
 import { Header, Alert } from 'components';
@@ -52,17 +52,12 @@ function LoginForm(props) {
   );
 };
 
-function Login() {
-  const user = useSelector(state => state.user.login);
+function Login(props) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   return (
     <>
-      <Header
-        loggedIn={user.loggedIn}
-        logout={() => dispatch(logoutUser())}
-      />
+      <Header forPage="login" />
       <main className="page">
         <Formik
           initialValues={initialValues}

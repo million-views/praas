@@ -5,9 +5,11 @@ import { MockStoreProvider } from './mock-store-provider';
 
 function MockProvider({ children }) {
   return (
-    <MockRouterProvider>
-      <MockStoreProvider>{children}</MockStoreProvider>;
-    </MockRouterProvider>
+    <MockStoreProvider>
+      <MockRouterProvider>
+        {children}
+      </MockRouterProvider>
+    </MockStoreProvider>
   );
 };
 
