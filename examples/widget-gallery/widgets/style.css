@@ -36,3 +36,6 @@ button.primary {
 .form-block > input {
   display: block;
 }
+.error {
+  color: crimson;
+}

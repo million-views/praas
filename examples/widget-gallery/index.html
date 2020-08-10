@@ -40,16 +40,16 @@
   <body>
     <form>
       <div class="form-block">
-        <label for="name">CURI</label>
+        <label for="name">URL</label>
         <input
           id="curi-input"
           type="url"
-          placeholder="curi"
+          placeholder="url"
           onfocus="handleCuriFocus()"
           onblur="handleCuriBlur(this.value)"
           required
         />
-        <div id="curi-error"></div>
+        <div id="curi-error" class="error"></div>
       </div>
     </form>
     <iframe
