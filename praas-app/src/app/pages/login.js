@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { useDispatch } from 'react-redux';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 
@@ -17,7 +18,6 @@ const initialValues = {
 /* eslint react/prop-types: 0 */
 function LoginForm(props) {
   const { status, dirty, isValid, isSubmitting } = props;
-
   // clear stale data
   logoutUser();
 
@@ -55,9 +55,10 @@ function LoginForm(props) {
 function Login(props) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   return (
     <>
-      <Header forPage="login" />
+      <Header />
       <main className="page">
         <Formik
           initialValues={initialValues}

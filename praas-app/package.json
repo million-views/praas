@@ -21,7 +21,8 @@
     "lint:fix": "stylelint src/**/*.{css,scss} --fix && eslint --fix src",
     "build": "webpack --colors --progress -p --env.production --config src/cfg/webpack",
     "watch": "webpack-dev-server --progress --config src/cfg/webpack",
-    "test": "npm run -s lint && jest -c src/cfg/jest.config.js --watch --no-cache --coverage --rootDir .",
+    "test": "npm run -s lint && jest -c src/cfg/jest.config.js --no-cache --coverage --rootDir .",
+    "test:watch": "npm run -s lint && jest -c src/cfg/jest.config.js --watch --no-cache --rootDir .",
     "start": "npm run build && node ./live-server build"
   },
   "husky": {

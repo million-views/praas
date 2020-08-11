@@ -64,7 +64,7 @@ function Signup() {
 
   return (
     <>
-      <Header forPage="signup" />
+      <Header />
       <main className="page">
         <Formik
           initialValues={initialValues}

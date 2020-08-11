@@ -70,7 +70,7 @@ function Home(props) {
 
   return (
     <>
-      <Header forPage="home" />
+      <Header />
       <main className="page">
         {view}
       </main>

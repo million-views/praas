@@ -1,19 +1,17 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { logoutUser } from 'store/user/login';
 
 const title = 'conduits.xyz';
 
-Header.propTypes = {
-  forPage: PropTypes.string.isRequired,
-};
-
-function Header({ forPage }) {
+function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+  const forPage = location.pathname;
+  // console.log('location: ', location);
 
   // FIXME!
   // - come back and refactor this code, for now it's a poc
@@ -29,7 +27,6 @@ function Header({ forPage }) {
     );
     return { loggedIn, isBusy };
   });
-  // console.log('forPage: ', forPage);
 
   // TODO:
   // - refactor this code to use a little state machine
@@ -43,7 +40,7 @@ function Header({ forPage }) {
         </ul>
       );
     } else {
-      if (forPage === 'signup') {
+      if (forPage === '/signup') {
         return (
           <ul className="menu">
             <li>
@@ -51,7 +48,7 @@ function Header({ forPage }) {
             </li>
           </ul>
         );
-      } else if (forPage === 'login') {
+      } else if (forPage === '/login') {
         return (
           <ul className="menu">
             <li>
@@ -66,7 +63,7 @@ function Header({ forPage }) {
         return (
           <ul className="menu">
             <li>
-              <a className="icon-mail">Ooops</a>
+              <a className="icon-mail">Ooopsie, where is `{location.pathname}`</a>
             </li>
           </ul>
         );

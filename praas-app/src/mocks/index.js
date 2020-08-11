@@ -1,16 +1,31 @@
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { render } from '@testing-library/react';
 
-import { MockRouterProvider } from './mock-router-provider';
-import { MockStoreProvider } from './mock-store-provider';
+import configureStore from 'store';
 
-function MockProvider({ children }) {
-  return (
-    <MockStoreProvider>
-      <MockRouterProvider>
-        {children}
-      </MockRouterProvider>
-    </MockStoreProvider>
-  );
+// options:
+// - initialEntries: An array of `location`s in the history stack. These
+//   may be full-blown location objects with `{ pathname, search, hash,
+//   state }` or simple string URLs.
+// - hydrate: initial data for redux store, if any
+function renderComponentUnderTest(component, options = {}) {
+  const fixture = ({ children }) => {
+    const store = configureStore(options.hydrate || {});
+    const initialEntries = options.initialEntries || ['/'];
+    return (
+      <Provider store={store}>
+        <MemoryRouter initialEntries={initialEntries}>
+          {children}
+        </MemoryRouter>
+      </Provider>
+    );
+  };
+
+  return {
+    ...render(component, { wrapper: fixture })
+  };
 };
 
-export { MockProvider };
+export { renderComponentUnderTest };

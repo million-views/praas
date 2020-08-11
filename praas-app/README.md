@@ -15,14 +15,18 @@ TBD...
 
 ### Tasks
 
-| task     | command line       | notes                                          |
-| :------- | :----------------- | :--------------------------------------------- |
-| install  | `npm install`      | installs dependencies                          |
-| lint     | `npm run lint`     | run eslint on `src` folder                     |
-| lint:fix | `npm run lint:fix` | run eslint on `src` folder                     |
-| build    | `npm run build`    | compile to `build` folder                      |
-| start    | `npm run start`    | web serve `build` folder                       |
-| watch    | `npm run watch`    | watch/build changes to `app` and `web` folders |
+| task       | command line       | notes                                          |
+| :--------- | :----------------- | :--------------------------------------------- |
+| install    | `npm install`      | installs dependencies                          |
+| lint       | `npm run lint`     | run eslint on `src` folder                     |
+| lint:fix   | `npm run lint:fix` | run eslint on `src` folder                     |
+| build      | `npm run build`    | compile to `build` folder                      |
+| start      | `npm run start`    | web serve `build` folder                       |
+| watch      | `npm run watch`    | watch/build changes to `app` and `web` folders |
+| test       | `npm run test `    | run tests and report coverage                  |
+| test:watch | `npm run test `    | run tests in watch mode without coverage       |
+
+
 
 ## Code organization
 

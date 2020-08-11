@@ -16,7 +16,7 @@ to be expounded at some point in time.
     - internal dependencies next
     - separate the two groups with a single blank line
   - avoid class components
-  - use hooks but also don't go crazy in converting into a hook
+  - use hooks but also don't go crazy in converting everything into a hook
   - write tests based on use cases and test for functionality instead of
     visual appearances
   - `components`, `hooks` and `lib` folders are special. Stuff gets in here

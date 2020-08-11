@@ -1,11 +1,11 @@
 import React from 'react';
 
 import {
-  render, screen, waitFor, waitForElementToBeRemoved
+  screen, waitFor, waitForElementToBeRemoved
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { MockProvider } from 'mocks';
+import { renderComponentUnderTest } from 'mocks';
 import Login from './login';
 
 // TODO:
@@ -25,12 +25,15 @@ describe('Login Page', () => {
     return { heading, email, password, submit };
   };
 
-  const renderComponentUnderTest = () => {
-    render(<Login />, { wrapper: MockProvider });
+  const renderPage = () => {
+    renderComponentUnderTest(
+      <Login data="pony-foo" />,
+      { initialEntries: ['/login'] }
+    );
   };
 
   it('should render login form', async () => {
-    renderComponentUnderTest();
+    renderPage();
     const { heading, email, password, submit } = subjectsUnderTest();
 
     expect(heading).toBeInTheDocument();
@@ -44,7 +47,7 @@ describe('Login Page', () => {
   // At the moment Formik and Browser behaviours are not in sync. We have to
   // type something and then press submit to see the error message.
   it('should disallow form submit action on validation errors', async () => {
-    renderComponentUnderTest();
+    renderPage();
     const { email, password, submit } = subjectsUnderTest();
     // click on email, type anything, clear and tab out to trigger error(s)
     userEvent.click(email);
@@ -95,7 +98,7 @@ describe('Login Page', () => {
   });
 
   it('should display error message on login failure', async () => {
-    renderComponentUnderTest();
+    renderPage();
     const { email, password, submit } = subjectsUnderTest();
 
     userEvent.type(email, 'tester@testing.paradise');
@@ -108,7 +111,7 @@ describe('Login Page', () => {
   });
 
   it('should navigate to main view on login success', async () => {
-    renderComponentUnderTest();
+    renderPage();
     const { email, password, submit } = subjectsUnderTest();
 
     userEvent.type(email, 'user@example.org');
