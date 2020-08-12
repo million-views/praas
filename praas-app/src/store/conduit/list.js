@@ -34,22 +34,22 @@ const initialState = { inflight: false, conduits: [] };
 
 export default function list(state = initialState, { type, payload }) {
   switch (type) {
-    case LIST_CONDUIT_REQUEST:
-      return {
-        ...state,
-        inflight: true,
-      };
-    case LIST_CONDUIT_SUCCESS:
-      return {
-        inflight: false,
-        conduits: payload.conduits,
-      };
-    case LIST_CONDUIT_FAILURE:
-      return {
-        inflight: false,
-        errors: { ...payload.errors }
-      };
-    default:
-      return state;
+  case LIST_CONDUIT_REQUEST:
+    return {
+      ...state,
+      inflight: true,
+    };
+  case LIST_CONDUIT_SUCCESS:
+    return {
+      inflight: false,
+      conduits: payload.conduits,
+    };
+  case LIST_CONDUIT_FAILURE:
+    return {
+      inflight: false,
+      errors: { ...payload.errors }
+    };
+  default:
+    return state;
   };
 };

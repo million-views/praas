@@ -36,15 +36,13 @@ function LoginForm(props) {
       <div>
         <Field
           name="user.email" placeholder="Email - jane@test.com" type="email"
-          required
-        />
+          required />
         <ErrorMessage name="user.email" component="div" className="error" />
       </div>
       <div>
         <Field
           name="user.password" placeholder="Password" type="password"
-          required
-        />
+          required />
         <ErrorMessage name="user.password" component="div" className="error" />
       </div>
       <button type="submit" disabled={disabled}>Submit</button>
@@ -66,8 +64,7 @@ function Login(props) {
           onSubmit={(values, actions) => {
             const user = values.user;
             dispatch(loginUser({ user }, actions, navigate));
-          }}
-        >
+          }}>
           {(props) => <LoginForm {...props} />}
         </Formik>
       </main>

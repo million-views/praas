@@ -64,31 +64,31 @@ const initialState = localUser
   : { inflight: false, loggedIn: false };
 export default function login(state = initialState, { type, payload }) {
   switch (type) {
-    case LOGIN_REQUEST:
-      return {
-        ...state,
-        inflight: true,
-        ...payload.user
-      };
-    case LOGIN_SUCCESS:
-      return {
-        inflight: false,
-        loggedIn: true,
-        ...payload.user,
-      };
-    case LOGIN_FAILURE:
-      // console.log('Deal with this:', payload);
-      return {
-        inflight: false,
-        loggedIn: false,
-        errors: { ...payload.errors }
-      };
-    case LOGOUT:
-      return {
-        inflight: false,
-        loggedIn: false
-      };
-    default:
-      return state;
+  case LOGIN_REQUEST:
+    return {
+      ...state,
+      inflight: true,
+      ...payload.user
+    };
+  case LOGIN_SUCCESS:
+    return {
+      inflight: false,
+      loggedIn: true,
+      ...payload.user,
+    };
+  case LOGIN_FAILURE:
+    // console.log('Deal with this:', payload);
+    return {
+      inflight: false,
+      loggedIn: false,
+      errors: { ...payload.errors }
+    };
+  case LOGOUT:
+    return {
+      inflight: false,
+      loggedIn: false
+    };
+  default:
+    return state;
   };
 };

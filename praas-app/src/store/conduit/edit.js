@@ -37,25 +37,25 @@ const initialState = { inflight: false };
 
 export default function create(state = initialState, { type, payload }) {
   switch (type) {
-    case UPDATE_CONDUIT_REQUEST:
-      return {
-        ...state,
-        inflight: true,
-        ...payload.conduit
-      };
-    case UPDATE_CONDUIT_SUCCESS:
-      return {
-        inflight: false,
-        ...payload.conduit,
-      };
-    case UPDATE_CONDUIT_FAILURE:
-      // console.log('Deal with this:', payload);
-      return {
-        inflight: false,
-        errors: { ...payload.errors }
-      };
-    default:
-      return state;
+  case UPDATE_CONDUIT_REQUEST:
+    return {
+      ...state,
+      inflight: true,
+      ...payload.conduit
+    };
+  case UPDATE_CONDUIT_SUCCESS:
+    return {
+      inflight: false,
+      ...payload.conduit,
+    };
+  case UPDATE_CONDUIT_FAILURE:
+    // console.log('Deal with this:', payload);
+    return {
+      inflight: false,
+      errors: { ...payload.errors }
+    };
+  default:
+    return state;
   };
 };
 

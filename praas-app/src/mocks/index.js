@@ -9,10 +9,10 @@ import configureStore from 'store';
 // - initialEntries: An array of `location`s in the history stack. These
 //   may be full-blown location objects with `{ pathname, search, hash,
 //   state }` or simple string URLs.
-// - hydrate: initial data for redux store, if any
+// - initialState: initial data for redux store, if any
 function renderComponentUnderTest(component, options = {}) {
   const fixture = ({ children }) => {
-    const store = configureStore(options.hydrate || {});
+    const store = configureStore(options.initialState || {});
     const initialEntries = options.initialEntries || ['/'];
     return (
       <Provider store={store}>

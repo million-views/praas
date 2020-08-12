@@ -31,8 +31,7 @@ const Racm = (props) => {
                 const idx = form.values.racm.indexOf(category.id);
                 remove(idx);
               }
-            }}
-          />
+            }} />
           <span className="checkable">{category.name}</span>
         </label>
       ))}
@@ -51,8 +50,7 @@ const Status = ({ field, form: { values, touched, errors } }) => {
           {...field}
           type="radio"
           defaultChecked={values.status === 'active'}
-          value="active"
-        />
+          value="active" />
         <span className="checkable">Active</span>
       </label>
       <label>
@@ -60,8 +58,7 @@ const Status = ({ field, form: { values, touched, errors } }) => {
           {...field}
           type="radio"
           defaultChecked={values.status === 'inactive'}
-          value="inactive"
-        />
+          value="inactive" />
         <span className="checkable">Inactive</span>
       </label>
       {touched[field.name] && errors[field.name] && (
@@ -83,16 +80,14 @@ function ConduitForm(props) {
         name="suriApiKey"
         placeholder="Service endpoint API Key"
         type="text"
-        required
-      />
+        required />
       <ErrorMessage name="suriApiKey" component="div" className="error" />
 
       <Field
         name="suriType"
         placeholder="Select Type"
         component="select"
-        required
-      >
+        required>
         <option value="googleSheets">Google Sheets</option>
         <option value="airtable">Airtable</option>
         <option value="email">Email</option>
@@ -103,8 +98,7 @@ function ConduitForm(props) {
         name="suriObjectKey"
         placeholder="Service endpoint object path"
         type="text"
-        required
-      />
+        required />
       <ErrorMessage name="suriObjectKey" component="div" className="error" />
 
       <div style={{ display: 'flex' }}>
@@ -123,22 +117,19 @@ function ConduitForm(props) {
         name="description"
         placeholder="Description of the endpoint"
         type="text"
-        required
-      />
+        required />
       <ErrorMessage name="description" component="div" className="error" />
 
       <button
         type="submit"
         disabled={isSubmitting === true}
-        className={classes}
-      >
+        className={classes}>
         {buttonLabel}
       </button>
       <button
         type="button"
         onClick={() => changeView('list', 'cancel', cid, 'components/form')}
-        className={classes}
-      >
+        className={classes}>
         Cancel
       </button>
     </Form>

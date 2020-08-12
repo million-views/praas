@@ -20,19 +20,19 @@ export const error = (message) => ({
 // note: klass is so named for it could be used to directly map to a css class
 export default function alert(state = {}, { type, payload }) {
   switch (type) {
-    case ALERT_CLEAR:
-      return {};
-    case ALERT_SUCCESS:
-      return {
-        klass: 'alert-success',
-        message: payload.errors
-      };
-    case ALERT_ERROR:
-      return {
-        klass: 'alert-danger',
-        message: payload.errors
-      };
-    default:
-      return state;
+  case ALERT_CLEAR:
+    return {};
+  case ALERT_SUCCESS:
+    return {
+      klass: 'alert-success',
+      message: payload.errors
+    };
+  case ALERT_ERROR:
+    return {
+      klass: 'alert-danger',
+      message: payload.errors
+    };
+  default:
+    return state;
   }
 };

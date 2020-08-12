@@ -71,7 +71,12 @@ function Header() {
     }
   };
 
-  const busy = isBusy && <span className="icon-spin-1 spin" />;
+  // see https://www.digitala11y.com/aria-busy-state/
+  const busy = isBusy && <span
+    role="progressbar"
+    aria-label="loading"
+    aria-live="polite" aria-busy="true"
+    className="icon-spin-1 spin" />;
 
   return (
     <nav>

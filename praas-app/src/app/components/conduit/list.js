@@ -49,8 +49,7 @@ const Modal = ({ open, setModal, conduit, changeView }) => {
               dispatch(deleteConduit(conduit.id, changeView));
               setModal();
             }}
-            className="button dangerous"
-          >
+            className="button dangerous">
             Delete
           </label>
         </footer>
@@ -77,8 +76,7 @@ const List = (props) => {
           open={conduit.id === modal}
           setModal={setModal}
           changeView={props.changeView}
-          conduit={conduit}
-        />
+          conduit={conduit} />
       );
     }
   };
@@ -97,14 +95,12 @@ const List = (props) => {
               props.changeView('edit', 'form', conduit.id, 'components/list/row');
             }}
             style={{ background: 0 }}
-            className="icon-cog"
-          />
+            className="icon-cog" />
           <label
             disabled={conduit.status === 'active'}
             className="button icon-trash"
             style={{ background: 0 }}
-            onClick={() => setModal(conduit.id)}
-          />
+            onClick={() => setModal(conduit.id)} />
           {
             createModal(conduit)
           }
@@ -118,8 +114,7 @@ const List = (props) => {
       <h1>List Conduits</h1>
       <h2>A conduit is a handle to a RESTful service endpoint</h2>
       <button
-        onClick={() => props.changeView('add', 'form', undefined, 'components/list')}
-      >
+        onClick={() => props.changeView('add', 'form', undefined, 'components/list')}>
         Add conduit
       </button>
       <table>

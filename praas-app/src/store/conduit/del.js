@@ -35,21 +35,21 @@ const initialState = { inflight: false };
 
 export default function del(state = initialState, { type, payload }) {
   switch (type) {
-    case DELETE_CONDUIT_REQUEST:
-      return {
-        ...state,
-        inflight: true,
-      };
-    case DELETE_CONDUIT_SUCCESS:
-      return {
-        inflight: false,
-      };
-    case DELETE_CONDUIT_FAILURE:
-      return {
-        inflight: false,
-        errors: { ...payload.errors }
-      };
-    default:
-      return state;
+  case DELETE_CONDUIT_REQUEST:
+    return {
+      ...state,
+      inflight: true,
+    };
+  case DELETE_CONDUIT_SUCCESS:
+    return {
+      inflight: false,
+    };
+  case DELETE_CONDUIT_FAILURE:
+    return {
+      inflight: false,
+      errors: { ...payload.errors }
+    };
+  default:
+    return state;
   };
 };

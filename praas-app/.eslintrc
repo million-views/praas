@@ -76,6 +76,23 @@
         "objects": "only-multiline"
       }
     ],
+    "indent": [
+      "error",
+      2,
+      {
+        "ignoredNodes": [
+          "JSXElement",
+          "JSXElement *"
+        ]
+      }
+    ],
+    "react/jsx-closing-bracket-location": [
+      1,
+      {
+        "selfClosing": "after-props",
+        "nonEmpty": "after-props"
+      }
+    ],
     "no-unused-vars": [
       2,
       {

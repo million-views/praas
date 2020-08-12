@@ -26,7 +26,7 @@ describe('Login Page', () => {
   };
 
   const renderPage = () => {
-    renderComponentUnderTest(
+    return renderComponentUnderTest(
       <Login data="pony-foo" />,
       { initialEntries: ['/login'] }
     );
@@ -64,7 +64,7 @@ describe('Login Page', () => {
 
     // type invalid email and tab out to trigger error(s)
     userEvent.type(email, 'Hello, World!');
-    // FIXME! either formik or rtl is eatig space!
+    // FIXME! either formik or rtl is eating space!
     expect(email).toHaveAttribute('value', 'Hello,World!');
     await waitFor(() => {
       const emailCheck = screen.getByText(/invalid email address/i);

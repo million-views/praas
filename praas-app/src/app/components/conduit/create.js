@@ -29,15 +29,13 @@ function CreateConduitForm({ changeView }) {
       validationSchema={conduitSchema}
       onSubmit={(values, actions) => {
         dispatch(addConduit({ conduit: { ...values } }, actions, changeView));
-      }}
-    >
+      }}>
       {(props) => (
         <ConduitForm
           {...props}
           buttonLabel="Create Conduit"
           changeView={changeView}
-          status=""
-        />
+          status="" />
       )}
     </Formik>
   );

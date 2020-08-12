@@ -39,8 +39,7 @@ function EditConduitForm ({ changeView, cid }) {
             changeView
           )
         );
-      }}
-    >
+      }}>
       {(props) => (
         <ConduitForm
           {...props}
@@ -49,8 +48,7 @@ function EditConduitForm ({ changeView, cid }) {
           changeView={changeView}
           conduit={conduit}
           handleFieldUpdates
-          status=""
-        />
+          status="" />
       )}
     </Formik>
   );

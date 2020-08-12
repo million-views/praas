@@ -36,25 +36,25 @@ export const registerUser = (user, actions, navigate) => {
 // Reducer
 export default function registration(state = { inflight: false }, { type, payload }) {
   switch (type) {
-    case REGISTER_REQUEST:
-      return {
-        inflight: true
-      };
-    case REGISTER_SUCCESS:
-      return {
-        // ...state,
-        inflight: false,
-        errors: {}
-        // ...payload.user,
-      };
-    case REGISTER_FAILURE:
-      // console.log('Deal with this:', payload);
-      return {
-        inflight: false,
-        errors: { ...payload.errors }
-      };
+  case REGISTER_REQUEST:
+    return {
+      inflight: true
+    };
+  case REGISTER_SUCCESS:
+    return {
+      // ...state,
+      inflight: false,
+      errors: {}
+      // ...payload.user,
+    };
+  case REGISTER_FAILURE:
+    // console.log('Deal with this:', payload);
+    return {
+      inflight: false,
+      errors: { ...payload.errors }
+    };
 
-    default:
-      return state;
+  default:
+    return state;
   };
 };
