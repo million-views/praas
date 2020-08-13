@@ -69,18 +69,18 @@ describe('Header Component', () => {
     expect(sut.busyIndicator).toBeInTheDocument();
   });
 
-  it('should have logout action when logged in', async () => {
-    const { sut } = renderHeader('/', { inflight: false, loggedIn: true });
+  it('should have contextual actions', async () => {
+    let sut;
+    // 'logout' when logged in
+    ({ sut } = renderHeader('/', { inflight: false, loggedIn: true }));
     expect(sut.contextAction).toHaveTextContent(/logout/i);
-  });
 
-  it('should have signup action when on login path', async () => {
-    const { sut } = renderHeader('/login', { inflight: false, loggedIn: false });
+    // 'signup' at `/login`
+    ({ sut } = renderHeader('/login', { inflight: false, loggedIn: false }));
     expect(sut.contextAction).toHaveTextContent(/signup/i);
-  });
 
-  it('should have signin action when on signup path', async () => {
-    const { sut } = renderHeader('/signup', { inflight: false, loggedIn: false });
+    // 'login' at `/signup`
+    ({ sut } = renderHeader('/signup', { inflight: false, loggedIn: false }));
     expect(sut.contextAction).toHaveTextContent(/login/i);
   });
 
