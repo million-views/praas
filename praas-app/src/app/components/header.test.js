@@ -32,49 +32,55 @@ describe('Header Component', () => {
     );
 
     if (dump) {
+      // eslint-disable-next-line testing-library/no-debug
       screen.debug(result.container);
     }
 
-    // fetch the subjects under test and return them in `sut`
-    const brand = result.container.querySelector(
-      'div>nav>a>span'
-    );
-    const busyIndicator = result.container.querySelector(
-      '[role="progressbar"][aria-live="polite"][aria-busy="true"]'
-    );
-
     return {
       container: result.container,
-      sut: {
-        brand, busyIndicator,
-      }
     };
   };
 
   it('should have a branding', async () => {
-    const { sut } = renderHeader('/', { inflight: false, loggedIn: false });
-    expect(sut.brand).toBeInTheDocument();
-    expect(getNodeText(sut.brand)).toMatch(/conduits.xyz/i);
+    renderHeader('/', { inflight: false, loggedIn: false });
+    const brand = screen.getByText(/conduits.xyz/i);
+    expect(brand).toBeInTheDocument();
+    expect(getNodeText(brand)).toMatch(/conduits.xyz/i);
   });
 
   it('should contextually turn on busy indicator', async () => {
-    const { sut } = renderHeader('/', { inflight: true, loggedIn: false });
+    const { container } = renderHeader(
+      '/',
+      { inflight: true, loggedIn: false },
+      false
+    );
 
-    /* eslint testing-library/no-debug: 0 */
-    // screen.debug(sut.busyIndicator);
-    expect(sut.busyIndicator).toBeInTheDocument();
-  });
+    const busyIndicator = container.querySelector(
+      '[role="progressbar"][aria-live="polite"][aria-busy="true"]'
+    );
 
-  it('should have logout action when logged in', async () => {
-    // const { sut } = renderHeader('/', { inflight: false, loggedIn: false });
+    expect(busyIndicator).toBeInTheDocument();
   });
 
   it('should have signup action when on login path', async () => {
-    // const { sut } = renderHeader('/', { inflight: false, loggedIn: false });
+    renderHeader('/login', { inflight: false, loggedIn: false });
+    const signup = screen.getByText(/signup/i);
+    expect(signup).toBeInTheDocument();
+    expect(getNodeText(signup)).toMatch(/signup/i);
+  });
+
+  it('should have logout action when logged in', async () => {
+    renderHeader('/', { inflight: false, loggedIn: true });
+    const logout = screen.getByText(/logout/i);
+    expect(logout).toBeInTheDocument();
+    expect(getNodeText(logout)).toMatch(/logout/i);
   });
 
   it('should have signin action when on signup path', async () => {
-    // const { sut } = renderHeader('/', { inflight: false, loggedIn: false });
+    renderHeader('/signup', { inflight: false, loggedIn: false });
+    const login = screen.getByText(/login/i);
+    expect(login).toBeInTheDocument();
+    expect(getNodeText(login)).toMatch(/login/i);
   });
 
   xit('should have a help action', async () => {
