@@ -43,10 +43,14 @@ describe('Header Component', () => {
       '[role="progressbar"][aria-live="polite"][aria-busy="true"]'
     );
 
+    const contextAction = result.container.querySelector(
+      'div>nav>ul.menu>li>a'
+    );
+
     return {
       container: result.container,
       sut: {
-        brand, busyIndicator,
+        brand, busyIndicator, contextAction
       }
     };
   };
@@ -66,15 +70,18 @@ describe('Header Component', () => {
   });
 
   it('should have logout action when logged in', async () => {
-    // const { sut } = renderHeader('/', { inflight: false, loggedIn: false });
+    const { sut } = renderHeader('/', { inflight: false, loggedIn: true });
+    expect(sut.contextAction).toHaveTextContent(/logout/i);
   });
 
   it('should have signup action when on login path', async () => {
-    // const { sut } = renderHeader('/', { inflight: false, loggedIn: false });
+    const { sut } = renderHeader('/login', { inflight: false, loggedIn: false });
+    expect(sut.contextAction).toHaveTextContent(/signup/i);
   });
 
   it('should have signin action when on signup path', async () => {
-    // const { sut } = renderHeader('/', { inflight: false, loggedIn: false });
+    const { sut } = renderHeader('/signup', { inflight: false, loggedIn: false });
+    expect(sut.contextAction).toHaveTextContent(/login/i);
   });
 
   xit('should have a help action', async () => {
