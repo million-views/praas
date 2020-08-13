@@ -62,7 +62,7 @@ const request3 = {
   }]
 };
 
-describe('Testing Proxy Server...', async () => {
+describe('Testing Gateway Server...', async () => {
   context('Validate incoming request', () => {
     it('should reject requests to inactive conduits', async function () {
       const res = await proxyServer().get('/');
@@ -425,21 +425,6 @@ describe('Testing Proxy Server...', async () => {
         expect(del.body.records[i].deleted).to.be.true;
         expect(del.body.records[i].id).to.equal(records[i]);
       }
-    });
-  });
-
-  context.skip('Testing Google Sheets Gateway', () => {
-    it('Should create Contacts (POST)', async () => {
-    });
-    it('Should get Contact by id (GET)', async () => {
-    });
-    it('Should list all Contacts (GET)', async () => {
-    });
-    it('Should update Contacts - partial (PATCH)', async () => {
-    });
-    it('Should update Contacts - full (PUT)', async () => {
-    });
-    it('Should delete contacts (DELETE)', async () => {
     });
   });
 });
