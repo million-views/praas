@@ -26,7 +26,13 @@ TBD...
 | test       | `npm run test `    | run tests and report coverage                  |
 | test:watch | `npm run test `    | run tests in watch mode without coverage       |
 
+Note : Since the project uses [husky] to set up pre-commit hooks;
+sometimes it can get in the way of development when commiting assets
+that are still work in progress. If the code commited do not break any
+live features, husky may be bypassed by using the `--no-verify` flag
+along with `git commit`.
 
+[husky]: https://github.com/typicode/husky
 
 ## Code organization
 
