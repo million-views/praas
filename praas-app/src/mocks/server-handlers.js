@@ -38,6 +38,35 @@ const login = (req, res, ctx) => {
   }
 };
 
+const signup = (req, res, ctx) => {
+  const errorResponse = {
+    errors: {
+      email: 'email must be unique'
+    }
+  };
+
+  const successResponse = {
+    user: {
+      id: 6,
+      firstName: 'User',
+      lastName: '',
+      email: req.body.email,
+      token: 'header.payload.signature'
+    }
+  };
+
+  const { firstName, email, password } = req.body.user;
+  if (firstName === 'User' && email === 'user2@example.org' && password === '709$3cR31') {
+    return res(ctx.json(successResponse));
+  } else {
+    return res(
+      ctx.status(422, 'You are so good!'),
+      ctx.json(errorResponse)
+    );
+  }
+};
+
 export const handlers = [
   rest.post('/users/login', login),
+  rest.post('/users', signup),
 ];
