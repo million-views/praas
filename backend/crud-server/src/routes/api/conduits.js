@@ -210,6 +210,7 @@ router.put('/:id', auth.required, async (req, res, next) => {
 });
 
 // Update conduit
+
 router.patch('/:id', auth.required, async (req, res, next) => {
   try {
     const conduit = await Conduit.findByPk(req.params.id);
@@ -225,7 +226,12 @@ router.patch('/:id', auth.required, async (req, res, next) => {
       );
     }
 
-    if (serviceTargets.includes(req.body.conduit.suriType) === false) {
+    // FIXME!
+    // Since the mode of access to supported service types is vastly
+    // different, we should not allow service type for an existing
+    // conduit to be changed. Tests, UI and this logic needs to
+    // fixed
+    if (req.body.conduit.suriType && serviceTargets.includes(req.body.conduit.suriType) === false) {
       return next(
         new RestApiError(422, {
           suriType: `'${req.body.conduit.suriType}' unsupported`,

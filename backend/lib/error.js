@@ -64,6 +64,7 @@ function RestApiError(statusCode, errors = {}) {
 function RestApiErrorHandler(err, req, res, next) {
   // request path is the flow origin that led to the error
   err.path = req.path;
+  err.method = req.method;
 
   // fail fast: unknown error types are unexpected here.
   if (!(err instanceof RestApiError)) {
@@ -98,6 +99,7 @@ function RestApiErrorHandler(err, req, res, next) {
   // on mac/linux run with:
   // DUMP_ERROR_RESPONSE=1 npm run `task`
   if (process.env.DUMP_ERROR_RESPONSE) {
+    err.body = req.body;
     console.error(err);
   }
 

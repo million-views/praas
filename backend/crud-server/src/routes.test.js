@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const server = require('./server');
 const helpers = require('../../lib/helpers');
 const conf = require('../../config').test.settings;
+const targets = require('../../config').targets.settings;
 
 const expect = chai.expect;
 chai.use(chaiHttp);
@@ -473,8 +474,19 @@ describe('Praas REST API', () => {
     // PATCH method
     context('update existing service endpoints', function () {
       it('should update existing service endpoints', async function () {
-        // change status to active
-        const activeConduit = { conduit: { status: 'active' } };
+        // change status to active and randomly change service type
+        // FIXME!
+        // Since the mode of access to supported service types is vastly
+        // different, we should not allow service type for an existing
+        // conduit to be changed. This test and the route logic needs to
+        // fixed
+        const suriType = helpers.randomlyPickFrom(targets).type;
+        const activeConduit = {
+          conduit: {
+            status: 'active',
+            suriType
+          }
+        };
         const activateConduit = await Api()
           .patch(`/conduits/${ctId1}`)
           .set('Authorization', `Token ${jakeUser.token}`)
