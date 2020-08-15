@@ -21,6 +21,7 @@ module.exports = {
     '^app(.*)$': '<rootDir>/src/app/$1',
     '^components(.*)$': '<rootDir>/src/app/components/$1',
     '^api(.*)$': '<rootDir>/src/api/$1',
+    '^lib(.*)$': '<rootDir>/src/lib/$1',
     '^store(.*)$': '<rootDir>/src/store/$1',
     '^hooks(.*)$': '<rootDir>/src/hooks/$1',
     '^mocks(.*)$': '<rootDir>/src/mocks/$1',

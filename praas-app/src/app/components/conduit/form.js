@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Field, FieldArray, Form, ErrorMessage } from 'formik';
 
 import { Alert } from 'components';
-import { cx } from 'tiny';
+import { cx } from 'lib/tiny';
 
 const categories = [
   { id: 'GET', name: 'GET' },

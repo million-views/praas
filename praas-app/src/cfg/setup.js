@@ -95,9 +95,6 @@ module.exports = (wpc) => {
 
     // we keep site wide css/scss frameworks here
     kiscss: `${wpc.lib}/kiscss`,
-
-    // we keep internal widgets and 3rd party libs here
-    tiny: `${wpc.lib}/tiny`,
   };
 
   const extensions = ['.jsx', '.js', '.json', '.scss', '.css', '.html'];

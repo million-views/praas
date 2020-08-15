@@ -1,33 +1,33 @@
-import React from 'react';
+// import React from 'react';
 
-import { screen } from '@testing-library/react';
-import { renderComponentUnderTest } from 'mocks';
-import List from './list';
+// import { screen } from '@testing-library/react';
+// import { renderComponentUnderTest } from 'mocks';
+// import List from './list';
 
 describe('Conduit List', () => {
-  const renderList = (dump = false) => {
-    const initialState = {
-      user: {
-        inflight: false,
-        loggedIn: true,
-      }
-    };
+  // const renderList = (dump = false) => {
+  //   const initialState = {
+  //     user: {
+  //       inflight: false,
+  //       loggedIn: true,
+  //     }
+  //   };
 
-    const result = renderComponentUnderTest(
-      <List />,
-      { initialEntries: ['/'], initialState }
-    );
+  //   const result = renderComponentUnderTest(
+  //     <List />,
+  //     { initialEntries: ['/'], initialState }
+  //   );
 
-    if (dump) {
-      screen.debug(result.container);
-    }
+  //   if (dump) {
+  //     screen.debug(result.container);
+  //   }
 
-    // fetch the subjects under test and return them in `sut`
-    return {
-      container: result.container,
-      sut: {},
-    };
-  };
+  //   // fetch the subjects under test and return them in `sut`
+  //   return {
+  //     container: result.container,
+  //     sut: {},
+  //   };
+  // };
 
   it('should have headings', async () => {
   });
