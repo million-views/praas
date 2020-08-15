@@ -124,7 +124,7 @@ describe('Login Page', () => {
     await waitForElementToBeRemoved(signup);
     // signup is gone from dom! instead of looking for its absence
     // check for the presence of another element that appears due
-    // state transition
+    // to state transition
 
     await waitFor(() => {
       const logout = screen.getByText(/logout/i);

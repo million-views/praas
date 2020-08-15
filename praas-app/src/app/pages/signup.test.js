@@ -172,7 +172,7 @@ describe('Signup Page', () => {
     await waitForElementToBeRemoved(login);
     // login is gone from dom! instead of looking for its absence
     // check for the presence of another element that appears due
-    // state transition
+    // to state transition
 
     await waitFor(() => {
       const signup = screen.getByText(/signup/i);
