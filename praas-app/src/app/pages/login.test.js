@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-  screen, waitFor, waitForElementToBeRemoved
+  screen, waitFor, waitForElementToBeRemoved //, waitForElement
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -64,8 +64,8 @@ describe('Login Page', () => {
 
     // type invalid email and tab out to trigger error(s)
     userEvent.type(email, 'Hello, World!');
-    // FIXME! either formik or rtl is eating space!
-    expect(email).toHaveAttribute('value', 'Hello,World!');
+    // FIXME! rtl is eating space; dig more into normalizer options
+    expect(email.value).toBe('Hello,World!');
     await waitFor(() => {
       const emailCheck = screen.getByText(/invalid email address/i);
       expect(emailCheck).toBeInTheDocument();
@@ -75,7 +75,7 @@ describe('Login Page', () => {
 
     // type short password
     userEvent.type(password, 'pas');
-    expect(password).toHaveAttribute('value', 'pas');
+    expect(password.value).toBe('pas');
     await waitFor(() => {
       const passwordCheck = screen.getByText(/password too short/i);
       expect(passwordCheck).toBeInTheDocument();
@@ -91,8 +91,8 @@ describe('Login Page', () => {
     userEvent.type(password, 'password');
 
     await waitFor(() => {
-      expect(email).toHaveAttribute('value', 'tester@testing.paradise');
-      expect(password).toHaveAttribute('value', 'password');
+      expect(email.value).toBe('tester@testing.paradise');
+      expect(password.value).toBe('password');
       expect(submit).toBeEnabled();
     });
   });
@@ -104,6 +104,7 @@ describe('Login Page', () => {
     userEvent.type(email, 'tester@testing.paradise');
     userEvent.type(password, 'password');
     userEvent.click(submit);
+
     await waitFor(() => {
       const serverError = screen.getByText(/email or password is invalid/i);
       expect(serverError).toBeInTheDocument();

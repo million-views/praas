@@ -85,7 +85,7 @@ describe('Signup Page', () => {
 
     // type short first name
     userEvent.type(firstName, 'f');
-    expect(firstName).toHaveAttribute('value', 'f');
+    expect(firstName.value).toBe('f');
     await waitFor(() => {
       const firstnameCheck = screen.getByText(/must be longer than 2 characters/i);
       expect(firstnameCheck).toBeInTheDocument();
@@ -97,7 +97,7 @@ describe('Signup Page', () => {
     userEvent.clear(firstName);
     // type long first name
     userEvent.type(firstName, 'firstnamefirstnamefirstname');
-    expect(firstName).toHaveAttribute('value', 'firstnamefirstnamefirstname');
+    expect(firstName.value).toBe('firstnamefirstnamefirstname');
     await waitFor(() => {
       const firstnameCheck = screen.getByText(/nice try, nobody has a first name that long/i);
       expect(firstnameCheck).toBeInTheDocument();
@@ -107,8 +107,8 @@ describe('Signup Page', () => {
 
     // type invalid email and tab out to trigger error(s)
     userEvent.type(email, 'Hello, World!');
-    // FIXME! either formik or rtl is eating space!
-    expect(email).toHaveAttribute('value', 'Hello,World!');
+    // FIXME! rtl is eating space; dig more into normalizer options
+    expect(email.value).toBe('Hello,World!');
     await waitFor(() => {
       const emailCheck = screen.getByText(/invalid email address/i);
       expect(emailCheck).toBeInTheDocument();
@@ -118,7 +118,7 @@ describe('Signup Page', () => {
 
     // type short password
     userEvent.type(password, 'pas');
-    expect(password).toHaveAttribute('value', 'pas');
+    expect(password.value).toBe('pas');
     await waitFor(() => {
       const passwordCheck = screen.getByText(/must be longer than 8 characters/i);
       expect(passwordCheck).toBeInTheDocument();
@@ -136,9 +136,9 @@ describe('Signup Page', () => {
     userEvent.type(password, 'password');
 
     await waitFor(() => {
-      expect(firstName).toHaveAttribute('value', 'tester');
-      expect(email).toHaveAttribute('value', 'tester@testing.paradise');
-      expect(password).toHaveAttribute('value', 'password');
+      expect(firstName.value).toBe('tester');
+      expect(email.value).toBe('tester@testing.paradise');
+      expect(password.value).toBe('password');
       expect(submit).toBeEnabled();
     });
   });
