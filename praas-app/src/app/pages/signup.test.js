@@ -22,10 +22,14 @@ describe('Signup Page', () => {
   };
 
   const renderPage = () => {
-    return renderComponentUnderTest(
+    const result = renderComponentUnderTest(
       <Signup />,
       { initialEntries: ['/signup'] }
     );
+
+    return {
+      container: result.container,
+    };
   };
 
   it('should render signup form', async () => {
@@ -40,7 +44,7 @@ describe('Signup Page', () => {
     expect(submit).toBeDisabled();
   });
 
-  it('should disallow form submit action on validating errors', async() => {
+  it('should disallow form submit action on validation errors', async() => {
     renderPage();
     const { firstName, email, password, submit } = subjectsUnderTest();
 
@@ -52,7 +56,7 @@ describe('Signup Page', () => {
     userEvent.tab();
 
     await waitFor(() => {
-      const firstnameCheck = screen.getByText(/don't be shy. tell us your first name/i);
+      const firstnameCheck = screen.getByText(/don't be shy\.*/i);
       expect(firstnameCheck).toBeInTheDocument();
       expect(submit).toBeDisabled();
     });
@@ -87,7 +91,7 @@ describe('Signup Page', () => {
     userEvent.type(firstName, 'f');
     expect(firstName.value).toBe('f');
     await waitFor(() => {
-      const firstnameCheck = screen.getByText(/must be longer than 2 characters/i);
+      const firstnameCheck = screen.getByText(/must be longer than 2\.*/i);
       expect(firstnameCheck).toBeInTheDocument();
       expect(firstnameCheck).toHaveClass('error');
       expect(submit).toBeDisabled();
@@ -99,7 +103,7 @@ describe('Signup Page', () => {
     userEvent.type(firstName, 'firstnamefirstnamefirstname');
     expect(firstName.value).toBe('firstnamefirstnamefirstname');
     await waitFor(() => {
-      const firstnameCheck = screen.getByText(/nice try, nobody has a first name that long/i);
+      const firstnameCheck = screen.getByText(/nice try, nobody has a\.*/i);
       expect(firstnameCheck).toBeInTheDocument();
       expect(firstnameCheck).toHaveClass('error');
       expect(submit).toBeDisabled();
@@ -120,7 +124,7 @@ describe('Signup Page', () => {
     userEvent.type(password, 'pas');
     expect(password.value).toBe('pas');
     await waitFor(() => {
-      const passwordCheck = screen.getByText(/must be longer than 8 characters/i);
+      const passwordCheck = screen.getByText(/must be longer than 8\.*/i);
       expect(passwordCheck).toBeInTheDocument();
       expect(passwordCheck).toHaveClass('error');
       expect(submit).toBeDisabled();
@@ -150,7 +154,16 @@ describe('Signup Page', () => {
     userEvent.type(firstName, 'tester');
     userEvent.type(email, 'tester@testing.paradise');
     userEvent.type(password, 'password');
+
+    await waitFor(() => {
+      expect(firstName.value).toBe('tester');
+      expect(email.value).toBe('tester@testing.paradise');
+      expect(password.value).toBe('password');
+      expect(submit).toBeEnabled();
+    });
+
     userEvent.click(submit);
+
     await waitFor(() => {
       const serverError = screen.getByText(/email must be unique/i);
       expect(serverError).toBeInTheDocument();
@@ -161,19 +174,35 @@ describe('Signup Page', () => {
     renderPage();
     const { firstName, email, password, submit } = subjectsUnderTest();
 
+    // look for a known anchor on this page...
+    const login = screen.getByText(/login/i);
+    expect(login).toBeInTheDocument();
+
     userEvent.type(firstName, 'User');
     userEvent.type(email, 'user2@example.org');
     userEvent.type(password, '709$3cR31');
 
-    const login = screen.getByText(/login/i);
-    expect(login).toBeInTheDocument();
+    await waitFor(() => {
+      expect(firstName.value).toBe('User');
+      expect(email.value).toBe('user2@example.org');
+      expect(password.value).toBe('709$3cR31');
+      expect(submit).toBeEnabled();
+    });
+
+    // login should be gone from dom, since signup navigates to it...
     userEvent.click(submit);
 
-    await waitForElementToBeRemoved(login);
-    // login is gone from dom! instead of looking for its absence
-    // check for the presence of another element that appears due
-    // to state transition
+    // this fails with RHF but works with Formik
+    // await waitForElementToBeRemoved(login);
 
+    // this doesn't work either...
+    // await waitForElementToBeRemoved(() => login);
+
+    // this works... moving on...it is probably a doc bug!
+    await waitForElementToBeRemoved(() => screen.getByText(/login/i));
+
+    // ... instead of checking for 'login's absence (because you can't ?)
+    // check for presence of an element that appears due to state transition
     await waitFor(() => {
       const signup = screen.getByText(/signup/i);
       expect(signup).toBeInTheDocument();

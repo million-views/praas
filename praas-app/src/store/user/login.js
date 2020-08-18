@@ -7,36 +7,18 @@ const LOGIN_FAILURE = 'user/LOGIN_FAILURE';
 const LOGOUT = 'user/LOGOUT';
 
 // Sync action creators
-export const loginUserSuccess = (user) => ({
+const loginUserSuccess = (user) => ({
   type: LOGIN_SUCCESS, payload: user
 });
 
-export const loginUserFailure = (error) => ({
+const loginUserFailure = (error) => ({
   type: LOGIN_FAILURE, payload: error
 });
 
 // odd man out :-(
-export const logoutSuccess = () => {
+const logoutSuccess = () => {
   return { type: LOGOUT };
 };
-
-// // Async action creators
-// export const logoutUser = (navigate) => {
-//   return (dispatch) => {
-//     PraasAPI.user.logout().then(
-//       (_success) => {
-//         // console.log('logout: ', success);
-//         navigate('/');
-//       },
-//       (_error) => {
-//         // console.log('logout: ', error);
-//         navigate('/');
-//       }
-//     ).then(() => {
-//       dispatch(logoutSuccess());
-//     });
-//   };
-// };
 
 // Async action creators
 export const logoutUser = () => (dispatch) => {
@@ -79,7 +61,7 @@ export default function login(state = initialState, { type, payload }) {
       inflight: false,
       loggedIn: true,
       errors: {},
-      ...payload.user,
+      ...payload,
     };
   case LOGIN_FAILURE:
     // console.log('Deal with this:', payload);

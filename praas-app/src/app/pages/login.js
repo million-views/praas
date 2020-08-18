@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import { useDispatch /* , useSelector */ } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers';
 
@@ -23,7 +22,7 @@ function Login(props) {
   const [remoteErrors, setRemoteErrors] = useState({});
 
   const {
-    register, handleSubmit, formState, errors, reset
+    register, handleSubmit, formState, errors
   } = useForm({
     mode: 'all',
     resolver: yupResolver(loginSchema),
@@ -39,7 +38,6 @@ function Login(props) {
     const user = data.user;
     try {
       const result = await dispatch(loginUser({ user }));
-      await reset(['email', 'password']);
       setRemoteErrors({});
       navigate('/', { state: result });
     } catch (errors) {

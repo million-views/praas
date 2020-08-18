@@ -134,9 +134,10 @@ describe('Login Page', () => {
     await waitFor(() => {
       expect(email.value).toBe('user@example.org');
       expect(password.value).toBe('709$3cR31');
+      expect(submit).toBeEnabled();
     });
 
-    // signup should be gone from dom, since login navigates to home
+    // signup should be gone from dom, since login navigates to home...
     userEvent.click(submit);
 
     // this fails with RHF but works with Formik
@@ -148,7 +149,7 @@ describe('Login Page', () => {
     // this works... moving on...it is probably a doc bug!
     await waitForElementToBeRemoved(() => screen.getByText(/signup/i));
 
-    // instead of looking for its absence (because you can't ?)
+    // ... instead of checking for 'signup's absence (because you can't ?)
     // check for presence of an element that appears due to state transition
     await waitFor(() => {
       const logout = screen.getByText(/logout/i);

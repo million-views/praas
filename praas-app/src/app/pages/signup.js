@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers';
 
 import { Header, Alert } from 'components';
+import { Input } from 'components/form-fields';
 import { signup as signupSchema } from 'app/schema';
 import { registerUser } from 'store/user/registration';
 
@@ -15,68 +17,69 @@ const initialValues = {
   }
 };
 
-/* eslint react/prop-types: 0 */
-function SignupForm(props) {
-  const { status, dirty, isValid, isSubmitting } = props;
+function Signup(props) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [remoteErrors, setRemoteErrors] = useState({});
+
+  const {
+    register, handleSubmit, formState, errors
+  } = useForm({
+    mode: 'all',
+    resolver: yupResolver(signupSchema),
+    defaultValues: initialValues
+  });
+
   let disabled = true;
-  if (dirty && isValid && isSubmitting === false) {
+  if (formState.isDirty && formState.isValid && formState.isSubmitting === false) {
     disabled = false;
   };
 
-  return (
-    <Form>
-      <h2>Create your account</h2>
-      {
-        status && <Alert klass="alert-danger" message={status.errors} />
-      }
-      <div>
-        <Field
-          name="user.firstName" placeholder="First name" type="text"
-          required />
-        <ErrorMessage name="user.firstName" component="div" className="error" />
-      </div>
+  const onSubmit = async (data) => {
+    const user = data.user;
+    try {
+      const result = await dispatch(registerUser({ user }));
+      setRemoteErrors({});
+      navigate('/login', { state: result });
+    } catch (errors) {
+      setRemoteErrors(errors);
+    }
+  };
 
-      <div>
-        <Field
-          name="user.email" placeholder="Email - jane@test.com" type="email"
-          required />
-        <ErrorMessage name="user.email" component="div" className="error" />
-      </div>
-
-      <div>
-        <Field
-          name="user.password" placeholder="Password" type="password"
-          required />
-        <ErrorMessage name="user.password" component="div" className="error" />
-      </div>
-
-      <button type="submit" disabled={disabled}>Submit</button>
-    </Form>
-  );
-};
-
-function Signup() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  let serverErrors = null;
+  if (remoteErrors && Object.keys(remoteErrors).length) {
+    serverErrors = <Alert klass="alert-danger" message={remoteErrors} />;
+  }
 
   return (
     <>
       <Header />
       <main className="page">
-        <Formik
-          initialValues={initialValues}
-          validationSchema={signupSchema}
-          onSubmit={(values, actions) => {
-            const user = values.user;
-            dispatch(registerUser({ user }, actions, navigate));
-          }}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <h2>Create your account</h2>
           {
-            (props) => <SignupForm {...props} />
+            serverErrors
           }
-        </Formik>
+          <div>
+            <Input
+              type="text" register={register} errors={errors}
+              name="user.firstName" placeholder="First name" />
+          </div>
+          <div>
+            <Input
+              type="email" register={register} errors={errors}
+              name="user.email" placeholder="Email - jane@test.com" />
+          </div>
+          <div>
+            <Input
+              type="password" register={register} errors={errors}
+              name="user.password" placeholder="Password" />
+          </div>
+          <button type="submit" disabled={disabled}>Submit</button>
+        </form>
       </main>
     </>
   );
-};
+}
 
 export default Signup;

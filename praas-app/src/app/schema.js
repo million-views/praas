@@ -18,26 +18,26 @@ const conduit = Yup.object({
 const login = Yup.object({
   user: Yup.object({
     email: Yup.string()
-      .email('Invalid email address')
-      .required('Email is required'),
+      .required('Email is required')
+      .email('Invalid email address'),
     password: Yup.string()
-      .min(4, 'Password too short')
-      .required('Passphrase is required'),
+      .required('Passphrase is required')
+      .min(4, 'Password too short'),
   })
 });
 
 const signup = Yup.object({
   user: Yup.object({
     firstName: Yup.string()
+      .required("Don't be shy. Tell us your first name")
       .min(2, 'Must be longer than 2 characters')
-      .max(20, 'Nice try, nobody has a first name that long')
-      .required("Don't be shy. Tell us your first name"),
+      .max(20, 'Nice try, nobody has a first name that long'),
     email: Yup.string()
-      .email('Invalid email address')
-      .required('Email is required'),
+      .required('Email is required')
+      .email('Invalid email address'),
     password: Yup.string()
-      .min(4, 'Must be longer than 8 characters')
-      .required('Passphrase is required'),
+      .required('Passphrase is required')
+      .min(4, 'Must be longer than 8 characters'),
   })
 });
 

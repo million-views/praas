@@ -15,22 +15,18 @@ export const registerFailure = (error) => ({
 });
 
 // Async action creators
-export const registerUser = (user, actions, navigate) => {
-  return (dispatch) => {
-    dispatch({ type: REGISTER_REQUEST, user });
-    PraasAPI.user.register(user).then(
-      (user) => {
-        dispatch(registerSuccess(user));
-        actions.setSubmitting(false);
-        navigate('/login');
-      },
-      (error) => {
-        dispatch(registerFailure(error));
-        actions.setSubmitting(false);
-        actions.setStatus({ errors: { ...error.errors } });
-      }
-    );
-  };
+export const registerUser = (user) => (dispatch) => {
+  dispatch({ type: REGISTER_REQUEST, user });
+  return PraasAPI.user.register(user).then(
+    (data) => {
+      dispatch(registerSuccess(data.user));
+      return Promise.resolve(data.user);
+    },
+    (error) => {
+      dispatch(registerFailure(error.errors));
+      return Promise.reject(error.errors);
+    }
+  );
 };
 
 // Reducer
@@ -46,13 +42,13 @@ export default function registration(state = { inflight: false }, { type, payloa
       // ...state,
       inflight: false,
       errors: {}
-      // ...payload.user,
+      // ...payload, // <- uncomment if we decide to login user on success
     };
   case REGISTER_FAILURE:
     // console.log('Deal with this:', payload);
     return {
       inflight: false,
-      errors: { ...payload.errors }
+      errors: { ...payload }
     };
 
   default:
