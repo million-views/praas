@@ -1,0 +1,15 @@
+{
+  "editor.rulers": [
+    76
+  ],
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/build": true
+  },
+  "javascript.validate.enable": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
+}
