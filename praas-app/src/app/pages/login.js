@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useDispatch } from 'react-redux';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { useDispatch /* , useSelector */ } from 'react-redux';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers';
 
 import { Header, Alert } from 'components';
+import { Input } from 'components/form-fields';
 import { login as loginSchema } from 'app/schema';
-import { loginUser, logoutUser } from 'store/user/login';
+import { loginUser } from 'store/user/login';
 
 const initialValues = {
   user: {
@@ -15,58 +17,62 @@ const initialValues = {
   }
 };
 
-/* eslint react/prop-types: 0 */
-function LoginForm(props) {
-  const { status, dirty, isValid, isSubmitting } = props;
-  // clear stale data
-  logoutUser();
-
-  let disabled = true;
-  if (dirty && isValid && isSubmitting === false) {
-    disabled = false;
-  };
-
-  return (
-    <Form>
-      <h2>Login to your account</h2>
-      {
-        status && <Alert klass="alert-danger" message={status.errors} />
-      }
-
-      <div>
-        <Field
-          name="user.email" placeholder="Email - jane@test.com" type="email"
-          required />
-        <ErrorMessage name="user.email" component="div" className="error" />
-      </div>
-      <div>
-        <Field
-          name="user.password" placeholder="Password" type="password"
-          required />
-        <ErrorMessage name="user.password" component="div" className="error" />
-      </div>
-      <button type="submit" disabled={disabled}>Submit</button>
-    </Form>
-  );
-};
-
 function Login(props) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [remoteErrors, setRemoteErrors] = useState({});
+
+  const {
+    register, handleSubmit, formState, errors, reset
+  } = useForm({
+    mode: 'all',
+    resolver: yupResolver(loginSchema),
+    defaultValues: initialValues
+  });
+
+  let disabled = true;
+  if (formState.isDirty && formState.isValid && formState.isSubmitting === false) {
+    disabled = false;
+  };
+
+  const onSubmit = async (data) => {
+    const user = data.user;
+    try {
+      const result = await dispatch(loginUser({ user }));
+      await reset(['email', 'password']);
+      setRemoteErrors({});
+      navigate('/', { state: result });
+    } catch (errors) {
+      setRemoteErrors(errors);
+    }
+  };
+
+  let serverErrors = null;
+  if (remoteErrors && Object.keys(remoteErrors).length) {
+    serverErrors = <Alert klass="alert-danger" message={remoteErrors} />;
+  }
 
   return (
     <>
       <Header />
       <main className="page">
-        <Formik
-          initialValues={initialValues}
-          validationSchema={loginSchema}
-          onSubmit={(values, actions) => {
-            const user = values.user;
-            dispatch(loginUser({ user }, actions, navigate));
-          }}>
-          {(props) => <LoginForm {...props} />}
-        </Formik>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <h2>Login to your account</h2>
+          {
+            serverErrors
+          }
+          <div>
+            <Input
+              type="email" register={register} errors={errors}
+              name="user.email" placeholder="Email - jane@test.com" />
+          </div>
+          <div>
+            <Input
+              type="password" register={register} errors={errors}
+              name="user.password" placeholder="Password" />
+          </div>
+          <button type="submit" disabled={disabled}>Submit</button>
+        </form>
       </main>
     </>
   );

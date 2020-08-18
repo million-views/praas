@@ -20,60 +20,65 @@ export const logoutSuccess = () => {
   return { type: LOGOUT };
 };
 
+// // Async action creators
+// export const logoutUser = (navigate) => {
+//   return (dispatch) => {
+//     PraasAPI.user.logout().then(
+//       (_success) => {
+//         // console.log('logout: ', success);
+//         navigate('/');
+//       },
+//       (_error) => {
+//         // console.log('logout: ', error);
+//         navigate('/');
+//       }
+//     ).then(() => {
+//       dispatch(logoutSuccess());
+//     });
+//   };
+// };
+
 // Async action creators
-export const logoutUser = (navigate) => {
-  return (dispatch) => {
-    PraasAPI.user.logout().then(
-      (_success) => {
-        // console.log('logout: ', success);
-        navigate('/');
-      },
-      (_error) => {
-        // console.log('logout: ', error);
-        navigate('/');
-      }
-    ).then(() => {
-      dispatch(logoutSuccess());
-    });
-  };
+export const logoutUser = () => (dispatch) => {
+  return PraasAPI.user.logout().then(() => {
+    dispatch(logoutSuccess());
+    return Promise.resolve();
+  });
 };
 
-export const loginUser = (user, actions, navigate) => {
-  return (dispatch) => {
-    dispatch({ type: LOGIN_REQUEST, payload: user });
-    PraasAPI.user.login(user).then(
-      (data) => {
-        localStorage.setItem('user', JSON.stringify({ ...data.user }));
-        dispatch(loginUserSuccess(data.user));
-        actions.setSubmitting(false);
-        navigate('/');
-      },
-      (error) => {
-        dispatch(loginUserFailure(error));
-        actions.setSubmitting(false);
-        actions.setStatus({ errors: { ...error.errors } });
-      }
-    );
-  };
+export const loginUser = (user) => (dispatch) => {
+  dispatch({ type: LOGIN_REQUEST, payload: user });
+  return PraasAPI.user.login(user).then(
+    (data) => {
+      localStorage.setItem('user', JSON.stringify({ ...data.user }));
+      dispatch(loginUserSuccess(data.user));
+      return Promise.resolve(data.user);
+    },
+    (error) => {
+      dispatch(loginUserFailure(error.errors));
+      return Promise.reject(error.errors);
+    }
+  );
 };
 
 // Reducer
 const localUser = JSON.parse(localStorage.getItem('user'));
 const initialState = localUser
-  ? { inflight: false, loggedIn: true, ...localUser }
+  ? { inflight: false, loggedIn: true, errors: {}, ...localUser }
   : { inflight: false, loggedIn: false };
 export default function login(state = initialState, { type, payload }) {
   switch (type) {
   case LOGIN_REQUEST:
     return {
-      ...state,
       inflight: true,
-      ...payload.user
+      loggedIn: false,
+      errors: {},
     };
   case LOGIN_SUCCESS:
     return {
       inflight: false,
       loggedIn: true,
+      errors: {},
       ...payload.user,
     };
   case LOGIN_FAILURE:
@@ -81,12 +86,13 @@ export default function login(state = initialState, { type, payload }) {
     return {
       inflight: false,
       loggedIn: false,
-      errors: { ...payload.errors }
+      errors: { ...payload }
     };
   case LOGOUT:
     return {
       inflight: false,
-      loggedIn: false
+      loggedIn: false,
+      errors: {}
     };
   default:
     return state;

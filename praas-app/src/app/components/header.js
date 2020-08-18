@@ -35,7 +35,7 @@ function Header() {
       return (
         <ul className="menu">
           <li>
-            <a onClick={() => dispatch(logoutUser(navigate))} className="icon-logout">Logout</a>
+            <a onClick={() => dispatch(logoutUser())} className="icon-logout">Logout</a>
           </li>
         </ul>
       );

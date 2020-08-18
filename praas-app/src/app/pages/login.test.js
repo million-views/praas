@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-  screen, waitFor, waitForElementToBeRemoved //, waitForElement
+  screen, waitFor, waitForElementToBeRemoved
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -26,10 +26,14 @@ describe('Login Page', () => {
   };
 
   const renderPage = () => {
-    return renderComponentUnderTest(
+    const result = renderComponentUnderTest(
       <Login data="pony-foo" />,
       { initialEntries: ['/login'] }
     );
+
+    return {
+      container: result.container,
+    };
   };
 
   it('should render login form', async () => {
@@ -43,9 +47,6 @@ describe('Login Page', () => {
     expect(submit).toBeDisabled();
   });
 
-  // FIXME!
-  // At the moment Formik and Browser behaviours are not in sync. We have to
-  // type something and then press submit to see the error message.
   it('should disallow form submit action on validation errors', async () => {
     renderPage();
     const { email, password, submit } = subjectsUnderTest();
@@ -64,9 +65,10 @@ describe('Login Page', () => {
 
     // type invalid email and tab out to trigger error(s)
     userEvent.type(email, 'Hello, World!');
-    // FIXME! rtl is eating space; dig more into normalizer options
-    expect(email.value).toBe('Hello,World!');
     await waitFor(() => {
+      // FIXME! rtl is eating space; dig more into normalizer options
+      expect(email.value).toBe('Hello,World!');
+
       const emailCheck = screen.getByText(/invalid email address/i);
       expect(emailCheck).toBeInTheDocument();
       expect(emailCheck).toHaveClass('error');
@@ -75,8 +77,8 @@ describe('Login Page', () => {
 
     // type short password
     userEvent.type(password, 'pas');
-    expect(password.value).toBe('pas');
     await waitFor(() => {
+      expect(password.value).toBe('pas');
       const passwordCheck = screen.getByText(/password too short/i);
       expect(passwordCheck).toBeInTheDocument();
       expect(passwordCheck).toHaveClass('error');
@@ -100,9 +102,17 @@ describe('Login Page', () => {
   it('should display error message on login failure', async () => {
     renderPage();
     const { email, password, submit } = subjectsUnderTest();
-
+    // eslint-disable-next-line testing-library/no-debug
+    // screen.debug(email);
     userEvent.type(email, 'tester@testing.paradise');
     userEvent.type(password, 'password');
+
+    await waitFor(() => {
+      expect(email.value).toBe('tester@testing.paradise');
+      expect(password.value).toBe('password');
+      expect(submit).toBeEnabled();
+    });
+
     userEvent.click(submit);
 
     await waitFor(() => {
@@ -115,18 +125,31 @@ describe('Login Page', () => {
     renderPage();
     const { email, password, submit } = subjectsUnderTest();
 
-    userEvent.type(email, 'user@example.org');
-    userEvent.type(password, '709$3cR31');
-
+    // look for a known anchor on this page...
     const signup = screen.getByText(/signup/i);
     expect(signup).toBeInTheDocument();
+
+    userEvent.type(email, 'user@example.org');
+    userEvent.type(password, '709$3cR31');
+    await waitFor(() => {
+      expect(email.value).toBe('user@example.org');
+      expect(password.value).toBe('709$3cR31');
+    });
+
+    // signup should be gone from dom, since login navigates to home
     userEvent.click(submit);
 
-    await waitForElementToBeRemoved(signup);
-    // signup is gone from dom! instead of looking for its absence
-    // check for the presence of another element that appears due
-    // to state transition
+    // this fails with RHF but works with Formik
+    // await waitForElementToBeRemoved(signup);
 
+    // this doesn't work either...
+    // await waitForElementToBeRemoved(() => signup);
+
+    // this works... moving on...it is probably a doc bug!
+    await waitForElementToBeRemoved(() => screen.getByText(/signup/i));
+
+    // instead of looking for its absence (because you can't ?)
+    // check for presence of an element that appears due to state transition
     await waitFor(() => {
       const logout = screen.getByText(/logout/i);
       expect(logout).toBeInTheDocument();

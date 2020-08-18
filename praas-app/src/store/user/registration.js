@@ -38,7 +38,8 @@ export default function registration(state = { inflight: false }, { type, payloa
   switch (type) {
   case REGISTER_REQUEST:
     return {
-      inflight: true
+      inflight: true,
+      errors: {}
     };
   case REGISTER_SUCCESS:
     return {

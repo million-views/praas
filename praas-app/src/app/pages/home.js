@@ -33,8 +33,7 @@ function Home(props) {
     const { mode, reason } = state;
     const fetch = (
       user.loggedIn
-    && (mode === 'list' || mode === 'initial')
-    && reason !== 'cancel'
+    && (mode === 'list' || mode === 'initial') && reason !== 'cancel'
     );
 
     if (fetch) {
