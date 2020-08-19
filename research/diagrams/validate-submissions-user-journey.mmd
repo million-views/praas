@@ -1,0 +1,13 @@
+journey
+    title validate submissions user journey
+    section set up conduit
+      sign up: 5: user
+      link NTS: 3: user
+    section link conduit to website
+        get conduit URI: 5: user
+        create form to POST to conduit URI: 4: user
+        submit form: 5: visitors
+    section validate submissions
+        delegate access to NTS: 5: user, delegate
+        validate submisions: 1: delegate
+        validation report: 2: delegate, user
