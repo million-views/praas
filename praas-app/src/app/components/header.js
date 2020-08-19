@@ -6,13 +6,62 @@ import { logoutUser } from 'store/user/login';
 
 const title = 'conduits.xyz';
 
-function Header() {
+/* eslint react/prop-types: 0 */
+const MenuItem = ({ onClick, icon, label }) => {
+  return (
+    <li>
+      <a onClick={onClick} className={icon}>
+        {label}
+      </a>
+    </li>
+  );
+};
+
+const Menu = ({ loggedIn }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-  const forPage = location.pathname;
-  // console.log('location: ', location);
+  const forPage = loggedIn ? 'when-logged-in' : location.pathname;
+  // console.log('location: ', location, ' loggedIn: ', loggedIn, forPage);
 
+  const menu = {
+    'when-logged-in': {
+      icon: 'icon-logout', label: 'Logout', go: () => dispatch(logoutUser())
+    },
+    '/signup': {
+      icon: 'icon-login', label: 'Login', go: () => navigate('/login')
+    },
+    '/login': {
+      icon: 'icon-user-add', label: 'Signup', go: () => navigate('/signup'),
+    },
+  };
+
+  const whereTo = menu[forPage];
+  // console.log('whereTo: ', whereTo);
+
+  if (whereTo) {
+    /* eslint react/jsx-handler-names: 0 */
+    return (
+      <ul className="menu">
+        <MenuItem
+          onClick={whereTo.go}
+          icon={whereTo.icon} label={whereTo.label} />
+      </ul>
+    );
+  } else {
+    // TODO:
+    // - implement a feature to bring up a form to report this as a bug
+    return (
+      <ul>
+        <MenuItem>
+          icon="icon-mail" label={`Ooopsie, ${location.pathname}`}
+        </MenuItem>
+      </ul>
+    );
+  }
+};
+
+function Header() {
   // FIXME!
   // - come back and refactor this code, for now it's a poc
   const { loggedIn, isBusy } = useSelector(state => {
@@ -28,49 +77,6 @@ function Header() {
     return { loggedIn, isBusy };
   });
 
-  // TODO:
-  // - refactor this code to use a little state machine
-  const Menu = () => {
-    if (loggedIn) {
-      return (
-        <ul className="menu">
-          <li>
-            <a onClick={() => dispatch(logoutUser())} className="icon-logout">Logout</a>
-          </li>
-        </ul>
-      );
-    } else {
-      if (forPage === '/signup') {
-        return (
-          <ul className="menu">
-            <li>
-              <a onClick={() => navigate('/login')} className="icon-login">Login</a>
-            </li>
-          </ul>
-        );
-      } else if (forPage === '/login') {
-        return (
-          <ul className="menu">
-            <li>
-              <a onClick={() => navigate('/signup')} className="icon-user-add">Signup</a>
-            </li>
-          </ul>
-        );
-      } else {
-        // TODO:
-        // - implement a feature to bring up a form and report this condition
-        //   as a bug
-        return (
-          <ul className="menu">
-            <li>
-              <a className="icon-mail">Ooopsie, where is `{location.pathname}`</a>
-            </li>
-          </ul>
-        );
-      }
-    }
-  };
-
   // see https://www.digitala11y.com/aria-busy-state/
   const busy = isBusy && <span
     role="progressbar"
@@ -85,7 +91,7 @@ function Header() {
       </a>
       <input id="responsive-menu" type="checkbox" className="show" />
       <label htmlFor="responsive-menu" className="burger icon-menu" />
-      <Menu />
+      <Menu loggedIn={loggedIn} />
     </nav>
   );
 };
