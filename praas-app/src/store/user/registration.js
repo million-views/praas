@@ -10,8 +10,8 @@ export const registerSuccess = (user) => ({
   type: REGISTER_SUCCESS, payload: user
 });
 
-export const registerFailure = (error) => ({
-  type: REGISTER_FAILURE, payload: error
+export const registerFailure = (errors) => ({
+  type: REGISTER_FAILURE, payload: errors
 });
 
 // Async action creators

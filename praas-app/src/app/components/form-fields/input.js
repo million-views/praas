@@ -27,7 +27,7 @@ Usage:
     <form onSubmit={handleSubmit(onSubmit)}>
     ...
       <Input
-        tag="div"
+        wrapUsing="div"
         type="email|password|text|..."
         name="description"
         register={register}

@@ -15,6 +15,7 @@ export const listConduitFailure = (error) => ({
   type: LIST_CONDUIT_FAILURE, payload: error
 });
 
+// Async action creators
 export const listConduits = () => {
   return (dispatch) => {
     dispatch({ type: LIST_CONDUIT_REQUEST });

@@ -1,5 +1,4 @@
 import ConduitList from './list';
-import CreateConduitForm from './create';
-import EditConduitForm from './edit';
+import { CreateConduitForm, EditConduitForm } from './form';
 
 export { ConduitList, CreateConduitForm, EditConduitForm };

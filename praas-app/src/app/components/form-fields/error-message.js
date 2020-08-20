@@ -12,6 +12,7 @@ function _get(object, path, defaultValue) {
   function isObjectEmpty(o) {
     return Object.entries(o).length === 0;
   }
+
   function arr_deref(o, ref, i) {
     return !ref
       ? o && Object
@@ -57,27 +58,19 @@ keyed by the field name with the following shape:
 <ErrorMessage errors={errors} name="status" inline=true />
 ```code
 */
-export function ErrorMessage(
-  { name, errors, message, inline = false }
-) {
+export function ErrorMessage({ name, errors, message, inline = false }) {
   // if message is present then it overrides default received in `errors`
   // return JSX iff name is found in `errors`
+
   let jsx = null;
   if (errors && Object.entries(errors).length) {
-    // console.log('name: ', name, ' errors: ', errors, ' message: ');
-    message = _get(errors, name, message);
-    // console.log('from path:', message);
+    // console.log('!!!!! name: ', name, ' errors: ', errors, ' message: ');
+    const errorRecord = _get(errors, name, message);
 
-    // if (errors[name]) {
-    if (message && message.message) {
+    if (errorRecord && errorRecord.message) {
       jsx = inline
-        ? <span className="error">{message.message}</span>
-        : <div className="error">{message.message}</div>;
-    // } else {
-    //   jsx = inline
-    //     ? <span className="error">{errors[name].message}</span>
-    //     : <div className="error">{errors[name].message}</div>;
-    // }
+        ? <span className="error">{errorRecord.message}</span>
+        : <div className="error">{errorRecord.message}</div>;
     }
   }
 

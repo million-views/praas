@@ -143,8 +143,7 @@ const praas = {
         method: 'GET',
       });
     },
-    delete(data) {
-      const cid = data;
+    delete(cid) {
       return afetch(`/conduits/${cid}`, {
         method: 'DELETE',
       });

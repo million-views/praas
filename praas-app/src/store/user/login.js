@@ -11,8 +11,8 @@ const loginUserSuccess = (user) => ({
   type: LOGIN_SUCCESS, payload: user
 });
 
-const loginUserFailure = (error) => ({
-  type: LOGIN_FAILURE, payload: error
+const loginUserFailure = (errors) => ({
+  type: LOGIN_FAILURE, payload: errors
 });
 
 // odd man out :-(

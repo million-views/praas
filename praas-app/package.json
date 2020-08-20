@@ -41,11 +41,11 @@
   "dependencies": {
     "@babel/runtime": "^7.11.2",
     "@hookform/resolvers": "^0.1.0",
-    "formik": "^2.1.5",
     "history": "^5.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-error-boundary": "^2.3.1",
     "react-hook-form": "^6.4.1",
     "react-redux": "^7.2.1",
     "react-router": "^6.0.0-beta.0",
@@ -54,11 +54,11 @@
     "redux-thunk": "^2.3.0",
     "stylelint-config-recommended": "^3.0.0",
     "tsutils": "^3.17.1",
-    "typescript": "^3.9.7",
+    "typescript": "^4.0.2",
     "yup": "^0.29.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.11.1",
+    "@babel/core": "^7.11.4",
     "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/plugin-transform-react-jsx": "^7.10.4",
@@ -66,7 +66,7 @@
     "@babel/polyfill": "^7.10.4",
     "@babel/preset-env": "^7.11.0",
     "@babel/preset-react": "^7.10.4",
-    "@testing-library/dom": "7.22.2",
+    "@testing-library/dom": "7.22.3",
     "@testing-library/jest-dom": "^5.11.3",
     "@testing-library/react": "^10.4.8",
     "@testing-library/user-event": "^12.1.1",
@@ -98,7 +98,7 @@
     "html-inline-css-webpack-plugin": "^1.8.1",
     "html-webpack-plugin": "^4.3.0",
     "husky": "^4.2.5",
-    "jest": "^26.4.0",
+    "jest": "^26.4.1",
     "lint-staged": "^10.2.11",
     "live-server": "^1.2.1",
     "mini-css-extract-plugin": "^0.10.0",
@@ -118,7 +118,7 @@
     "webpack-bundle-analyzer": "^3.8.0",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0",
-    "webpack-merge": "^5.1.1"
+    "webpack-merge": "^5.1.2"
   },
   "browserslist": {
     "development": [

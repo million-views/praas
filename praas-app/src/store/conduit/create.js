@@ -7,54 +7,52 @@ const ADD_CONDUIT_SUCCESS = 'conduit/ADD_CONDUIT_SUCCESS';
 const ADD_CONDUIT_FAILURE = 'conduit/ADD_CONDUIT_FAILURE';
 
 // Sync action creators
-export const addConduitSuccess = (payload) => ({
-  type: ADD_CONDUIT_SUCCESS, payload,
+export const addConduitSuccess = (conduit) => ({
+  type: ADD_CONDUIT_SUCCESS, payload: conduit
 });
 
-export const addConduitFailure = (error) => ({
-  type: ADD_CONDUIT_FAILURE,
-  payload: error,
+export const addConduitFailure = (errors) => ({
+  type: ADD_CONDUIT_FAILURE, payload: errors,
 });
 
-export const addConduit = (conduit, actions, changeView) => {
-  return (dispatch) => {
-    dispatch({ type: ADD_CONDUIT_REQUEST, payload: conduit });
-    PraasAPI.conduit.add(conduit).then(
-      (payload) => {
-        // console.log('addConduit, success: ', payload.conduit.id);
-        actions.setSubmitting(false);
-        dispatch(addConduitSuccess(payload));
-        changeView('list', 'refresh', payload.conduit.id, 'store/add');
-      },
-      (error) => {
-        // console.log('error: ', error);
-        actions.setSubmitting(false);
-        actions.setStatus({ errors: { ...error.errors } });
-        dispatch(addConduitFailure(error));
-      }
-    );
-  };
+// Async action creators
+export const addConduit = (conduit) => (dispatch) => {
+  dispatch({ type: ADD_CONDUIT_REQUEST, payload: conduit });
+  return PraasAPI.conduit.add(conduit).then(
+    (data) => {
+      // console.log('addConduit, success: ', payload.conduit.id);
+      dispatch(addConduitSuccess(data.conduit));
+      return Promise.resolve(data.conduit);
+    },
+    (error) => {
+      // console.log('error: ', error);
+      dispatch(addConduitFailure(error.errors));
+      return Promise.reject(error.errors);
+    }
+  );
 };
-const initialState = { inflight: false };
+
+const initialState = { inflight: false, errors: {} };
 
 export default function create(state = initialState, { type, payload }) {
   switch (type) {
   case ADD_CONDUIT_REQUEST:
     return {
-      ...state,
       inflight: true,
-      ...payload.conduit,
+      errors: {},
+      ...payload,
     };
   case ADD_CONDUIT_SUCCESS:
     return {
       inflight: false,
-      ...payload.conduit,
+      errors: {},
+      conduit: { ...state.conduit, ...payload },
     };
   case ADD_CONDUIT_FAILURE:
     // console.log('Deal with this:', payload);
     return {
       inflight: false,
-      errors: { ...payload.errors },
+      errors: { ...payload },
     };
   default:
     return state;

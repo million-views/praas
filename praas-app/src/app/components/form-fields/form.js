@@ -45,6 +45,11 @@ export function Form({ methods, children, onSubmit, errors = {}, ...rest }) {
 
   let disabled = true;
 
+  // console.log(
+  //   'formStat(isDirty, isValid, isSubmitting): ',
+  //   formState.isDirty, formState.isValid, formState.isSubmitting
+  // );
+
   if (formState.isDirty && formState.isValid && formState.isSubmitting === false) {
     disabled = false;
   };

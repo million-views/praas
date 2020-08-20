@@ -45,11 +45,9 @@ function Login(props) {
         <h2>Login to your account</h2>
         <Form onSubmit={onSubmit} methods={methods} errors={remoteErrors}>
           <Input
-            wrapUsing="div" type="email"
-            name="user.email" placeholder="Email - jane@test.com" />
+            type="email" name="user.email" placeholder="Email - jane@test.com" />
           <Input
-            wrapUsing="div" type="password"
-            name="user.password" placeholder="Password" />
+            type="password" name="user.password" placeholder="Password" />
           <button type="submit">Submit</button>
         </Form>
       </main>

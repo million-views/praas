@@ -15,6 +15,7 @@ export const deleteConduitFailure = (error) => ({
   type: DELETE_CONDUIT_FAILURE, payload: error
 });
 
+// Async action creators
 export const deleteConduit = (conduitId, changeView) => {
   return (dispatch) => {
     dispatch({ type: DELETE_CONDUIT_REQUEST });
@@ -31,23 +32,25 @@ export const deleteConduit = (conduitId, changeView) => {
     );
   };
 };
-const initialState = { inflight: false };
+const initialState = { inflight: false, errors: {} };
 
 export default function del(state = initialState, { type, payload }) {
   switch (type) {
   case DELETE_CONDUIT_REQUEST:
     return {
-      ...state,
       inflight: true,
+      errors: {},
+      ...payload
     };
   case DELETE_CONDUIT_SUCCESS:
     return {
+      errors: {},
       inflight: false,
     };
   case DELETE_CONDUIT_FAILURE:
     return {
       inflight: false,
-      errors: { ...payload.errors }
+      errors: { ...payload },
     };
   default:
     return state;

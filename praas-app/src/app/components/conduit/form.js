@@ -1,146 +1,169 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers';
 import PropTypes from 'prop-types';
-import { Field, FieldArray, Form, ErrorMessage } from 'formik';
 
-import { Alert } from 'components';
-import { cx } from 'lib/tiny';
+// import { Header } from 'components';
+import {
+  Text, Select, CheckboxGroup, RadioGroup, Form
+} from 'components/form-fields';
+import { conduit as conduitSchema } from 'app/schema';
 
-const categories = [
-  { id: 'GET', name: 'GET' },
-  { id: 'POST', name: 'POST' },
-  { id: 'DELETE', name: 'DELETE' },
-  { id: 'PATCH', name: 'PATCH' },
+import { addConduit, updateConduit, getConduit } from 'store/conduit';
+
+const conduitAccessControl = [
+  { name: 'get', value: 'GET', label: 'List' },
+  { name: 'post', value: 'POST', label: 'Add' },
+  { name: 'put', value: 'PUT', label: 'Update' },
+  { name: 'delete', value: 'DELETE', label: 'Delete' },
 ];
 
-/* eslint react/prop-types: 0 */
-const Racm = (props) => {
-  const { push, remove, form } = props;
+const conduitStatus = [
+  { name: 'active', value: 'active', label: 'Active' },
+  { name: 'inactive', value: 'inactive', label: 'Inactive' },
+];
+
+const conduitSupportedEndpoints = [
+  { value: 'googleSheets', label: 'Google Sheets' },
+  { value: 'airtable', label: 'Airtable' },
+  { value: 'email', label: 'Email' },
+];
+
+const getInitialValues = (conduit) => {
+  if (!conduit) {
+    return {
+      conduit: {
+        suriApiKey: '',
+        suriType: 'airtable',
+        suriObjectKey: '',
+        racm: ['GET'],
+        description: '',
+        status: 'inactive',
+      }
+    };
+  } else {
+    return {
+      conduit: { ...conduit }
+    };
+  }
+};
+
+ConduitForm.propTypes = {
+  heading: PropTypes.string.isRequired,
+  send: PropTypes.func.isRequired,
+  sendActionLabel: PropTypes.string.isRequired,
+  onSuccess: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  conduit: PropTypes.object,
+};
+
+function ErrorFallback({ error, componentStack, resetErrorBoundary }) {
   return (
-    <div>
-      {categories.map((category) => (
-        <label key={category.id}>
-          <input
-            name="racm"
-            type="checkbox"
-            value={category.id}
-            checked={form.values.racm.includes(category.id)}
-            onChange={(e) => {
-              if (e.target.checked) {
-                push(category.id);
-              } else {
-                const idx = form.values.racm.indexOf(category.id);
-                remove(idx);
-              }
-            }} />
-          <span className="checkable">{category.name}</span>
-        </label>
-      ))}
-      {form.touched.racm && form.errors.racm && (
-        <div className="field-error">{form.errors.racm}</div>
-      )}
+    <div role="alert">
+      <p>Something went wrong:</p>
+      <pre style={{ color: 'red' }}> {error.message} </pre>
+      <pre>{componentStack}</pre>
+      <button onClick={resetErrorBoundary}>Try again</button>
     </div>
-  );
-};
-
-const Status = ({ field, form: { values, touched, errors } }) => {
-  return (
-    <span>
-      <label>
-        <input
-          {...field}
-          type="radio"
-          defaultChecked={values.status === 'active'}
-          value="active" />
-        <span className="checkable">Active</span>
-      </label>
-      <label>
-        <input
-          {...field}
-          type="radio"
-          defaultChecked={values.status === 'inactive'}
-          value="inactive" />
-        <span className="checkable">Inactive</span>
-      </label>
-      {touched[field.name] && errors[field.name] && (
-        <div className="field-error">{errors[field.name]}</div>
-      )}
-    </span>
-  );
-};
-
-function ConduitForm(props) {
-  const { buttonLabel, changeView, isSubmitting, status, cid } = props;
-  const classes = cx(['submit', { spinner: isSubmitting }]);
-
-  return (
-    <Form>
-      <h2>{buttonLabel}</h2>
-      {status && <Alert klass="alert-danger" message={status.errors} />}
-      <Field
-        name="suriApiKey"
-        placeholder="Service endpoint API Key"
-        type="text"
-        required />
-      <ErrorMessage name="suriApiKey" component="div" className="error" />
-
-      <Field
-        name="suriType"
-        placeholder="Select Type"
-        component="select"
-        required>
-        <option value="googleSheets">Google Sheets</option>
-        <option value="airtable">Airtable</option>
-        <option value="email">Email</option>
-      </Field>
-      <ErrorMessage name="suriType" component="div" className="error" />
-
-      <Field
-        name="suriObjectKey"
-        placeholder="Service endpoint object path"
-        type="text"
-        required />
-      <ErrorMessage name="suriObjectKey" component="div" className="error" />
-
-      <div style={{ display: 'flex' }}>
-        <div style={{ flexGrow: 3 }} className="card">
-          <h4>Allowed operations: </h4>
-          <FieldArray name="racm" component={Racm} />
-        </div>
-        <span style={{ flexGrow: 1 }}> </span>
-        <div className="card" style={{ flexGrow: 1 }}>
-          <h4>Status:</h4>
-          <Field name="status" component={Status} />
-        </div>
-      </div>
-
-      <Field
-        name="description"
-        placeholder="Description of the endpoint"
-        type="text"
-        required />
-      <ErrorMessage name="description" component="div" className="error" />
-
-      <button
-        type="submit"
-        disabled={isSubmitting === true}
-        className={classes}>
-        {buttonLabel}
-      </button>
-      <button
-        type="button"
-        onClick={() => changeView('list', 'cancel', cid, 'components/form')}
-        className={classes}>
-        Cancel
-      </button>
-    </Form>
   );
 }
 
-ConduitForm.propTypes = {
-  buttonLabel: PropTypes.string.isRequired,
-  changeView: PropTypes.func,
-  isSubmitting: PropTypes.bool.isRequired,
-  status: PropTypes.string.isRequired,
+function ConduitForm(
+  { heading, send, sendActionLabel, onSuccess, onCancel, conduit }
+) {
+  const [remoteErrors, setRemoteErrors] = useState({});
+  const methods = useForm({
+    mode: 'all',
+    resolver: yupResolver(conduitSchema),
+    defaultValues: getInitialValues(conduit)
+  });
+
+  const onSubmit = async (data) => {
+    const conduit = data.conduit;
+    try {
+      const result = await send(conduit);
+      setRemoteErrors({});
+      Promise.resolve(result).then((result) => onSuccess(result));
+      // navigate('/login', { state: result });
+    } catch (errors) {
+      setRemoteErrors(errors);
+    }
+  };
+
+  // TODO:
+  // - a more sophisticated error recovery
+  // - perhaps bring up a modal to submit the stack trace?
+  return (
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback} onReset={() => methods.clearErrors()}>
+      <h2>{heading}</h2>
+      <Form onSubmit={onSubmit} methods={methods} errors={remoteErrors}>
+        <Text
+          name="conduit.suriApiKey"
+          placeholder="Service endpoint API Key" />
+        <Select
+          name="conduit.suriType"
+          title="Select conduit type"
+          options={conduitSupportedEndpoints} />
+        <Text
+          name="conduit.suriObjectKey"
+          placeholder="Service endpoint object path" />
+        <CheckboxGroup
+          wrapUsing="div" className="card" name="conduit.racm"
+          title="Allowed Operations:"
+          options={conduitAccessControl} />
+        <RadioGroup
+          wrapUsing="div" className="card" name="conduit.status"
+          title="Status: "
+          options={conduitStatus} />
+        <Text
+          name="conduit.description"
+          placeholder="Description of the endpoint" />
+        <button type="submit">{sendActionLabel}</button>
+        <button type="button" onClick={onCancel}>Cancel</button>
+      </Form>
+    </ErrorBoundary>
+  );
 };
 
-export default ConduitForm;
+/* eslint react/prop-types: 0 */
+
+export function CreateConduitForm({ changeView }) {
+  const dispatch = useDispatch();
+  const send = (conduit) => dispatch(addConduit({ conduit }));
+  const onSuccess = (result) =>
+    changeView('list', 'refresh', result.id, 'conduit/create/success');
+  const onCancel = () =>
+    changeView('list', 'cancel', undefined, 'conduit/create/cancel');
+
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <ConduitForm
+        heading="Create Conduit"
+        send={send} sendActionLabel="Create Conduit"
+        onSuccess={onSuccess} onCancel={onCancel} />
+    </ErrorBoundary>
+  );
+};
+
+export function EditConduitForm({ changeView, cid }) {
+  const dispatch = useDispatch();
+  const conduit = useSelector(state => getConduit(state, cid));
+  const send = (conduit) =>
+    dispatch(updateConduit({ conduit: { ...conduit, id: cid } }));
+  const onSuccess = (result) =>
+    changeView('list', 'refresh', result.id, 'conduit/edit/success');
+  const onCancel = () =>
+    changeView('list', 'cancel', undefined, 'conduit/edit/cancel');
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <ConduitForm
+        send={send} onSuccess={onSuccess} onCancel={onCancel}
+        conduit={conduit}
+        heading="Update Conduit" sendActionLabel="Save Conduit" />
+    </ErrorBoundary>
+  );
+};

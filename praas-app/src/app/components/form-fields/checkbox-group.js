@@ -29,17 +29,17 @@ export function Checkbox({ name, register, value, label, ...rest }) {
 };
 
 CheckboxGroup.propTypes = {
+  wrapUsing: PropTypes.string,
   name: PropTypes.string.isRequired,
   register: PropTypes.func,
   options: PropTypes.arrayOf(
-    PropTypes.arrayOf(
-      PropTypes.shape(
-        {
-          value: PropTypes.string.isRequired,
-          label: PropTypes.string,
-        }
-      ).isRequired
-    )
+    PropTypes.shape(
+      {
+        name: PropTypes.string.isRequired,
+        value: PropTypes.string.isRequired,
+        label: PropTypes.string,
+      }
+    ).isRequired
   ),
   errors: PropTypes.object,
 };
@@ -81,10 +81,11 @@ Usage:
 */
 
 export function CheckboxGroup(
-  { name, register, options = [], errors = {}, ...rest }
+  { wrapUsing, name, register, options = [], errors = {}, ...rest }
 ) {
+  const WrapTag = wrapUsing || React.Fragment;
   return (
-    <>
+    <WrapTag>
       {options.map((option) => {
         return (
           <Checkbox
@@ -96,6 +97,6 @@ export function CheckboxGroup(
         );
       })}
       <ErrorMessage name={name} errors={errors} />
-    </>
+    </WrapTag>
   );
 };

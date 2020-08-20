@@ -17,6 +17,7 @@ Usage:
     label="List"
   />
 */
+
 export function Radio({ name, register, value, label, ...rest }) {
   return (
     <label>
@@ -29,17 +30,17 @@ export function Radio({ name, register, value, label, ...rest }) {
 };
 
 RadioGroup.propTypes = {
+  wrapUsing: PropTypes.string,
   name: PropTypes.string.isRequired,
   register: PropTypes.func,
   options: PropTypes.arrayOf(
-    PropTypes.arrayOf(
-      PropTypes.shape(
-        {
-          value: PropTypes.string.isRequired,
-          label: PropTypes.string,
-        }
-      ).isRequired
-    )
+    PropTypes.shape(
+      {
+        name: PropTypes.string.isRequired,
+        value: PropTypes.string.isRequired,
+        label: PropTypes.string,
+      }
+    ).isRequired
   ),
   errors: PropTypes.object,
 };
@@ -77,10 +78,11 @@ Usage:
 */
 
 export function RadioGroup(
-  { name, register, options = [], errors = {}, ...rest }
+  { wrapUsing, name, register, options = [], errors = {}, ...rest }
 ) {
+  const WrapTag = wrapUsing || React.Fragment;
   return (
-    <>
+    <WrapTag>
       {options.map((option) => {
         return (
           <Radio
@@ -90,6 +92,6 @@ export function RadioGroup(
         );
       })}
       <ErrorMessage name={name} errors={errors} />
-    </>
+    </WrapTag>
   );
 };
