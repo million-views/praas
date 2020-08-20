@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers';
 
 import { Header, Alert } from 'components';
-import { Input } from 'components/form-fields';
+import { Input, Form } from 'components/form-fields';
 import { login as loginSchema } from 'app/schema';
 import { loginUser } from 'store/user/login';
 
@@ -22,7 +22,7 @@ function Login(props) {
   const [remoteErrors, setRemoteErrors] = useState({});
 
   const {
-    register, handleSubmit, formState, errors
+    formState, ...methods
   } = useForm({
     mode: 'all',
     resolver: yupResolver(loginSchema),
@@ -54,23 +54,19 @@ function Login(props) {
     <>
       <Header />
       <main className="page">
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <Form onSubmit={onSubmit} methods={methods}>
           <h2>Login to your account</h2>
           {
             serverErrors
           }
-          <div>
-            <Input
-              type="email" register={register} errors={errors}
-              name="user.email" placeholder="Email - jane@test.com" />
-          </div>
-          <div>
-            <Input
-              type="password" register={register} errors={errors}
-              name="user.password" placeholder="Password" />
-          </div>
+          <Input
+            wrapUsing="div" type="email"
+            name="user.email" placeholder="Email - jane@test.com" />
+          <Input
+            wrapUsing="div" type="password"
+            name="user.password" placeholder="Password" />
           <button type="submit" disabled={disabled}>Submit</button>
-        </form>
+        </Form>
       </main>
     </>
   );

@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers';
 
 import { Header, Alert } from 'components';
-import { Input } from 'components/form-fields';
+import { Input, Form } from 'components/form-fields';
 import { signup as signupSchema } from 'app/schema';
 import { registerUser } from 'store/user/registration';
 
@@ -22,9 +22,7 @@ function Signup(props) {
   const navigate = useNavigate();
   const [remoteErrors, setRemoteErrors] = useState({});
 
-  const {
-    register, handleSubmit, formState, errors
-  } = useForm({
+  const { formState, ...methods } = useForm({
     mode: 'all',
     resolver: yupResolver(signupSchema),
     defaultValues: initialValues
@@ -55,28 +53,22 @@ function Signup(props) {
     <>
       <Header />
       <main className="page">
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <Form onSubmit={onSubmit} methods={methods}>
           <h2>Create your account</h2>
           {
             serverErrors
           }
-          <div>
-            <Input
-              type="text" register={register} errors={errors}
-              name="user.firstName" placeholder="First name" />
-          </div>
-          <div>
-            <Input
-              type="email" register={register} errors={errors}
-              name="user.email" placeholder="Email - jane@test.com" />
-          </div>
-          <div>
-            <Input
-              type="password" register={register} errors={errors}
-              name="user.password" placeholder="Password" />
-          </div>
+          <Input
+            wrapUsing="div" type="text"
+            name="user.firstName" placeholder="First name" />
+          <Input
+            wrapUsing="div" type="email"
+            name="user.email" placeholder="Email - jane@test.com" />
+          <Input
+            wrapUsing="div" type="password"
+            name="user.password" placeholder="Password" />
           <button type="submit" disabled={disabled}>Submit</button>
-        </form>
+        </Form>
       </main>
     </>
   );
