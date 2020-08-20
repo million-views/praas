@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers';
 
-import { Header, Alert } from 'components';
+import { Header } from 'components';
 import { Input, Form } from 'components/form-fields';
 import { signup as signupSchema } from 'app/schema';
 import { registerUser } from 'store/user/registration';
@@ -39,21 +39,12 @@ function Signup(props) {
     }
   };
 
-  let serverErrors = null;
-  if (remoteErrors && Object.keys(remoteErrors).length) {
-    serverErrors = <Alert klass="alert-danger" message={remoteErrors} />;
-  }
-
   return (
     <>
       <Header />
       <main className="page">
         <h2>Create your account</h2>
-
-        <Form onSubmit={onSubmit} methods={methods}>
-          {
-            serverErrors
-          }
+        <Form onSubmit={onSubmit} methods={methods} errors={remoteErrors}>
           <Input
             wrapUsing="div" type="text"
             name="user.firstName" placeholder="First name" />

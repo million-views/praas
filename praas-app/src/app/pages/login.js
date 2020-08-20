@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers';
 
-import { Header, Alert } from 'components';
+import { Header } from 'components';
 import { Input, Form } from 'components/form-fields';
 import { login as loginSchema } from 'app/schema';
 import { loginUser } from 'store/user/login';
@@ -38,20 +38,12 @@ function Login(props) {
     }
   };
 
-  let serverErrors = null;
-  if (remoteErrors && Object.keys(remoteErrors).length) {
-    serverErrors = <Alert klass="alert-danger" message={remoteErrors} />;
-  }
-
   return (
     <>
       <Header />
       <main className="page">
         <h2>Login to your account</h2>
-        <Form onSubmit={onSubmit} methods={methods}>
-          {
-            serverErrors
-          }
+        <Form onSubmit={onSubmit} methods={methods} errors={remoteErrors}>
           <Input
             wrapUsing="div" type="email"
             name="user.email" placeholder="Email - jane@test.com" />

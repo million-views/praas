@@ -1,9 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { Alert } from 'components';
+
 Form.propTypes = {
   methods: PropTypes.object,
   onSubmit: PropTypes.func,
+  errors: PropTypes.object
 };
 
 /*
@@ -37,7 +40,7 @@ NOTE:
   and avoid the above limitation to at least get a level 2 nested
   `input` field
 */
-export function Form({ methods, children, onSubmit, ...rest }) {
+export function Form({ methods, children, onSubmit, errors = {}, ...rest }) {
   const { handleSubmit, formState } = methods;
 
   let disabled = true;
@@ -46,36 +49,46 @@ export function Form({ methods, children, onSubmit, ...rest }) {
     disabled = false;
   };
 
+  let afterSubmitErrors = null;
+  if (errors && Object.keys(errors).length) {
+    afterSubmitErrors = <Alert klass="alert-danger" message={errors} />;
+  }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {React.Children.map(children, child => {
-        let formifiedChild = child;
-        // console.log('formifiedChild', child);
-        if (child && child.props && child.props.name) {
-          formifiedChild = React.createElement(child.type, {
-            ...{
-              ...child.props,
-              register: methods.register,
-              errors: methods.errors,
-              key: child.props.name
-            }
-          });
-        }
+      {
+        afterSubmitErrors
+      }
+      {
+        React.Children.map(children, child => {
+          let formifiedChild = child;
+          // console.log('formifiedChild', child);
+          if (child && child.props && child.props.name) {
+            formifiedChild = React.createElement(child.type, {
+              ...{
+                ...child.props,
+                register: methods.register,
+                errors: methods.errors,
+                key: child.props.name
+              }
+            });
+          }
 
-        // add enable/disable state logic
-        if (child && child.props && child.props.type === 'submit') {
-          console.log('found submit, adding state...');
-          formifiedChild = React.createElement(child.type, {
-            ...{
-              ...child.props,
-              key: child.props.name,
-              disabled
-            }
-          });
-        }
+          // add enable/disable state logic
+          if (child && child.props && child.props.type === 'submit') {
+            // console.log('found submit, adding state...');
+            formifiedChild = React.createElement(child.type, {
+              ...{
+                ...child.props,
+                key: child.props.name,
+                disabled
+              }
+            });
+          }
 
-        return formifiedChild;
-       })}
+          return formifiedChild;
+        })
+      }
     </form>
   );
 };
