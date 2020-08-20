@@ -53,14 +53,14 @@ Usage:
 ```
 */
 export function Select({
-  name, register, title, options = [], multiple = false, errors = {}
+  name, register, title, options = [], multiple = false, errors = {}, ...rest
 }) {
   return (
     <>
       <select
         name={name} placeholder={title}
         multiple={multiple}
-        ref={register}>
+        ref={register} {...rest}>
         {options.map(option => (
           <option key={option.value} value={option.value}>
             {option.label}

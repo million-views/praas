@@ -17,12 +17,12 @@ Usage:
     label="List"
   />
 */
-export function Radio({ name, register, value, label }) {
+export function Radio({ name, register, value, label, ...rest }) {
   return (
     <label>
       <input
         type="radio" name={name} defaultValue={value}
-        ref={register} />
+        ref={register} {...rest} />
       {Boolean(label) && <span className="checkable">{label}</span>}
     </label>
   );
@@ -77,7 +77,7 @@ Usage:
 */
 
 export function RadioGroup(
-  { name, register, options = [], errors = {} }
+  { name, register, options = [], errors = {}, ...rest }
 ) {
   return (
     <>
@@ -86,7 +86,7 @@ export function RadioGroup(
           <Radio
             key={option.value}
             name={name} register={register}
-            value={option.value} label={option.label} />
+            value={option.value} label={option.label} {...rest} />
         );
       })}
       <ErrorMessage name={name} errors={errors} />

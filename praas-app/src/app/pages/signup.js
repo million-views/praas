@@ -22,16 +22,11 @@ function Signup(props) {
   const navigate = useNavigate();
   const [remoteErrors, setRemoteErrors] = useState({});
 
-  const { formState, ...methods } = useForm({
+  const methods = useForm({
     mode: 'all',
     resolver: yupResolver(signupSchema),
     defaultValues: initialValues
   });
-
-  let disabled = true;
-  if (formState.isDirty && formState.isValid && formState.isSubmitting === false) {
-    disabled = false;
-  };
 
   const onSubmit = async (data) => {
     const user = data.user;
@@ -53,8 +48,9 @@ function Signup(props) {
     <>
       <Header />
       <main className="page">
+        <h2>Create your account</h2>
+
         <Form onSubmit={onSubmit} methods={methods}>
-          <h2>Create your account</h2>
           {
             serverErrors
           }
@@ -67,7 +63,7 @@ function Signup(props) {
           <Input
             wrapUsing="div" type="password"
             name="user.password" placeholder="Password" />
-          <button type="submit" disabled={disabled}>Submit</button>
+          <button type="submit">Submit</button>
         </Form>
       </main>
     </>

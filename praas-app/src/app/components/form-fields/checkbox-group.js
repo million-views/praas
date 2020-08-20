@@ -17,12 +17,12 @@ Usage:
     value="get"
   />
 */
-export function Checkbox({ name, register, value, label }) {
+export function Checkbox({ name, register, value, label, ...rest }) {
   return (
     <label>
       <input
         type="checkbox" name={name} defaultValue={value}
-        ref={register} />
+        ref={register} {...rest} />
       {Boolean(label) && <span className="checkable">{label}</span>}
     </label>
   );
@@ -81,7 +81,7 @@ Usage:
 */
 
 export function CheckboxGroup(
-  { name, register, options = [], errors = {} }
+  { name, register, options = [], errors = {}, ...rest }
 ) {
   return (
     <>
@@ -92,7 +92,7 @@ export function CheckboxGroup(
             name={name}
             register={register}
             label={option.label}
-            value={option.value} />
+            value={option.value} {...rest} />
         );
       })}
       <ErrorMessage name={name} errors={errors} />

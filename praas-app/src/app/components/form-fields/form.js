@@ -37,10 +37,14 @@ NOTE:
   and avoid the above limitation to at least get a level 2 nested
   `input` field
 */
-export function Form(
-  { methods, children, onSubmit, ...rest }
-) {
-  const { handleSubmit } = methods;
+export function Form({ methods, children, onSubmit, ...rest }) {
+  const { handleSubmit, formState } = methods;
+
+  let disabled = true;
+
+  if (formState.isDirty && formState.isValid && formState.isSubmitting === false) {
+    disabled = false;
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -57,6 +61,19 @@ export function Form(
             }
           });
         }
+
+        // add enable/disable state logic
+        if (child && child.props && child.props.type === 'submit') {
+          console.log('found submit, adding state...');
+          formifiedChild = React.createElement(child.type, {
+            ...{
+              ...child.props,
+              key: child.props.name,
+              disabled
+            }
+          });
+        }
+
         return formifiedChild;
        })}
     </form>
