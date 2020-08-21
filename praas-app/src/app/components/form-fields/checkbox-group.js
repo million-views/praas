@@ -29,8 +29,8 @@ export function Checkbox({ name, register, value, label, ...rest }) {
 };
 
 CheckboxGroup.propTypes = {
-  wrapUsing: PropTypes.string,
   name: PropTypes.string.isRequired,
+  title: PropTypes.string,
   register: PropTypes.func,
   options: PropTypes.arrayOf(
     PropTypes.shape(
@@ -65,38 +65,33 @@ Usage:
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
     ...
-      <div>
-        <span>Conduit allowed operations</span>
-        <div>
-          <span>
-            <CheckboxGroup
-              name="racm" register={register}
-              options={accessControl} errors={errors} />
-          </span>
-        </div>
-      </div>
+      <CheckboxGroup
+        name="racm" title="Allowed Operations:"
+        options={accessControl} errors={errors} />
     ...
   );
 ```
 */
 
 export function CheckboxGroup(
-  { wrapUsing, name, register, options = [], errors = {}, ...rest }
+  { name, title, register, options = [], errors = {}, ...rest }
 ) {
-  const WrapTag = wrapUsing || React.Fragment;
   return (
-    <WrapTag>
-      {options.map((option) => {
-        return (
-          <Checkbox
-            key={option.value}
-            name={name}
-            register={register}
-            label={option.label}
-            value={option.value} {...rest} />
-        );
-      })}
-      <ErrorMessage name={name} errors={errors} />
-    </WrapTag>
+    <div>
+      {title ? <h5>{title}</h5> : null}
+      <span>
+        {options.map((option) => {
+          return (
+            <Checkbox
+              key={option.value}
+              name={name}
+              register={register}
+              label={option.label}
+              value={option.value} {...rest} />
+          );
+        })}
+      </span>
+      <ErrorMessage name={name} errors={errors} inline />
+    </div>
   );
 };

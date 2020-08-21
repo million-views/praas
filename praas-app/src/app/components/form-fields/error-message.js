@@ -55,10 +55,10 @@ keyed by the field name with the following shape:
 ```code
 <input
   name="status" ref={register({ required: "Conduit state is required" })} />
-<ErrorMessage errors={errors} name="status" inline=true />
+<ErrorMessage errors={errors} name="status"  />
 ```code
 */
-export function ErrorMessage({ name, errors, message, inline = false }) {
+export function ErrorMessage({ name, errors, message }) {
   // if message is present then it overrides default received in `errors`
   // return JSX iff name is found in `errors`
 
@@ -68,9 +68,7 @@ export function ErrorMessage({ name, errors, message, inline = false }) {
     const errorRecord = _get(errors, name, message);
 
     if (errorRecord && errorRecord.message) {
-      jsx = inline
-        ? <span className="error">{errorRecord.message}</span>
-        : <div className="error">{errorRecord.message}</div>;
+      jsx = <h6 className="error">{errorRecord.message}</h6>;
     }
   }
 

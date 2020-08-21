@@ -30,8 +30,8 @@ export function Radio({ name, register, value, label, ...rest }) {
 };
 
 RadioGroup.propTypes = {
-  wrapUsing: PropTypes.string,
   name: PropTypes.string.isRequired,
+  title: PropTypes.string,
   register: PropTypes.func,
   options: PropTypes.arrayOf(
     PropTypes.shape(
@@ -64,34 +64,31 @@ Usage:
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
     ...
-      <div>
-        <span>Conduit status</span>
-        <div>
-          <RadioGroup
-            name="status" register={register}
-            options={status} errors={errors} />
-        </div>
-      </div>
+      <RadioGroup
+        name="status" title="Conduit status:"
+        options={status} errors={errors} />
     ...
   );
 ```
 */
 
 export function RadioGroup(
-  { wrapUsing, name, register, options = [], errors = {}, ...rest }
+  { name, title, register, options = [], errors = {}, ...rest }
 ) {
-  const WrapTag = wrapUsing || React.Fragment;
   return (
-    <WrapTag>
-      {options.map((option) => {
-        return (
-          <Radio
-            key={option.value}
-            name={name} register={register}
-            value={option.value} label={option.label} {...rest} />
-        );
-      })}
+    <div>
+      {title ? <h5>{title}</h5> : null}
+      <span>
+        {options.map((option) => {
+          return (
+            <Radio
+              key={option.value}
+              name={name} register={register}
+              value={option.value} label={option.label} {...rest} />
+          );
+        })}
+      </span>
       <ErrorMessage name={name} errors={errors} />
-    </WrapTag>
+    </div>
   );
 };

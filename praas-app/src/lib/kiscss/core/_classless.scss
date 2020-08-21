@@ -72,6 +72,23 @@ h6,
 p {
   margin: 0 0 ($separation / 2) ($separation / 2);
   padding: ($separation / 2) 0 0 0;
+  // colors
+  &.success {
+    background: $success;
+  }
+
+  &.warning {
+    background: $warning;
+  }
+
+  &.error {
+    background: $error;
+  }
+
+  &.pseudo {
+    background-color: transparent;
+    color: inherit;
+  }
 }
 
 // Grouping content
@@ -218,6 +235,16 @@ figure {
 // 1. Change the font styles in all browsers.
 // 2. Fix margins to suite our style.
 // 3. See https://github.com/necolas/normalize.css/issues/778
+
+form {
+  border: $border;
+  border-radius: $radius;
+  box-shadow: $shadow;
+  display: block;
+  max-width: 100%;
+  min-width: 50%;
+  padding: 1.5rem;
+}
 
 button,
 input,

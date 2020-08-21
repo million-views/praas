@@ -26,7 +26,7 @@ if (formState.isDirty && formState.isValid && formState.isSubmitting === false) 
   ...
   <div>
     <Input
-      wrapUsing="div" type="password"
+      type="password"
       name="user.password" placeholder="Password" />
   </div>
   <button type="submit" disabled={disabled}>Submit</button>
@@ -34,11 +34,8 @@ if (formState.isDirty && formState.isValid && formState.isSubmitting === false) 
 
 NOTE:
 - works only on those input elements that have a name attribute
-- handles only evel 1 children; won't work if `input` fields
-  are nested
-- use the `wrapUsing` prop on any of `Input` based form elements to wrap
-  and avoid the above limitation to at least get a level 2 nested
-  `input` field
+- handles only level 1 children; won't work if `input` fields
+  are nested in other elements inside the form.
 */
 export function Form({ methods, children, onSubmit, errors = {}, ...rest }) {
   const { handleSubmit, formState } = methods;

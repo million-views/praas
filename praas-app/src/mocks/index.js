@@ -1,7 +1,11 @@
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { render } from '@testing-library/react';
+import {
+  render, screen, getNodeText,
+  waitFor, waitForElementToBeRemoved
+} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import configureStore from 'store';
 
@@ -28,4 +32,8 @@ function renderComponentUnderTest(component, options = {}) {
   };
 };
 
-export { renderComponentUnderTest };
+export {
+  screen, getNodeText, waitFor, waitForElementToBeRemoved,
+  userEvent,
+  renderComponentUnderTest
+};

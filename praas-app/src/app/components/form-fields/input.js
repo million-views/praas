@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { ErrorMessage } from './error-message';
 
 Input.propTypes = {
-  wrapUsing: PropTypes.string,
   type: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
+  title: PropTypes.string,
   register: PropTypes.func,
   placeholder: PropTypes.string,
   label: PropTypes.string,
@@ -27,9 +27,9 @@ Usage:
     <form onSubmit={handleSubmit(onSubmit)}>
     ...
       <Input
-        wrapUsing="div"
         type="email|password|text|..."
         name="description"
+        title="hmmm"
         register={register}
         placeholder="A short note to remember"
         label="Description"
@@ -39,11 +39,11 @@ Usage:
 ```
 */
 export function Input(
-  { wrapUsing, type, name, register, placeholder, label, errors = {}, ...rest }
+  { type, name, title, register, placeholder, label, errors = {}, ...rest }
 ) {
-  const WrapTag = wrapUsing || React.Fragment;
   return (
-    <WrapTag>
+    <div>
+      {title ? <h5>{title}</h5> : null}
       <label>
         {Boolean(label) && <span>{label}</span>}
         <input
@@ -51,6 +51,6 @@ export function Input(
           ref={register} {...rest} />
       </label>
       <ErrorMessage name={name} errors={errors} />
-    </WrapTag>
+    </div>
   );
 };

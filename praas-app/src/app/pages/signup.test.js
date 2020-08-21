@@ -1,11 +1,10 @@
 import React from 'react';
 
 import {
-  screen, waitFor, waitForElementToBeRemoved
-} from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-
-import { renderComponentUnderTest } from 'mocks';
+  screen, waitFor, waitForElementToBeRemoved,
+  userEvent,
+  renderComponentUnderTest
+} from 'mocks';
 import Signup from './signup';
 
 describe('Signup Page', () => {

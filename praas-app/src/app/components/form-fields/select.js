@@ -4,8 +4,9 @@ import { ErrorMessage } from './error-message';
 
 Select.propTypes = {
   name: PropTypes.string.isRequired,
+  title: PropTypes.string,
   register: PropTypes.func,
-  title: PropTypes.string.isRequired,
+  placeholder: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(
     PropTypes.shape(
       {
@@ -53,12 +54,15 @@ Usage:
 ```
 */
 export function Select({
-  name, register, title, options = [], multiple = false, errors = {}, ...rest
+  name, title, register, placeholder,
+  options = [], multiple = false, errors = {},
+  ...rest
 }) {
   return (
-    <>
+    <div>
+      {title ? <h5>{title}</h5> : null}
       <select
-        name={name} placeholder={title}
+        name={name} placeholder={placeholder}
         multiple={multiple}
         ref={register} {...rest}>
         {options.map(option => (
@@ -68,6 +72,6 @@ export function Select({
         ))}
       </select>
       <ErrorMessage name={name} errors={errors} />
-    </>
+    </div>
   );
 };

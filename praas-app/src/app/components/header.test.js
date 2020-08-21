@@ -1,12 +1,6 @@
 import React from 'react';
 
-import {
-  screen, // , // waitFor, waitForElementToBeRemoved
-  getNodeText
-} from '@testing-library/react';
-// import userEvent from '@testing-library/user-event';
-
-import { renderComponentUnderTest } from 'mocks';
+import { screen, getNodeText, renderComponentUnderTest } from 'mocks';
 import Header from './header';
 
 describe('Header Component', () => {

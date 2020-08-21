@@ -1,14 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Input } from './input';
 
-Text.propTypes = {
-  name: PropTypes.string.isRequired,
-  register: PropTypes.func,
-  placeholder: PropTypes.string,
-  label: PropTypes.string,
-  errors: PropTypes.object,
-};
 /***
 Usage:
 ```code
@@ -26,6 +18,7 @@ Usage:
     ...
       <Text
         name="description"
+        title="Note to self"
         register={register}
         placeholder="A short note to remember"
         label="Description"

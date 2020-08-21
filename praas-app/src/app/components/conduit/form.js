@@ -105,20 +105,19 @@ function ConduitForm(
           name="conduit.suriApiKey"
           placeholder="Service endpoint API Key" />
         <Select
-          name="conduit.suriType"
-          title="Select conduit type"
+          name="conduit.suriType" placeholder="Select conduit type"
           options={conduitSupportedEndpoints} />
         <Text
           name="conduit.suriObjectKey"
           placeholder="Service endpoint object path" />
         <CheckboxGroup
-          wrapUsing="div" className="card" name="conduit.racm"
-          title="Allowed Operations:"
+          name="conduit.racm" title="Allowed Operations:"
           options={conduitAccessControl} />
+        <br />
         <RadioGroup
-          wrapUsing="div" className="card" name="conduit.status"
-          title="Status: "
+          name="conduit.status" title="Status: "
           options={conduitStatus} />
+        <br />
         <Text
           name="conduit.description"
           placeholder="Description of the endpoint" />
