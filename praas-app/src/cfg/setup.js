@@ -55,8 +55,18 @@ const assets = (wpc) => {
         noErrorOnMissing: ifDev,
         globOptions,
       },
-      { context: wpc.web, from: 'assets/images/*.*', noErrorOnMissing: ifDev },
-      //    { context: wpc.lib, from: 'fonts/*.*', to: 'assets', ignore: ['*.scss'] },
+      {
+        context: wpc.web,
+        from: 'assets/images/*.*',
+        globOptions,
+        noErrorOnMissing: ifDev
+      },
+      {
+        context: wpc.web,
+        from: 'assets/fonts/*.*',
+        globOptions,
+        noErrorOnMissing: ifDev
+      },
     ],
   };
 };

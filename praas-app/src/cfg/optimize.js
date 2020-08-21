@@ -1,8 +1,7 @@
-const UglifyJs = require('uglifyjs-webpack-plugin');
 const TerserJs = require('terser-webpack-plugin');
 const OptimizeCSSAssets = require('optimize-css-assets-webpack-plugin');
 
-const uglifyOptions = {
+const terserOptions = {
   warnings: false,
   output: {
     comments: false
@@ -18,19 +17,20 @@ const uglifyOptions = {
     evaluate: true,
   },
   screw_ie8: true,
+  ie8: false,
   ecma: 6,
-  mangle: true
+  mangle: true,
+  module: true,
+  toplevel: true,
+  drop_console: true,
+  passes: 2,
 };
 
 module.exports = (wpc) => {
   const plugins = [];
-
   if (wpc.isProd) {
     plugins.push(
-      new UglifyJs({ test: /\.js(\?.*)?$/i, uglifyOptions })
-    );
-    plugins.push(
-      new TerserJs({})
+      new TerserJs({ terserOptions })
     );
     plugins.push(
       new OptimizeCSSAssets({})
@@ -39,6 +39,7 @@ module.exports = (wpc) => {
 
   return {
     optimization: {
+      minimize: true,
       minimizer: plugins
     }
   };
