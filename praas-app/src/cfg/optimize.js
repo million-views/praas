@@ -18,7 +18,7 @@ const terserOptions = {
   },
   screw_ie8: true,
   ie8: false,
-  ecma: 6,
+  ecma: 8,
   mangle: true,
   module: true,
   toplevel: true,
@@ -39,7 +39,8 @@ module.exports = (wpc) => {
 
   return {
     optimization: {
-      minimize: true,
+      minimize: (wpc.isProd === true),
+      concatenateModules: (wpc.isProd === true),
       minimizer: plugins
     }
   };
