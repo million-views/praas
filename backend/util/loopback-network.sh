@@ -24,10 +24,11 @@ if [ $# -ne 1 ]; then
 elif [ $1 != 'add' ] && [ $1 != 'del' ]; then
 	echo 'unrecognized argument'
 	exit 1
-elif [[ "${action}" == "del" ]] && [[ "${OSTYPE}" =~ "darwin" ]]; then
-	action='delete'
 else
 	action=$1
+  if [[ "$OSTYPE" == "darwin"* ]] && [ "$action" == 'del' ]; then
+		action='delete'
+	fi
 fi
 
 
@@ -35,14 +36,11 @@ function set_command {
 	if command -v ip > /dev/null; then
 		command=ip
 		command_path=$( command -v ip )
-	elif command -v 'ifconfig' > /dev/null; then
-		command=ifconfig
-		command_path=$( command -v ifconfig )
-	elif [[ "${OSTYPE}" =~ "darwin" ]]; then
+	elif command -v '/sbin/ifconfig' > /dev/null; then
 	  # on mac there is a dumbed down version of iconfig that does jack
 		# which makes the script fail
 		command=ifconfig
-		command_path='/sbin/ifconfig'
+		command_path=$( command -v /sbin/ifconfig )
 	else
 		echo 'no command found to parse network interfaces'
 	fi
