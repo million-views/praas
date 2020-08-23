@@ -91,17 +91,17 @@ app.all('/*', upload.none(), (req, res, next) => {
       // We`ll be using this multiple times, so store in a short variable
       const hff = conduit.hiddenFormField[i];
       let reqHff = undefined;
-      if (req.body.records && req.body.records[0].fields[hff.fieldName]) {
+      if (req.body?.records?.[0].fields[hff.fieldName]) {
         reqHff = req.body.records[0].fields[hff.fieldName];
       };
 
       // This feature is to catch spam bots, so don't
       // send error if failure, send 200-OK instead
-      if (hff && hff.policy === 'drop-if-filled' && reqHff) {
+      if (hff?.policy === 'drop-if-filled' && reqHff) {
         return res.sendStatus(200);
       }
 
-      if (hff && hff.policy === 'pass-if-match' && !(reqHff === hff.value)) {
+      if (hff?.policy === 'pass-if-match' && !(reqHff === hff.value)) {
         return res.sendStatus(200);
       }
 

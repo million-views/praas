@@ -138,7 +138,7 @@ router.get('/', auth.required, async (req, res, next) => {
         order
       });
     } else {
-      if (proxyUser && proxyUser.id === req.payload.id) {
+      if (proxyUser?.id === req.payload.id) {
         // fetch conduits in active status; check status enums in model.js
         conduits = await Conduit.findAll({ where: { status: 'active' } });
       } else {
