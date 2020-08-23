@@ -8,16 +8,15 @@ const API_URL = 'http://localhost:4000';
 
 // throws type error if parameters is not iterable and that is by design...
 // don't call this function when there are no query parameters.
-const queryize = parameters => {
-  return Object
-    .entries(parameters)
-    .reduce((acc, entry, index) => {
-      const [param, value] = entry;
-      const encoded = (index === 0)
+const queryize = (parameters) => {
+  return Object.entries(parameters).reduce((acc, entry, index) => {
+    const [param, value] = entry;
+    const encoded =
+      index === 0
         ? `${param}=${encodeURIComponent(value)}&`
         : `${param}=${encodeURIComponent(value)}`;
-      return `${acc}${encoded}`;
-    }, '');
+    return `${acc}${encoded}`;
+  }, '');
 };
 
 // applies base service endpoint and optionally creates url query
@@ -64,12 +63,10 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
     'Content-Type': 'application/json',
   };
 
-  return fetch(
-    urlize(url, parameters), {
-      ...rest,
-      headers,
-    }
-  ).then(
+  return fetch(urlize(url, parameters), {
+    ...rest,
+    headers,
+  }).then(
     async (response) => {
       // this handles server response (including non 2xx)
       // we can dispatch both success and non-success action creators
@@ -90,9 +87,9 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
         return Promise.reject({
           statusText: response.statusText,
           status: response.status,
-          ...errors
+          ...errors,
         });
-      };
+      }
     },
     (error) => {
       console.log('Got into an error situation');
@@ -101,7 +98,10 @@ const afetch = async (url, { headers, parameters, ...rest }) => {
       return Promise.reject({
         statusText: "I'm a teapot",
         status: 418, // Unable to contact server, can't make coffee,
-        errors: { offline: 'Check to see Conduits resource server is up and running', network: error.message }
+        errors: {
+          offline: 'Check to see Conduits resource server is up and running',
+          network: error.message,
+        },
       });
     }
   );
@@ -119,25 +119,25 @@ const praas = {
     login(data) {
       return afetch('/users/login', {
         method: 'POST',
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
     },
     logout() {
       return Promise.resolve('success').then((_success) => invalidateSession());
-    }
+    },
   },
   conduit: {
     add(data) {
       return afetch('/conduits', {
         method: 'POST',
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
     },
     update(data) {
       const cid = data.conduit.id;
       return afetch(`/conduits/${cid}`, {
         method: 'PATCH',
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
     },
     get(id) {

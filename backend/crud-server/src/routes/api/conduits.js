@@ -19,7 +19,7 @@ const conduitOptFields = [
 ];
 
 // cache frequently used objects
-const serviceTargets = conf.targets.settings.map(i => i.type);
+const serviceTargets = conf.targets.settings.map((i) => i.type);
 
 // add conduit
 router.post('/', auth.required, async function (req, res, next) {
@@ -99,14 +99,20 @@ router.get('/:id', auth.required, async (req, res, next) => {
 // - revisit to make sure we catch all nuances of proper pagination
 // - should we add a limit when there is no start or count?
 const sortable = [
-  'createdAt', 'updatedAt', 'description', 'status', 'id', 'curi',
+  'createdAt',
+  'updatedAt',
+  'description',
+  'status',
+  'id',
+  'curi',
 ];
 
 router.get('/', auth.required, async (req, res, next) => {
   const query = req.query;
   try {
     let conduits = undefined;
-    const start = Number(query.start), count = Number(query.count);
+    const start = Number(query.start),
+      count = Number(query.count);
     const proxyUser = req.app.locals.proxyUser;
 
     // sorting
@@ -118,11 +124,13 @@ router.get('/', auth.required, async (req, res, next) => {
       }
 
       if (Array.isArray(query.sort)) {
-        order = query.sort.map(f => {
-          f = f.trim().split(':');
-          if (f[0].includes(sortable) && f[1].match(/asc|desc/i)) return f;
-          return [];
-        }).filter(f => f.length);
+        order = query.sort
+          .map((f) => {
+            f = f.trim().split(':');
+            if (f[0].includes(sortable) && f[1].match(/asc|desc/i)) return f;
+            return [];
+          })
+          .filter((f) => f.length);
       }
     }
 
@@ -135,7 +143,7 @@ router.get('/', auth.required, async (req, res, next) => {
           },
           userId: req.payload.id,
         },
-        order
+        order,
       });
     } else {
       if (proxyUser?.id === req.payload.id) {
@@ -144,7 +152,7 @@ router.get('/', auth.required, async (req, res, next) => {
       } else {
         conduits = await Conduit.findAll({
           where: { userId: req.payload.id },
-          order
+          order,
         });
       }
     }
@@ -168,9 +176,7 @@ router.put('/:id', auth.required, async (req, res, next) => {
     }
 
     if (req.body.conduit.curi) {
-      return next(
-        new RestApiError(403, { conduit: 'is immutable' })
-      );
+      return next(new RestApiError(403, { conduit: 'is immutable' }));
     }
 
     const errors = {};
@@ -221,9 +227,7 @@ router.patch('/:id', auth.required, async (req, res, next) => {
     }
 
     if (req.body.conduit.curi) {
-      return next(
-        new RestApiError(403, { conduit: 'is immutable' })
-      );
+      return next(new RestApiError(403, { conduit: 'is immutable' }));
     }
 
     // FIXME!
@@ -231,7 +235,10 @@ router.patch('/:id', auth.required, async (req, res, next) => {
     // different, we should not allow service type for an existing
     // conduit to be changed. Tests, UI and this logic needs to
     // fixed
-    if (req.body.conduit.suriType && serviceTargets.includes(req.body.conduit.suriType) === false) {
+    if (
+      req.body.conduit.suriType &&
+      serviceTargets.includes(req.body.conduit.suriType) === false
+    ) {
       return next(
         new RestApiError(422, {
           suriType: `'${req.body.conduit.suriType}' unsupported`,

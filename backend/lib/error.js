@@ -59,7 +59,7 @@ function RestApiError(statusCode, errors = {}) {
   this.errors = sanitize(errors);
   this.message = REST_API_ERRORS[statusCode];
   this.status = statusCode;
-};
+}
 
 function RestApiErrorHandler(err, req, res, next) {
   // request path is the flow origin that led to the error
@@ -78,10 +78,15 @@ function RestApiErrorHandler(err, req, res, next) {
       // for the sake of consistency we transform UnauthorizedError into
       // RestApiError.
       const { message, status, path } = err;
-      err = Object.setPrototypeOf({
-        message, status, path,
-        errors: { authorization: 'token not found or malformed' }
-      }, Object.getPrototypeOf(new RestApiError(status)));
+      err = Object.setPrototypeOf(
+        {
+          message,
+          status,
+          path,
+          errors: { authorization: 'token not found or malformed' },
+        },
+        Object.getPrototypeOf(new RestApiError(status))
+      );
     } else {
       const cname = err.constructor.name;
       console.error(

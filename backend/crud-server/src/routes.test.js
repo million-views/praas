@@ -15,7 +15,7 @@ const jake = {
     lastName: 'Jacob',
     email: 'jake1000@jake.jake',
     password: 'jakejake',
-  }
+  },
 };
 
 const apiServer = server.app.listen(server.port);
@@ -23,8 +23,7 @@ const Api = () => chai.request(apiServer);
 
 // NOTE:
 // reword/rephrase resource-error messages to fit this pattern
-const ERROR_PATTERN
-  = /^invalid.*$|^missing.*$|not found|unsupported|cannot be blank|cannot be null/;
+const ERROR_PATTERN = /^invalid.*$|^missing.*$|not found|unsupported|cannot be blank|cannot be null/;
 
 describe('Praas REST API', () => {
   before(async () => {
@@ -56,12 +55,10 @@ describe('Praas REST API', () => {
         // ... in order to test here!
         if (workingCorsResponse) {
           expect(workingCorsResponse).to.have.status(204);
-          expect(workingCorsResponse)
-            .to.have
-            .header(
-              'access-control-allow-methods',
-              'GET,HEAD,PUT,PATCH,POST,DELETE'
-            );
+          expect(workingCorsResponse).to.have.header(
+            'access-control-allow-methods',
+            'GET,HEAD,PUT,PATCH,POST,DELETE'
+          );
         }
       }
     });
@@ -73,7 +70,7 @@ describe('Praas REST API', () => {
       const res = await Api()
         .post('/users')
         .send({
-          user: { firstName, lastName, email: email.toLowerCase(), password }
+          user: { firstName, lastName, email: email.toLowerCase(), password },
         });
       expect(res.status).to.equal(200);
       expect(res.body).to.have.property('user');
@@ -85,7 +82,7 @@ describe('Praas REST API', () => {
       const res = await Api()
         .post('/users')
         .send({
-          user: { firstName, lastName, email: email.toLowerCase(), password }
+          user: { firstName, lastName, email: email.toLowerCase(), password },
         });
       expect(res.status).to.equal(422);
       const errors = res.body.errors;
@@ -95,9 +92,7 @@ describe('Praas REST API', () => {
     });
 
     it('should return errors for bad registration data of user', async () => {
-      let res = await Api()
-        .post('/users')
-        .send({ user: {} });
+      let res = await Api().post('/users').send({ user: {} });
       expect(res.status).to.equal(422);
 
       // empty field values
@@ -107,18 +102,14 @@ describe('Praas REST API', () => {
       expect(res.status).to.equal(422);
 
       // empty body
-      res = await Api()
-        .post('/users')
-        .send();
+      res = await Api().post('/users').send();
       expect(res.status).to.equal(422);
     });
 
     it('should not authenticate when user credentials are missing', async function () {
       const user = { ...jake.user };
       delete user.password;
-      const res = await Api()
-        .post('/users/login')
-        .send({ user: user });
+      const res = await Api().post('/users/login').send({ user: user });
       expect(res.status).to.equal(422);
       expect(res.body.errors.message).to.equal('Missing credentials');
     });
@@ -126,35 +117,34 @@ describe('Praas REST API', () => {
     it('should not authenticate without valid user credentials', async function () {
       const user = { ...jake.user };
       user.password = 'jake';
-      const res = await Api()
-        .post('/users/login')
-        .send({ user: user });
+      const res = await Api().post('/users/login').send({ user: user });
       expect(res.status).to.equal(422);
       expect(res.body).to.have.property('errors');
-      expect(res.body.errors.credentials).to.equal('email or password is invalid');
+      expect(res.body.errors.credentials).to.equal(
+        'email or password is invalid'
+      );
     });
 
     it('should not allow creating conduit', async function () {
-      const res = await Api()
-        .post('/conduits')
-        .send(helpers.fakeConduit());
+      const res = await Api().post('/conduits').send(helpers.fakeConduit());
       expect(res.status).to.equal(401);
       expect(res.body).to.have.property('errors');
-      expect(res.body.errors.authorization).to.equal('token not found or malformed');
+      expect(res.body.errors.authorization).to.equal(
+        'token not found or malformed'
+      );
     });
 
     it('should not GET conduit information', async function () {
-      const res = await Api()
-        .get('/conduits');
+      const res = await Api().get('/conduits');
       expect(res.status).to.equal(401);
       expect(res.body).to.have.property('errors');
-      expect(res.body.errors.authorization).to.equal('token not found or malformed');
+      expect(res.body.errors.authorization).to.equal(
+        'token not found or malformed'
+      );
     });
 
     it('should authenticate with valid user credentials', async function () {
-      const res = await Api()
-        .post('/users/login')
-        .send(jake);
+      const res = await Api().post('/users/login').send(jake);
       expect(res.status).to.equal(200);
       expect(res.body.user).to.have.property('firstName');
       expect(res.body.user).to.have.property('lastName');
@@ -169,50 +159,55 @@ describe('Praas REST API', () => {
   });
 
   context('When authenticated', () => {
-    let jakeUser, ctId1, ctId2 = undefined;
+    let jakeUser,
+      ctId1,
+      ctId2 = undefined;
 
-    before('login and add new service endpoints for PUT, PATCH and DELETE', async function () {
-      // login
-      const res = await Api()
-        .post('/users/login')
-        .send({
-          user: {
-            email: jake.user.email,
-            password: jake.user.password
-          }
-        });
-      jakeUser = res.body.user;
-      // console.log('jakeUser: ', jakeUser);
-      // WARN: this is only for debugging, real code should use
-      // jwt.verify(...) in order to validate the signature with
-      // a known secret.
-      const jwtDecoded = jwt.decode(jakeUser.token);
-      expect(jwtDecoded.email).to.equal(jakeUser.email);
-      expect(jwtDecoded.id).to.equal(jakeUser.id);
+    before(
+      'login and add new service endpoints for PUT, PATCH and DELETE',
+      async function () {
+        // login
+        const res = await Api()
+          .post('/users/login')
+          .send({
+            user: {
+              email: jake.user.email,
+              password: jake.user.password,
+            },
+          });
+        jakeUser = res.body.user;
+        // console.log('jakeUser: ', jakeUser);
+        // WARN: this is only for debugging, real code should use
+        // jwt.verify(...) in order to validate the signature with
+        // a known secret.
+        const jwtDecoded = jwt.decode(jakeUser.token);
+        expect(jwtDecoded.email).to.equal(jakeUser.email);
+        expect(jwtDecoded.id).to.equal(jakeUser.id);
 
-      // create two conduits service endpoints
-      const ct1 = helpers.fakeConduit();
-      const res1 = await Api()
-        .post('/conduits')
-        .set('Authorization', `Token ${jakeUser.token}`)
-        .send({ conduit: ct1 });
-      expect(res1.status).to.equal(201);
-      expect(res1.body).to.have.property('conduit');
-      expect(res1.body.conduit).to.have.property('id');
-      ctId1 = res1.body.conduit.id;
-      expect(ctId1).to.be.not.null;
+        // create two conduits service endpoints
+        const ct1 = helpers.fakeConduit();
+        const res1 = await Api()
+          .post('/conduits')
+          .set('Authorization', `Token ${jakeUser.token}`)
+          .send({ conduit: ct1 });
+        expect(res1.status).to.equal(201);
+        expect(res1.body).to.have.property('conduit');
+        expect(res1.body.conduit).to.have.property('id');
+        ctId1 = res1.body.conduit.id;
+        expect(ctId1).to.be.not.null;
 
-      const ct2 = helpers.fakeConduit();
-      const res2 = await Api()
-        .post('/conduits')
-        .set('Authorization', `Token ${jakeUser.token}`)
-        .send({ conduit: ct2 });
-      expect(res2.status).to.equal(201);
-      expect(res2.body).to.have.property('conduit');
-      expect(res2.body.conduit).to.have.property('id');
-      ctId2 = res2.body.conduit.id;
-      expect(ctId2).to.be.not.null;
-    });
+        const ct2 = helpers.fakeConduit();
+        const res2 = await Api()
+          .post('/conduits')
+          .set('Authorization', `Token ${jakeUser.token}`)
+          .send({ conduit: ct2 });
+        expect(res2.status).to.equal(201);
+        expect(res2.body).to.have.property('conduit');
+        expect(res2.body.conduit).to.have.property('id');
+        ctId2 = res2.body.conduit.id;
+        expect(ctId2).to.be.not.null;
+      }
+    );
 
     after('logout', async () => {
       jakeUser.token = '';
@@ -228,7 +223,7 @@ describe('Praas REST API', () => {
     it('should allow the user to update their information', async function () {
       const userName = {
         firstName: 'John',
-        lastName: 'Doe'
+        lastName: 'Doe',
       };
       const res = await Api()
         .put('/user')
@@ -294,7 +289,9 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`)
             .send({ conduit: withoutSuriApiKey });
           expect(noSuriApiKey.status).to.equal(422);
-          expect(Object.keys(noSuriApiKey.body.errors)).to.include('suriApiKey');
+          expect(Object.keys(noSuriApiKey.body.errors)).to.include(
+            'suriApiKey'
+          );
           expect(noSuriApiKey.body.errors.suriApiKey).to.match(ERROR_PATTERN);
 
           // check for Service Object Key ( suriObjectKey )
@@ -305,8 +302,12 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`)
             .send({ conduit: withoutSuriObjectKey });
           expect(noSuriObjectKey.status).to.equal(422);
-          expect(Object.keys(noSuriObjectKey.body.errors)).to.include('suriObjectKey');
-          expect(noSuriObjectKey.body.errors.suriObjectKey).to.match(ERROR_PATTERN);
+          expect(Object.keys(noSuriObjectKey.body.errors)).to.include(
+            'suriObjectKey'
+          );
+          expect(noSuriObjectKey.body.errors.suriObjectKey).to.match(
+            ERROR_PATTERN
+          );
         });
 
         it('should validate Resource Access Control Methods', async function () {
@@ -329,8 +330,8 @@ describe('Praas REST API', () => {
             .send({ conduit: withInvalidAllowList });
           expect(res.status).to.equal(422);
           expect(res.body).to.have.property('errors');
-          res.body.errors.forEach(
-            error => expect(error.allowlist).to.match(ERROR_PATTERN)
+          res.body.errors.forEach((error) =>
+            expect(error.allowlist).to.match(ERROR_PATTERN)
           );
         });
 
@@ -343,8 +344,8 @@ describe('Praas REST API', () => {
             .send({ conduit: withInvalidHiddenFormField });
           expect(res.status).to.equal(422);
           expect(res.body).to.have.property('errors');
-          res.body.errors.forEach(
-            error => expect(error.hiddenFormField).to.match(ERROR_PATTERN)
+          res.body.errors.forEach((error) =>
+            expect(error.hiddenFormField).to.match(ERROR_PATTERN)
           );
         });
       });
@@ -402,7 +403,7 @@ describe('Praas REST API', () => {
             start: ctId2 + 1,
             count: conf.conduitsPerPage,
             // sort: ['description:desc', 'id:asc']
-            sort: 'last name:desc,id:asc,created at:asc, createdAt:foo'
+            sort: 'last name:desc,id:asc,created at:asc, createdAt:foo',
             // sort: 'last name:desc'
             // sort: 'last name'
           })
@@ -434,7 +435,9 @@ describe('Praas REST API', () => {
         expect(res.body.conduit.suriType).to.equal(putData.suriType);
         expect(res.body.conduit.allowlist).to.eql(putData.allowlist);
         expect(res.body.conduit.racm).to.eql(putData.racm);
-        expect(res.body.conduit.hiddenFormField).to.eql(putData.hiddenFormField);
+        expect(res.body.conduit.hiddenFormField).to.eql(
+          putData.hiddenFormField
+        );
       });
 
       it('should reject an invalid service endpoint', async function () {
@@ -484,8 +487,8 @@ describe('Praas REST API', () => {
         const activeConduit = {
           conduit: {
             status: 'active',
-            suriType
-          }
+            suriType,
+          },
         };
         const activateConduit = await Api()
           .patch(`/conduits/${ctId1}`)

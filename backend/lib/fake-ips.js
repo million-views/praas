@@ -1,16 +1,9 @@
 // NOTE: these magic ip-addresses came from the following:
 // `dig +short amazon.in yahoo.com amazon.com`
 
-const allowed = [
-  '52.95.116.115',
-  '72.30.35.9',
-];
+const allowed = ['52.95.116.115', '72.30.35.9'];
 
-const inactive = [
-  '98.137.246.7',
-  '98.138.219.231',
-  '176.32.103.205',
-];
+const inactive = ['98.137.246.7', '98.138.219.231', '176.32.103.205'];
 
 const denied = [
   '52.95.120.67',
