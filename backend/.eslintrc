@@ -8,15 +8,13 @@
     "module": "commonjs",
     "sourceType": "module"
   },
-  "plugins": [],
+  "plugins": ["prettier"],
   "settings": {
     "react": {
       "pragma": "h"
     }
   },
-  "extends": [
-    "standard"
-  ],
+  "extends": ["standard", "prettier"],
   "overrides": [
     {
       "files": "*.test.js",
@@ -37,23 +35,11 @@
   "rules": {
     "no-undef-init": "off",
     "no-var": "error",
-    "space-infix-ops": "off",
-    "operator-linebreak": [
-      "error",
-      "before"
-    ],
     "camelcase": 0,
     "object-property-newline": 0,
-    "brace-style": [
-      "error",
-      "1tbs"
-    ],
+    "brace-style": ["error", "1tbs"],
     "one-var": 0,
-    "space-before-function-paren": 0,
-    "semi": [
-      2,
-      "always"
-    ],
+    "semi": [2, "always"],
     "comma-dangle": [
       "error",
       {
@@ -76,6 +62,7 @@
         "avoidEscape": true,
         "allowTemplateLiterals": true
       }
-    ]
+    ],
+    "prettier/prettier": "error"
   }
 }
