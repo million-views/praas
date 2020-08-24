@@ -30,21 +30,21 @@ else
 	action=$1
 fi
 
-
+# on mac there is a dumbed down version of iconfig under /usr/local/bin
+# that does jack for us; this script works only with either 'ip' or
+# '/sbin/ifconfig' commands. Also, note that 'ifconfig' on debian is
+# not in the PATH... 
+#
+# tested on Debian and Mac
 function set_command {
 	if command -v ip > /dev/null; then
 		command=ip
 		command_path=$( command -v ip )
-	elif command -v 'ifconfig' > /dev/null; then
+	elif command -v '/sbin/ifconfig' > /dev/null; then
 		command=ifconfig
-		command_path=$( command -v ifconfig )
-	elif [[ "${OSTYPE}" =~ "darwin" ]]; then
-	  # on mac there is a dumbed down version of iconfig that does jack
-		# which makes the script fail
-		command=ifconfig
-		command_path='/sbin/ifconfig'
+		command_path=$( command -v /sbin/ifconfig )
 	else
-		echo 'no command found to parse network interfaces'
+		echo 'no compatible command found to parse network interfaces'
 	fi
 }
 
