@@ -52,5 +52,15 @@ to have as a pre-requisite to running the test suite.
   - all field names are case sensitive for the purpose of testing
   - the fields **should** be of type `Single line text`
 
-[pre-defined pseudo-random IPs]: ../lib/fake-ips.js
+[pre-defined pseudo-random ips]: ../lib/fake-ips.js
 [script]: ../util/loopback-network.sh
+
+### Running tests
+
+To execute the gateway tests, execute the following commands in the order after adding the necessary configs in .env.conduit-user file.
+
+1. Add the proxys - `./util/loopback-network.sh`
+2. Generate test data - `npm run test-model`. The model testing also generates some curi test data required during the gateway testing.
+3. Run the resource server - `npm run start-resource-server`
+4. Run the gateway server - `npm run start-gateway-server`
+5. Run the gateway tests - `npm run test-gateway`
