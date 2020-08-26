@@ -11,4 +11,6 @@ async function pushData(url, options) {
   };
 }
 
-module.exports = pushData;
+module.exports = {
+  pushData,
+};

@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const cors = require('cors');
-const pushData = require('./integrations/airtable');
+const { pushData } = require('./integrations/airtable');
 
 const { RestApiError, RestApiErrorHandler } = require('../../lib/error');
 const config = require('../../config');
