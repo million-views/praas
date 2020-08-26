@@ -22,7 +22,13 @@ router.post('/users', async (req, res, next) => {
 
   const userReqFields = ['firstName', 'email', 'password'];
   const userOptFields = ['lastName'];
-  helpers.processInput(req.body.user, userReqFields, userOptFields, user, errors);
+  helpers.processInput(
+    req.body.user,
+    userReqFields,
+    userOptFields,
+    user,
+    errors
+  );
   if (Object.keys(errors).length) {
     return next(new RestApiError(422, errors));
   }
@@ -46,25 +52,31 @@ router.post('/users', async (req, res, next) => {
 
 // Update User
 router.put('/user', auth.required, function (req, res, next) {
-  User.findByPk(req.payload.id).then(function (user) {
-    if (!user) {
-      return next(new RestApiError(404, { user: 'not found' }));
-    }
+  User.findByPk(req.payload.id)
+    .then(function (user) {
+      if (!user) {
+        return next(new RestApiError(404, { user: 'not found' }));
+      }
 
-    const userOptFields = ['firstName', 'lastName', 'password'];
-    helpers.processInput(req.body.user, [], userOptFields, user, {});
+      const userOptFields = ['firstName', 'lastName', 'password'];
+      helpers.processInput(req.body.user, [], userOptFields, user, {});
 
-    return user.save().then(function () {
-      return res.json({ user: user.toAuthJSON() });
+      return user.save().then(function () {
+        return res.json({ user: user.toAuthJSON() });
+      });
+    })
+    .catch((reason) => {
+      next(new RestApiError(500, reason));
     });
-  }).catch((reason) => {
-    next(new RestApiError(500, reason));
-  });
 });
 
 // Authentication
 router.post('/users/login', function (req, res, next) {
-  passport.authenticate('local', { session: false }, function (err, user, info) {
+  passport.authenticate('local', { session: false }, function (
+    err,
+    user,
+    info
+  ) {
     if (err) {
       console.log('err: ', err);
       return next(new RestApiError(500, err));

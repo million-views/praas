@@ -5,8 +5,10 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 
 const {
-  boundHttpRequest, randomlyPickFrom,
-  testAllowedIpList, testDeniedIpList
+  boundHttpRequest,
+  randomlyPickFrom,
+  testAllowedIpList,
+  testDeniedIpList,
 } = require('../../lib/helpers');
 
 const expect = chai.expect;
@@ -18,7 +20,9 @@ const proxyServerURL = `http://${proxyHost}:${proxyPort}`;
 const proxyServer = () => chai.request(proxyServerURL);
 
 // Test Data
-const testConduits = JSON.parse(fs.readFileSync(path.resolve('.test-data-curi.json')));
+const testConduits = JSON.parse(
+  fs.readFileSync(path.resolve('.test-data-curi.json'))
+);
 const dropConduit = testConduits.dropConduit;
 const passConduit = testConduits.passConduit;
 
@@ -30,36 +34,42 @@ const aorConduit3 = testConduits.aorConduit3; // POST-multi-mixed
 const noIncludeConduit = testConduits.noIncludeConduit;
 
 const request1 = {
-  records: [{
-    fields: {
-      name: 'first last',
-      email: 'first@last.com',
-    }
-  }]
+  records: [
+    {
+      fields: {
+        name: 'first last',
+        email: 'first@last.com',
+      },
+    },
+  ],
 };
 
 // non-compliant hiddenFormField
 const request2 = {
-  records: [{
-    fields: {
-      name: 'first last',
-      email: 'first@last.com',
-      hiddenFormField: 'hiddenFormFieldValue',
-    }
-  }]
+  records: [
+    {
+      fields: {
+        name: 'first last',
+        email: 'first@last.com',
+        hiddenFormField: 'hiddenFormFieldValue',
+      },
+    },
+  ],
 };
 
 // valid hiddenFormField
 // the value for hiddenFormField comes from `../crud-server/src/routes.test.js`
 // validate it against the value in `testConduit2`
 const request3 = {
-  records: [{
-    fields: {
-      name: 'first last',
-      email: 'first@last.com',
-      hiddenFormField: 'hidden-form-field-value',
-    }
-  }]
+  records: [
+    {
+      fields: {
+        name: 'first last',
+        email: 'first@last.com',
+        hiddenFormField: 'hidden-form-field-value',
+      },
+    },
+  ],
 };
 
 describe('Testing Gateway Server...', async () => {
@@ -90,14 +100,14 @@ describe('Testing Gateway Server...', async () => {
         const options2 = {
           ...optionsBase,
           localAddress: randomlyPickFrom(testDeniedIpList),
-          headers: { ...optionsBase.headers, Host: aorConduit2.host }
+          headers: { ...optionsBase.headers, Host: aorConduit2.host },
         };
         boundHttpRequest(options2).then(
-          success => {
+          (success) => {
             // console.log('success ---> ', success);
             expect(success.statusCode).to.equal(200);
           },
-          error => {
+          (error) => {
             console.log('error --->', error);
             expect(true).to.equal(false); // This is not expected
           }
@@ -105,11 +115,11 @@ describe('Testing Gateway Server...', async () => {
 
         options2.localAddress = randomlyPickFrom(testAllowedIpList);
         boundHttpRequest(options2).then(
-          success => {
+          (success) => {
             // console.log('success ---> ', success);
             expect(success.statusCode).to.equal(200);
           },
-          error => {
+          (error) => {
             console.log('error --->', error);
             expect(true).to.equal(false); // This is not expected
           }
@@ -120,14 +130,14 @@ describe('Testing Gateway Server...', async () => {
         const options1 = {
           ...optionsBase,
           localAddress: randomlyPickFrom(testDeniedIpList),
-          headers: { ...optionsBase.headers, Host: aorConduit1.host }
+          headers: { ...optionsBase.headers, Host: aorConduit1.host },
         };
         boundHttpRequest(options1).then(
-          success => {
+          (success) => {
             // console.log('success ---> ', success);
             expect(success.statusCode).to.equal(403);
           },
-          error => {
+          (error) => {
             console.log('error --->', error);
             expect(true).to.equal(false); // This is not expected
           }
@@ -137,14 +147,14 @@ describe('Testing Gateway Server...', async () => {
           ...optionsBase,
           method: 'POST',
           localAddress: randomlyPickFrom(testDeniedIpList),
-          headers: { ...optionsBase.headers, Host: aorConduit3.host }
+          headers: { ...optionsBase.headers, Host: aorConduit3.host },
         };
         boundHttpRequest(options3, postData).then(
-          success => {
+          (success) => {
             // console.log('success ---> ', success);
             expect(success.statusCode).to.equal(403);
           },
-          error => {
+          (error) => {
             console.log('error --->', error);
             expect(true).to.equal(false); // This is not expected
           }
@@ -155,14 +165,14 @@ describe('Testing Gateway Server...', async () => {
         const options1 = {
           ...optionsBase,
           localAddress: randomlyPickFrom(aorConduit1.allowlist).ip,
-          headers: { ...optionsBase.headers, Host: aorConduit1.host }
+          headers: { ...optionsBase.headers, Host: aorConduit1.host },
         };
         boundHttpRequest(options1).then(
-          success => {
+          (success) => {
             // console.log('success ---> ', success);
             expect(success.statusCode).to.equal(200);
           },
-          error => {
+          (error) => {
             console.log('error --->', error);
             expect(true).to.equal(false); // This is not expected
           }
@@ -171,32 +181,34 @@ describe('Testing Gateway Server...', async () => {
         const options2 = {
           ...optionsBase,
           localAddress: randomlyPickFrom(aorConduit2.allowlist).ip,
-          headers: { ...optionsBase.headers, Host: aorConduit2.host }
+          headers: { ...optionsBase.headers, Host: aorConduit2.host },
         };
         boundHttpRequest(options2).then(
-          success => {
+          (success) => {
             // console.log('success ---> ', success);
             expect(success.statusCode).to.equal(200);
           },
-          error => {
+          (error) => {
             console.log('error --->', error);
             expect(true).to.equal(false); // This is not expected
           }
         );
 
-        const activeOnly = aorConduit3.allowlist.filter(ip => ip.status === 'active');
+        const activeOnly = aorConduit3.allowlist.filter(
+          (ip) => ip.status === 'active'
+        );
         const options3 = {
           ...optionsBase,
           method: 'POST',
           localAddress: randomlyPickFrom(activeOnly).ip,
-          headers: { ...optionsBase.headers, Host: aorConduit3.host }
+          headers: { ...optionsBase.headers, Host: aorConduit3.host },
         };
         boundHttpRequest(options3, postData).then(
-          success => {
+          (success) => {
             // console.log('success ---> ', success);
             expect(success.statusCode).to.equal(200);
           },
-          error => {
+          (error) => {
             console.log('error --->', error);
             expect(true).to.equal(false); // This is not expected
           }
@@ -270,7 +282,9 @@ describe('Testing Gateway Server...', async () => {
           expect(res.body).to.have.property('records');
           expect(res.body.records.length).to.equal(request3.records.length);
           for (let i = 0; i < res.body.records.length; i++) {
-            expect(res.body.records[i].fields).to.eql(request3.records[i].fields);
+            expect(res.body.records[i].fields).to.eql(
+              request3.records[i].fields
+            );
           }
         });
 
@@ -283,7 +297,9 @@ describe('Testing Gateway Server...', async () => {
           expect(res.body).to.have.property('records');
           expect(res.body.records.length).to.equal(request3.records.length);
           for (let i = 0; i < res.body.records.length; i++) {
-            expect(res.body.records[i].fields).to.not.eql(request3.records[i].fields);
+            expect(res.body.records[i].fields).to.not.eql(
+              request3.records[i].fields
+            );
           }
         });
       });
@@ -330,12 +346,14 @@ describe('Testing Gateway Server...', async () => {
 
     it('should PATCH entries (partial update)', async function () {
       const req = {
-        records: [{
-          id: recordId,
-          fields: {
-            email: 'flast@last.com',
-          }
-        }]
+        records: [
+          {
+            id: recordId,
+            fields: {
+              email: 'flast@last.com',
+            },
+          },
+        ],
       };
       const res = await proxyServer()
         .patch('/')
@@ -347,12 +365,14 @@ describe('Testing Gateway Server...', async () => {
 
     it('should PUT into an existing entry (full update)', async function () {
       const req = {
-        records: [{
-          id: recordId,
-          fields: {
-            name: 'last, first',
-          }
-        }]
+        records: [
+          {
+            id: recordId,
+            fields: {
+              name: 'last, first',
+            },
+          },
+        ],
       };
       const res = await proxyServer()
         .put('/')
@@ -380,23 +400,23 @@ describe('Testing Gateway Server...', async () => {
               name: 'first last',
               email: 'first@last.com',
               hiddenFormField: 'hidden-form-field-value',
-            }
+            },
           },
           {
             fields: {
               name: 'second last',
               email: 'second@last.com',
               hiddenFormField: 'hidden-form-field-value',
-            }
+            },
           },
           {
             fields: {
               name: 'third last',
               email: 'third@last.com',
               hiddenFormField: 'hidden-form-field-value',
-            }
+            },
           },
-        ]
+        ],
       };
       const res = await proxyServer()
         .post('/')

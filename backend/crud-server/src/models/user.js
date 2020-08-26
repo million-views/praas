@@ -9,7 +9,7 @@ module.exports = (db, DataTypes) => {
       allowNull: false,
       validate: {
         notEmpty: true,
-      }
+      },
     },
     lastName: {
       type: DataTypes.STRING,
@@ -20,29 +20,32 @@ module.exports = (db, DataTypes) => {
       allowNull: false,
       validate: {
         is: /\S+@\S+\.\S+/,
-        notEmpty: true
+        notEmpty: true,
       },
       unique: true,
       set(email) {
         this.setDataValue('email', email.toString().toLowerCase());
-      }
+      },
     },
     password: {
       type: DataTypes.VIRTUAL,
       set(val) {
         this.setDataValue('salt', crypto.randomBytes(16).toString('hex'));
-        this.setDataValue('hash', crypto
-          .pbkdf2Sync(val, this.salt, 10000, 512, 'sha512')
-          .toString('hex'));
-      }
+        this.setDataValue(
+          'hash',
+          crypto
+            .pbkdf2Sync(val, this.salt, 10000, 512, 'sha512')
+            .toString('hex')
+        );
+      },
     },
     hash: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     salt: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
   });
 
@@ -73,7 +76,7 @@ module.exports = (db, DataTypes) => {
       firstName: this.firstName,
       lastName: this.lastName,
       email: this.email,
-      token: tkn
+      token: tkn,
     };
   };
 
@@ -89,7 +92,7 @@ module.exports = (db, DataTypes) => {
   // if found and password matches, return the user object
   // else return falsey...
   // WARN: watchout for collisions with Sequelize's own class methods
-  User.exists = async function(email, password) {
+  User.exists = async function (email, password) {
     const user = await User.findOne({ where: { email: email } });
     if (!user || !user.passwordValid(password)) {
       return undefined;

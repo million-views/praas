@@ -22,12 +22,12 @@ const domain = conf.conduit.settings.domain;
 function powerset(list) {
   const set = [],
     listSize = list.length,
-    combinationsCount = (1 << listSize);
+    combinationsCount = 1 << listSize;
 
   for (let i = 1; i < combinationsCount; i++) {
     const combination = [];
     for (let j = 0; j < listSize; j++) {
-      if ((i & (1 << j))) {
+      if (i & (1 << j)) {
         combination.push(list[j]);
       }
     }
@@ -66,7 +66,8 @@ const fakeUserProfile = (overrides = {}) => {
   const password = baseUser.password || firstName + conf.passwordSuffix;
 
   return {
-    ...baseUser, password
+    ...baseUser,
+    password,
   };
 };
 
@@ -75,43 +76,48 @@ const statuses = ['active', 'inactive'];
 const hiddenFields = ['partner', 'campaign', 'department', 'account'];
 const hiddenFieldPolicy = ['drop-if-filled', 'pass-if-match'];
 const racmCombo = powerset(['GET', 'POST', 'DELETE', 'PUT', 'PATCH']);
-const supportedServiceTargets = conf.targets.settings.map(i => i.type);
+const supportedServiceTargets = conf.targets.settings.map((i) => i.type);
 
 const {
   allowed: testAllowedIpList,
   inactive: testInactiveIpList,
-  denied: testDeniedIpList
+  denied: testDeniedIpList,
 } = require('../lib/fake-ips');
 
 const randomlyPickFrom = (choices) => {
   const rollDice = Math.floor(Math.random() * choices.length);
   return choices[rollDice];
 };
-
 const fakeConduit = (overrides = {}) => {
   const status = randomlyPickFrom(statuses);
-  const ip = (status === 'inactive')
-    ? randomlyPickFrom(testInactiveIpList)
-    : randomlyPickFrom(testAllowedIpList);
+  const ip =
+    status === 'inactive'
+      ? randomlyPickFrom(testInactiveIpList)
+      : randomlyPickFrom(testAllowedIpList);
 
   const conduit = {
     suriApiKey: faker.random.uuid(),
     suriType: randomlyPickFrom(supportedServiceTargets),
     suriObjectKey: faker.lorem.word(),
-    allowlist: [{
-      ip, status,
-      comment: faker.lorem.words()
-    }],
+    allowlist: [
+      {
+        ip,
+        status,
+        comment: faker.lorem.words(),
+      },
+    ],
     racm: randomlyPickFrom(racmCombo),
     throttle: faker.random.boolean(),
     status: randomlyPickFrom(statuses),
     description: faker.lorem.sentence(),
-    hiddenFormField: [{
-      fieldName: randomlyPickFrom(hiddenFields),
-      policy: randomlyPickFrom(hiddenFieldPolicy),
-      include: faker.random.boolean(),
-      value: faker.lorem.word(),
-    }],
+    hiddenFormField: [
+      {
+        fieldName: randomlyPickFrom(hiddenFields),
+        policy: randomlyPickFrom(hiddenFieldPolicy),
+        include: faker.random.boolean(),
+        value: faker.lorem.word(),
+      },
+    ],
     ...overrides,
   };
 
@@ -124,18 +130,21 @@ const processInput = (inp, req, opt, out, err) => {
     return;
   }
   for (let i = 0; i < req.length; i++) {
-    if (typeof inp[req[i]] === 'undefined' || inp[req[i]] === null
-      || ('' + inp[req[i]]).trim() === '') {
+    if (
+      typeof inp[req[i]] === 'undefined' ||
+      inp[req[i]] === null ||
+      ('' + inp[req[i]]).trim() === ''
+    ) {
       err[req[i]] = 'cannot be blank';
     } else {
       out[req[i]] = inp[req[i]];
-    };
-  };
+    }
+  }
   for (let i = 0; i < opt.length; i++) {
     if (typeof inp[opt[i]] !== 'undefined') {
       out[opt[i]] = inp[opt[i]];
-    };
-  };
+    }
+  }
 };
 
 // Returns proxy server user object (with credentials filled in from .env
@@ -161,8 +170,8 @@ function getProxyServerCredentials() {
       firstName: 'Proxy',
       lastName: 'Server',
       email: proxy_credentials.parsed.PROXY_SERVER_EMAIL,
-      password: proxy_credentials.parsed.PROXY_SERVER_PASSWORD
-    }
+      password: proxy_credentials.parsed.PROXY_SERVER_PASSWORD,
+    },
   };
 }
 
@@ -202,21 +211,21 @@ function boundHttpRequest(options, body = null) {
   if (body) {
     options.headers = {
       ...options.headers,
-      'Content-Length': Buffer.byteLength(body)
+      'Content-Length': Buffer.byteLength(body),
     };
   }
 
   return new Promise((resolve, reject) => {
-    const clientRequest = http.request(options, incomingMessage => {
+    const clientRequest = http.request(options, (incomingMessage) => {
       // response object.
       const response = {
         statusCode: incomingMessage.statusCode,
         headers: incomingMessage.headers,
-        body: []
+        body: [],
       };
 
       // collect response body data.
-      incomingMessage.on('data', chunk => {
+      incomingMessage.on('data', (chunk) => {
         response.body.push(chunk);
       });
 
@@ -237,7 +246,7 @@ function boundHttpRequest(options, body = null) {
     });
 
     // reject on request error.
-    clientRequest.on('error', error => {
+    clientRequest.on('error', (error) => {
       reject(error);
     });
 
@@ -252,8 +261,14 @@ function boundHttpRequest(options, body = null) {
 }
 
 module.exports = {
-  fakeUserProfile, fakeConduit, processInput,
-  makeCuri, getProxyServerCredentials,
-  testAllowedIpList, testInactiveIpList, testDeniedIpList,
-  randomlyPickFrom, boundHttpRequest
+  fakeUserProfile,
+  fakeConduit,
+  processInput,
+  makeCuri,
+  getProxyServerCredentials,
+  testAllowedIpList,
+  testInactiveIpList,
+  testDeniedIpList,
+  randomlyPickFrom,
+  boundHttpRequest,
 };

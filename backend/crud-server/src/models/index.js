@@ -45,8 +45,8 @@ const db = new Sequelize('development', null, null, {
   storage: './sqlite-praas-crud.db',
   define: {
     // underscored: true, /* use underscore instead of camelCase */
-    freezeTableName: true /* keep the table name provided by us */
-  }
+    freezeTableName: true /* keep the table name provided by us */,
+  },
 });
 
 const User = require('./user')(db, Sequelize.DataTypes);

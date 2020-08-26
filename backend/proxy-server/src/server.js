@@ -24,7 +24,7 @@ app.locals.cmap = new Map();
 
 // cache frequently used objects
 const SURI = {};
-config.targets.settings.forEach(i => (SURI[i.type] = i.suri));
+config.targets.settings.forEach((i) => (SURI[i.type] = i.suri));
 
 // we handle all requests to the proxy end point...
 app.all('/*', upload.none(), (req, res, next) => {
@@ -44,11 +44,13 @@ app.all('/*', upload.none(), (req, res, next) => {
   const clientIp = req.connection.remoteAddress;
   const allowlist = conduit.allowlist;
   if (allowlist.length > 0 && clientIp !== '127.0.0.1') {
-    let allowed = false, inactive = 0;
-    for (let i=0, imax=allowlist.length; i < imax; i++) {
+    let allowed = false,
+      inactive = 0;
+    for (let i = 0, imax = allowlist.length; i < imax; i++) {
       const item = allowlist[i];
       if (item.status === 'active' && item.ip === clientIp) {
-        allowed = true; break;
+        allowed = true;
+        break;
       }
 
       if (item.status === 'inactive') {
@@ -63,25 +65,28 @@ app.all('/*', upload.none(), (req, res, next) => {
   }
 
   // PUT, POST and PATCH operations have records in body
-  if (['PUT', 'PATCH', 'POST'].includes(req.method)
-    && !(req.body.records)) {
+  if (['PUT', 'PATCH', 'POST'].includes(req.method) && !req.body.records) {
     return next(new RestApiError(422, { records: 'not present' }));
   }
 
   // PUT, POST and PATCH operations need fields data in body
-  if (['PUT', 'PATCH', 'POST'].includes(req.method)
-    && req.body.records[0].fields === undefined) {
+  if (
+    ['PUT', 'PATCH', 'POST'].includes(req.method) &&
+    req.body.records[0].fields === undefined
+  ) {
     return next(new RestApiError(422, { fields: 'not present' }));
   }
 
   // PUT and PATCH operations need id field in body
-  if (['PUT', 'PATCH'].includes(req.method)
-    && req.body.records[0].id === undefined) {
+  if (
+    ['PUT', 'PATCH'].includes(req.method) &&
+    req.body.records[0].id === undefined
+  ) {
     return next(new RestApiError(422, { id: 'not provided' }));
   }
 
   // check racm for allowed methods
-  if (conduit.racm.findIndex(method => method === req.method) === -1) {
+  if (conduit.racm.findIndex((method) => method === req.method) === -1) {
     return next(new RestApiError(405, { [req.method]: 'not permitted' }));
   }
 
@@ -93,7 +98,7 @@ app.all('/*', upload.none(), (req, res, next) => {
       let reqHff = undefined;
       if (req.body?.records?.[0].fields[hff.fieldName]) {
         reqHff = req.body.records[0].fields[hff.fieldName];
-      };
+      }
 
       // This feature is to catch spam bots, so don't
       // send error if failure, send 200-OK instead
@@ -133,7 +138,7 @@ app.all('/*', upload.none(), (req, res, next) => {
   }
 
   // Multi DELETE to be sent as query paramters
-  if ((req.method === 'DELETE') && req.query.records) {
+  if (req.method === 'DELETE' && req.query.records) {
     url += req.query.records.reduce((q, i) => q + `records[]=${i}&`, '?');
   }
 
@@ -141,17 +146,19 @@ app.all('/*', upload.none(), (req, res, next) => {
   let respStat;
   if (conduit.suriType === 'airtable') {
     fetch(url, options)
-      .then(resp => {
+      .then((resp) => {
         respStat = resp.status;
         return resp.json();
       })
-      .then(json => res.status(respStat).send(json))
-      .catch(err => next(new RestApiError(500, err)));
+      .then((json) => res.status(respStat).send(json))
+      .catch((err) => next(new RestApiError(500, err)));
   }
 });
 
 console.log(
-  `Gateway server is in ${conf.production ? 'production' : 'development'} mode...`
+  `Gateway server is in ${
+    conf.production ? 'production' : 'development'
+  } mode...`
 );
 
 // error handling...
@@ -166,8 +173,8 @@ async function fetchConduits(user) {
     const conduits = payload.conduits;
 
     // remove conduits which are not found in the list, from the cache
-    app.locals.cmap.forEach(cache => {
-      if (conduits.findIndex(list => list.curi === cache.curi) === -1) {
+    app.locals.cmap.forEach((cache) => {
+      if (conduits.findIndex((list) => list.curi === cache.curi) === -1) {
         app.locals.cmap.delete(cache.curi);
       }
     });
@@ -187,7 +194,7 @@ async function fetchConduits(user) {
   } catch (e) {
     console.log('unexpected... ', e);
   }
-};
+}
 
 // launch the server and listen only when running as a standalone process
 if (!module.parent) {
@@ -205,15 +212,16 @@ if (!module.parent) {
       setInterval(() => fetchConduits(data.user), conf.cacheRefreshInterval);
     })
     .catch((error) => {
-      console.log('unexpected... ', error); process.exit(1);
+      console.log('unexpected... ', error);
+      process.exit(1);
     });
 
   // start listening only after logging in to the resource server...
   // if we can't login then there's no point in running the proxy
-  app.listen(
-    conf.gwServerPort,
-    'localhost',
-    () => console.log(`Conduits proxy server is listening on port ${conf.gwServerPort}`)
+  app.listen(conf.gwServerPort, 'localhost', () =>
+    console.log(
+      `Conduits proxy server is listening on port ${conf.gwServerPort}`
+    )
   );
 }
 
