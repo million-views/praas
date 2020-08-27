@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const cors = require('cors');
-const fetch = require('node-fetch');
+const { pushData } = require('./integrations/airtable');
 
 const { RestApiError, RestApiErrorHandler } = require('../../lib/error');
 const config = require('../../config');
@@ -33,7 +33,11 @@ app.all('/*', upload.none(), (req, res, next) => {
   if (!conduit) {
     // If conduit not found in Cache, send 404
     // FIXME: per MDN, the statusCode should be 400
-    return next(new RestApiError(404, { conduit: `${reqCuri} not found` }));
+    return next(
+      new RestApiError(404, {
+        conduit: `${reqCuri} not found`,
+      })
+    );
   }
 
   // Top of the stack check is ip allow-list check
@@ -64,17 +68,33 @@ app.all('/*', upload.none(), (req, res, next) => {
     }
   }
 
-  // PUT, POST and PATCH operations have records in body
-  if (['PUT', 'PATCH', 'POST'].includes(req.method) && !req.body.records) {
-    return next(new RestApiError(422, { records: 'not present' }));
+  // check racm for allowed methods
+  if (conduit.racm.findIndex((method) => method === req.method) === -1) {
+    return next(
+      new RestApiError(405, {
+        [req.method]: 'not permitted',
+      })
+    );
   }
 
-  // PUT, POST and PATCH operations need fields data in body
-  if (
-    ['PUT', 'PATCH', 'POST'].includes(req.method) &&
-    req.body.records[0].fields === undefined
-  ) {
-    return next(new RestApiError(422, { fields: 'not present' }));
+  if (['PUT', 'PATCH', 'POST'].includes(req.method)) {
+    // PUT, POST and PATCH operations have records in body
+    if (!req.body.records) {
+      return next(
+        new RestApiError(422, {
+          records: 'not present',
+        })
+      );
+    }
+
+    if (req.body.records[0].fields === undefined) {
+      // PUT, POST and PATCH operations need fields data in body
+      return next(
+        new RestApiError(422, {
+          fields: 'not present',
+        })
+      );
+    }
   }
 
   // PUT and PATCH operations need id field in body
@@ -82,27 +102,24 @@ app.all('/*', upload.none(), (req, res, next) => {
     ['PUT', 'PATCH'].includes(req.method) &&
     req.body.records[0].id === undefined
   ) {
-    return next(new RestApiError(422, { id: 'not provided' }));
-  }
-
-  // check racm for allowed methods
-  if (conduit.racm.findIndex((method) => method === req.method) === -1) {
-    return next(new RestApiError(405, { [req.method]: 'not permitted' }));
+    return next(
+      new RestApiError(422, {
+        id: 'not provided',
+      })
+    );
   }
 
   // perform hidden form field validation (needed only for new record creation)
+
   if (req.method === 'POST') {
     for (let i = 0, imax = conduit.hiddenFormField.length; i < imax; i++) {
       // We`ll be using this multiple times, so store in a short variable
       const hff = conduit.hiddenFormField[i];
-      let reqHff = undefined;
-      if (req.body?.records?.[0].fields[hff.fieldName]) {
-        reqHff = req.body.records[0].fields[hff.fieldName];
-      }
+      const reqHff = req.body.records?.[0].fields[hff.fieldName];
 
       // This feature is to catch spam bots, so don't
       // send error if failure, send 200-OK instead
-      if (hff?.policy === 'drop-if-filled' && reqHff) {
+      if (hff.policy === 'drop-if-filled' && reqHff) {
         return res.sendStatus(200);
       }
 
@@ -143,14 +160,12 @@ app.all('/*', upload.none(), (req, res, next) => {
   }
 
   // Send request
-  let respStat;
   if (conduit.suriType === 'airtable') {
-    fetch(url, options)
-      .then((resp) => {
-        respStat = resp.status;
-        return resp.json();
+    pushData(url, options)
+      .then((response) => {
+        const { status, data } = response;
+        res.status(status).send(data);
       })
-      .then((json) => res.status(respStat).send(json))
       .catch((err) => next(new RestApiError(500, err)));
   }
 });
@@ -166,7 +181,6 @@ console.log(
 app.use(RestApiErrorHandler);
 
 async function fetchConduits(user) {
-  // fetch a list of conduits... be sure to run test-model, test-rest in sequence
   // before starting the proxy so we have data to test...
   try {
     const payload = await PraasAPI.conduit.list(user.id);
@@ -198,7 +212,6 @@ async function fetchConduits(user) {
 
 // launch the server and listen only when running as a standalone process
 if (!module.parent) {
-  // fetch the conduits first... but first check if our credentials are kosher with resource server
   // by logging in...
   PraasAPI.user
     .login(helpers.getProxyServerCredentials())
