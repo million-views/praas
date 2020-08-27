@@ -15,6 +15,7 @@
     "jest-dom"
   ],
   "extends": [
+    "prettier",
     "standard",
     "standard-jsx",
     "standard-react",
