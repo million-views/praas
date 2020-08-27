@@ -48,28 +48,23 @@ app.all('/*', upload.none(), (req, res, next) => {
   const clientIp = req.connection.remoteAddress;
   const allowlist = conduit.allowlist;
   if (allowlist.length > 0 && clientIp !== '127.0.0.1') {
-    let allowedIP = null;
+    let allowed = false,
+      inactive = 0;
     for (let i = 0, imax = allowlist.length; i < imax; i++) {
       const item = allowlist[i];
       if (item.status === 'active' && item.ip === clientIp) {
-        allowedIP = item;
+        allowed = true;
         break;
       }
-    }
-    if (!allowedIP) {
-      return next(
-        new RestApiError(403, {
-          client: `${clientIp} restricted`,
-        })
-      );
+
+      if (item.status === 'inactive') {
+        inactive++;
+      }
     }
 
-    if (allowedIP.status !== 'active') {
-      return next(
-        new RestApiError(403, {
-          client: `${clientIp} restricted`,
-        })
-      );
+    if (!allowed && inactive !== allowlist.length) {
+      // console.log('---->', clientIp, allowlist, inactive);
+      return next(new RestApiError(403, { client: `${clientIp} restricted` }));
     }
   }
 
