@@ -12,7 +12,7 @@ const targetTypesMap = {
 };
 
 const handleArrowKeys = setModal => event => {
-  if (event && event.key === 'Escape') setModal();
+  if (event?.key === 'Escape') setModal();
 };
 
 const Modal = ({ open, setModal, conduit, changeView }) => {

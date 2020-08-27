@@ -10,7 +10,8 @@
   keeping an eye on `Final Form`. The criteria for this decision and any
   future decision will be based on how easy it is to plug in a UI framework
   underneath the chosen forms library. From that perspective, `Final Form`
-  seems to have an edge but it was discovered after we started the porting effort to move to `RHF`.
+  seems to have an edge but it was discovered after we started the porting 
+  effort to move to `RHF`.
 
 - The good news is that both `RHF` and `Final Form` seems to be similar 
   enought that should `RHF` introduce any friction we should be able to 

@@ -63,11 +63,11 @@ export function ErrorMessage({ name, errors, message }) {
   // return JSX iff name is found in `errors`
 
   let jsx = null;
-  if (errors && Object.entries(errors).length) {
+  if (errors ?? Object.entries(errors).length) {
     // console.log('!!!!! name: ', name, ' errors: ', errors, ' message: ');
     const errorRecord = _get(errors, name, message);
 
-    if (errorRecord && errorRecord.message) {
+    if (errorRecord?.message) {
       jsx = <h6 className="error">{errorRecord.message}</h6>;
     }
   }

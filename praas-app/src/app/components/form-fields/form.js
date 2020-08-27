@@ -65,7 +65,7 @@ export function Form({ methods, children, onSubmit, errors = {}, ...rest }) {
         React.Children.map(children, child => {
           let formifiedChild = child;
           // console.log('formifiedChild', child);
-          if (child && child.props && child.props.name) {
+          if (child?.props?.name) {
             formifiedChild = React.createElement(child.type, {
               ...{
                 ...child.props,
@@ -77,7 +77,7 @@ export function Form({ methods, children, onSubmit, errors = {}, ...rest }) {
           }
 
           // add enable/disable state logic
-          if (child && child.props && child.props.type === 'submit') {
+          if (child?.props?.type === 'submit') {
             // console.log('found submit, adding state...');
             formifiedChild = React.createElement(child.type, {
               ...{
