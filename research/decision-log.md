@@ -1,23 +1,51 @@
+# Forms redux
+[20AUG2020]
+- With the advent of React Hooks, there have been a slew of new packages with
+  smaller foot print. Forms are super important in any product and they are
+  different from the rest of the application. While `Formik` remains a solid
+  library to deal with forms, it's lineage rooted in pre-hooks era presents
+  a steeper learning curve than `React Hook Form` and `Final Form`.
+
+- We bit the bullet and decided to convert to `React Hook Form` while
+  keeping an eye on `Final Form`. The criteria for this decision and any
+  future decision will be based on how easy it is to plug in a UI framework
+  underneath the chosen forms library. From that perspective, `Final Form`
+  seems to have an edge but it was discovered after we started the porting effort to move to `RHF`.
+
+- The good news is that both `RHF` and `Final Form` seems to be similar 
+  enought that should `RHF` introduce any friction we should be able to 
+  switch to `Final Form` with relative ease compared to moving to `RHF`
+  from `Formik`.
+
 # Sorting
-[31Jul2020]
-- Decided that the Resource server REST API will support requests to sort Conduits to one or more criteria
-  - Conduit endpoint supports requests to sort the primary data with a “sort” query parameter. The value for “sort” must represent sort fields of the below decided format
+[31JUL2020]
+- Decided that the Resource server REST API will support requests to sort
+  Conduits to one or more criteria
+  - Conduit endpoint supports requests to sort the primary data with a “sort”
+    query parameter. The value for “sort” must represent sort fields of the
+    below decided format
     ` GET /users?sort=first name:asc `
     ` GET /users?sort=first name:desc `
 
-  - Conduit endpoint support multiple sort fields with “comma-separated” sort fields and “colon-seperated” sort order.
+  - Conduit endpoint support multiple sort fields with “comma-separated” sort
+    fields and “colon-seperated” sort order.
     ` GET /users?sort=first name:asc,email address:desc `
 
-  - 1. When the server gets the request from the client via query parameter “sort”, the server returns data array of the response ordered according to the criteria specified.
+  - 1. When the server gets the request from the client via query parameter 
+      “sort”, the server returns data array of the response ordered according
+       to the criteria specified.
   - 2. The server will apply default sorting to the data
     - When the request parameter “sort” is not specified
     - When “sort” does not have valid sort fields.
 
 # serviceObjectKey
-[25Jul2020]
-- Decided to change "suriObjectKey" from "optional field" to "required field" in Resource server.
-  - As the "suriType" and "suri" will be matched based on the selection of "suriType", which is constant.
-  - In Resource server Data layer, REST layer changes were made to support "suriObjectKey".
+[25JUL2020]
+- Decided to change "suriObjectKey" from "optional field" to "required field"
+ in Resource server.
+  - As the "suriType" and "suri" will be matched based on the selection of 
+    "suriType", which is constant.
+  - In Resource server Data layer, REST layer changes were made to support
+    "suriObjectKey".
   - To create a Conduit, UI need to support "suriObjectKey".
 
 # Service account, resource server, OAuth2
