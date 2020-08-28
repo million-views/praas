@@ -1,16 +1,27 @@
 const fetch = require('node-fetch');
 
-async function pushData(url, options) {
-  const response = await fetch(url, options);
-  const status = response.status;
-  const responseJSON = await response.json();
+// NOTE: the interface is evolving and experimental
 
-  return {
-    status,
-    data: responseJSON,
-  };
+function Airtable({ debug = false }) {
+  function imap({ url, options }) {
+    return { okay: true, url, options };
+  }
+
+  async function transmit({ url, options }) {
+    const response = await fetch(url, options);
+    const status = response.status;
+    const data = await response.json();
+
+    return { status, data };
+  }
+
+  function omap({ status, data }) {
+    return { status, data };
+  }
+
+  return { imap, transmit, omap };
 }
 
 module.exports = {
-  pushData,
+  Airtable,
 };
