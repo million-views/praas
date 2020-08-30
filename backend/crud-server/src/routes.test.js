@@ -95,7 +95,6 @@ describe('Praas REST API', () => {
       let res = await Api().post('/users').send({ user: {} });
       expect(res.status).to.equal(422);
 
-      // empty field values
       res = await Api()
         .post('/users')
         .send({ user: { firstName: '', email: '' } });
@@ -395,22 +394,167 @@ describe('Praas REST API', () => {
         expect(res.body.conduits.length).to.equal(conf.conduitsPerPage);
       });
 
-      it('should support sorting', async function () {
-        // sort by allowed fields
-        const res1 = await Api()
-          .get('/conduits')
-          .query({
-            start: ctId2 + 1,
-            count: conf.conduitsPerPage,
-            // sort: ['description:desc', 'id:asc']
-            sort: 'last name:desc,id:asc,created at:asc, createdAt:foo',
-            // sort: 'last name:desc'
-            // sort: 'last name'
-          })
-          .set('Authorization', `Token ${jakeUser.token}`);
-        expect(res1.status).to.equal(200);
-        expect(res1.body.conduits.length).to.equal(conf.conduitsPerPage);
-        // ignore unknown field
+      context('Sorting', () => {
+        before(async () => {
+          const activeConduit = {
+            conduit: {
+              description: 'test description',
+            },
+          };
+          await Api()
+            .patch(`/conduits/${ctId1}`)
+            .set('Authorization', `Token ${jakeUser.token}`)
+            .send(activeConduit);
+        });
+
+        it('should support default supporting based on updatedAt:DESC', async () => {
+          const res = await Api()
+            .get('/conduits')
+            .query({ start: ctId1, count: conf.conduitsPerPage })
+            .set('Authorization', `Token ${jakeUser.token}`);
+          const { conduits } = res.body;
+          expect(res.status).to.equal(200);
+          // since we update the conduit in the before section, it should be the first conduit
+          expect(conduits[0].id).to.equal(ctId1);
+          expect(Date.parse(conduits[0].updatedAt)).to.be.greaterThan(
+            Date.parse(conduits[1].updatedAt)
+          );
+          expect(Date.parse(conduits[1].updatedAt)).to.be.greaterThan(
+            Date.parse(conduits[2].updatedAt)
+          );
+          expect(
+            Date.parse(conduits[conduits.length - 2].updatedAt)
+          ).to.be.greaterThan(
+            Date.parse(conduits[conduits.length - 1].updatedAt)
+          );
+        });
+
+        it('can sort based on createdAt', async () => {
+          const res = await Api()
+            .get('/conduits')
+            .query({
+              start: ctId1,
+              count: conf.conduitsPerPage,
+              sort: 'createdAt:DESC',
+            })
+            .set('Authorization', `Token ${jakeUser.token}`);
+          const { conduits: conduitsDescending } = res.body;
+          expect(res.status).to.equal(200);
+          expect(Date.parse(conduitsDescending[0].createdAt)).to.be.greaterThan(
+            Date.parse(conduitsDescending[1].createdAt)
+          );
+          // tests if the sorting works right using createdAt and not using updatedAt
+          expect(conduitsDescending[0].id).to.not.equal(ctId1);
+          const res1 = await Api()
+            .get('/conduits')
+            .query({
+              start: ctId1,
+              count: conf.conduitsPerPage,
+              sort: 'createdAt:ASC',
+            })
+            .set('Authorization', `Token ${jakeUser.token}`);
+          const { conduits: conduitsAscending } = res1.body;
+          expect(res1.status).to.equal(200);
+          expect(Date.parse(conduitsAscending[0].createdAt)).to.be.lessThan(
+            Date.parse(conduitsAscending[1].createdAt)
+          );
+        });
+
+        it('can sort based on description', async () => {
+          const res = await Api()
+            .get('/conduits')
+            .query({
+              start: ctId1,
+              count: conf.conduitsPerPage,
+              sort: 'description:DESC',
+            })
+            .set('Authorization', `Token ${jakeUser.token}`);
+          const { conduits: conduitsDescending } = res.body;
+          expect(res.status).to.equal(200);
+          expect(
+            conduitsDescending[0].description >
+              conduitsDescending[1].description
+          ).to.equal(true);
+          const res1 = await Api()
+            .get('/conduits')
+            .query({
+              start: ctId1,
+              count: conf.conduitsPerPage,
+              sort: 'description:asc',
+            })
+            .set('Authorization', `Token ${jakeUser.token}`);
+          const { conduits: conduitsAscending } = res1.body;
+          expect(res1.status).to.equal(200);
+          expect(
+            conduitsAscending[0].description < conduitsAscending[1].description
+          ).to.equal(true);
+        });
+        it('can sort based on status', async () => {
+          const res = await Api()
+            .get('/conduits')
+            .query({
+              start: ctId1,
+              count: conf.conduitsPerPage,
+              sort: 'status:DESC',
+            })
+            .set('Authorization', `Token ${jakeUser.token}`);
+          const { conduits: conduitsDescending } = res.body;
+
+          expect(res.status).to.equal(200);
+          expect(conduitsDescending[0].status).to.equal('inactive');
+          const res1 = await Api()
+            .get('/conduits')
+            .query({
+              start: ctId1,
+              count: conf.conduitsPerPage,
+              sort: 'status:ASC',
+            })
+            .set('Authorization', `Token ${jakeUser.token}`);
+          const { conduits: conduitsAscending } = res1.body;
+
+          expect(res1.status).to.equal(200);
+          expect(conduitsAscending[0].status).to.equal('active');
+        });
+        it('can sort based on id', async () => {
+          const res = await Api()
+            .get('/conduits')
+            .query({
+              start: ctId1,
+              count: conf.conduitsPerPage,
+              sort: 'id:DESC',
+            })
+            .set('Authorization', `Token ${jakeUser.token}`);
+          expect(res.status).to.equal(200);
+          expect(res.body.conduits[0].id).to.be.greaterThan(
+            res.body.conduits[1].id
+          );
+          const res1 = await Api()
+            .get('/conduits')
+            .query({
+              start: ctId1,
+              count: conf.conduitsPerPage,
+              sort: 'id:ASC',
+            })
+            .set('Authorization', `Token ${jakeUser.token}`);
+          expect(res1.status).to.equal(200);
+          expect(res1.body.conduits[0].id).to.be.lessThan(
+            res1.body.conduits[1].id
+          );
+        });
+        it('can sort based on curi', async () => {
+          const res = await Api()
+            .get('/conduits')
+            .query({
+              start: ctId1,
+              count: conf.conduitsPerPage,
+              sort: 'curi:DESC',
+            })
+            .set('Authorization', `Token ${jakeUser.token}`);
+          expect(res.status).to.equal(200);
+          const receivedCuri = res.body.conduits.map((conduit) => conduit.curi);
+          const sortedCuri = receivedCuri.sort();
+          expect(receivedCuri).to.equal(sortedCuri);
+        });
       });
     });
 
