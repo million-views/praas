@@ -19,3 +19,6 @@ __snapshots__
 
 # test-data
 .test-data-curi.json
+
+# .secrets/*.json
+.secrets/*.json

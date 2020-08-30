@@ -1,0 +1,10 @@
+This is a *temporary* arrangement to get gsheets support working while
+we also actively change the resource server API and implement the necessary
+changes to the UI.
+
+To test gsheets support, download you service account .json secrets file
+and move it to this location. And then in the UI, for suriApiKey type in
+the name of the file - do not include the path!
+
+REMEMBER to not commit the json file itself!!! The .gitignore file has been
+setup to ignore *.json files in this folder. 
