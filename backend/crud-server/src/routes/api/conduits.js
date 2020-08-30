@@ -116,24 +116,26 @@ router.get('/', auth.required, async (req, res, next) => {
     const proxyUser = req.app.locals.proxyUser;
 
     // sorting
-    let order = undefined;
+    // default ordering is based on createdAt and updatedAt
+    let order = [['updatedAt', 'DESC']];
 
     if (query.sort) {
       if (typeof query.sort === 'string') {
-        query.sort = query.sort.split(',');
+        query.sort = query.sort.split(',').map((sortItem) => sortItem.trim());
       }
 
       if (Array.isArray(query.sort)) {
         order = query.sort
-          .map((f) => {
+          .filter((f) => {
             f = f.trim().split(':');
-            if (f[0].includes(sortable) && f[1].match(/asc|desc/i)) return f;
+            if (sortable.includes(f[0]) && f[1].match(/asc|desc/i)) return f;
             return [];
           })
-          .filter((f) => f.length);
+          .map((o) => {
+            return o.split(':');
+          });
       }
     }
-
     if (Number.isSafeInteger(start) && Number.isSafeInteger(count)) {
       conduits = await Conduit.findAll({
         where: {
@@ -148,7 +150,10 @@ router.get('/', auth.required, async (req, res, next) => {
     } else {
       if (proxyUser?.id === req.payload.id) {
         // fetch conduits in active status; check status enums in model.js
-        conduits = await Conduit.findAll({ where: { status: 'active' } });
+        conduits = await Conduit.findAll({
+          where: { status: 'active' },
+          order,
+        });
       } else {
         conduits = await Conduit.findAll({
           where: { userId: req.payload.id },

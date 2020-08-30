@@ -172,6 +172,8 @@ module.exports = (db, DataTypes) => {
       description: this.description,
       hiddenFormField: this.hiddenFormField,
       userId: this.userId,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
     };
   };
 
