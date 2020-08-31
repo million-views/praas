@@ -56,27 +56,32 @@ module.exports = (db, DataTypes) => {
     return this.hash === hash;
   };
 
-  User.prototype.generateJWT = function () {
-    const today = new Date();
-    const exp = new Date(today);
-    exp.setDate(today.getDate() + 60);
+  // valid for 1 hour
+  User.prototype.generateJWT = function (exp, iat) {
     const payload = {
       id: this.id,
       email: this.email,
-      exp: parseInt(exp.getTime() / 1000),
+      exp,
+      iat,
     };
 
     return jwt.sign(payload, config.system.settings.secret);
   };
 
   User.prototype.toAuthJSON = function () {
-    const tkn = this.generateJWT();
+    const iat = Math.floor(new Date().getTime() / 1000);
+    const exp = iat + 3600; // valid for 1 hour
+    // const exp = iat + 20; // valid for 20 second
+
+    const tkn = this.generateJWT(exp, iat);
     return {
       id: this.id,
       firstName: this.firstName,
       lastName: this.lastName,
       email: this.email,
       token: tkn,
+      type: 'Bearer',
+      expiresAt: exp,
     };
   };
 
