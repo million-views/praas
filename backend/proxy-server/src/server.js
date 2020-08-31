@@ -4,6 +4,7 @@ const gateway = require('./gateway');
 const { RestApiErrorHandler } = require('../../lib/error');
 const helpers = require('../../lib/helpers');
 const PraasAPI = require('../../lib/praas');
+const { getToken } = require('./access-token');
 const conf = require('../../config').system.settings;
 
 // store conduits indexed by curi in app.locals for lookup later...
@@ -57,8 +58,8 @@ if (!module.parent) {
   // by logging in...
   (async () => {
     try {
-      const credentials = helpers.getProxyServerCredentials();
-      const data = await PraasAPI.user.login(credentials);
+      const { user: credentials } = helpers.getProxyServerCredentials();
+      const data = await getToken('conduits', credentials);
       // save our token...
       global.localStorage.setItem('user', JSON.stringify(data.user));
       fetchConduits(data.user);

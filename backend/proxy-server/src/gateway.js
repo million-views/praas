@@ -4,6 +4,7 @@ const cors = require('cors');
 
 const config = require('../../config');
 const { RestApiError } = require('../../lib/error');
+const { getToken } = require('./access-token');
 const { Airtable } = require('./integrations/airtable');
 
 // array of middleware that go in the front of stack
