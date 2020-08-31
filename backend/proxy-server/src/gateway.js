@@ -2,8 +2,8 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const cors = require('cors');
 
-const { RestApiError } = require('../../lib/error');
 const config = require('../../config');
+const { RestApiError } = require('../../lib/error');
 const { Airtable } = require('./integrations/airtable');
 
 // array of middleware that go in the front of stack
@@ -11,10 +11,9 @@ const { Airtable } = require('./integrations/airtable');
 // - order matters but not verified to be correct
 // - e.g. should cors go first?
 function head(options = {}) {
-  const frontOptions = Object.assign(
-    { urlencoded: { extended: true } },
-    { ...options.urlencoded }
-  );
+  const frontOptions = {
+    urlencoded: options.urlencoded ?? { extended: true },
+  };
 
   const upload = multer();
   return [
@@ -167,10 +166,10 @@ function middle({ cmap = [], debug = false }) {
     }
 
     if (req.method === 'POST') {
-      const conduit = res.locals.conduit;
-      for (let i = 0, imax = conduit.hiddenFormField.length; i < imax; i++) {
+      const hiddenFormField = res.locals.conduit.hiddenFormField;
+      for (let i = 0, imax = hiddenFormField.length; i < imax; i++) {
         // We`ll be using this multiple times, so store in a short variable
-        const hff = conduit.hiddenFormField[i];
+        const hff = hiddenFormField[i];
         const reqHff = req.body.records?.[0].fields[hff.fieldName];
 
         // This feature is to catch spam bots, so don't

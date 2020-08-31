@@ -55,21 +55,19 @@ async function fetchConduits(user) {
 // launch the server and listen only when running as a standalone process
 if (!module.parent) {
   // by logging in...
-  PraasAPI.user
-    .login(helpers.getProxyServerCredentials())
-    .then(async (data) => {
-      // console.log('logged in?', data);
+  (async () => {
+    try {
+      const credentials = helpers.getProxyServerCredentials();
+      const data = await PraasAPI.user.login(credentials);
       // save our token...
-
-      global.localStorage.setItem('user', JSON.stringify({ ...data.user }));
-
+      global.localStorage.setItem('user', JSON.stringify(data.user));
       fetchConduits(data.user);
       setInterval(() => fetchConduits(data.user), conf.cacheRefreshInterval);
-    })
-    .catch((error) => {
-      console.log('unexpected... ', error);
+    } catch (error) {
+      console.log('unexpected...', error);
       process.exit(1);
-    });
+    }
+  })();
 
   // start listening only after logging in to the resource server...
   // if we can't login then there's no point in running the proxy
