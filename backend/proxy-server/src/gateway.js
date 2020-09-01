@@ -4,8 +4,17 @@ const cors = require('cors');
 
 const config = require('../../config');
 const { RestApiError } = require('../../lib/error');
-const { getToken } = require('./access-token');
+const tokenService = require('./token-service');
 const { Airtable } = require('./integrations/airtable');
+
+// cache frequently used objects
+// service endpoint base (includes hostname and path to service, if any)
+const SEP_BASE = {};
+config.targets.settings.forEach((i) => (SEP_BASE[i.type] = i.suri));
+
+// declare these once
+const opsNeedingBody = ['PUT', 'POST', 'PATCH']; // have records in body ?
+const opsNeedingId = ['PUT', 'PATCH']; // have id field in body ?
 
 // array of middleware that go in the front of stack
 // NOTE:
@@ -28,10 +37,6 @@ function head(options = {}) {
 // array of middleware organized by feature and order of precedence
 // if any of these get big and complex they can be moved out.
 function middle({ cmap = [], debug = false }) {
-  // cache frequently used objects
-  const SURI = {};
-  config.targets.settings.forEach((i) => (SURI[i.type] = i.suri));
-
   if (debug) {
     console.log(`baking gateway middleware for ${cmap.length} conduits`);
   }
@@ -117,9 +122,6 @@ function middle({ cmap = [], debug = false }) {
     next(); // all good, proceed to next in chain!
   }
 
-  // declare these once
-  const opsNeedingBody = ['PUT', 'POST', 'PATCH']; // have records in body ?
-  const opsNeedingId = ['PUT', 'PATCH']; // have id field in body ?
   function apiComplianceCheck(req, res, next) {
     const records = req.body.records;
     if (debug) {
@@ -151,6 +153,12 @@ function middle({ cmap = [], debug = false }) {
           id: 'not provided',
         })
       );
+    }
+
+    // GET and DELETE don't need request body
+    // FIXME! is this the right place to do this?
+    if (!opsNeedingBody.includes(req.method)) {
+      delete req.body;
     }
 
     next(); // all good, proceed to next in chain!
@@ -192,45 +200,9 @@ function middle({ cmap = [], debug = false }) {
     next(); // all good, proceed to next in chain!
   }
 
-  function prepareRequest(req, res, next) {
-    if (debug) {
-      console.log(`prepare-request: ${req.method}`);
-    }
-
-    const conduit = res.locals.conduit;
-    let url = SURI[conduit.suriType];
-    if (conduit.suriObjectKey) {
-      // mdn strongly recommends + or += operator for performance
-      url += `${conduit.suriObjectKey}`;
-    }
-    url += req.path;
-
-    const options = {
-      method: req.method,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${conduit.suriApiKey}`,
-      },
-    };
-
-    // GET and DELETE don't need request body
-    if (opsNeedingBody.includes(req.method)) {
-      options.body = JSON.stringify(req.body);
-    }
-
-    // Multi DELETE to be sent as query paramters
-    if (req.method === 'DELETE' && req.query.records) {
-      url += req.query.records.reduce((q, i) => q + `records[]=${i}&`, '?');
-    }
-
-    res.locals.inbound = { url, options };
-    next(); // all good, proceed to next in chain!
-  }
-
   // prettier-ignore
   return [
     preflightCheck, allowlistCheck, racmCheck, apiComplianceCheck, hffCheck,
-    prepareRequest,
   ];
 }
 
@@ -249,8 +221,26 @@ function tail({ debug = false }) {
 
   return async function proxy(req, res, next) {
     const conduit = res.locals.conduit;
-    const inbound = res.locals.inbound;
     const nts = ntsHandlers[conduit.suriType];
+    const token = await tokenService.getAccessToken(
+      conduit.suriType,
+      conduit.suriApiKey
+    );
+
+    // scoped container...
+    const inbound = {
+      suri: SEP_BASE[conduit.suriType], // base URI to service endpoint
+      container: conduit.suriObjectKey, // sheet, table, inbox, bucket, folder, ...
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token.user.token}`,
+      },
+
+      method: req.method,
+      path: req.path,
+      query: req.query,
+      body: req.body,
+    };
 
     if (!nts) {
       next(
@@ -263,11 +253,11 @@ function tail({ debug = false }) {
         const { okay, ...rest } = nts.imap(inbound);
         if (okay) {
           const response = await nts.transmit(rest);
-          const { status, data } = nts.omap(response);
+          const { status, data } = await nts.omap(response);
           res.status(status).send(data);
         }
       } catch (e) {
-        next(new RestApiError(500, e));
+        next(e);
       }
     }
   };

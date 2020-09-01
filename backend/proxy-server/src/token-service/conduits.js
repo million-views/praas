@@ -8,9 +8,8 @@ function ConduitsAccessToken({ debug = false }) {
     }
     const { email, password } = credentials;
     if (!email || !password) {
-      throw new RestApiError(500, {
-        email: 'required',
-        password: 'required',
+      throw new RestApiError(422, {
+        credentials: 'email or password is invalid',
         error: 'INVALID_CREDENTIALS',
       });
     }

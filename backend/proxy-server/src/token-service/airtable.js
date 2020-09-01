@@ -4,6 +4,10 @@ const { RestApiError } = require('../../../lib/error');
 // an expiry at the moment
 function AirtableAccessToken({ debug = false }) {
   async function requestAccessToken(credentials) {
+    if (debug) {
+      console.log('airtable-access-token: ', credentials);
+    }
+
     if (!credentials) {
       throw new RestApiError(422, {
         error: 'INVALID_CREDENTIALS',
@@ -15,7 +19,6 @@ function AirtableAccessToken({ debug = false }) {
 
     const token = {
       user: {
-        email: 'proxy@example.com',
         token: credentials,
         type: 'Bearer',
         expiresAt: iat + 3600,

@@ -123,5 +123,5 @@ function praas() {
   };
 }
 
-// export default praas;
+// prass-api is a 'singleton';
 module.exports = praas();
