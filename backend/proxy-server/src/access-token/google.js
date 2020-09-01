@@ -4,7 +4,6 @@ const jws = require('jws');
 
 const afetch = require('../../../lib/error');
 const { RestApiError } = require('../../../lib/error');
-const { response } = require('express');
 
 const GTOKEN_HOST = 'https://www.googleapis.com';
 const GTOKEN_PATH = '/oauth2/v4/token';

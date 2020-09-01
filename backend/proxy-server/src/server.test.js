@@ -218,11 +218,15 @@ describe('Testing Gateway Server...', async () => {
 
     context('Validating RACM', () => {
       it('Should reject method not present in RACM list', async function () {
-        const res = await proxyServer().get('/').set('Host', dropConduit.host);
+        const res = await proxyServer()
+          .get('/')
+          .set('Host', dropConduit.host);
         expect(res.status).to.equal(405);
       });
       it('Should allow method present in RACM list', async function () {
-        const res = await proxyServer().get('/').set('Host', passConduit.host);
+        const res = await proxyServer()
+          .get('/')
+          .set('Host', passConduit.host);
         expect(res.status).to.not.equal(405);
       });
     });

@@ -440,9 +440,9 @@ describe('Praas REST API', () => {
             .set('Authorization', `Token ${jakeUser.token}`);
           const { conduits: conduitsDescending } = res.body;
           expect(res.status).to.equal(200);
-          expect(Date.parse(conduitsDescending[0].createdAt)).to.be.greaterThan(
-            Date.parse(conduitsDescending[1].createdAt)
-          );
+          expect(
+            Date.parse(conduitsDescending[0].createdAt)
+          ).to.be.greaterThan(Date.parse(conduitsDescending[1].createdAt));
           // tests if the sorting works right using createdAt and not using updatedAt
           expect(conduitsDescending[0].id).to.not.equal(ctId1);
           const res1 = await Api()
@@ -486,7 +486,8 @@ describe('Praas REST API', () => {
           const { conduits: conduitsAscending } = res1.body;
           expect(res1.status).to.equal(200);
           expect(
-            conduitsAscending[0].description < conduitsAscending[1].description
+            conduitsAscending[0].description <
+              conduitsAscending[1].description
           ).to.equal(true);
         });
         it('can sort based on status', async () => {
@@ -551,7 +552,9 @@ describe('Praas REST API', () => {
             })
             .set('Authorization', `Token ${jakeUser.token}`);
           expect(res.status).to.equal(200);
-          const receivedCuri = res.body.conduits.map((conduit) => conduit.curi);
+          const receivedCuri = res.body.conduits.map(
+            (conduit) => conduit.curi
+          );
           const sortedCuri = receivedCuri.sort();
           expect(receivedCuri).to.equal(sortedCuri);
         });
@@ -575,7 +578,9 @@ describe('Praas REST API', () => {
         expect(res.status).to.equal(200);
         expect(res.body.conduit).to.not.eql(conduit.body.conduit);
         expect(res.body.conduit.suriApiKey).to.equal(putData.suriApiKey);
-        expect(res.body.conduit.suriObjectKey).to.equal(putData.suriObjectKey);
+        expect(res.body.conduit.suriObjectKey).to.equal(
+          putData.suriObjectKey
+        );
         expect(res.body.conduit.suriType).to.equal(putData.suriType);
         expect(res.body.conduit.allowlist).to.eql(putData.allowlist);
         expect(res.body.conduit.racm).to.eql(putData.racm);

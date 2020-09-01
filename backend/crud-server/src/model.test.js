@@ -1559,7 +1559,9 @@ describe('PraaS', () => {
               objCdt
                 .save()
                 .then(() => {
-                  done(Error('Conduit saved with undefined allowlist status'));
+                  done(
+                    Error('Conduit saved with undefined allowlist status')
+                  );
                 })
                 .catch((e) => {
                   expect(e.name).to.equal('SequelizeValidationError');
