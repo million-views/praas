@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const jws = require('jws');
 
-const afetch = require('../../../lib/error');
+const afetch = require('../../../lib/afetch');
 const { RestApiError } = require('../../../lib/error');
 
 const GTOKEN_HOST = 'https://www.googleapis.com';
@@ -24,7 +24,7 @@ const GTOKEN_PATH = '/oauth2/v4/token';
 
 function GoogleAccessToken({
   debug = false,
-  vault = './secrets',
+  vault = '.secrets',
   scope = ['https://www.googleapis.com/auth/spreadsheets'],
 }) {
   if (Array.isArray(scope)) {
@@ -35,6 +35,7 @@ function GoogleAccessToken({
     const keyFileName = path.resolve(vault, credentials);
     const contents = fs.readFileSync(keyFileName, 'utf8');
     const json = JSON.parse(contents);
+
     const privateKey = json.private_key;
     const clientEmail = json.client_email;
     if (!privateKey || !clientEmail) {
@@ -56,11 +57,22 @@ function GoogleAccessToken({
       },
       claims
     );
-    const signedJWT = jws.sign({
-      header: { alg: 'RS256' },
-      payload,
-      secret: privateKey,
-    });
+    let signedJWT;
+    try {
+      signedJWT = jws.sign({
+        header: { alg: 'RS256' },
+        payload,
+        secret: privateKey,
+      });
+    } catch (e) {
+      const errors = {
+        library: e.library,
+        function: e.function,
+        reason: e.reason,
+        code: e.code,
+      };
+      throw new RestApiError(500, errors);
+    }
 
     const headers = {
       Accept: 'application/json',
@@ -94,16 +106,28 @@ function GoogleAccessToken({
 
       return token;
     } catch (error) {
-      const body = error?.response?.data ?? {};
-      if (body.error) {
-        const desc = body.error_description ?? '';
-        error.message = `${body.error}${desc}`;
-      }
-      // FIXME! debug to figure out what the status code should be
-      throw new RestApiError(500, error);
+      const body = await error.json();
+      throw new RestApiError(error.status, body);
     }
   }
   return { requestAccessToken };
 }
 
+if (require.main === module) {
+  const args = process.argv.slice(2);
+  if (args.length === 1) {
+    console.log('requesting access token...');
+    const gac = GoogleAccessToken(true);
+    (async function () {
+      try {
+        const token = await gac.requestAccessToken(args[0]);
+        console.log(token);
+      } catch (e) {
+        console.log(e);
+      }
+    })();
+  } else {
+    console.log('google <secret-file-name>');
+  }
+}
 module.exports = { GoogleAccessToken };
