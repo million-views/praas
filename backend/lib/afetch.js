@@ -60,7 +60,7 @@ async function afetch(host, path, options) {
       } else {
         // caller wants server errors to be treated as error
         // eslint-disable-next-line prefer-promise-reject-errors
-        return Promise.reject({ ...response });
+        return Promise.reject(response);
       }
     }
   } catch (error) {
