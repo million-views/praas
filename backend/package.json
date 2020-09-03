@@ -23,7 +23,11 @@
     "test-gateway": "mocha --exit proxy-server/src/server.test.js",
     "start-resource-server": "node node --unhandled-rejections=strict crud-server/src/server.js",
     "start-gateway-server": "node --unhandled-rejections=strict proxy-server/src/server.js",
-    "createdb": "node crud-server/src/createdb.js"
+    "createdb": "node crud-server/src/createdb.js",
+    "resource-server-api-doc": "redoc-cli bundle spec/conduits.api.v1.yaml --output api-docs/resource-server.html",
+    "api-doc-reload": "live-server --watch=api-docs/ --open=api-docs/",
+    "api-doc-watch": "watch \"npm run resource-server-api-doc\" ./spec",
+    "api-doc": "concurrently \"npm run api-doc-reload\" \"npm run api-doc-watch\""
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -47,6 +51,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
+    "concurrently": "^5.3.0",
     "eslint": "^7.5.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-config-standard": "^14.1.1",
@@ -57,9 +62,12 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "faker": "^4.1.0",
+    "live-server": "^1.2.1",
     "mocha": "^8.1.1",
     "nyc": "^15.1.0",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "redoc-cli": "^0.9.12",
+    "watch": "^1.0.2"
   },
   "engines": {
     "node": ">=14"
