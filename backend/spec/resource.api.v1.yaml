@@ -9,7 +9,7 @@ info:
   contact:
     name: Million Views
     url: 'https://www.m5nv.com'
-    email: kavitha@m5nv.com
+    email: hello@m5nv.com
   license:
     url: 'https://github.com/million-views/praas/blob/master/LICENSE'
     name: MIT
@@ -48,7 +48,7 @@ paths:
         in: path
         required: true
         schema: 
-          type: number
+          type: integer
           example: 30
 
       responses:
@@ -110,10 +110,10 @@ paths:
           in: path
           required: true
           schema: 
-            type: number
+            type: integer
             example: 30   
         - in: body
-          name: body
+          name: conduit
           description: Conduit object that needs to be updated
           required: true
           schema:
@@ -139,7 +139,7 @@ paths:
           in: path
           required: true
           schema: 
-            type: number
+            type: integer
             example: 30      
       responses:
         '200':
@@ -192,7 +192,7 @@ paths:
         in: path
         required: true
         schema: 
-          type: number
+          type: integer
           example: 11
 
       responses:
@@ -220,7 +220,7 @@ paths:
         in: path
         required: true
         schema: 
-          type: number
+          type: integer
           example: 11
       - in: body
         name: user
@@ -247,32 +247,32 @@ paths:
           - user
         consumes:
         - application/json
-      produces:
-        - application/json
-      parameters:
-      - name: email
-        in: path
-        required: true
-        schema: 
-          type: email
+        produces:
+          - application/json
+        parameters:
+        - name: email
+          in: path
+          required: true
+          schema: 
+            type: email
+            schema:
+              $ref: '#/components/schemas/login'
+        - name: password
+          in: path
+          required: true
           schema:
-            $ref: '#/components/schemas/login'
-      - name: password
-        in: path
-        required: true
-        schema:
-          type: password
-          schema:
-            $ref: '#/components/schemas/login'
-      responses:
-        '200':
-          description: User loggedin
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/login'
-        '422':
-          description: Invalid input
+            type: password
+            schema:
+              $ref: '#/components/schemas/login'
+        responses:
+          '200':
+            description: User loggedin
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/login'
+          '422':
+            description: Invalid input
         
   
   /users:
@@ -336,7 +336,7 @@ components:
           description: System generated conduit URI
           nullable: false
         allowlist:
-          type: json
+          type: object
           required: 
             - ip
             - status
@@ -351,7 +351,7 @@ components:
               type: string
               default: active
         racm:
-          type: json
+          type: object
           description: Request Access Control Map
           nullable: false
           default: get
@@ -377,11 +377,11 @@ components:
           nullable: false
           default: inactive
         description:
-          type: text
+          type: string
           description: Notes about the conduit
           nullable: true
         hiddenFormField:
-          type: json
+          type: object
           description: To avoid bot spamming or manage campaigns
           nullable: true
           properties:
@@ -452,10 +452,28 @@ components:
           nullable: false
           example: testpa$$
 
-  securitySchemes: {}
-
 tags:
   - name: conduit
     description: API containing conduit data
   - name: user
     description: Conduit user
+  - name: conduit_model
+    x-displayName: The Conduit Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/conduit" />
+  - name: user_model
+    x-displayName: The User Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/user" />
+
+x-tagGroups:
+  - name: Conduit Management
+    tags:
+      - conduit
+  - name: User Management
+    tags:
+      - user
+  - name: Models
+    tags:
+      - conduit_model
+      - user_model

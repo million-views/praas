@@ -24,7 +24,7 @@
     "start-resource-server": "node node --unhandled-rejections=strict crud-server/src/server.js",
     "start-gateway-server": "node --unhandled-rejections=strict proxy-server/src/server.js",
     "createdb": "node crud-server/src/createdb.js",
-    "resource-server-api-doc": "redoc-cli bundle spec/conduits.api.v1.yaml --output api-docs/resource-server.html",
+    "resource-server-api-doc": "redoc-cli bundle spec/resource.api.v1.yaml --output api-docs/resource.html",
     "api-doc-reload": "live-server --watch=api-docs/ --open=api-docs/",
     "api-doc-watch": "watch \"npm run resource-server-api-doc\" ./spec",
     "api-doc": "concurrently \"npm run api-doc-reload\" \"npm run api-doc-watch\""
