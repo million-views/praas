@@ -61,9 +61,17 @@ function TokenService(options) {
 
   // returns true if token is undefined or will expire in next 15 seconds
   function expired(token) {
+    if (options.debug) {
+      console.log(
+        'token expiresAt: ',
+        token?.user?.expiresAt,
+        ' cached: ',
+        token?.cached
+      );
+    }
     const now = Math.floor(new Date().getTime() / 1000);
-    if (token?.expiresAt) {
-      return now >= token.expiresAt - 15;
+    if (token?.user?.expiresAt) {
+      return now >= token.user.expiresAt - 15;
     } else {
       return true;
     }

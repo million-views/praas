@@ -71,7 +71,7 @@ module.exports = (db, DataTypes) => {
   User.prototype.toAuthJSON = function () {
     const iat = Math.floor(new Date().getTime() / 1000);
     const exp = iat + 3600; // valid for 1 hour
-    // const exp = iat + 20; // valid for 20 second
+    // const exp = iat + 60; // valid for 60 seconds
 
     const tkn = this.generateJWT(exp, iat);
     return {

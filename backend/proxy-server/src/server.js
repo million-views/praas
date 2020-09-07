@@ -5,6 +5,7 @@ const { RestApiErrorHandler } = require('../../lib/error');
 const helpers = require('../../lib/helpers');
 const PraasAPI = require('../../lib/praas');
 const tokenService = require('./token-service');
+const user = require('../../crud-server/src/models/user');
 const conf = require('../../config').system.settings;
 
 // store conduits indexed by curi in app.locals for lookup later...
@@ -23,10 +24,28 @@ console.log(
   } mode...`
 );
 
-async function fetchConduits(user) {
+const { user: credentials } = helpers.getProxyServerCredentials();
+
+async function loginToResourceServer() {
+  const data = await tokenService.getAccessToken('conduits', credentials);
+  // save our token...
+  if (!data.cached) {
+    // this a fresh access token that is needed by API
+    console.log('access-token refreshed!');
+    globalThis.localStorage.setItem('user', JSON.stringify(data.user));
+  }
+
+  return data.user;
+}
+
+// const loginOnce = once(loginToResourceServer);
+
+async function fetchConduits() {
   // before starting the proxy so we have data to test...
+  const user = await loginToResourceServer();
+
   try {
-    const payload = await PraasAPI.conduit.list(user.id);
+    const { data: payload } = await PraasAPI.conduit.list(user.id);
     const conduits = payload.conduits;
 
     // remove conduits which are not found in the list, from the cache
@@ -58,12 +77,8 @@ if (!module.parent) {
   // by logging in...
   (async () => {
     try {
-      const { user: credentials } = helpers.getProxyServerCredentials();
-      const data = await tokenService.getAccessToken('conduits', credentials);
-      // save our token...
-      global.localStorage.setItem('user', JSON.stringify(data.user));
-      fetchConduits(data.user);
-      setInterval(() => fetchConduits(data.user), conf.cacheRefreshInterval);
+      fetchConduits();
+      setInterval(() => fetchConduits(), conf.cacheRefreshInterval);
     } catch (error) {
       console.log('unexpected...', error);
       process.exit(1);

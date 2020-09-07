@@ -37,11 +37,12 @@ function headers() {
 
 // This handles server response with a status code other than 2xx...
 // ... which is distinct from network and other errors when using fetch
-async function onServerError(response) {
+async function handleServerErrorResponse(response, request) {
   const errors = await response.json();
   console.log('error: ', errors);
   if (response.status === 401) {
     // token expired? clear our view of logged in status
+    console.log('access-token expired!');
     invalidateSession();
   }
 
@@ -57,20 +58,22 @@ function praas() {
   return {
     user: {
       register(data) {
-        return afetch(API_HOST, '/users', {
+        return afetch(API_HOST, {
           method: 'POST',
+          path: '/users',
           headers: headers(),
           body: JSON.stringify(data),
           // parameters: { start: 10, count: 20 }
-          onError: onServerError,
+          onNotOk: handleServerErrorResponse,
         });
       },
       login(data) {
-        return afetch(API_HOST, '/users/login', {
+        return afetch(API_HOST, {
           method: 'POST',
+          path: '/users/login',
           headers: headers(),
           body: JSON.stringify(data),
-          onError: onServerError,
+          onNotOk: handleServerErrorResponse,
         });
       },
       logout() {
@@ -79,44 +82,49 @@ function praas() {
     },
     conduit: {
       add(data) {
-        return afetch(API_HOST, '/conduits', {
+        return afetch(API_HOST, {
           method: 'POST',
+          path: '/conduits',
           headers: headers(),
           body: JSON.stringify(data),
-          onError: onServerError,
+          onNotOk: handleServerErrorResponse,
         });
       },
       update(data) {
         const cid = data.conduit.id;
-        return afetch(API_HOST, `/conduits/${cid}`, {
+        return afetch(API_HOST, {
           method: 'PATCH',
+          path: `/conduits/${cid}`,
           headers: headers(),
           body: JSON.stringify(data),
-          onError: onServerError,
+          onNotOk: handleServerErrorResponse,
         });
       },
       get(id) {
-        return afetch(API_HOST, `/conduits/${id}`, {
+        return afetch(API_HOST, {
           method: 'GET',
+          path: `/conduits/${id}`,
           headers: headers(),
-          onError: onServerError,
+          onNotOk: handleServerErrorResponse,
         });
       },
       list(_id) {
         // id is not used
-        return afetch(API_HOST, '/conduits', {
+        return afetch(API_HOST, {
           method: 'GET',
+          path: '/conduits',
           headers: headers(),
-          onError: onServerError,
+          onNotOk: handleServerErrorResponse,
         });
       },
       delete(data) {
         console.log('data: ', data);
         const cid = data;
-        return afetch(API_HOST, `/conduits/${cid}`, {
+        return afetch(API_HOST, {
           method: 'DELETE',
+          path: `/conduits/${cid}`,
           headers: headers(),
-          onError: onServerError,
+          onNotOk: handleServerErrorResponse,
         });
       },
     },
