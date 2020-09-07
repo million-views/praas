@@ -24,21 +24,6 @@ console.log(
   } mode...`
 );
 
-// TODO:
-// - move this to `tiny` lib when we go mono repo
-function once(fn, context) {
-  let result;
-
-  return async function () {
-    if (fn) {
-      result = await fn.apply(context || this, arguments);
-      fn = null;
-    }
-
-    return result;
-  };
-}
-
 const { user: credentials } = helpers.getProxyServerCredentials();
 
 async function loginToResourceServer() {
