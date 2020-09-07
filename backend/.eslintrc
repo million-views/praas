@@ -35,7 +35,8 @@
   },
   "globals": {
     "location": true,
-    "ga": true
+    "ga": true,
+    "globalThis": true
   },
   "rules": {
     "no-undef-init": "off",
