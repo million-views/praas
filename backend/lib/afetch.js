@@ -26,8 +26,12 @@ const queryize = (parameters) => {
 
 // applies base service endpoint and optionally creates url query
 // string when params is an object.
-const urlize = (host, path, params = undefined) => {
-  let url = `${host}${path}`;
+const urlize = (host, path = undefined, params = undefined) => {
+  let url = host;
+  if (path) {
+    url += path;
+  }
+
   if (params) {
     url = `${url}?${queryize(params)}`;
   }
@@ -40,12 +44,19 @@ const urlize = (host, path, params = undefined) => {
 // as the need arises.
 // @host hostname including port number if any (e.g http://localhost:4000)
 // @path path to RESTful resource (e.g /conduits)
-// @options {headers, parameters, onError, ...rest}
+// @options {headers, path, parameters, onError, ...rest}
 //
-// onError in options is invoked for non-2xx responses; all other errors
-// `reject`ed.
-async function afetch(host, path, options) {
-  const { headers, parameters, onError, ...rest } = options;
+// `onNotOk` in options if present is invoked for non-2xx responses, allowing
+// applications to decide whether to take resolve or reject path. When not
+// present, non-2xx responses are `reject`ed.
+//
+// `path` in options identifies the REST resource at host. It is concatenated
+//  to `host` if present. For instance if host is 'http://localhost:4000' and
+//  path is '/conduits' then  `URL` passed to the underlying `fetch`
+//  implementation will be 'http://localhost:4000/conduits'
+//
+async function afetch(host, options) {
+  const { headers, path, parameters, onNotOk, ...rest } = options;
   try {
     const response = await fetch(urlize(host, path, parameters), {
       ...rest,
@@ -53,10 +64,11 @@ async function afetch(host, path, options) {
     });
     // this handles server response (including non 2xx)
     if (response.ok) {
-      return response.json();
+      return { status: response.status, data: await response.json() };
     } else {
-      if (onError) {
-        return onError(response);
+      if (onNotOk) {
+        const request = { host, options };
+        return onNotOk(response, request);
       } else {
         // caller wants server errors to be treated as error
         // eslint-disable-next-line prefer-promise-reject-errors

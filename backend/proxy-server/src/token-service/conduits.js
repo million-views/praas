@@ -14,7 +14,7 @@ function ConduitsAccessToken({ debug = false }) {
       });
     }
 
-    const data = await PraasAPI.user.login({
+    const { data } = await PraasAPI.user.login({
       user: {
         email,
         password,

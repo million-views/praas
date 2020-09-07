@@ -57,6 +57,7 @@ function GoogleAccessToken({
       },
       claims
     );
+
     let signedJWT;
     try {
       signedJWT = jws.sign({
@@ -85,14 +86,15 @@ function GoogleAccessToken({
     });
 
     try {
-      const response = await afetch(GTOKEN_HOST, GTOKEN_PATH, {
+      const { status, data: response } = await afetch(GTOKEN_HOST, {
         method: 'POST',
+        path: GTOKEN_PATH,
         headers,
         body: data.toString(),
       });
 
       if (debug) {
-        console.log(response);
+        console.log(status, response);
       }
 
       const token = {
