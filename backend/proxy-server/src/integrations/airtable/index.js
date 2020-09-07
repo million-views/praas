@@ -1,8 +1,19 @@
-const fetch = require('node-fetch');
-const { RestApiError } = require('../../../../lib/error');
+const afetch = require('../../../../lib/afetch');
 
 // NOTE: the interface is evolving and experimental
 function Airtable({ debug = false }) {
+  async function onNotOkay(response) {
+    const status = response.status;
+    if (status !== 418) {
+      Promise.resolve({
+        status: response.status,
+        data: await response.json(),
+      });
+    } else {
+      Promise.reject(response);
+    }
+  }
+
   function imap({ suri, container, ...inbound }) {
     let url = suri;
     if (container) {
@@ -31,23 +42,15 @@ function Airtable({ debug = false }) {
       method: inbound.method,
       headers: inbound.headers,
       body,
+      onNotOkay,
     };
 
     return { okay: true, url, outbound };
   }
 
   async function transmit({ url, outbound }) {
-    try {
-      const response = await fetch(url, outbound);
-      const status = response.status;
-      const data = await response.json();
-      return { status, data };
-    } catch (error) {
-      // FIXME!!
-      // need analysis of various error conditions and allow the gateway
-      // to handle them gracefully.
-      throw new RestApiError(500, error);
-    }
+    const { status, data } = await afetch(url, outbound);
+    return { status, data };
   }
 
   function omap({ status, data }) {
