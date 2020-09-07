@@ -34,7 +34,7 @@ module.exports = {
       {
         type: 'googleSheets',
         name: 'Google Sheets',
-        suri: 'https://docs.google.com/spreadsheets/d/',
+        suri: 'https://sheets.googleapis.com/v4/spreadsheets/',
       },
       {
         type: 'airtable',
