@@ -36,7 +36,7 @@ info:
     url: 'https://github.com/million-views/praas/blob/master/LICENSE'
     name: MIT
 servers:
-  - url: 'https://api.conduit.xyz/v1'
+  - url: 'https://api.conduits.xyz/v1'
 tags:
   - name: list
     x-displayName: List records
@@ -130,7 +130,7 @@ paths:
         - api_key: []
       responses:
         '200':
-          description: Retirns list of available contacts
+          description: Returns list of available contacts
           content:
             application/json:
               schema:
@@ -145,14 +145,8 @@ paths:
       x-codeSamples:
         - lang: cURL
           source: |
-            curl "https://api.conduits.xyz/v1/sasjfbdsfh7sf/contacts?maxRecords=10&view=Grid%20view" \
+            curl "https://api.conduits.xyz/v1/contacts?maxRecords=10&view=Grid%20view" \
             -H "Authorization: Bearer YOUR_API_KEY"
-  
-  /{id}:
-    get:
-      tags:
-        - retrive
-
     post:
       tags:
         - create
@@ -165,7 +159,49 @@ paths:
       tags:
         - delete
 
+  /contacts/{id}:
+    get:
+      operationId: getContactById
+      summary: Retrive a contact
+      description: ''
+      tags:
+        - retrive
+      parameters:
+        - $ref: '#/components/parameters/contactId'
+      security:
+        - api_key: []
+      responses:
+        '200':
+          description: Returns detail of a contact
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ContactObject'
+        '400':
+          description: Contact not found
+          $ref: '#/components/responses/Error400InvalidParams'
+        '404':
+          $ref: '#/components/responses/Error404NotFound'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl "https://api.conduits.xyz/v1/contacts/{id}" \
+            -H "Authorization: Bearer YOUR_API_KEY"
+        
+
+
+
 components:
+  parameters:
+    contactId:
+      name: id
+      in: path
+      required: true
+      description: Contact Id
+      example: 3
+      schema:
+        type: integer
+        minimum: 1
   schemas:
     id:
       type: integer
@@ -202,6 +238,15 @@ components:
               $ref: '#/components/schemas/contact'    
           offeset:
             type: integer
+    ContactObject:
+      type: object
+      title: Fetch a contact
+      properties:
+        fields:
+          $ref: '#/components/schemas/contact'
+        createdTime:
+          type: string
+          format: date-time
     Error400Invalid:
         allOf:
             - $ref: '#/components/schemas/ErrorGeneric'
