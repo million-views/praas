@@ -35,6 +35,8 @@ info:
   license:
     url: 'https://github.com/million-views/praas/blob/master/LICENSE'
     name: MIT
+servers:
+  - url: 'https://api.conduit.xyz/v1'
 tags:
   - name: list
     x-displayName: List records
@@ -124,17 +126,27 @@ paths:
         Returned records do not include any fields with "empty" values, e.g. `""`, `[]`, or `false`.
       tags: 
       - list
+      security:
+        - api_key: []
       responses:
         '200':
-          description: Contacts list
+          description: Retirns list of available contacts
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/contact'
-        '404':
+                  $ref: '#/components/schemas/ContactListResponse'
+        '400':
           description: Contacts not found
+          $ref: '#/components/responses/Error400InvalidParams'
+        '401':
+          $ref: '#/components/responses/Error401Unauthorized'
+        '403':
+          $ref: '#/components/responses/Error403PermissionDenied'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl "https://api.conduits.xyz/v1/sasjfbdsfh7sf/contacts?maxRecords=10&view=Grid%20view" \
+            -H "Authorization: Bearer YOUR_API_KEY"
   
   /{id}:
     get:
@@ -176,5 +188,150 @@ components:
           type: string
           description: Customer contact email address
           nullable: false
-
-
+    ContactListResponse:
+      type: object
+      title: Contact List
+      properties:
+          count:
+            type: integer
+            description: Count of all Contacts
+          results:
+            type: array
+            description: List of Contacts
+            items: 
+              $ref: '#/components/schemas/contact'    
+          offeset:
+            type: integer
+    Error400Invalid:
+        allOf:
+            - $ref: '#/components/schemas/ErrorGeneric'
+        title: Error 400 Bad Request
+        example: 
+          title: invalid
+          detail: Invalid email
+          status: 400
+    Error401Unauthorized:
+      allOf:
+        - $ref: '#/components/schemas/ErrorGeneric'
+      title: Error 401 Unauthorized
+      example: 
+        title: not_authenticated
+        detail: Authentication credentials were not provided
+        status: 401
+    Error403PermissionDenied: 
+      allOf: 
+        - $ref: '#/components/schemas/ErrorGeneric'
+      title: Error 403 Permission Denied
+      example:
+        title: permission_denied
+        detail: You do not have permission to perform this action.
+        status: 403
+    Error404NotFound:
+      allOf:
+        - $ref: '#/components/schemas/ErrorGeneric'
+      title: Error 404 Not Found
+      example:
+        title: not_found
+        detail: Not Found
+        status: 404
+    Error413TooManyRequests:
+      allOf:
+        - $ref: '#/components/schemas/ErrorGeneric'
+      title: Error 413 Too Many Requests
+      example:
+        title: rate_limited
+        detail: The rate limit has been reached
+        status: 413
+    Error422InvalidParams: 
+        type: object
+        title: Error 422 Invalid Parameters
+        properties:
+          title:
+            type: string
+          detail:
+            type: object
+          status:
+            type: integer
+        required: 
+          - title
+          - detail
+          - status
+        example:
+          title: invalid
+          detail:
+            valid_name:
+              - 'valid name is required.'
+              - 'Ensure this value does not have special characters.'
+            length:
+              - 'valid length is required for a name.'
+              - 'Ensure that the name length is greater than 2 and less than 15.'
+          status: 422
+    Error502BadGateway:
+      allOf:
+        - $ref: '#/components/schemas/ErrorGeneric'
+      title: Error 502 Bad Gateway
+      example:
+        title: bad_gateway
+        detail: Bad Gateway
+        status: 502
+    ErrorGeneric:
+      type: "object"
+      title: Error object
+      properties:
+        title:
+          type: string
+        detail:
+          type: string
+        status:
+          type: integer
+      required:
+        - title
+        - detail
+        - status
+  responses:
+    EmptyResponse:
+      description: Empty response.
+    Error400InvalidBody:
+      description: Body payload is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400Invalid'
+    Error400InvalidParams:
+      description: Query params are invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400Invalid'
+    Error401Unauthorized:
+      description: Missing or invalid authorization.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error401Unauthorized'
+    Error403PermissionDenied:
+      description: Missing permission.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error403PermissionDenied'
+    Error404NotFound:
+      description: The specified resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error404NotFound'
+    Error502BadGateway:
+      description: Unable to contact the target gateway..
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error502BadGateway'
+  securitySchemes:
+    api_key:
+      description: >
+        For this sample, you can use the api key `special-key` to test the
+        authorization filters.
+      type: apiKey
+      name: api_key
+      in: header
