@@ -1,45 +1,11 @@
 const fetch = require('node-fetch');
 
 // NOTE: the interface is evolving and experimental
-/*
-Conduits:
-POST https://{cid}.conduits.xyz
-
-{
-  "records": [{
-     "fields": {
-       "Name": "Jack",
-       "Email": "jack@example.com"
-    }
-  },
-  {
-     "fields": {
-       "Name": "Jill",
-       "Email": "jill@example.com"
-    }
-  }]
-}
-
-
-GSheets:
-POST https://sheets.googleapis.com/v4/spreadsheets/{spreadsheetId}/values/{range}:append
-
-{
-  "range": "B1:C2",
-  "majorDimension": "COLUMNS",
-  "values": [ [ "Jack", "jack@example.com" ], [ "Jill", "jill@example.com" ] ]
-}
-
-----
-fields: [Name, Email] -> B?, C?
-
-READ, WRITE, UPDATE, LIST
-*/
-
 function GSheets({ debug = false }) {
   const metacache = new Map();
 
   function imap({ suri, container, ...inbound }) {
+    console.log(suri, container, inbound.headers);
     const meta = metacache.get(container) ?? {};
     const url = suri + container;
 

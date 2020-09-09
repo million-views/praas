@@ -44,7 +44,7 @@ const { AirtableAccessToken } = require('./airtable');
 
 // TokenService is a 'singleton'; if you want to change it's behaviour
 // you can do so by setting appropriate properties here...
-const defaultOptions = { debug: false, vault: './secrets' };
+const defaultOptions = { debug: false, vault: '.secrets' };
 
 function TokenService(options) {
   const accessTokenProviders = {

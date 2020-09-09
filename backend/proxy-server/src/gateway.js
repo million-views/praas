@@ -6,6 +6,7 @@ const config = require('../../config');
 const { RestApiError } = require('../../lib/error');
 const tokenService = require('./token-service');
 const { Airtable } = require('./integrations/airtable');
+const { GSheets } = require('./integrations/gsheets');
 
 // cache frequently used objects
 // service endpoint base (includes hostname and path to service, if any)
@@ -217,6 +218,7 @@ function tail({ debug = false }) {
   // cache integrations to non-traditional-storage
   const ntsHandlers = {
     airtable: Airtable({ debug }),
+    googleSheets: GSheets({ debug }),
   };
 
   return async function proxy(req, res, next) {
@@ -245,7 +247,7 @@ function tail({ debug = false }) {
     if (!nts) {
       next(
         new RestApiError(500, {
-          suriType: `unknown ${conduit.suriType}`,
+          suriType: `${conduit.suriType} not supported`,
         })
       );
     } else {
