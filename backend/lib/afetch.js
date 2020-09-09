@@ -39,6 +39,22 @@ const urlize = (host, path = undefined, params = undefined) => {
   return url;
 };
 
+// Default server error response handler... this function makes it almost
+// the same as default fetch behavior needed by gateway integrations that
+// handle non-2xx responses in the "resolve" path unlike our resource server
+// client which handles non-2xx responses in the "reject" path.
+async function resolve(response) {
+  const status = response.status;
+  if (status !== 418) {
+    Promise.resolve({
+      status: response.status,
+      data: await response.json(),
+    });
+  } else {
+    Promise.reject(response);
+  }
+}
+
 // tiny application specific wrapper around fetch. In its current form
 // it assumes all responses including errors to be in JSON format.
 // as the need arises.
@@ -56,7 +72,7 @@ const urlize = (host, path = undefined, params = undefined) => {
 //  implementation will be 'http://localhost:4000/conduits'
 //
 async function afetch(host, options) {
-  const { headers, path, parameters, onNotOk, ...rest } = options;
+  const { headers, path, parameters, onNotOk = resolve, ...rest } = options;
   try {
     const response = await fetch(urlize(host, path, parameters), {
       ...rest,

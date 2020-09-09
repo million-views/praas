@@ -2,18 +2,6 @@ const afetch = require('../../../../lib/afetch');
 
 // NOTE: the interface is evolving and experimental
 function Airtable({ debug = false }) {
-  async function onNotOkay(response) {
-    const status = response.status;
-    if (status !== 418) {
-      Promise.resolve({
-        status: response.status,
-        data: await response.json(),
-      });
-    } else {
-      Promise.reject(response);
-    }
-  }
-
   function imap({ suri, container, ...inbound }) {
     let url = suri;
     if (container) {
@@ -42,7 +30,6 @@ function Airtable({ debug = false }) {
       method: inbound.method,
       headers: inbound.headers,
       body,
-      onNotOkay,
     };
 
     return { okay: true, url, outbound };
