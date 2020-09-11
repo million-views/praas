@@ -2,7 +2,7 @@ const afetch = require('../../../../lib/afetch');
 
 // NOTE: the interface is evolving and experimental
 function Airtable({ debug = false }) {
-  function imap({ suri, container, ...inbound }) {
+  async function imap({ suri, container, ...inbound }) {
     let url = suri;
     if (container) {
       // mdn strongly recommends + or += operator for performance

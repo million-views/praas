@@ -252,7 +252,7 @@ function tail({ debug = false }) {
       );
     } else {
       try {
-        const { okay, ...rest } = nts.imap(inbound);
+        const { okay, ...rest } = await nts.imap(inbound);
         if (okay) {
           const response = await nts.transmit(rest);
           const { status, data } = await nts.omap(response);
