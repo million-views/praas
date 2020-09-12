@@ -233,15 +233,11 @@ function tail({ debug = false }) {
     const inbound = {
       suri: SEP_BASE[conduit.suriType], // base URI to service endpoint
       container: conduit.suriObjectKey, // sheet, table, inbox, bucket, folder, ...
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token.user.token}`,
-      },
-
-      method: req.method,
-      path: req.path,
-      query: req.query,
-      body: req.body,
+      token: token.user.token, // to access remote service endpoint
+      method: req.method, // inbound request method
+      path: req.path, // inbound request path
+      query: req.query, // inbound request query parameters
+      body: req.body, // inbound request body
     };
 
     if (!nts) {

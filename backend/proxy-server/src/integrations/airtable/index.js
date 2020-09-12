@@ -28,7 +28,10 @@ function Airtable({ debug = false }) {
 
     const outbound = {
       method: inbound.method,
-      headers: inbound.headers,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${inbound.token}`,
+      },
       body,
     };
 

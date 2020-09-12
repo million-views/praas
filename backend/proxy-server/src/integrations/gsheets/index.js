@@ -1,7 +1,7 @@
 const afetch = require('../../../../lib/afetch');
 const { RestApiError } = require('../../../../lib/error');
 
-function extractMeta(data) {
+function metaTransform(data) {
   const {
     spreadsheetId: baseId,
     properties: { title: base, locale, timeZone },
@@ -69,8 +69,8 @@ function extractMeta(data) {
 
   return meta;
 }
-// Spreadsheet meta shape: indexed by spreadsheetId
-async function metaget(service, container, token) {
+
+async function metaFetch(service, container, token) {
   // container (a.k.a resource_path) consists of a base and a path to an object
   // in the base.
   const index = container.indexOf('/');
@@ -102,41 +102,44 @@ async function metaget(service, container, token) {
     const { status, errors } = error;
     throw new RestApiError(status, { ...errors.error });
   }
+
   // process and return meta
-  const meta = { ...extractMeta(data), url: urlBase, probe };
-  // prettier-ignore
-  return meta;
+  return { ...metaTransform(data), url: urlBase, probe };
 }
 
 // NOTE: the interface is evolving and experimental
 function GSheets({ debug = false }) {
   const metacache = new Map();
 
-  async function imap({ suri, container, ...inbound }) {
-    console.log(suri, container, inbound.headers);
+  async function metaget(suri, container, inbound) {
+    if (debug) {
+      console.log(suri, container, inbound.token);
+    }
+
     let meta = metacache.get(container);
     if (!meta) {
       meta.cached = true;
+    } else {
+      meta = await metaFetch(suri, container, inbound.token);
+      metacache.set(container, meta);
     }
 
-    try {
-      meta = await metaget(suri, container);
-      metacache.set(container, meta);
-      return { okay: true, meta };
-    } catch (e) {
-      // FIXME! rethrow ?
-      console.log(e);
-    }
+    return meta;
+  }
+
+  async function imap({ suri, container, ...inbound }) {
+    const meta = await metaget(suri, container, inbound);
 
     const outbound = {
       method: inbound.method,
       headers: inbound.headers,
+      meta,
     };
 
     return { okay: true, url: meta.url, outbound };
   }
 
-  async function transmit({ url, ...outbound }) {
+  async function transmit({ url, meta, ...outbound }) {
     const response = await afetch(url, outbound);
     const status = response.status;
     const data = await response.json();
@@ -157,7 +160,7 @@ if (require.main === module) {
     console.log(`requesting meta for ${args[0]} ...`);
     (async function () {
       try {
-        const meta = await metaget(
+        const meta = await metaFetch(
           'https://sheets.googleapis.com/v4/spreadsheets/',
           args[0],
           args[1]
