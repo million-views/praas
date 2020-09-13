@@ -1,6 +1,42 @@
 const afetch = require('../../../../lib/afetch');
 const { RestApiError } = require('../../../../lib/error');
 
+// gateway has already performed sanity checks, assume body has the
+// correct shape.
+// NOTE:
+// - Null values will be skipped.
+// - To set a cell to an empty value, set the string value to an empty string.
+// - If inbound method is POST or PATCH, we set the cell value to be null
+//   so that any existing value is preserved. If inbound method is PUT then
+//   we set the cell value to '' so that existing value is cleared.
+function mapPayloadFor(method, usingMeta, input) {
+  const records = input.records;
+  const values = [];
+
+  for (let i = 0, imax = records.length; i < imax; i++) {
+    const inputRow = records[i].fields;
+    const outputRow = [];
+    for (let j = 0, jmax = usingMeta.length; j < jmax; j++) {
+      const cname = usingMeta[j],
+        cvalue = inputRow[cname];
+      if (cvalue) {
+        outputRow.push(cvalue);
+      } else {
+        // input doesn't have a field - decide if the missing field needs
+        // be cleared or skipped
+        if (method === 'POST' || method === 'PATCH') {
+          outputRow.push(null);
+        } else if (method === 'PUT') {
+          outputRow.push('');
+        }
+      }
+    }
+    values.push(outputRow);
+  }
+
+  return values;
+}
+
 function metaTransform(data) {
   const {
     spreadsheetId: baseId,
@@ -18,37 +54,26 @@ function metaTransform(data) {
     ],
   } = data;
 
-  const fields = {};
+  const fields = []; // array because sequence matters!
   // NOTE: we only consider sequential columns with a non-empty cell value
   //       to be part of the table meta data; columns with a non-empty cell
   //       value are *not* considered as part of the table! this loop will
   //       break out on the first cell that is empty
-  // TODO: decide on which value to use as the field name:
-  //       - formattedValue
-  //       - userEnteredValue
-  //       - effectiveValue
 
   let skip = false,
     managedFieldCount = 0,
     totalFieldCount = 0;
   for (let i = 0, imax = rawFieldData.length; i < imax; i++) {
-    const {
-      formattedValue: fv,
-      // eslint-disable-next-line no-unused-vars
-      userEnteredValue: { stringValue: uev } = { stringValue: undefined },
-      // eslint-disable-next-line no-unused-vars
-      effectiveValue: { stringValue: ev } = { stringValue: undefined },
-    } = rawFieldData[i];
-    // console.log('fv: ', fv, ' uev: ', uev, ' ev: ', ev);
+    const { formattedValue: fv } = rawFieldData[i];
     totalFieldCount++;
     if (!skip) {
       if (fv) {
-        fields[fv] = i;
+        fields.push(fv);
         managedFieldCount++;
       } else {
-        // sticky once triggered... rewrite this once we are are sure about
-        // all the use cases are understood and confirm we don't need the
-        // totalFieldCount to compute the effective grid area.
+        // sticky once triggered... rewrite this once all use cases are
+        // understood and confirm we don't need the totalFieldCount to
+        // compute the effective grid area.
         skip = true; // sticky once triggered
       }
     }
@@ -92,7 +117,8 @@ async function metaFetch(service, container, token) {
       },
       parameters: {
         ranges: probe,
-        includeGridData: true,
+        fields:
+          'spreadsheetId,properties.title,properties.locale,properties.timeZone,sheets(properties,data.rowData.values(formattedValue))',
       },
       onNotOk: 'reject',
     };
@@ -127,13 +153,25 @@ function GSheets({ debug = false }) {
     return meta;
   }
 
-  async function imap({ suri, container, ...inbound }) {
-    const meta = await metaget(suri, container, inbound);
+  // WIP... not ready yet
+  async function imap({ suri, container, method, body, ...rest }) {
+    const meta = await metaget(suri, container, rest);
+    const urlBase = meta.url;
+    const payload = mapPayloadFor(method, meta.fields, body);
 
+    // TODO:
+    // - identify where A1 notation goes based on POST/PUT/PATCH
+    //   - POST => add row, A1 notation in url
+    //   - PUT/PATCH => replace/update, A1 notation in payload
+    //   - DELETE => delete row(s), A1 notation in payload
     const outbound = {
-      method: inbound.method,
-      headers: inbound.headers,
-      meta,
+      url: urlBase,
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${rest.token}`,
+      },
+      body: payload,
     };
 
     return { okay: true, url: meta.url, outbound };
@@ -156,7 +194,39 @@ function GSheets({ debug = false }) {
 
 if (require.main === module) {
   const args = process.argv.slice(2);
-  if (args.length === 2) {
+  if (args.length === 0) {
+    const meta = ['name', 'email', 'hiddenFormField'];
+    const input = {
+      records: [
+        {
+          fields: {
+            name: 'Jack 1',
+            email: 'jack.1@last.com',
+            hiddenFormField: 'hff-1',
+          },
+        },
+        {
+          fields: {
+            name: 'Jack 2',
+            hiddenFormField: 'hff-2',
+          },
+        },
+        {
+          fields: {
+            name: 'Jack 3',
+            email: 'jack.3@last.com',
+          },
+        },
+      ],
+    };
+    console.log('testing mapping function...');
+    let output = mapPayloadFor('POST', meta, input);
+    console.log('mapped output for POST...:', output);
+    output = mapPayloadFor('PATCH', meta, input);
+    console.log('mapped output for PATCH...:', output);
+    output = mapPayloadFor('PUT', meta, input);
+    console.log('mapped output for PUT...:', output);
+  } else if (args.length === 2) {
     console.log(`requesting meta for ${args[0]} ...`);
     (async function () {
       try {
