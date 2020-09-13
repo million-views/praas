@@ -7,6 +7,7 @@ const { RestApiError } = require('../../lib/error');
 const tokenService = require('./token-service');
 const { Airtable } = require('./integrations/airtable');
 const { GSheets } = require('./integrations/gsheets');
+const inspect = require('util').inspect;
 
 // cache frequently used objects
 // service endpoint base (includes hostname and path to service, if any)
@@ -221,6 +222,36 @@ function tail({ debug = false }) {
     googleSheets: GSheets({ debug }),
   };
 
+  let act = 0; // asynchronous completion token; debugging aid.
+
+  // need this to obtain a closure over act
+  function dispatcher(nts, act) {
+    return async function (inbound, res, next) {
+      try {
+        const { okay, ...rest } = await nts.imap(inbound);
+        if (okay) {
+          if (debug) {
+            console.log(`${act} ~~~>`, inspect(rest, { depth: 4 }));
+          }
+
+          const response = await nts.transmit(rest);
+          const { status, data } = await nts.omap(response);
+
+          if (debug) {
+            console.log(`${act} <~~~`, status, inspect(data, { depth: 4 }));
+          }
+
+          return res.status(status).send(data);
+        }
+      } catch (e) {
+        if (debug) {
+          console.log(`${act} !~~~!`, e);
+        }
+        next(e);
+      }
+    };
+  }
+
   return async function proxy(req, res, next) {
     const conduit = res.locals.conduit;
     const nts = ntsHandlers[conduit.suriType];
@@ -240,6 +271,8 @@ function tail({ debug = false }) {
       body: req.body, // inbound request body
     };
 
+    act += 1;
+
     if (!nts) {
       next(
         new RestApiError(500, {
@@ -247,16 +280,7 @@ function tail({ debug = false }) {
         })
       );
     } else {
-      try {
-        const { okay, ...rest } = await nts.imap(inbound);
-        if (okay) {
-          const response = await nts.transmit(rest);
-          const { status, data } = await nts.omap(response);
-          res.status(status).send(data);
-        }
-      } catch (e) {
-        next(e);
-      }
+      await dispatcher(nts, act)(inbound, res, next);
     }
   };
 }
