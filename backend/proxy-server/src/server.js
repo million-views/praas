@@ -5,7 +5,6 @@ const { RestApiErrorHandler } = require('../../lib/error');
 const helpers = require('../../lib/helpers');
 const PraasAPI = require('../../lib/praas');
 const tokenService = require('./token-service');
-const user = require('../../crud-server/src/models/user');
 const conf = require('../../config').system.settings;
 
 // store conduits indexed by curi in app.locals for lookup later...

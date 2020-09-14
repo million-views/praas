@@ -6,6 +6,8 @@ const config = require('../../config');
 const { RestApiError } = require('../../lib/error');
 const tokenService = require('./token-service');
 const { Airtable } = require('./integrations/airtable');
+const { GSheets } = require('./integrations/gsheets');
+const inspect = require('util').inspect;
 
 // cache frequently used objects
 // service endpoint base (includes hostname and path to service, if any)
@@ -217,7 +219,38 @@ function tail({ debug = false }) {
   // cache integrations to non-traditional-storage
   const ntsHandlers = {
     airtable: Airtable({ debug }),
+    googleSheets: GSheets({ debug }),
   };
+
+  let act = 0; // asynchronous completion token; debugging aid.
+
+  // need this to obtain a closure over act
+  function dispatcher(nts, act) {
+    return async function (inbound, res, next) {
+      try {
+        const { okay, ...rest } = await nts.imap(inbound);
+        if (okay) {
+          if (debug) {
+            console.log(`${act} ~~~>`, inspect(rest, { depth: 4 }));
+          }
+
+          const response = await nts.transmit(rest);
+          const { status, data } = await nts.omap(response);
+
+          if (debug) {
+            console.log(`${act} <~~~`, status, inspect(data, { depth: 4 }));
+          }
+
+          return res.status(status).send(data);
+        }
+      } catch (e) {
+        if (debug) {
+          console.log(`${act} !~~~!`, e);
+        }
+        next(e);
+      }
+    };
+  }
 
   return async function proxy(req, res, next) {
     const conduit = res.locals.conduit;
@@ -231,34 +264,23 @@ function tail({ debug = false }) {
     const inbound = {
       suri: SEP_BASE[conduit.suriType], // base URI to service endpoint
       container: conduit.suriObjectKey, // sheet, table, inbox, bucket, folder, ...
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token.user.token}`,
-      },
-
-      method: req.method,
-      path: req.path,
-      query: req.query,
-      body: req.body,
+      token: token.user.token, // to access remote service endpoint
+      method: req.method, // inbound request method
+      path: req.path, // inbound request path
+      query: req.query, // inbound request query parameters
+      body: req.body, // inbound request body
     };
+
+    act += 1;
 
     if (!nts) {
       next(
         new RestApiError(500, {
-          suriType: `unknown ${conduit.suriType}`,
+          suriType: `${conduit.suriType} not supported`,
         })
       );
     } else {
-      try {
-        const { okay, ...rest } = nts.imap(inbound);
-        if (okay) {
-          const response = await nts.transmit(rest);
-          const { status, data } = await nts.omap(response);
-          res.status(status).send(data);
-        }
-      } catch (e) {
-        next(e);
-      }
+      await dispatcher(nts, act)(inbound, res, next);
     }
   };
 }

@@ -91,6 +91,7 @@ function GoogleAccessToken({
         path: GTOKEN_PATH,
         headers,
         body: data.toString(),
+        onNotOk: 'reject',
       });
 
       if (debug) {
@@ -108,8 +109,8 @@ function GoogleAccessToken({
 
       return token;
     } catch (error) {
-      const body = await error.json();
-      throw new RestApiError(error.status, body);
+      const { status, errors } = error;
+      throw new RestApiError(status, errors);
     }
   }
   return { requestAccessToken };
