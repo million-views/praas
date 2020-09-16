@@ -1,9 +1,12 @@
 const afetch = require('../../../../lib/afetch');
 
+// service api endpoint of the target integration
+const SAPI = 'https://api.airtable.com/v0/';
+
 // NOTE: the interface is evolving and experimental
 function Airtable({ debug = false }) {
-  async function imap({ suri, container, ...inbound }) {
-    let url = suri;
+  async function imap({ container, ...inbound }) {
+    let url = SAPI;
     if (container) {
       // mdn strongly recommends + or += operator for performance
       url += container;

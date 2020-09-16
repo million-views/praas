@@ -2,17 +2,11 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const cors = require('cors');
 
-const config = require('../../config');
 const { RestApiError } = require('../../lib/error');
 const tokenService = require('./token-service');
 const { Airtable } = require('./integrations/airtable');
 const { GSheets } = require('./integrations/gsheets');
 const inspect = require('util').inspect;
-
-// cache frequently used objects
-// service endpoint base (includes hostname and path to service, if any)
-const SEP_BASE = {};
-config.targets.settings.forEach((i) => (SEP_BASE[i.type] = i.suri));
 
 // declare these once
 const opsNeedingBody = ['PUT', 'POST', 'PATCH']; // have records in body ?
@@ -262,7 +256,6 @@ function tail({ debug = false }) {
 
     // scoped container...
     const inbound = {
-      suri: SEP_BASE[conduit.suriType], // base URI to service endpoint
       container: conduit.suriObjectKey, // sheet, table, inbox, bucket, folder, ...
       token: token.user.token, // to access remote service endpoint
       method: req.method, // inbound request method
