@@ -2,6 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
 const server = require('./server');
+const util = require('../../lib/util');
 const helpers = require('../../lib/helpers');
 const conf = require('../../config').test.settings;
 const targets = require('../../config').targets.settings;
@@ -632,7 +633,7 @@ describe('Praas REST API', () => {
         // different, we should not allow service type for an existing
         // conduit to be changed. This test and the route logic needs to
         // fixed
-        const suriType = helpers.randomlyPickFrom(targets).type;
+        const suriType = util.pickRandomlyFrom(targets).type;
         const activeConduit = {
           conduit: {
             status: 'active',

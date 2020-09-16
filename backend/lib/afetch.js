@@ -64,7 +64,8 @@ const urlize = (host, path = undefined, params = undefined) => {
 async function afetch(host, options) {
   const { headers, path, parameters, onNotOk = 'resolve', ...rest } = options;
   try {
-    const response = await fetch(urlize(host, path, parameters), {
+    const url = urlize(host, path, parameters);
+    const response = await fetch(url, {
       ...rest,
       headers,
     });
