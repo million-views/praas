@@ -1,4 +1,5 @@
 const { UnauthorizedError } = require('express-jwt');
+const inspect = require('util').inspect;
 
 // Using appropriate response status code in a REST api can be a tricky
 // proposition. Most appropriate status code *may* disclose information
@@ -91,7 +92,7 @@ function RestApiErrorHandler(err, req, res, next) {
       const cname = err.constructor.name;
       console.error(
         `expected RestApiError or UnauthorizedError, got ${cname}; bailing!`,
-        err
+        inspect(err, { depth: 6 })
       );
       process.exit(1);
     }
@@ -105,13 +106,13 @@ function RestApiErrorHandler(err, req, res, next) {
   // DUMP_ERROR_RESPONSE=1 npm run `task`
   if (process.env.DUMP_ERROR_RESPONSE) {
     err.body = req.body;
-    console.error(err);
+    console.error(inspect(err, { depth: 6 }));
   }
 
   if (process.env.DUMP_STACK_TRACE && stack) {
     // on mac/linux run with:
     // DUMP_STACK_TRACE=1 npm run `task`
-    console.error(stack);
+    console.error(inspect(stack, { depth: 6 }));
   }
 
   const errors = err.errors;
