@@ -91,7 +91,6 @@ function GoogleAccessToken({
         path: GTOKEN_PATH,
         headers,
         body: data.toString(),
-        onNotOk: 'reject',
       });
 
       if (debug) {
