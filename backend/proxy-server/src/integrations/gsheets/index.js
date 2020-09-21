@@ -1,6 +1,6 @@
 const afetch = require('../../../../lib/afetch');
 const { RestApiError } = require('../../../../lib/error');
-const { freezeall } = require('../../../../lib/util');
+const { freezeall, rangeset } = require('../../../../lib/util');
 
 const inspect = require('util').inspect;
 
@@ -71,45 +71,86 @@ function columnToLetter(column) {
 //     existing value is cleared.
 function mapRequest(method, meta, rest) {
   const metaFields = meta.fields;
-  const outboundRequest = { ...meta.api[method]?.mapsTo };
-  const slots = {
+  const bodySlots = {
     POST: 'values',
     PATCH: 'data',
     PUT: 'data',
     DELETE: 'requests',
   };
+  const slot = bodySlots[method];
 
-  const slot = slots[method];
+  function mapGET() {
+    const mappedRequest = { ...meta.api[method]?.mapsTo };
 
-  if (method === 'GET') {
     // replace ranges with either a single record request or multiple record
     // request.
-  } else if (method === 'DELETE') {
-    console.log(rest.query);
+    const rowId = Number.parseInt(rest.path.substring(1));
+    const ranges = [];
+    if (Number.isSafeInteger(rowId)) {
+      ranges.push(
+        `${meta.table}!A${rowId + 1}:${meta.lastColumn}${rowId + 1}`
+      );
+    } else {
+      // TODO: deal with pagination parameters; for now return all rows
+      ranges.push(`${meta.table}!A2:${meta.lastColumn}`);
+    }
+
+    const parameters = { ...mappedRequest.parameters, ranges };
+    mappedRequest.parameters = parameters;
+    return mappedRequest;
+  }
+
+  function mapDELETE() {
+    const mappedRequest = { ...meta.api[method]?.mapsTo };
     const body = { ...meta.api[method]?.bodyTemplate };
 
+    const records = rest.query.records ?? [];
+    if (records.length === 0) {
+      const rowId = Number.parseInt(rest.path.substring(1));
+      if (Number.isInteger(rowId)) {
+        records.push(rowId);
+      }
+    }
+
     // TODO: optimize using rangeset function
-    const requests = rest.query?.records.map((id) => {
+    const ranges = rangeset(
+      records,
+      (start, end) => {
+        return {
+          startIndex: start,
+          endIndex: end,
+        };
+      },
+      true
+    );
+
+    // TODO:
+    // it is unclear how the API behaves when multiple row
+    // ranges are provided for DELETE... needs more analysis
+    const requests = ranges.map((id) => {
       return {
         deleteDimension: {
           range: {
             sheetId: meta.tableId,
             dimension: 'ROWS',
-            startIndex: id,
-            endIndex: id,
+            ...id,
           },
         },
       };
     });
+
     Object.assign(body, { [slot]: requests });
-    outboundRequest.body = body;
-  } else {
+    mappedRequest.body = body;
+    return mappedRequest;
+  }
+
+  function mapPOST() {
+    const mappedRequest = { ...meta.api[method]?.mapsTo };
+    const body = { ...meta.api[method]?.bodyTemplate };
+    const cellDefault = ''; // <- default to this for unspecified fields
     const records = rest.body.records;
     const values = [];
 
-    // input doesn't have a field - decide if the missing field needs
-    // be skipped or set/cleared
-    const cellDefault = method === 'PATCH' ? null : '';
     for (let i = 0, imax = records.length; i < imax; i++) {
       const inputRow = records[i].fields;
       const outputRow = [];
@@ -124,12 +165,93 @@ function mapRequest(method, meta, rest) {
       }
       values.push(outputRow);
     }
-    const body = { ...meta.api[method]?.bodyTemplate };
     Object.assign(body, { [slot]: values });
-    outboundRequest.body = body;
+    mappedRequest.body = body;
+    return mappedRequest;
   }
 
-  return outboundRequest;
+  function mapPATCH() {
+    const cellDefault = null; // <- preserve existing cell value
+    const mappedRequest = { ...meta.api[method]?.mapsTo };
+    const body = { ...meta.api[method]?.bodyTemplate };
+
+    const records = rest.body.records;
+    const data = [];
+
+    for (let i = 0, imax = records.length; i < imax; i++) {
+      const inputRow = records[i].fields;
+      const inputRowId = records[i].id;
+      const values = [];
+      for (let j = 0, jmax = metaFields.length; j < jmax; j++) {
+        const cname = metaFields[j],
+          cvalue = inputRow[cname];
+        if (cvalue) {
+          values.push(cvalue);
+        } else {
+          values.push(cellDefault);
+        }
+      }
+
+      const outputRow = {
+        range: `${meta.table}!A${inputRowId + 1}`,
+        majorDimension: 'ROWS',
+        values,
+      };
+
+      data.push(outputRow);
+    }
+
+    Object.assign(body, { [slot]: data });
+    mappedRequest.body = body;
+    return mappedRequest;
+  }
+
+  function mapPUT() {
+    const cellDefault = ''; // <- clear current cell value
+    const mappedRequest = { ...meta.api[method]?.mapsTo };
+    const body = { ...meta.api[method]?.bodyTemplate };
+
+    const records = rest.body.records;
+    const data = [];
+
+    for (let i = 0, imax = records.length; i < imax; i++) {
+      const inputRow = records[i].fields;
+      const inputRowId = records[i].id;
+
+      const values = [];
+      for (let j = 0, jmax = metaFields.length; j < jmax; j++) {
+        const cname = metaFields[j],
+          cvalue = inputRow[cname];
+        if (cvalue) {
+          values.push(cvalue);
+        } else {
+          values.push(cellDefault);
+        }
+      }
+      const outputRow = {
+        range: `${meta.table}!A${inputRowId + 1}`,
+        majorDimension: 'ROWS',
+        values,
+      };
+
+      data.push(outputRow);
+    }
+
+    Object.assign(body, { [slot]: data });
+    mappedRequest.body = body;
+    return mappedRequest;
+  }
+
+  const mapper = {
+    GET: mapGET,
+    DELETE: mapDELETE,
+    PATCH: mapPATCH,
+    POST: mapPOST,
+    PUT: mapPUT,
+  };
+
+  const mappedRequest = mapper[method]();
+  return mappedRequest;
 }
 
 // assumes data contains meta for a single sheet; if there are multiple
@@ -199,7 +321,7 @@ function metaTransform(data) {
         parameters: {
           majorDimension: 'ROWS',
           valueRenderOption: 'UNFORMATTED_VALUE',
-          ranges: [`${table}!A1:C`], // <- fix me to support multiple ranges
+          ranges: [], // <- one or more ranges
         },
       },
     },
@@ -286,7 +408,7 @@ function metaTransform(data) {
     locale, timeZone,
     base, baseId,
     table, tableId, tableType,
-    fields, managedFieldCount, totalFieldCount,
+    fields, managedFieldCount, totalFieldCount, lastColumn,
     api
   };
 
@@ -345,9 +467,7 @@ function GSheets({ debug = false }) {
 
     let meta = metacache.get(container);
     if (!meta) {
-      meta.cached = true;
-    } else {
-      meta = await metaFetch(SAPI, container, inbound.token);
+      meta = await metaFetch(container, inbound.token);
       metacache.set(container, meta);
     }
 
@@ -363,13 +483,7 @@ function GSheets({ debug = false }) {
       rest
     );
 
-    // TODO:
-    // - identify where A1 notation goes based on POST/PUT/PATCH
-    //   - POST => add row, A1 notation in url
-    //   - PUT/PATCH => replace/update, A1 notation in payload
-    //   - DELETE => delete row(s), A1 notation in payload
-
-    const outbound = {
+    return {
       method: apiCall,
       url,
       parameters,
@@ -377,18 +491,18 @@ function GSheets({ debug = false }) {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${rest.token}`,
       },
-      body,
+      body: body ? JSON.stringify(body) : undefined,
     };
-
-    return { okay: true, url: meta.url, outbound };
   }
 
-  async function transmit({ url, meta, ...outbound }) {
-    const response = await afetch(url, outbound);
-    const status = response.status;
-    const data = await response.json();
-
-    return { status, data };
+  async function transmit({ url, ...outbound }) {
+    try {
+      const { status, data } = await afetch(url, outbound);
+      return { status, data };
+    } catch (error) {
+      const { status, errors } = error;
+      throw new RestApiError(status, errors);
+    }
   }
 
   function omap({ status, data }) {
@@ -399,104 +513,196 @@ function GSheets({ debug = false }) {
 }
 
 function main() {
-  // the real payload of conduits api will not have "id" field
-  // for POST, but will for PUT and PATCH.
-  const input = {
-    GET: {
-      path: '/1',
-      query: [],
-    },
-    POST: {
-      body: {
-        records: [
-          {
-            fields: {
-              name: 'Jack 1',
-              email: 'jack.1@last.com',
-              hiddenFormField: 'hff-1',
-            },
-          },
-          {
-            fields: {
-              name: 'Jack 2',
-              hiddenFormField: 'hff-2',
-            },
-          },
-          {
-            fields: {
-              name: 'Jack 3',
-              email: 'jack.3@last.com',
-            },
-          },
-        ],
+  // conduit API requests have the following shape
+  const inbound = {
+    GET: [
+      // get one
+      {
+        path: '/1',
+        query: {},
       },
-    },
-    PATCH: {
-      body: {
-        records: [
-          {
-            id: 1,
-            fields: {
-              name: 'Jack 1 updated',
-              // all other fields should remain intact
-            },
-          },
-          {
-            id: 2,
-            fields: {
-              // all other fields should remain intact
-              hiddenFormField: 'hff-2 updated',
-            },
-          },
-          {
-            id: 3,
-            fields: {
-              name: 'Jack 3 got a boost',
-              hiddenFormField: 'I did not exist before!',
-            },
-          },
-        ],
+      // get all
+      {
+        path: '/',
+        query: {}, // <- TODO, more options go here
       },
-    },
-    PUT: {
-      body: {
-        records: [
-          {
-            id: 1,
-            fields: {
-              name: 'Jack 1',
-              email: 'jack.1@last.com',
-              // this field will be cleared
-              // hiddenFormField: 'hff-1'
+    ],
+    POST: [
+      // add one row
+      {
+        path: '/',
+        query: {},
+        body: {
+          records: [
+            {
+              fields: {
+                name: 'Jack 1',
+                email: 'jack.1@last.com',
+                hiddenFormField: 'hff-1',
+              },
             },
-          },
-          {
-            id: 2,
-            fields: {
-              name: 'Jack 2',
-              // this field should be set
-              email: 'jack.2@last.com',
-              // and this field should be cleared
-              // hiddenFormField: 'hff-2',
-            },
-          },
-          {
-            id: 3,
-            fields: {
-              name: 'Jack 3',
-              email: 'jack.3@last.com',
-            },
-          },
-        ],
+          ],
+        },
       },
-    },
-    DELETE: {
-      query: { records: [1, 2, 3] },
-    },
+      // add multiple rows
+      {
+        path: '/',
+        query: {},
+        body: {
+          records: [
+            {
+              fields: {
+                name: 'Jack 2',
+                hiddenFormField: 'hff-2',
+              },
+            },
+            {
+              fields: {
+                name: 'Jack 3',
+                email: 'jack.3@last.com',
+              },
+            },
+            {
+              fields: {
+                name: 'Jack 4',
+                email: 'jack.4@last.com',
+              },
+            },
+            {
+              fields: {
+                name: 'Jack 5',
+                email: 'jack.5@last.com',
+              },
+            },
+            {
+              fields: {
+                name: 'Jack 6',
+                email: 'jack.6@last.com',
+              },
+            },
+            {
+              fields: {
+                name: 'Jack 7',
+                email: 'jack.7@last.com',
+              },
+            },
+          ],
+        },
+      },
+    ],
+    PATCH: [
+      // update one row
+      {
+        path: '/',
+        query: {},
+        body: {
+          records: [
+            {
+              id: 1,
+              fields: {
+                name: 'Jack 1 updated',
+                // all other fields should remain intact
+              },
+            },
+          ],
+        },
+      },
+      // update multiple rows
+      {
+        path: '/',
+        query: {},
+        body: {
+          records: [
+            {
+              id: 2,
+              fields: {
+                // all other fields should remain intact
+                hiddenFormField: 'hff-2 updated',
+              },
+            },
+            {
+              id: 3,
+              fields: {
+                name: 'Jack 3 got a boost',
+                hiddenFormField: 'I did not exist before!',
+              },
+            },
+          ],
+        },
+      },
+    ],
+    PUT: [
+      // replace one row
+      {
+        path: '/',
+        query: {},
+        body: {
+          records: [
+            {
+              id: 1,
+              fields: {
+                name: 'Jack 1',
+                email: 'jack.1@last.com',
+                // this field will be cleared
+                // hiddenFormField: 'hff-1'
+              },
+            },
+          ],
+        },
+      },
+      // replace multiple rows
+      {
+        path: '/',
+        query: {},
+        body: {
+          records: [
+            {
+              id: 2,
+              fields: {
+                name: 'Jack 2',
+                // this field should be set
+                email: 'jack.2@last.com',
+                // and this field should be cleared
+                // hiddenFormField: 'hff-2',
+              },
+            },
+            {
+              id: 3,
+              fields: {
+                name: 'Jack 3',
+                email: 'jack.3@last.com',
+              },
+            },
+          ],
+        },
+      },
+    ],
+    DELETE: [
+      // delete 1 row
+      {
+        path: '/1',
+        query: {},
+      },
+      // delete multiple rows; NOTE: row numbers are dynamic and mutate
+      // NOTE:
+      // unlike Airtable or traditional database, row numbers in gsheets
+      // are ephemeral and not unique!!!
+      {
+        path: '/',
+        // previous row 2 is now 1
+        query: { records: [1, 2, 4, 5, 6] },
+      },
+    ],
   };
 
   async function smokeMapRequestTest(method, meta) {
-    return await mapRequest(method, meta, input[method]);
+    for (const input of inbound[method]) {
+      const output = await mapRequest(method, meta, input);
+      console.log(
+        `mapped request for ${method}`,
+        inspect(output, { depth: 6 })
+      );
+    }
   }
 
   async function smokeMapResponseTest() {}
@@ -523,12 +729,7 @@ if (require.main === module) {
         const meta = await run.smokeMetaFetchTest(args[0], args[1]);
         // console.log(inspect(meta, { depth: 4 }));
         if (args.length === 3) {
-          const output = await run.smokeMapRequestTest(args[2], meta);
-          console.log(
-            'mapped request for',
-            args[2],
-            inspect(output, { depth: 6 })
-          );
+          await run.smokeMapRequestTest(args[2], meta);
         }
       } catch (e) {
         console.log(e);
