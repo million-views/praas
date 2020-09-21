@@ -39,7 +39,7 @@ function Airtable({ debug = false }) {
       body,
     };
 
-    return { okay: true, url, outbound };
+    return { url, outbound };
   }
 
   async function transmit({ url, outbound }) {

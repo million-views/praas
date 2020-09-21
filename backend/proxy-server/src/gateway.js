@@ -221,22 +221,24 @@ function tail({ debug = false }) {
   // need this to obtain a closure over act
   function dispatcher(nts, act) {
     return async function (inbound, res, next) {
+      if (debug) {
+        console.log(`${act} ~~~>`, inspect(inbound, { depth: 4 }));
+      }
+
       try {
-        const { okay, ...rest } = await nts.imap(inbound);
-        if (okay) {
-          if (debug) {
-            console.log(`${act} ~~~>`, inspect(rest, { depth: 4 }));
-          }
-
-          const response = await nts.transmit(rest);
-          const { status, data } = await nts.omap(response);
-
-          if (debug) {
-            console.log(`${act} <~~~`, status, inspect(data, { depth: 4 }));
-          }
-
-          return res.status(status).send(data);
+        const mappedRequest = await nts.imap(inbound);
+        if (debug) {
+          console.log(`${act} ~~~X`, inspect(mappedRequest, { depth: 4 }));
         }
+
+        const response = await nts.transmit(mappedRequest);
+        const { status, data } = await nts.omap(response);
+
+        if (debug) {
+          console.log(`${act} <~~~`, status, inspect(data, { depth: 4 }));
+        }
+
+        return res.status(status).send(data);
       } catch (e) {
         if (debug) {
           console.log(`${act} !~~~!`, e);
