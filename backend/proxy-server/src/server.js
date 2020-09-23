@@ -13,7 +13,7 @@ const cmap = new Map();
 
 const app = express();
 app.use(gateway.head());
-app.use(gateway.middle({ cmap }));
+app.use(gateway.middle({ cmap, debug: false }));
 app.use(gateway.tail({ debug: true }));
 app.use(RestApiErrorHandler); // !! should be registered last
 

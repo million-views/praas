@@ -180,10 +180,29 @@ function middle({ cmap = [], debug = false }) {
         // This feature is to catch spam bots, so don't
         // send error if failure, send 200-OK instead
         if (hff.policy === 'drop-if-filled' && reqHff) {
+          if (debug) {
+            console.log(
+              'drop-if-filled: ...dropping',
+              ' coz ',
+              reqHff,
+              ' != ',
+              hff.value
+            );
+          }
           return res.sendStatus(200);
         }
 
         if (hff?.policy === 'pass-if-match' && !(reqHff === hff.value)) {
+          if (debug) {
+            console.log(
+              'pass-if-match: ...dropping',
+              ' coz ',
+              reqHff,
+              ' != ',
+              hff.value
+            );
+          }
+
           return res.sendStatus(200);
         }
 
@@ -228,7 +247,11 @@ function tail({ debug = false }) {
       try {
         const mappedRequest = await nts.imap(inbound);
         if (debug) {
-          console.log(`${act} ~~~X`, inspect(mappedRequest, { depth: 4 }));
+          const { method, url, parameters, headers, body } = mappedRequest;
+          console.log(
+            `${act} ~~~X`,
+            inspect({ method, url, parameters, headers, body }, { depth: 4 })
+          );
         }
 
         const response = await nts.transmit(mappedRequest);
