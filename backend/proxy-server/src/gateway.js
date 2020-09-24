@@ -264,7 +264,7 @@ function tail({ debug = false }) {
         return res.status(status).send(data);
       } catch (e) {
         if (debug) {
-          console.log(`${act} !~~~!`, e);
+          console.log(`${act} !~~~!`, inspect(e, { depth: 4 }));
         }
         next(e);
       }
