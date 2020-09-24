@@ -4,6 +4,7 @@ const expect = require('chai').expect;
 const jwt = require('jsonwebtoken');
 const config = require('../../config');
 const models = require('./models');
+const util = require('../../lib/util');
 const helpers = require('../../lib/helpers');
 const dotEnv = require('dotenv-safe');
 
@@ -251,7 +252,7 @@ describe('PraaS', () => {
         racm: ['GET'],
         allowlist: [
           {
-            ip: helpers.randomlyPickFrom(helpers.testAllowedIpList),
+            ip: util.pickRandomlyFrom(helpers.testAllowedIpList),
             status: 'active',
             comment: 'clients with ip matching me should be be accepted',
           },
@@ -269,7 +270,7 @@ describe('PraaS', () => {
         racm: ['GET'],
         allowlist: [
           {
-            ip: helpers.randomlyPickFrom(helpers.testInactiveIpList),
+            ip: util.pickRandomlyFrom(helpers.testInactiveIpList),
             status: 'inactive',
             comment: 'I am practically not there coz I am inactive',
           },
@@ -287,17 +288,17 @@ describe('PraaS', () => {
         racm: ['POST'],
         allowlist: [
           {
-            ip: helpers.randomlyPickFrom(helpers.testAllowedIpList),
+            ip: util.pickRandomlyFrom(helpers.testAllowedIpList),
             status: 'active',
             comment: 'clients with ip matching me should be be accepted',
           },
           {
-            ip: helpers.randomlyPickFrom(helpers.testAllowedIpList),
+            ip: util.pickRandomlyFrom(helpers.testAllowedIpList),
             status: 'active',
             comment: 'clients with ip matching me should be be accepted',
           },
           {
-            ip: helpers.randomlyPickFrom(helpers.testInactiveIpList),
+            ip: util.pickRandomlyFrom(helpers.testInactiveIpList),
             status: 'inactive',
             comment: 'I am practically not there coz I am inactive',
           },

@@ -1,9 +1,13 @@
 const afetch = require('../../../../lib/afetch');
+const { RestApiError } = require('../../../../lib/error');
+
+// service api endpoint of the target integration
+const SAPI = 'https://api.airtable.com/v0/';
 
 // NOTE: the interface is evolving and experimental
 function Airtable({ debug = false }) {
-  async function imap({ suri, container, ...inbound }) {
-    let url = suri;
+  async function imap({ container, ...inbound }) {
+    let url = SAPI;
     if (container) {
       // mdn strongly recommends + or += operator for performance
       url += container;
@@ -17,17 +21,17 @@ function Airtable({ debug = false }) {
     }
 
     // Multi DELETE to be sent as query paramters
-    // TODO:
-    // - is it per spec or is this an alternative?
+    let parameters = undefined;
     if (inbound.method === 'DELETE' && inbound.query.records) {
-      url += inbound.query.records.reduce(
-        (q, i) => q + `records[]=${i}&`,
-        '?'
-      );
+      parameters = {
+        records: inbound.query.records,
+      };
     }
 
     const outbound = {
       method: inbound.method,
+      parameters,
+      qformat: 'bracket',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${inbound.token}`,
@@ -35,12 +39,17 @@ function Airtable({ debug = false }) {
       body,
     };
 
-    return { okay: true, url, outbound };
+    return { url, outbound };
   }
 
   async function transmit({ url, outbound }) {
-    const { status, data } = await afetch(url, outbound);
-    return { status, data };
+    try {
+      const { status, data } = await afetch(url, outbound);
+      return { status, data };
+    } catch (error) {
+      const { status, errors } = error;
+      throw new RestApiError(status, errors);
+    }
   }
 
   function omap({ status, data }) {

@@ -4,12 +4,8 @@ const path = require('path');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
-const {
-  boundHttpRequest,
-  randomlyPickFrom,
-  testAllowedIpList,
-  testDeniedIpList,
-} = require('../../lib/helpers');
+const { boundHttpRequest, pickRandomlyFrom } = require('../../lib/util');
+const { testAllowedIpList, testDeniedIpList } = require('../../lib/helpers');
 
 const expect = chai.expect;
 chai.use(chaiHttp);
@@ -99,7 +95,7 @@ describe('Testing Gateway Server...', async () => {
       it('should accept requests from * when ip is inactive', async function () {
         const options2 = {
           ...optionsBase,
-          localAddress: randomlyPickFrom(testDeniedIpList),
+          localAddress: pickRandomlyFrom(testDeniedIpList),
           headers: { ...optionsBase.headers, Host: aorConduit2.host },
         };
         boundHttpRequest(options2).then(
@@ -113,7 +109,7 @@ describe('Testing Gateway Server...', async () => {
           }
         );
 
-        options2.localAddress = randomlyPickFrom(testAllowedIpList);
+        options2.localAddress = pickRandomlyFrom(testAllowedIpList);
         boundHttpRequest(options2).then(
           (success) => {
             // console.log('success ---> ', success);
@@ -129,7 +125,7 @@ describe('Testing Gateway Server...', async () => {
       it('should reject requests from IPs not in AllowList', async function () {
         const options1 = {
           ...optionsBase,
-          localAddress: randomlyPickFrom(testDeniedIpList),
+          localAddress: pickRandomlyFrom(testDeniedIpList),
           headers: { ...optionsBase.headers, Host: aorConduit1.host },
         };
         boundHttpRequest(options1).then(
@@ -146,7 +142,7 @@ describe('Testing Gateway Server...', async () => {
         const options3 = {
           ...optionsBase,
           method: 'POST',
-          localAddress: randomlyPickFrom(testDeniedIpList),
+          localAddress: pickRandomlyFrom(testDeniedIpList),
           headers: { ...optionsBase.headers, Host: aorConduit3.host },
         };
         boundHttpRequest(options3, postData).then(
@@ -164,7 +160,7 @@ describe('Testing Gateway Server...', async () => {
       it('should allow requests from IPs in AllowList', async function () {
         const options1 = {
           ...optionsBase,
-          localAddress: randomlyPickFrom(aorConduit1.allowlist).ip,
+          localAddress: pickRandomlyFrom(aorConduit1.allowlist).ip,
           headers: { ...optionsBase.headers, Host: aorConduit1.host },
         };
         boundHttpRequest(options1).then(
@@ -180,7 +176,7 @@ describe('Testing Gateway Server...', async () => {
 
         const options2 = {
           ...optionsBase,
-          localAddress: randomlyPickFrom(aorConduit2.allowlist).ip,
+          localAddress: pickRandomlyFrom(aorConduit2.allowlist).ip,
           headers: { ...optionsBase.headers, Host: aorConduit2.host },
         };
         boundHttpRequest(options2).then(
@@ -200,7 +196,7 @@ describe('Testing Gateway Server...', async () => {
         const options3 = {
           ...optionsBase,
           method: 'POST',
-          localAddress: randomlyPickFrom(activeOnly).ip,
+          localAddress: pickRandomlyFrom(activeOnly).ip,
           headers: { ...optionsBase.headers, Host: aorConduit3.host },
         };
         boundHttpRequest(options3, postData).then(

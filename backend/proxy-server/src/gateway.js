@@ -2,17 +2,11 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const cors = require('cors');
 
-const config = require('../../config');
 const { RestApiError } = require('../../lib/error');
 const tokenService = require('./token-service');
 const { Airtable } = require('./integrations/airtable');
 const { GSheets } = require('./integrations/gsheets');
 const inspect = require('util').inspect;
-
-// cache frequently used objects
-// service endpoint base (includes hostname and path to service, if any)
-const SEP_BASE = {};
-config.targets.settings.forEach((i) => (SEP_BASE[i.type] = i.suri));
 
 // declare these once
 const opsNeedingBody = ['PUT', 'POST', 'PATCH']; // have records in body ?
@@ -227,22 +221,24 @@ function tail({ debug = false }) {
   // need this to obtain a closure over act
   function dispatcher(nts, act) {
     return async function (inbound, res, next) {
+      if (debug) {
+        console.log(`${act} ~~~>`, inspect(inbound, { depth: 4 }));
+      }
+
       try {
-        const { okay, ...rest } = await nts.imap(inbound);
-        if (okay) {
-          if (debug) {
-            console.log(`${act} ~~~>`, inspect(rest, { depth: 4 }));
-          }
-
-          const response = await nts.transmit(rest);
-          const { status, data } = await nts.omap(response);
-
-          if (debug) {
-            console.log(`${act} <~~~`, status, inspect(data, { depth: 4 }));
-          }
-
-          return res.status(status).send(data);
+        const mappedRequest = await nts.imap(inbound);
+        if (debug) {
+          console.log(`${act} ~~~X`, inspect(mappedRequest, { depth: 4 }));
         }
+
+        const response = await nts.transmit(mappedRequest);
+        const { status, data } = await nts.omap(response);
+
+        if (debug) {
+          console.log(`${act} <~~~`, status, inspect(data, { depth: 4 }));
+        }
+
+        return res.status(status).send(data);
       } catch (e) {
         if (debug) {
           console.log(`${act} !~~~!`, e);
@@ -262,7 +258,6 @@ function tail({ debug = false }) {
 
     // scoped container...
     const inbound = {
-      suri: SEP_BASE[conduit.suriType], // base URI to service endpoint
       container: conduit.suriObjectKey, // sheet, table, inbox, bucket, folder, ...
       token: token.user.token, // to access remote service endpoint
       method: req.method, // inbound request method

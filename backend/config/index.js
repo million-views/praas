@@ -34,14 +34,12 @@ module.exports = {
       {
         type: 'googleSheets',
         name: 'Google Sheets',
-        suri: 'https://sheets.googleapis.com/v4/spreadsheets/',
       },
       {
         type: 'airtable',
         name: 'Airtable',
-        suri: 'https://api.airtable.com/v0/',
       },
-      { type: 'email', name: 'Email', suri: '' },
+      { type: 'email', name: 'Email' },
     ],
   },
   conduit: {

@@ -1,8 +1,7 @@
 const path = require('path');
-const http = require('http');
 const dotenv = require('dotenv-safe');
 const faker = require('faker');
-
+const util = require('./util');
 const conf = require('../config');
 
 const customAlphabet = require('nanoid/async').customAlphabet;
@@ -11,30 +10,6 @@ const nanoid = customAlphabet(
   conf.conduit.settings.uccount
 );
 const domain = conf.conduit.settings.domain;
-
-// Given an array of strings, this function returns all unique combinations
-// of the input array elements. More generally this is a powerset generator
-// minus the empty subset.
-//
-// See:
-// - https://www.mathsisfun.com/sets/power-set.html
-// - https://codereview.stackexchange.com/questions/7001/generating-all-combinations-of-an-array
-function powerset(list) {
-  const set = [],
-    listSize = list.length,
-    combinationsCount = 1 << listSize;
-
-  for (let i = 1; i < combinationsCount; i++) {
-    const combination = [];
-    for (let j = 0; j < listSize; j++) {
-      if (i & (1 << j)) {
-        combination.push(list[j]);
-      }
-    }
-    set.push(combination);
-  }
-  return set;
-}
 
 // Construct a custom uri...
 // Note once a low level function is asynchronous there is no reasonable way
@@ -75,7 +50,7 @@ const fakeUserProfile = (overrides = {}) => {
 const statuses = ['active', 'inactive'];
 const hiddenFields = ['partner', 'campaign', 'department', 'account'];
 const hiddenFieldPolicy = ['drop-if-filled', 'pass-if-match'];
-const racmCombo = powerset(['GET', 'POST', 'DELETE', 'PUT', 'PATCH']);
+const racmCombo = util.powerset(['GET', 'POST', 'DELETE', 'PUT', 'PATCH']);
 const supportedServiceTargets = conf.targets.settings.map((i) => i.type);
 
 const {
@@ -84,20 +59,16 @@ const {
   denied: testDeniedIpList,
 } = require('../lib/fake-ips');
 
-const randomlyPickFrom = (choices) => {
-  const rollDice = Math.floor(Math.random() * choices.length);
-  return choices[rollDice];
-};
 const fakeConduit = (overrides = {}) => {
-  const status = randomlyPickFrom(statuses);
+  const status = util.pickRandomlyFrom(statuses);
   const ip =
     status === 'inactive'
-      ? randomlyPickFrom(testInactiveIpList)
-      : randomlyPickFrom(testAllowedIpList);
+      ? util.pickRandomlyFrom(testInactiveIpList)
+      : util.pickRandomlyFrom(testAllowedIpList);
 
   const conduit = {
     suriApiKey: faker.random.uuid(),
-    suriType: randomlyPickFrom(supportedServiceTargets),
+    suriType: util.pickRandomlyFrom(supportedServiceTargets),
     suriObjectKey: faker.lorem.word(),
     allowlist: [
       {
@@ -106,14 +77,14 @@ const fakeConduit = (overrides = {}) => {
         comment: faker.lorem.words(),
       },
     ],
-    racm: randomlyPickFrom(racmCombo),
+    racm: util.pickRandomlyFrom(racmCombo),
     throttle: faker.random.boolean(),
-    status: randomlyPickFrom(statuses),
+    status: util.pickRandomlyFrom(statuses),
     description: faker.lorem.sentence(),
     hiddenFormField: [
       {
-        fieldName: randomlyPickFrom(hiddenFields),
-        policy: randomlyPickFrom(hiddenFieldPolicy),
+        fieldName: util.pickRandomlyFrom(hiddenFields),
+        policy: util.pickRandomlyFrom(hiddenFieldPolicy),
         include: faker.random.boolean(),
         value: faker.lorem.word(),
       },
@@ -175,91 +146,6 @@ function getProxyServerCredentials() {
   };
 }
 
-// Low level HTTP request exclusively meant for testing
-// WARNING: DO NOT USE IN PRODUCTION CODE
-//
-// This function exists so that we can bind a specific local ip
-// address in order to be able to test ip allow/deny list filtering.
-//
-// The local ip address is passed in options. A sample options looks
-// as below. Note: headers is optional.
-//
-// const options = {
-//  hostname: 'localhost',
-//  port: 5000,
-//  path: '/upload',
-//  method: 'POST',
-//  localAddress: '52.95.116.115',
-//  headers: {
-//    // 'Content-Type': 'application/x-www-form-urlencoded',
-//    // 'Content-Length': Buffer.byteLength(postData)
-//  }
-// };
-
-function boundHttpRequest(options, body = null) {
-  const methods = ['OPTIONS', 'HEAD', 'GET', 'POST', 'PUT', 'PATCH'];
-  options.method = options.method ? options.method.toUpperCase() : 'GET';
-
-  if (!methods.includes(options.method)) {
-    throw new Error(`Invalid method: ${options.method}`);
-  }
-
-  if (body && options.method !== 'POST') {
-    throw new Error(`Body not allowed in ${options.method}.`);
-  }
-
-  if (body) {
-    options.headers = {
-      ...options.headers,
-      'Content-Length': Buffer.byteLength(body),
-    };
-  }
-
-  return new Promise((resolve, reject) => {
-    const clientRequest = http.request(options, (incomingMessage) => {
-      // response object.
-      const response = {
-        statusCode: incomingMessage.statusCode,
-        headers: incomingMessage.headers,
-        body: [],
-      };
-
-      // collect response body data.
-      incomingMessage.on('data', (chunk) => {
-        response.body.push(chunk);
-      });
-
-      // resolve on end.
-      incomingMessage.on('end', () => {
-        if (response.body.length) {
-          response.body = response.body.join();
-
-          try {
-            response.body = JSON.parse(response.body);
-          } catch (error) {
-            // silently fail if response is not JSON.
-          }
-        }
-
-        resolve(response);
-      });
-    });
-
-    // reject on request error.
-    clientRequest.on('error', (error) => {
-      reject(error);
-    });
-
-    if (body) {
-      // write request body if present and close
-      clientRequest.end(body);
-    } else {
-      // close HTTP connection.
-      clientRequest.end();
-    }
-  });
-}
-
 module.exports = {
   fakeUserProfile,
   fakeConduit,
@@ -269,6 +155,4 @@ module.exports = {
   testAllowedIpList,
   testInactiveIpList,
   testDeniedIpList,
-  randomlyPickFrom,
-  boundHttpRequest,
 };
