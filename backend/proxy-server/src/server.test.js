@@ -81,7 +81,7 @@ const request4 = {
 };
 
 describe('Testing Gateway Server...', async () => {
-  context('Validate incoming request', () => {
+  context('Non functional requirements', () => {
     it('should reject requests to inactive conduits', async function () {
       const res = await proxyServer().get('/');
       expect(res.status).to.equal(404);
@@ -318,7 +318,7 @@ describe('Testing Gateway Server...', async () => {
     });
   });
 
-  context('Testing Airtable Gateway', () => {
+  context('Functional requirements', () => {
     let recordId;
     before('create an arbitrary record', async function () {
       const res = await proxyServer()
