@@ -15,6 +15,7 @@ import SubmitForm from './components/SubmitForm';
 import DataTable from './components/DataTable';
 import ConduitData from './components/ConduitData';
 import { write } from 'fs';
+import API from './api';
 
 // Action Types
 enum ActionTypes {
@@ -40,6 +41,11 @@ const setConsoleInfo = (payload: string) => ({
   payload,
 });
 
+const setTotalRecordsCount = (payload: number) => ({
+  type: ActionTypes.SET_TOTAL_RECORDS_COUNT,
+  payload,
+});
+
 type State = {
   step: number;
   conduitURIList: conduitURIList;
@@ -51,6 +57,15 @@ interface Action {
   type: ActionTypes;
   payload: any;
 }
+
+export type ConduitDataBase = {
+  name: string;
+  email: string;
+};
+
+export type ConduitDataWithValidity = ConduitDataBase & {
+  valid: boolean;
+};
 
 export const conduitNames = ['conduit-1', 'conduit-2', 'conduit-3'] as const;
 
@@ -122,22 +137,35 @@ const stepTitles = [
 
 function App() {
   const [state, dispatch] = useReducer(appReducer, initialState);
-  const { step, conduitURIList, consoleInfo } = state;
-
-  const fakeEmailAndPassword = (count: number) => {
-    for (let i = 0; i < count; i += 1) {
-      const name = faker.name.findName();
-      const email = faker.internet.email();
-      writeToConsole(`Faking name: ${name} and email: ${email}`);
-    }
-    writeToConsole(
-      'Created entries. Please check the spreadsheet to see if the values are populated'
-    );
-    changeStep(3);
-  };
+  const { step, conduitURIList, consoleInfo, totalRecordsCount } = state;
 
   const writeToConsole = (data: any) => {
     dispatch(setConsoleInfo(JSON.stringify(data)));
+  };
+
+  const changeStep = (stepNumber: number) => {
+    dispatch(setStep(stepNumber));
+    writeToConsole(`Changing to step: ${stepNumber}`);
+  };
+
+  const updateTotalCount = (count: number) => {
+    const { totalRecordsCount } = state;
+    dispatch(setTotalRecordsCount(totalRecordsCount + count));
+  };
+
+  const fakeEmailAndPassword = async (count: number) => {
+    for (let i = 0; i < count; i += 1) {
+      const name = faker.name.findName();
+      const email = faker.internet.email();
+      await createConduit({
+        name,
+        email,
+      });
+    }
+    updateTotalCount(count);
+    writeToConsole(
+      'Created entries. Please check the spreadsheet to see if the values are populated'
+    );
   };
 
   const handleConduitInputChange = (event: FormEvent<HTMLInputElement>) => {
@@ -153,9 +181,16 @@ function App() {
     );
   };
 
-  const changeStep = (stepNumber: number) => {
-    dispatch(setStep(stepNumber));
-    writeToConsole(`Changing to step: ${stepNumber}`);
+  const createConduit = async (data: ConduitDataBase) => {
+    try {
+      await API.create(data);
+      updateTotalCount(1);
+      writeToConsole(`Created conduit with data: ${data}`);
+    } catch (error) {
+      writeToConsole(
+        `Error creating conduit with name: ${data.name} and email: ${data.email}`
+      );
+    }
   };
 
   return (
@@ -193,6 +228,7 @@ function App() {
                 <SubmitForm
                   fakeEmailAndPassword={fakeEmailAndPassword}
                   changeStep={changeStep}
+                  totalRecordsCount={totalRecordsCount}
                 />
               </View>
             </>

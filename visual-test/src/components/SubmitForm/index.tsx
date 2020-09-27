@@ -12,9 +12,14 @@ import {
 interface Props {
   fakeEmailAndPassword: (count: number) => void;
   changeStep: (stepCounter: number) => void;
+  totalRecordsCount: number;
 }
 
-const SubmitForm = ({ fakeEmailAndPassword, changeStep }: Props) => {
+const SubmitForm = ({
+  fakeEmailAndPassword,
+  changeStep,
+  totalRecordsCount,
+}: Props) => {
   return (
     <View>
       <View paddingY="size-100">
@@ -70,7 +75,7 @@ const SubmitForm = ({ fakeEmailAndPassword, changeStep }: Props) => {
             onPress={() => changeStep(3)}
             marginY="size-500"
             maxWidth="size-2400"
-            isDisabled
+            isDisabled={totalRecordsCount === 0}
           >
             Proceed to next step
           </Button>
