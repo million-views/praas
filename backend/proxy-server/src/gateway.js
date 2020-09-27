@@ -2,16 +2,11 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const cors = require('cors');
 
-const config = require('../../config');
 const { RestApiError } = require('../../lib/error');
 const tokenService = require('./token-service');
 const { Airtable } = require('./integrations/airtable');
 const { GSheets } = require('./integrations/gsheets');
-
-// cache frequently used objects
-// service endpoint base (includes hostname and path to service, if any)
-const SEP_BASE = {};
-config.targets.settings.forEach((i) => (SEP_BASE[i.type] = i.suri));
+const inspect = require('util').inspect;
 
 // declare these once
 const opsNeedingBody = ['PUT', 'POST', 'PATCH']; // have records in body ?
@@ -185,10 +180,29 @@ function middle({ cmap = [], debug = false }) {
         // This feature is to catch spam bots, so don't
         // send error if failure, send 200-OK instead
         if (hff.policy === 'drop-if-filled' && reqHff) {
+          if (debug) {
+            console.log(
+              'drop-if-filled: ...dropping',
+              ' coz ',
+              reqHff,
+              ' != ',
+              hff.value
+            );
+          }
           return res.sendStatus(200);
         }
 
         if (hff?.policy === 'pass-if-match' && !(reqHff === hff.value)) {
+          if (debug) {
+            console.log(
+              'pass-if-match: ...dropping',
+              ' coz ',
+              reqHff,
+              ' != ',
+              hff.value
+            );
+          }
+
           return res.sendStatus(200);
         }
 
@@ -221,6 +235,42 @@ function tail({ debug = false }) {
     googleSheets: GSheets({ debug }),
   };
 
+  let act = 0; // asynchronous completion token; debugging aid.
+
+  // need this to obtain a closure over act
+  function dispatcher(nts, act) {
+    return async function (inbound, res, next) {
+      if (debug) {
+        console.log(`${act} ~~~>`, inspect(inbound, { depth: 4 }));
+      }
+
+      try {
+        const mappedRequest = await nts.imap(inbound);
+        if (debug) {
+          const { method, url, parameters, headers, body } = mappedRequest;
+          console.log(
+            `${act} ~~~X`,
+            inspect({ method, url, parameters, headers, body }, { depth: 4 })
+          );
+        }
+
+        const response = await nts.transmit(mappedRequest);
+        const { status, data } = await nts.omap(response);
+
+        if (debug) {
+          console.log(`${act} <~~~`, status, inspect(data, { depth: 4 }));
+        }
+
+        return res.status(status).send(data);
+      } catch (e) {
+        if (debug) {
+          console.log(`${act} !~~~!`, inspect(e, { depth: 4 }));
+        }
+        next(e);
+      }
+    };
+  }
+
   return async function proxy(req, res, next) {
     const conduit = res.locals.conduit;
     const nts = ntsHandlers[conduit.suriType];
@@ -231,18 +281,15 @@ function tail({ debug = false }) {
 
     // scoped container...
     const inbound = {
-      suri: SEP_BASE[conduit.suriType], // base URI to service endpoint
       container: conduit.suriObjectKey, // sheet, table, inbox, bucket, folder, ...
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token.user.token}`,
-      },
-
-      method: req.method,
-      path: req.path,
-      query: req.query,
-      body: req.body,
+      token: token.user.token, // to access remote service endpoint
+      method: req.method, // inbound request method
+      path: req.path, // inbound request path
+      query: req.query, // inbound request query parameters
+      body: req.body, // inbound request body
     };
+
+    act += 1;
 
     if (!nts) {
       next(
@@ -251,16 +298,7 @@ function tail({ debug = false }) {
         })
       );
     } else {
-      try {
-        const { okay, ...rest } = await nts.imap(inbound);
-        if (okay) {
-          const response = await nts.transmit(rest);
-          const { status, data } = await nts.omap(response);
-          res.status(status).send(data);
-        }
-      } catch (e) {
-        next(e);
-      }
+      await dispatcher(nts, act)(inbound, res, next);
     }
   };
 }
