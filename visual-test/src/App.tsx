@@ -6,18 +6,22 @@ import {
   View,
   Well,
   Heading,
+  Divider,
+  Header,
 } from '@adobe/react-spectrum';
 import faker from 'faker';
 
 import SubmitForm from './components/SubmitForm';
 import DataTable from './components/DataTable';
 import ConduitData from './components/ConduitData';
+import { write } from 'fs';
 
 // Action Types
 enum ActionTypes {
   SET_STEP,
   SET_CONDUIT_URI_LIST,
   SET_CONSOLE_INFO,
+  SET_TOTAL_RECORDS_COUNT,
 }
 
 // Actions
@@ -40,6 +44,7 @@ type State = {
   step: number;
   conduitURIList: conduitURIList;
   consoleInfo: string;
+  totalRecordsCount: number;
 };
 
 interface Action {
@@ -79,6 +84,11 @@ const appReducer = function (state: State, action: Action): State {
         consoleInfo: `${state.consoleInfo}
         \n ${action.payload}`,
       };
+    case ActionTypes.SET_TOTAL_RECORDS_COUNT:
+      return {
+        ...state,
+        totalRecordsCount: action.payload,
+      };
     default:
       return state;
   }
@@ -100,6 +110,7 @@ const initialState = {
     JSON.parse(storedConduitURIList)) ||
     initialConduitValues) as conduitURIList,
   consoleInfo: '',
+  totalRecordsCount: 0,
 };
 
 const stepTitles = [
@@ -113,9 +124,16 @@ function App() {
   const [state, dispatch] = useReducer(appReducer, initialState);
   const { step, conduitURIList, consoleInfo } = state;
 
-  const fakeEmailAndPassword = () => {
-    const name = faker.name.findName();
-    const email = faker.internet.email();
+  const fakeEmailAndPassword = (count: number) => {
+    for (let i = 0; i < count; i += 1) {
+      const name = faker.name.findName();
+      const email = faker.internet.email();
+      writeToConsole(`Faking name: ${name} and email: ${email}`);
+    }
+    writeToConsole(
+      'Created entries. Please check the spreadsheet to see if the values are populated'
+    );
+    changeStep(3);
   };
 
   const writeToConsole = (data: any) => {
@@ -143,22 +161,56 @@ function App() {
   return (
     <Provider theme={defaultTheme}>
       <Grid areas={['sections']} columns={['1fr', '1fr']} height="100vh">
-        <View padding="size-400" gridArea="sections">
-          <Heading level={1}>
-            Step: {step} {stepTitles[step]}
-          </Heading>
-          {step === 1 && (
-            <ConduitData
-              handleConduitChange={handleConduitInputChange}
-              conduitURIList={conduitURIList}
-              changeStep={changeStep}
-              writeToConsole={writeToConsole}
-            />
+        <View
+          gridArea="sections"
+          UNSAFE_style={{ overflow: 'auto', maxHeight: '100vh' }}
+        >
+          <Header position="sticky" top="size-0" zIndex={10}>
+            <View
+              backgroundColor="gray-50"
+              paddingY="size-100"
+              paddingX="size-400"
+            >
+              <Heading level={1}>
+                Step: {step} {stepTitles[step]}
+              </Heading>
+            </View>
+          </Header>
+          {step >= 1 && (
+            <View paddingY="size-800" paddingX="size-400">
+              <ConduitData
+                handleConduitChange={handleConduitInputChange}
+                conduitURIList={conduitURIList}
+                changeStep={changeStep}
+                writeToConsole={writeToConsole}
+              />
+            </View>
           )}
-          {step === 2 && <SubmitForm />}
-          {step === 3 && <DataTable />}
+          {step >= 2 && (
+            <>
+              <Divider size="S" />
+              <View paddingY="size-800" paddingX="size-400">
+                <SubmitForm
+                  fakeEmailAndPassword={fakeEmailAndPassword}
+                  changeStep={changeStep}
+                />
+              </View>
+            </>
+          )}
+          {step >= 3 && (
+            <>
+              <Divider size="S" />
+              <View paddingY="size-800" paddingX="size-400">
+                <DataTable />
+              </View>
+            </>
+          )}
         </View>
-        <View backgroundColor="static-black" borderRadius="small">
+        <View
+          backgroundColor="static-black"
+          borderRadius="small"
+          UNSAFE_style={{ overflow: 'auto', maxHeight: '100vh' }}
+        >
           <Well margin="size-100" UNSAFE_style={{ whiteSpace: 'pre-line' }}>
             {consoleInfo}
           </Well>

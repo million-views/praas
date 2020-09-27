@@ -55,11 +55,11 @@ const ConduitData = ({
             RACM: POST request)
           </li>
           <li>
-            The second conduit must support both read and write (Supports
-            RACM: GET, POST and PUT request)
+            The second conduit must support both read and update (Supports
+            RACM: GET and PATCH request)
           </li>
           <li>
-            The third conduit should be a write only conduit(Supports only
+            The third conduit should be a read only conduit(Supports only
             RACM: GET request)
           </li>
         </ol>
@@ -77,7 +77,7 @@ const ConduitData = ({
           onInput={handleConduitChange}
         />
         <TextField
-          label="Conduit 2 (With RACM: GET, POST, PUT enabled)"
+          label="Conduit 2 (With RACM: GET, PATCH enabled)"
           name={conduitNames[1]}
           value={conduitURIList[conduitNames[1]]}
           isRequired
@@ -94,8 +94,13 @@ const ConduitData = ({
           validationState={isConduitThreeValid ? 'valid' : 'invalid'}
           onInput={handleConduitChange}
         />
-        <Button variant="primary" type="submit" maxWidth="size-300">
-          Next
+        <Button
+          variant="cta"
+          type="submit"
+          marginY="size-500"
+          maxWidth="size-2400"
+        >
+          Proceed to next step
         </Button>
       </Form>
     </View>
