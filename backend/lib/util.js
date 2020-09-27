@@ -55,7 +55,7 @@ function rangeset(array, callback, halfopen = false) {
     callback = (start, end) =>
       start === end ? `${start}` : `${start}-${end}`;
   }
-  const sequence = array.sort();
+  const sequence = array.sort().map((v) => Number.parseInt(v));
   const ranges = [];
   for (let i = 0; i < sequence.length; i += 1) {
     const rstart = sequence[i];

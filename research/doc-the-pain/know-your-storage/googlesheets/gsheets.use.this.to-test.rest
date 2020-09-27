@@ -1,0 +1,305 @@
+# Google Sheets API
+## Variables
+@suri = https://sheets.googleapis.com/v4/spreadsheets/
+@base = <sheetId>
+@urlBase = {{suri}}{{base}}
+@table = Contacts
+@columns = {{table}}!A1:Z1
+
+@token = <access-token>
+@agent = User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:80.0) Gecko/20100101 Firefox/80.0
+
+###
+## (*) Get Meta Information of a named sheet and properties of interest
+GET {{urlBase}}
+  ?ranges={{columns}}
+  &fields=spreadsheetId,properties.title,properties.locale,properties.timeZone,sheets(properties,data.rowData.values(formattedValue))
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+###
+## (*) Attach developer meta data to row 1 which will be our schema
+
+
+###
+## (*) Add one row at the end
+POST {{urlBase}}/values/{{table}}!A1:append
+  ?valueInputOption=RAW
+  &insertDataOption=INSERT_ROWS
+  &includeValuesInResponse=true
+  &responseValueRenderOption=UNFORMATTED_VALUE
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "values": [
+    [
+      "Jack 1",
+      "jack-1@example.com",
+      "hff-1"
+    ]
+  ]
+}
+
+###
+## (*) Add multiple rows at the end
+POST {{urlBase}}/values/{{table}}!A1:append
+  ?valueInputOption=RAW
+  &insertDataOption=INSERT_ROWS
+  &includeValuesInResponse=true
+  &responseValueRenderOption=UNFORMATTED_VALUE
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "values": [
+    [
+      "Jack 2",
+      "jack-2@example.com",
+      "hff-2",
+    ],
+    [
+      "Jack 3",
+      "",
+      "hff-3"
+    ],
+    [
+      "Jack 4",
+      null,
+      "hff-4"
+    ],
+    [
+      "Jack 5",
+      "jack-5@example.com",
+    ],
+    [
+      "Jack 6",
+      "jack-6@example.com",
+      null
+    ],
+    [
+      "Jack 7",
+      "jack-7@example.com",
+      "hff-7"
+    ],
+  ]
+}
+
+###
+## (*) Update one (PATCH existing) row
+POST {{urlBase}}/values/:batchUpdate
+  ?fields=spreadsheetId,totalUpdatedRows,totalUpdatedColumns,totalUpdatedCells,responses.updatedData(range,values)
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "valueInputOption": "RAW",
+  "includeValuesInResponse": true,
+  "data": [
+    {
+      "range": "{{table}}!A2",
+      "majorDimension": "ROWS",
+      "values": [
+        [
+          "Jack 1 patched",
+          null,
+          null
+        ]
+      ]
+    }
+  ],
+}
+
+
+### 
+## (*) Update multiple (PATCH existing) rows
+##
+POST {{urlBase}}/values/:batchUpdate
+  ?fields=spreadsheetId,totalUpdatedRows,totalUpdatedColumns,totalUpdatedCells,responses.updatedData(range,values)
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "valueInputOption": "RAW",
+  "includeValuesInResponse": true,
+  "data": [
+    {
+      "range": "{{table}}!A3",
+      "majorDimension": "ROWS",
+      "values": [
+        [
+          null,
+          null,
+          "hff-2 updated"
+        ],
+      ]
+    },
+    {
+      "range": "{{table}}!A4",
+      "majorDimension": "ROWS",
+      "values": [
+        [
+          "Jack 3 got a boost",
+          null,
+          "I did not exist before!"
+        ]
+      ]
+    },
+  ],
+}
+
+###
+## (*) Replace one (PUT destructively existing) row
+##
+POST {{urlBase}}/values/:batchUpdate
+  ?fields=spreadsheetId,totalUpdatedRows,totalUpdatedColumns,totalUpdatedCells,responses.updatedData(range,values)
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "valueInputOption": "RAW",
+  "includeValuesInResponse": true,
+  "data": [
+    {
+      "range": "{{table}}!A2",
+      "majorDimension": "ROWS",
+      "values": [
+        [
+          "Jack 1",
+          "jack-1@example.com",
+          ""
+        ]
+      ]
+    }
+  ]
+}
+
+
+###
+## (*) Replace multiple (PUT destructively existing) rows
+##
+POST {{urlBase}}/values/:batchUpdate
+  ?fields=spreadsheetId,totalUpdatedRows,totalUpdatedColumns,totalUpdatedCells,responses.updatedData(range,values)
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "valueInputOption": "RAW",
+  "includeValuesInResponse": true,
+  "data": [
+    {
+      "range": "{{table}}!A3",
+      "majorDimension": "ROWS",
+      "values": [
+        [
+          "Jack 2",
+          "jack.2@example.com",
+          ""
+        ],
+      ]
+    },
+    {
+      "range": "{{table}}!A4",
+      "majorDimension": "ROWS",
+      "values": [
+        [
+          null,
+          "",
+          "hff-3"
+        ],
+      ]
+    },
+  ]
+}
+
+### 
+## (*) Get one row
+GET {{urlBase}}/values/:batchGet
+  ?majorDimension=ROWS
+  &ranges={{table}}!A2:C2
+  &valueRenderOption=UNFORMATTED_VALUE
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+### 
+## (*) Get discontiguous rows
+GET {{urlBase}}/values/:batchGet
+  ?majorDimension=ROWS
+  &ranges={{table}}!A2:C2
+  &ranges={{table}}!A4:C4
+  &ranges={{table}}!A6:C6
+  &valueRenderOption=UNFORMATTED_VALUE
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+
+###
+## (*) Get all rows
+GET {{urlBase}}/values/:batchGet
+  ?majorDimension=ROWS
+  &ranges={{table}}!A2:C
+  &valueRenderOption=UNFORMATTED_VALUE
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+
+###
+## (*) Delete one row
+#
+POST {{urlBase}}:batchUpdate
+  ?fields=spreadsheetId,updatedSpreadsheet(sheets(properties(sheetId,title),data.rowData.values(formattedValue)))
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "includeSpreadsheetInResponse": true,
+  "responseIncludeGridData": false,
+  "responseRanges":"{{table}}!A2:C2",
+  "requests": [
+    {
+      "deleteDimension": {
+        "range": {
+          "sheetId": 0,
+          "dimension": "ROWS",
+          "startIndex": 1,
+          "endIndex": 2,
+        }
+      }
+    }
+  ]
+}
+
+###
+## (*) Delete multiple rows
+POST {{urlBase}}:batchUpdate
+  ?fields=spreadsheetId,updatedSpreadsheet(sheets(properties(sheetId,title),data.rowData.values(formattedValue)))
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "includeSpreadsheetInResponse": true,
+  "responseIncludeGridData": false,
+  "responseRanges":"{{table}}!A2:C7",
+  "requests": [
+    {
+      "deleteDimension": {
+        "range": {
+          "sheetId": 0,
+          "dimension": "ROWS",
+          "startIndex": 1,
+          "endIndex": 3,
+        }
+      }
+    },
+    {
+      "deleteDimension": {
+        "range": {
+          "sheetId": 0,
+          "dimension": "ROWS",
+          "startIndex": 5,
+          "endIndex": 7
+        }
+      }
+    }
+  ]
+}

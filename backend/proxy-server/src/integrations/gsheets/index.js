@@ -1,3 +1,5 @@
+const { memory } = require('console');
+const { measureMemory } = require('vm');
 const afetch = require('../../../../lib/afetch');
 const { RestApiError } = require('../../../../lib/error');
 const { freezeall, rangeset } = require('../../../../lib/util');
@@ -79,9 +81,24 @@ function mapRequest(method, meta, rest) {
   };
   const slot = bodySlots[method];
 
+  // hack to help in transforming the response at a later stage
+  // NOTE: I think we should normalize the API to have a unified
+  //       response format even for a single row operation.
+  const memo = JSON.parse(
+    JSON.stringify(meta, [
+      'table',
+      'tableId',
+      'tableType',
+      'fields',
+      'managedFieldCount',
+      'totalFieldCount',
+      'lastColumn',
+    ])
+  );
+  memo.method = method;
+
   function mapGET() {
     const mappedRequest = { ...meta.api[method]?.mapsTo };
-
     // replace ranges with either a single record request or multiple record
     // request.
     const rowId = Number.parseInt(rest.path.substring(1));
@@ -90,13 +107,17 @@ function mapRequest(method, meta, rest) {
       ranges.push(
         `${meta.table}!A${rowId + 1}:${meta.lastColumn}${rowId + 1}`
       );
+      memo.expectedRowCount = 'one';
     } else {
       // TODO: deal with pagination parameters; for now return all rows
       ranges.push(`${meta.table}!A2:${meta.lastColumn}`);
+      memo.expectedRowCount = 'many';
+      // starting row id
     }
 
     const parameters = { ...mappedRequest.parameters, ranges };
     mappedRequest.parameters = parameters;
+    mappedRequest.memo = memo;
     return mappedRequest;
   }
 
@@ -109,10 +130,17 @@ function mapRequest(method, meta, rest) {
       const rowId = Number.parseInt(rest.path.substring(1));
       if (Number.isInteger(rowId)) {
         records.push(rowId);
+        memo.expectedRowCount = 'one';
       }
+    } else {
+      memo.expectedRowCount = 'many';
     }
 
-    // TODO: optimize using rangeset function
+    // need this to be able to return a response with the id of
+    // of the rows that got deleted.
+    memo.deleteRows = records;
+
+    // optimize using rangeset function
     const ranges = rangeset(
       records,
       (start, end) => {
@@ -124,6 +152,7 @@ function mapRequest(method, meta, rest) {
       true
     );
 
+    // console.log('rangeset: ', ranges);
     // TODO:
     // it is unclear how the API behaves when multiple row
     // ranges are provided for DELETE... needs more analysis
@@ -141,6 +170,7 @@ function mapRequest(method, meta, rest) {
 
     Object.assign(body, { [slot]: requests });
     mappedRequest.body = body;
+    mappedRequest.memo = memo;
     return mappedRequest;
   }
 
@@ -167,6 +197,12 @@ function mapRequest(method, meta, rest) {
     }
     Object.assign(body, { [slot]: values });
     mappedRequest.body = body;
+    // FIXME
+    // or the test case... we need to normalize the API to use the
+    // same format regardless of the number of rows being posted
+    memo.expectedRowCount = 'many'; // records.length > 1 ? 'many' : 'one';
+    mappedRequest.memo = memo;
+
     return mappedRequest;
   }
 
@@ -195,7 +231,7 @@ function mapRequest(method, meta, rest) {
       const outputRow = {
         range: `${meta.table}!A${inputRowId + 1}`,
         majorDimension: 'ROWS',
-        values,
+        values: [values],
       };
 
       data.push(outputRow);
@@ -203,6 +239,12 @@ function mapRequest(method, meta, rest) {
 
     Object.assign(body, { [slot]: data });
     mappedRequest.body = body;
+    // FIXME
+    // or the test case... we need to normalize the API to use the
+    // same format regardless of the number of rows being posted
+    memo.expectedRowCount = 'many'; // records.length > 1 ? 'many' : 'one';
+    mappedRequest.memo = memo;
+
     return mappedRequest;
   }
 
@@ -231,7 +273,7 @@ function mapRequest(method, meta, rest) {
       const outputRow = {
         range: `${meta.table}!A${inputRowId + 1}`,
         majorDimension: 'ROWS',
-        values,
+        values: [values],
       };
 
       data.push(outputRow);
@@ -239,6 +281,12 @@ function mapRequest(method, meta, rest) {
 
     Object.assign(body, { [slot]: data });
     mappedRequest.body = body;
+    // FIXME
+    // or the test case... we need to normalize the API to use the
+    // same format regardless of the number of rows being posted
+    memo.expectedRowCount = 'many'; // records.length > 1 ? 'many' : 'one';
+    mappedRequest.memo = memo;
+
     return mappedRequest;
   }
 
@@ -461,10 +509,6 @@ function GSheets({ debug = false }) {
   const metacache = new Map();
 
   async function metaget(container, inbound) {
-    if (debug) {
-      console.log(SAPI, container, inbound.token);
-    }
-
     let meta = metacache.get(container);
     if (!meta) {
       meta = await metaFetch(container, inbound.token);
@@ -477,7 +521,7 @@ function GSheets({ debug = false }) {
   // WIP... not ready yet
   async function imap({ container, method, ...rest }) {
     const meta = await metaget(container, rest);
-    const { url, method: apiCall, parameters, body } = mapRequest(
+    const { url, method: apiCall, parameters, body, memo } = mapRequest(
       method,
       meta,
       rest
@@ -492,21 +536,142 @@ function GSheets({ debug = false }) {
         Authorization: `Bearer ${rest.token}`,
       },
       body: body ? JSON.stringify(body) : undefined,
+      memo,
     };
   }
 
-  async function transmit({ url, ...outbound }) {
+  async function transmit({ url, memo, ...outbound }) {
     try {
       const { status, data } = await afetch(url, outbound);
-      return { status, data };
+      return { status, data, memo };
     } catch (error) {
       const { status, errors } = error;
       throw new RestApiError(status, errors);
     }
   }
 
-  function omap({ status, data }) {
-    return { status, data };
+  function translateRange(range) {
+    // known formats:
+    // - Contacts!A3:C3",
+    // - !A3:C3
+    // - !A3:C
+    // - A3:C
+    // - A3
+    // - Contacts!A3
+    return range.match(/\d+/g);
+  }
+
+  function omap({ memo, status, data }) {
+    const {
+      expectedRowCount,
+      fields,
+      table,
+      tableId,
+      method,
+      lastColumn,
+    } = memo;
+
+    const mappedResponse = {};
+    if (method === 'GET') {
+      // NOTE:
+      // - we only support contiguous rows (for now), even though we use
+      //   batchGet which allows us to fetch discontiguous row ranges
+      // - Any "empty" fields (e.g. "", [], or false) in the record will
+      //   not be returned.
+      const [start] = translateRange(data.valueRanges[0].range);
+      const rows = data.valueRanges[0].values ?? [];
+      const records = [];
+      for (let i = 0, imax = rows.length; i < imax; i++) {
+        // hack the record id and createdTime for now
+        const createdTime = new Date().toISOString();
+        // prettier-ignore
+        const record = { id: start - 1 + i, createdTime }, row = rows[i], data = {};
+        for (let j = 0, jmax = row.length; j < jmax; j++) {
+          const fval = row[j];
+          if (fval) {
+            data[fields[j]] = fval;
+          }
+        }
+        record.fields = data;
+        records.push(record);
+      }
+
+      if (expectedRowCount === 'one') {
+        Object.assign(mappedResponse, records[0]);
+      } else {
+        mappedResponse.records = records;
+      }
+    } else if (method === 'DELETE') {
+      // gsheets povides no clues about the rows that got deleted other
+      // than to say the request completed successfully or in error; so
+      // on success we recreate response from request query.
+      const deletedRows = memo.deleteRows;
+      const records = [];
+      for (let i = 0, imax = deletedRows.length; i < imax; i++) {
+        records.push({ deleted: true, id: Number.parseInt(deletedRows[i]) });
+      }
+      if (expectedRowCount === 'one') {
+        Object.assign(mappedResponse, records[0]);
+      } else {
+        mappedResponse.records = records;
+      }
+    } else if (method === 'POST') {
+      const [start] = translateRange(data.updates.updatedData.range);
+
+      const rows = data.updates.updatedData.values ?? [];
+      const records = [];
+      for (let i = 0, imax = rows.length; i < imax; i++) {
+        // hack the record id and createdTime for now
+        const createdTime = new Date().toISOString();
+        // prettier-ignore
+        const record = { id: start - 1 + i, createdTime }, row = rows[i], data = {};
+        for (let j = 0, jmax = row.length; j < jmax; j++) {
+          const fval = row[j];
+          if (fval) {
+            data[fields[j]] = fval;
+          }
+        }
+        record.fields = data;
+        records.push(record);
+      }
+
+      if (expectedRowCount === 'one') {
+        Object.assign(mappedResponse, records[0]);
+      } else {
+        mappedResponse.records = records;
+      }
+    } else if (method === 'PATCH' || method === 'PUT') {
+      // NOTE:
+      // - this is completely hard coded to how the current design
+      //   of the ingress API is. And subject to change. Atm this consider
+      //   this as poc.
+      const rows = data.responses ?? [];
+      const records = [];
+      for (let i = 0, imax = rows.length; i < imax; i++) {
+        // hack the record id and createdTime for now
+        const createdTime = new Date().toISOString();
+        const row = rows[i].updatedData;
+        const [start] = translateRange(row.range);
+        // prettier-ignore
+        const record = { id: start+1, createdTime }, data = {};
+        for (let j = 0, jmax = row.values[0].length; j < jmax; j++) {
+          const fval = row.values[0][j];
+          if (fval) {
+            data[fields[j]] = fval;
+          }
+        }
+        record.fields = data;
+        records.push(record);
+      }
+
+      if (expectedRowCount === 'one') {
+        Object.assign(mappedResponse, records[0]);
+      } else {
+        mappedResponse.records = records;
+      }
+    }
+
+    return { status, data: mappedResponse };
   }
 
   return { imap, transmit, omap };

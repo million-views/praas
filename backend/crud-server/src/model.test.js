@@ -205,7 +205,7 @@ describe('PraaS', () => {
             fieldName: 'hiddenFormField',
             policy: 'drop-if-filled',
             include: false,
-            value: 'hiddenFormFieldValue',
+            value: 'hff-2',
           },
         ],
       });
@@ -221,7 +221,7 @@ describe('PraaS', () => {
             fieldName: 'hiddenFormField',
             policy: 'pass-if-match',
             include: true,
-            value: 'hidden-form-field-value',
+            value: 'hff-3',
           },
         ],
       });
@@ -237,7 +237,7 @@ describe('PraaS', () => {
             fieldName: 'hiddenFormField',
             policy: 'pass-if-match',
             include: false,
-            value: 'hidden-form-field-value',
+            value: 'hff-4',
           },
         ],
       });
