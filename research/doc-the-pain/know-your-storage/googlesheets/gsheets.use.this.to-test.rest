@@ -141,6 +141,78 @@ Authorization: Bearer {{token}}
 }
 
 ###
+## (*) Retrieve data using metadata filter (lookup using metadataKey)
+## POST https://sheets.googleapis.com/v4/spreadsheets/{spreadsheetId}/values:batchGetByDataFilter
+## 
+## NOTE: the request does't return row values of "schema" because the metadata
+##       was created at ROW level whereas the lookup is at SHEET level. Leaving
+##       it here as an example of correct `syntax`
+POST {{urlBase}}/values:batchGetByDataFilter
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "dataFilters": [
+    {
+      "developerMetadataLookup": {
+        "locationType": "SHEET",
+        "metadataLocation": {
+          "sheetId": 0          
+        },
+        "metadataKey": "schema"
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataKey": "row-1"
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataKey": "row-2"
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataKey": "row-3"
+      }
+    }
+  ]
+}
+
+###
+## (*) Retrieve data using metadata filter (lookup using metadataId)
+## POST https://sheets.googleapis.com/v4/spreadsheets/{spreadsheetId}/values:batchGetByDataFilter
+POST {{urlBase}}/values:batchGetByDataFilter
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "dataFilters": [
+    {
+      "developerMetadataLookup": {
+        "metadataId": 393911805
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataId": 1740630435
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataId": 1676909753
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataId": 645182887
+      }
+    }
+  ]
+}
+
+###
 ## (*) Retrieve developer meta data by `metaId`
 ## GET https://sheets.googleapis.com/v4/spreadsheets/{spreadsheetId}/developerMetadata/{metadataId}
 ##
@@ -152,6 +224,7 @@ Authorization: Bearer {{token}}
 ## (*) Retrieve developer meta data by `metaId` in search
 ## GET https://sheets.googleapis.com/v4/spreadsheets/{spreadsheetId}/developerMetadata/{metadataId}
 ##
+## NOTE: you will need to replace the metadataId with what's applicable in your case!
 POST {{urlBase}}/developerMetadata:search
   ?fields=matchedDeveloperMetadata(developerMetadata)
 User-Agent: {{agent}}
@@ -194,7 +267,7 @@ Authorization: Bearer {{token}}
       "deleteDeveloperMetadata": {
         "dataFilter": {
             "developerMetadataLookup": {
-              "metadataKey": "header"
+              "metadataKey": "schema"
             }
         }
       }
@@ -214,16 +287,7 @@ Authorization: Bearer {{token}}
       "deleteDeveloperMetadata": {
         "dataFilter": {
             "developerMetadataLookup": {
-              "metadataKey": "header"
-            }
-        }
-      }
-    },
-    {
-      "deleteDeveloperMetadata": {
-        "dataFilter": {
-            "developerMetadataLookup": {
-              "metadataKey": "row-4"
+              "metadataKey": "schema"
             }
         }
       }
