@@ -14,7 +14,6 @@ import faker from 'faker';
 import SubmitForm from './components/SubmitForm';
 import DataTable from './components/DataTable';
 import ConduitData from './components/ConduitData';
-import { write } from 'fs';
 import API from './api';
 
 // Action Types
@@ -58,12 +57,12 @@ interface Action {
   payload: any;
 }
 
-export type ConduitDataBase = {
+export type ConduitBaseData = {
   name: string;
   email: string;
 };
 
-export type ConduitDataWithValidity = ConduitDataBase & {
+export type ConduitDataWithValidity = ConduitBaseData & {
   valid: boolean;
 };
 
@@ -102,7 +101,7 @@ const appReducer = function (state: State, action: Action): State {
     case ActionTypes.SET_TOTAL_RECORDS_COUNT:
       return {
         ...state,
-        totalRecordsCount: action.payload,
+        totalRecordsCount: state.totalRecordsCount + action.payload,
       };
     default:
       return state;
@@ -149,20 +148,18 @@ function App() {
   };
 
   const updateTotalCount = (count: number) => {
-    const { totalRecordsCount } = state;
-    dispatch(setTotalRecordsCount(totalRecordsCount + count));
+    dispatch(setTotalRecordsCount(count));
   };
 
   const fakeEmailAndPassword = async (count: number) => {
     for (let i = 0; i < count; i += 1) {
       const name = faker.name.findName();
       const email = faker.internet.email();
-      await createConduit({
+      await pushDataToConduit({
         name,
         email,
       });
     }
-    updateTotalCount(count);
     writeToConsole(
       'Created entries. Please check the spreadsheet to see if the values are populated'
     );
@@ -181,16 +178,20 @@ function App() {
     );
   };
 
-  const createConduit = async (data: ConduitDataBase) => {
+  const pushDataToConduit = async (data: ConduitBaseData) => {
     try {
       await API.create(data);
       updateTotalCount(1);
-      writeToConsole(`Created conduit with data: ${data}`);
+      writeToConsole(`Created conduit with data: ${JSON.stringify(data)}`);
     } catch (error) {
       writeToConsole(
         `Error creating conduit with name: ${data.name} and email: ${data.email}`
       );
     }
+  };
+
+  const handleFormSubmit = (data: ConduitBaseData) => {
+    pushDataToConduit(data);
   };
 
   return (
@@ -207,7 +208,7 @@ function App() {
               paddingX="size-400"
             >
               <Heading level={1}>
-                Step: {step} {stepTitles[step]}
+                Step: {step} {stepTitles[step - 1]}
               </Heading>
             </View>
           </Header>
@@ -229,6 +230,8 @@ function App() {
                   fakeEmailAndPassword={fakeEmailAndPassword}
                   changeStep={changeStep}
                   totalRecordsCount={totalRecordsCount}
+                  submitForm={handleFormSubmit}
+                  writeToConsole={writeToConsole}
                 />
               </View>
             </>

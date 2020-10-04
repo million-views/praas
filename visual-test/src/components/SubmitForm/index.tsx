@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FormEvent, FormEventHandler, useMemo, useState } from 'react';
 import {
   TextField,
   View,
@@ -8,18 +8,48 @@ import {
   ButtonGroup,
   Heading,
 } from '@adobe/react-spectrum';
+import { ConduitBaseData } from '../../App';
 
 interface Props {
   fakeEmailAndPassword: (count: number) => void;
   changeStep: (stepCounter: number) => void;
   totalRecordsCount: number;
+  submitForm: (data: ConduitBaseData) => void;
+  writeToConsole: (data: any) => void;
 }
 
 const SubmitForm = ({
   fakeEmailAndPassword,
   changeStep,
   totalRecordsCount,
+  writeToConsole,
+  submitForm,
 }: Props) => {
+  const [formData, setFormData] = useState<ConduitBaseData>({
+    name: '',
+    email: '',
+  });
+  const handleInputChange = (fieldName: string, value: string) => {
+    setFormData({
+      ...formData,
+      [fieldName]: value,
+    });
+  };
+  const handleFormSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    if (isEmailValid && formData.name !== '') {
+      submitForm(formData);
+    } else {
+      writeToConsole(`Fill in the form data: ${JSON.stringify(formData)}`);
+    }
+  };
+
+  const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+
+  const isEmailValid = useMemo(() => emailRegex.test(formData.email), [
+    formData,
+  ]);
+
   return (
     <View>
       <View paddingY="size-100">
@@ -38,9 +68,20 @@ const SubmitForm = ({
         </div>
       </View>
       <View paddingY="size-100">
-        <Form>
-          <TextField label="Name" />
-          <TextField label="Email" />
+        <Form onSubmit={handleFormSubmit}>
+          <TextField
+            label="Name"
+            onChange={(value) => handleInputChange('name', value)}
+            isRequired
+            validationState={formData.name !== '' ? 'valid' : 'invalid'}
+          />
+          <TextField
+            label="Email"
+            onChange={(value) => handleInputChange('email', value)}
+            isRequired
+            inputMode="email"
+            validationState={isEmailValid ? 'valid' : 'invalid'}
+          />
           <Button
             variant="primary"
             type="submit"
@@ -54,7 +95,9 @@ const SubmitForm = ({
       <View paddingY="size-200" flex={1}>
         <Heading level={3}>Fake requests</Heading>
         <ButtonGroup>
-          <Button variant="primary">Fake 5 requests</Button>
+          <Button variant="primary" onPress={() => fakeEmailAndPassword(5)}>
+            Fake 5 requests
+          </Button>
           <Button variant="primary" onPress={() => fakeEmailAndPassword(10)}>
             Fake 10 requests
           </Button>
