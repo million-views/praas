@@ -69,6 +69,8 @@ const List = (props) => {
   const [modal, setModal] = useState();
   const clist = useSelector(state => state.conduit.list);
 
+  const handleViewChange = () => props.changeView('add', 'form', undefined, 'components/list');
+
   const createModal = (conduit) => {
     if (conduit.status === 'inactive') {
       return (
@@ -114,7 +116,7 @@ const List = (props) => {
       <h1>List Conduits</h1>
       <h2>A conduit is a handle to a RESTful service endpoint</h2>
       <button
-        onClick={() => props.changeView('add', 'form', undefined, 'components/list')}>
+        onClick={handleViewChange}>
         Add conduit
       </button>
       <table>

@@ -81,6 +81,7 @@ function ConduitForm(
     defaultValues: getInitialValues(conduit)
   });
 
+  const handleClearErrors = () => methods.clearErrors();
   const onSubmit = async (data) => {
     const conduit = data.conduit;
     try {
@@ -98,7 +99,7 @@ function ConduitForm(
   // - perhaps bring up a modal to submit the stack trace?
   return (
     <ErrorBoundary
-      FallbackComponent={ErrorFallback} onReset={() => methods.clearErrors()}>
+      FallbackComponent={ErrorFallback} onReset={handleClearErrors}>
       <h2>{heading}</h2>
       <Form onSubmit={onSubmit} methods={methods} errors={remoteErrors}>
         <Text
