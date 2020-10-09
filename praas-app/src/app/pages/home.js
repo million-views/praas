@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 
 import { Header } from 'components';
 
@@ -28,7 +28,17 @@ function Home(props) {
   return (
     <>
       <Header />
-      <main className="page" />
+      <main className="page">
+        <Link to="conduit">
+          {/*
+            TODO: make this a clickable card...
+            See: https://github.com/million-views/kis.css/blob/master/src/app/pages/card.js
+          */}
+          <button>
+            Manage your conduits
+          </button>
+        </Link>
+      </main>
     </>
   );
 }

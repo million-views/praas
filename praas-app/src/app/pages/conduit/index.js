@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 
 import { Header } from 'components';
-import { ConduitList } from './list';
+import { List as ConduitList } from './list';
 import { CreateConduitForm, EditConduitForm } from './form';
 import { listConduits } from 'store/conduit/list';
 
@@ -60,6 +60,7 @@ function Conduit(props) {
   } else if (state.mode === 'edit') {
     view = <EditConduitForm cid={state.cid} changeView={viewChanger} />;
   } else {
+    // eslint-disable-next-line no-unused-vars
     view = <h1>Oops. We seem to have lost our way!</h1>;
   }
 

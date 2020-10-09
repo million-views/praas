@@ -140,4 +140,4 @@ List.propTypes = {
   changeView: PropTypes.func.isRequired,
 };
 
-export default List;
+export { List };
