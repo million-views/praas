@@ -1,19 +1,23 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const User = require('./models').User;
+const Login = require('./models').Login;
 
 passport.use(
   new LocalStrategy(
     {
-      usernameField: 'user[email]',
-      passwordField: 'user[password]',
+      usernameField: 'username',
+      passwordField: 'password',
     },
-    async function (email, password, done) {
+    async function (username, password, done) {
       let error = null;
       try {
-        const user = await User.exists(email, password);
-        if (user) {
-          return done(null, user);
+        const login = await Login.exists(username, password);
+        if (login && login.user) {
+          return done(null, login.user);
+        } else if (login && !login.user) {
+          return done(null, null, {
+            user: 'User details missing.',
+          });
         } else {
           return done(null, false, {
             errors: { credentials: 'email or password is invalid' },

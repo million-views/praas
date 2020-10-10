@@ -68,7 +68,7 @@ app.use(RestApiErrorHandler);
 // launch the server and listen only when running as a standalone process
 if (!module.parent) {
   models.db.sync({ force: false }).then(async () => {
-    const proxyUser = helpers.getProxyServerCredentials().user;
+    /* const proxyUser = helpers.getProxyServerCredentials().user;
     let user = new models.User();
     Object.assign(user, proxyUser);
     try {
@@ -82,17 +82,17 @@ if (!module.parent) {
         console.log(`Unexpected error: ${e.name}, aborting... ${e}`);
         process.exit(3);
       }
-    }
+    } */
 
     // set this user as a privileged client (i.e our proxy server) in app local
     // so we can check for privileged access in the routes...
-    app.locals.proxyUser = user;
+    /* app.locals.proxyUser = user;
     console.log(
       'app.locals.proxyUser -> email: ',
       app.locals.proxyUser.email,
       ' id: ',
       app.locals.proxyUser.id
-    );
+    ); */
 
     // start listening iff all good... we get here only if the database exists
     // and proxy user is either created anew or already exists.

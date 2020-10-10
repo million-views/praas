@@ -35,6 +35,8 @@ const Sequelize = require('sequelize');
 // To update json values:
 // - https://github.com/sequelize/sequelize/issues/2862
 // - https://github.com/sequelize/sequelize/issues/4805
+const storage =
+  process.env.NODE_ENV === 'test' ? ':memory:' : './sqlite-praas-crud.db';
 
 const db = new Sequelize('development', null, null, {
   logging: false,
@@ -42,13 +44,47 @@ const db = new Sequelize('development', null, null, {
   dialect: 'sqlite',
   // operatorsAliases: false,
   // sqlite only
-  storage: './sqlite-praas-crud.db',
+  storage: storage,
   define: {
-    // underscored: true, /* use underscore instead of camelCase */
+    underscored: true /* use underscore instead of camelCase */,
     freezeTableName: true /* keep the table name provided by us */,
   },
 });
 
 const User = require('./user')(db, Sequelize.DataTypes);
+const Login = require('./login')(db, Sequelize.DataTypes);
+const Account = require('./account')(db, Sequelize.DataTypes);
+const Membership = require('./membership')(db, Sequelize.DataTypes);
+const Secret = require('./secret')(db, Sequelize.DataTypes);
 const Conduit = require('./conduit')(db, Sequelize.DataTypes);
-module.exports = { db, User, Conduit };
+const Allowlist = require('./allowlist')(db, Sequelize.DataTypes);
+
+/* TODO: Move the relations to the releveant files if needed */
+/* Can be hasMany in future considering different means of login */
+User.hasOne(Login, {
+  foreignKey: {
+    allowNull: false,
+  },
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
+});
+Login.belongsTo(User);
+User.belongsToMany(Account, { through: Membership });
+
+Account.hasMany(Secret);
+Account.hasMany(Conduit);
+Account.hasMany(Conduit);
+Account.hasMany(Allowlist);
+
+Secret.hasMany(Conduit);
+
+Allowlist.belongsToMany(Conduit, { through: 'conduit_allowlist' });
+
+module.exports = {
+  db,
+  User,
+  Login,
+  Secret,
+  Conduit,
+  Allowlist,
+};

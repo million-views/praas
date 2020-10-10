@@ -19,45 +19,15 @@ module.exports = (db, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        is: /\S+@\S+\.\S+/,
         notEmpty: true,
       },
       unique: true,
-      set(email) {
-        this.setDataValue('email', email.toString().toLowerCase());
-      },
-    },
-    password: {
-      type: DataTypes.VIRTUAL,
-      set(val) {
-        this.setDataValue('salt', crypto.randomBytes(16).toString('hex'));
-        this.setDataValue(
-          'hash',
-          crypto
-            .pbkdf2Sync(val, this.salt, 10000, 512, 'sha512')
-            .toString('hex')
-        );
-      },
-    },
-    hash: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    salt: {
-      type: DataTypes.STRING,
-      allowNull: false,
     },
   });
 
-  User.prototype.passwordValid = function (password) {
-    const hash = crypto
-      .pbkdf2Sync(password, this.salt, 10000, 512, 'sha512')
-      .toString('hex');
-    return this.hash === hash;
-  };
-
   // valid for 1 hour
   User.prototype.generateJWT = function (exp, iat) {
+    // TODO: Add account details
     const payload = {
       id: this.id,
       email: this.email,
@@ -73,7 +43,7 @@ module.exports = (db, DataTypes) => {
     const exp = iat + 3600; // valid for 1 hour
     // const exp = iat + 60; // valid for 60 seconds
 
-    const tkn = this.generateJWT(exp, iat);
+    const tkn = this.generateJWT(exp, iat, this.email);
     return {
       id: this.id,
       firstName: this.firstName,
@@ -97,11 +67,8 @@ module.exports = (db, DataTypes) => {
   // if found and password matches, return the user object
   // else return falsey...
   // WARN: watchout for collisions with Sequelize's own class methods
-  User.exists = async function (email, password) {
+  User.exists = async function (email) {
     const user = await User.findOne({ where: { email: email } });
-    if (!user || !user.passwordValid(password)) {
-      return undefined;
-    }
 
     return user;
   };
