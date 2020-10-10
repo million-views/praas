@@ -5,7 +5,6 @@ const { RestApiErrorHandler } = require('../../lib/error');
 const helpers = require('../../lib/helpers');
 const PraasAPI = require('../../lib/praas');
 const tokenService = require('./token-service');
-const user = require('../../crud-server/src/models/user');
 const conf = require('../../config').system.settings;
 
 // store conduits indexed by curi in app.locals for lookup later...
@@ -14,8 +13,8 @@ const cmap = new Map();
 
 const app = express();
 app.use(gateway.head());
-app.use(gateway.middle({ cmap }));
-app.use(gateway.tail({ debug: true }));
+app.use(gateway.middle({ cmap, debug: false }));
+app.use(gateway.tail({ debug: false }));
 app.use(RestApiErrorHandler); // !! should be registered last
 
 console.log(
