@@ -47,6 +47,349 @@
 }
 ```
 
+
+## (*) Attach metadata to row 1
+```json
+{
+  "spreadsheetId": "doc-hash-abc",
+  "replies": [
+    {
+      "createDeveloperMetadata": {
+        "developerMetadata": {
+          "metadataId": 276183675,
+          "metadataKey": "header",
+          "metadataValue": "whatever",
+          "location": {
+            "locationType": "ROW",
+            "dimensionRange": {
+              "dimension": "ROWS",
+              "startIndex": 0,
+              "endIndex": 1
+            }
+          },
+          "visibility": "DOCUMENT"
+        }
+      }
+    }
+  ]
+}
+```
+
+## (*) Retrieve developer meta data for row 1 by key
+Notice that it returns multiple objects. GSheets let's you tag any
+object multiple times with the same key. Each tag returns a unique
+metadataId!
+```json
+{
+  "matchedDeveloperMetadata": [
+    {
+      "developerMetadata": {
+        "metadataId": 276183675,
+        "metadataKey": "header",
+        "metadataValue": "whatever",
+        "location": {
+          "locationType": "ROW",
+          "dimensionRange": {
+            "dimension": "ROWS",
+            "startIndex": 0,
+            "endIndex": 1
+          }
+        },
+        "visibility": "DOCUMENT"
+      },
+      "dataFilters": [
+        {
+          "developerMetadataLookup": {
+            "metadataKey": "header"
+          }
+        }
+      ]
+    },
+    {
+      "developerMetadata": {
+        "metadataId": 1645140124,
+        "metadataKey": "header",
+        "metadataValue": "whatever",
+        "location": {
+          "locationType": "ROW",
+          "dimensionRange": {
+            "dimension": "ROWS",
+            "startIndex": 0,
+            "endIndex": 1
+          }
+        },
+        "visibility": "DOCUMENT"
+      },
+      "dataFilters": [
+        {
+          "developerMetadataLookup": {
+            "metadataKey": "header"
+          }
+        }
+      ]
+    },
+    {
+      "developerMetadata": {
+        "metadataId": 1211685027,
+        "metadataKey": "header",
+        "metadataValue": "whatever",
+        "location": {
+          "locationType": "ROW",
+          "dimensionRange": {
+            "dimension": "ROWS",
+            "startIndex": 0,
+            "endIndex": 1
+          }
+        },
+        "visibility": "DOCUMENT"
+      },
+      "dataFilters": [
+        {
+          "developerMetadataLookup": {
+            "metadataKey": "header"
+          }
+        }
+      ]
+    },
+    {
+      "developerMetadata": {
+        "metadataId": 1481882266,
+        "metadataKey": "header",
+        "metadataValue": "whatever",
+        "location": {
+          "locationType": "ROW",
+          "dimensionRange": {
+            "dimension": "ROWS",
+            "startIndex": 0,
+            "endIndex": 1
+          }
+        },
+        "visibility": "DOCUMENT"
+      },
+      "dataFilters": [
+        {
+          "developerMetadataLookup": {
+            "metadataKey": "header"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+After row 1 got moved. Notice the row index is updated!
+```json
+{
+  "matchedDeveloperMetadata": [
+    {
+      "developerMetadata": {
+        "metadataId": 276183675,
+        "metadataKey": "header",
+        "metadataValue": "whatever",
+        "location": {
+          "locationType": "ROW",
+          "dimensionRange": {
+            "dimension": "ROWS",
+            "startIndex": 4,
+            "endIndex": 5
+          }
+        },
+        "visibility": "DOCUMENT"
+      },
+      "dataFilters": [
+        {
+          "developerMetadataLookup": {
+            "metadataKey": "header"
+          }
+        }
+      ]
+    },
+    {
+      "developerMetadata": {
+        "metadataId": 1481882266,
+        "metadataKey": "header",
+        "metadataValue": "whatever",
+        "location": {
+          "locationType": "ROW",
+          "dimensionRange": {
+            "dimension": "ROWS",
+            "startIndex": 4,
+            "endIndex": 5
+          }
+        },
+        "visibility": "DOCUMENT"
+      },
+      "dataFilters": [
+        {
+          "developerMetadataLookup": {
+            "metadataKey": "header"
+          }
+        }
+      ]
+    },
+    {
+      "developerMetadata": {
+        "metadataId": 1645140124,
+        "metadataKey": "header",
+        "metadataValue": "whatever",
+        "location": {
+          "locationType": "ROW",
+          "dimensionRange": {
+            "dimension": "ROWS",
+            "startIndex": 4,
+            "endIndex": 5
+          }
+        },
+        "visibility": "DOCUMENT"
+      },
+      "dataFilters": [
+        {
+          "developerMetadataLookup": {
+            "metadataKey": "header"
+          }
+        }
+      ]
+    },
+    {
+      "developerMetadata": {
+        "metadataId": 1211685027,
+        "metadataKey": "header",
+        "metadataValue": "whatever",
+        "location": {
+          "locationType": "ROW",
+          "dimensionRange": {
+            "dimension": "ROWS",
+            "startIndex": 4,
+            "endIndex": 5
+          }
+        },
+        "visibility": "DOCUMENT"
+      },
+      "dataFilters": [
+        {
+          "developerMetadataLookup": {
+            "metadataKey": "header"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+## (*) Delete developer meta data for row 1 by key
+Notice that all meta data tags are deleted
+```json
+
+  "spreadsheetId": "doc-hash-abc",
+  "replies": [
+    {
+      "deleteDeveloperMetadata": {
+        "deletedDeveloperMetadata": [
+          {
+            "metadataId": 1481882266,
+            "metadataKey": "header",
+            "metadataValue": "whatever",
+            "location": {
+              "locationType": "ROW",
+              "dimensionRange": {
+                "dimension": "ROWS",
+                "startIndex": 4,
+                "endIndex": 5
+              }
+            },
+            "visibility": "DOCUMENT"
+          },
+          {
+            "metadataId": 1645140124,
+            "metadataKey": "header",
+            "metadataValue": "whatever",
+            "location": {
+              "locationType": "ROW",
+              "dimensionRange": {
+                "dimension": "ROWS",
+                "startIndex": 4,
+                "endIndex": 5
+              }
+            },
+            "visibility": "DOCUMENT"
+          },
+          {
+            "metadataId": 276183675,
+            "metadataKey": "header",
+            "metadataValue": "whatever",
+            "location": {
+              "locationType": "ROW",
+              "dimensionRange": {
+                "dimension": "ROWS",
+                "startIndex": 4,
+                "endIndex": 5
+              }
+            },
+            "visibility": "DOCUMENT"
+          },
+          {
+            "metadataId": 1211685027,
+            "metadataKey": "header",
+            "metadataValue": "whatever",
+            "location": {
+              "locationType": "ROW",
+              "dimensionRange": {
+                "dimension": "ROWS",
+                "startIndex": 4,
+                "endIndex": 5
+              }
+            },
+            "visibility": "DOCUMENT"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+Request for metadata after deleting metadata `by key` or when no metadata
+is attached will return an empty object.
+
+```json
+{}
+```
+
+## (*) Retrieve developer meta data by `metaId`
+When not found:
+
+```json
+{
+  "error": {
+    "code": 404,
+    "message": "No developer metadata with ID 276183675.",
+    "status": "NOT_FOUND"
+  }
+}
+```
+
+When found:
+```json
+{
+  "metadataId": 1383379683,
+  "metadataKey": "header",
+  "metadataValue": "whatever",
+  "location": {
+    "locationType": "ROW",
+    "dimensionRange": {
+      "dimension": "ROWS",
+      "startIndex": 0,
+      "endIndex": 1
+    }
+  },
+  "visibility": "DOCUMENT"
+}
+```
+
+
+
 ## (*) Add one row at the end
 ```json
 {

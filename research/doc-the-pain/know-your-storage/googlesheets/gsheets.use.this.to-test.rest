@@ -1,16 +1,16 @@
 # Google Sheets API
 ## Variables
 @suri = https://sheets.googleapis.com/v4/spreadsheets/
-@base = <sheetId>
+@base = {{$processEnv SHEET_ID}}
 @urlBase = {{suri}}{{base}}
 @table = Contacts
 @columns = {{table}}!A1:Z1
 
-@token = <access-token>
+@token = {{$processEnv ACCESS_TOKEN}}
 @agent = User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:80.0) Gecko/20100101 Firefox/80.0
 
 ###
-## (*) Get Meta Information of a named sheet and properties of interest
+## (*) Get row 1 information of a named sheet and properties of interest
 GET {{urlBase}}
   ?ranges={{columns}}
   &fields=spreadsheetId,properties.title,properties.locale,properties.timeZone,sheets(properties,data.rowData.values(formattedValue))
@@ -18,7 +18,309 @@ User-Agent: {{agent}}
 Authorization: Bearer {{token}}
 
 ###
-## (*) Attach developer meta data to row 1 which will be our schema
+## (*) Attach developer meta data to row 1 which will be our `schema`
+POST {{urlBase}}:batchUpdate
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "requests": [
+    {
+      "createDeveloperMetadata": {
+        "developerMetadata":{ 
+          "metadataKey": "schema",
+          "metadataValue": "{book-keeping-data-goes-here}",
+          "location": {  
+            "dimensionRange": {
+              "sheetId": 0,
+              "dimension": "ROWS",
+              "startIndex": 0,   
+              "endIndex":1   
+            }
+          },
+          "visibility": "DOCUMENT"      
+        }
+      }
+    }
+  ]
+}
+
+###
+## (*) Attach developer meta data to multiple rows
+POST {{urlBase}}:batchUpdate
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "requests": [
+    {
+      "createDeveloperMetadata": {
+        "developerMetadata":{ 
+          "metadataKey": "row-1",
+          "metadataValue": "createdTime",
+          "location": {  
+            "dimensionRange": {
+              "sheetId": 0,
+              "dimension": "ROWS",
+              "startIndex": 1,   
+              "endIndex":2    
+            }
+          },
+          "visibility": "DOCUMENT"      
+        }
+      }
+    },
+    {
+      "createDeveloperMetadata": {
+        "developerMetadata":{ 
+          "metadataKey": "row-2",
+          "metadataValue": "createdTime",
+          "location": {  
+            "dimensionRange": {
+              "sheetId": 0,
+              "dimension": "ROWS",
+              "startIndex": 2,   
+              "endIndex": 3   
+            }
+          },
+          "visibility": "DOCUMENT"      
+        }
+      }
+    },
+    {
+      "createDeveloperMetadata": {
+        "developerMetadata":{ 
+          "metadataKey": "row-3",
+          "metadataValue": "createdTime",
+          "location": {  
+            "dimensionRange": {
+              "sheetId": 0,
+              "dimension": "ROWS",
+              "startIndex": 3,   
+              "endIndex": 4 
+            }
+          },
+          "visibility": "DOCUMENT"      
+        }
+      }
+    }
+  ]
+}
+
+###
+## (*) Retrieve developer meta data for multiple rows including schema row
+## POST https://sheets.googleapis.com/v4/spreadsheets/{spreadsheetId}/developerMetadata:search
+##
+POST {{urlBase}}/developerMetadata:search
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "dataFilters": [
+    {
+      "developerMetadataLookup": {
+        "metadataKey": "schema"
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataKey": "row-1"
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataKey": "row-2"
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataKey": "row-3"
+      }
+    }
+  ]
+}
+
+###
+## (*) Retrieve data using metadata filter (lookup using metadataKey)
+## POST https://sheets.googleapis.com/v4/spreadsheets/{spreadsheetId}/values:batchGetByDataFilter
+## 
+## NOTE: the request does't return row values of "schema" because the metadata
+##       was created at ROW level whereas the lookup is at SHEET level. Leaving
+##       it here as an example of correct `syntax`
+POST {{urlBase}}/values:batchGetByDataFilter
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "dataFilters": [
+    {
+      "developerMetadataLookup": {
+        "locationType": "SHEET",
+        "metadataLocation": {
+          "sheetId": 0          
+        },
+        "metadataKey": "schema"
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataKey": "row-1"
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataKey": "row-2"
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataKey": "row-3"
+      }
+    }
+  ]
+}
+
+###
+## (*) Retrieve data using metadata filter (lookup using metadataId)
+## POST https://sheets.googleapis.com/v4/spreadsheets/{spreadsheetId}/values:batchGetByDataFilter
+POST {{urlBase}}/values:batchGetByDataFilter
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "dataFilters": [
+    {
+      "developerMetadataLookup": {
+        "metadataId": 393911805
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataId": 1740630435
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataId": 1676909753
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataId": 645182887
+      }
+    }
+  ]
+}
+
+###
+## (*) Retrieve developer meta data by `metaId`
+## GET https://sheets.googleapis.com/v4/spreadsheets/{spreadsheetId}/developerMetadata/{metadataId}
+##
+GET {{urlBase}}/developerMetadata/1383379683
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+###
+## (*) Retrieve developer meta data by `metaId` in search
+## GET https://sheets.googleapis.com/v4/spreadsheets/{spreadsheetId}/developerMetadata/{metadataId}
+##
+## NOTE: you will need to replace the metadataId with what's applicable in your case!
+POST {{urlBase}}/developerMetadata:search
+  ?fields=matchedDeveloperMetadata(developerMetadata)
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "dataFilters": [
+    {
+      "developerMetadataLookup": {
+        "metadataId": 393911805
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataId": 1740630435
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataId": 1676909753
+      }
+    },
+    {
+      "developerMetadataLookup": {
+        "metadataId": 645182887
+      }
+    }
+  ]
+}
+
+###
+## (*) Delete developer meta data for row 1 by key
+POST {{urlBase}}:batchUpdate
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "requests": [
+    {
+      "deleteDeveloperMetadata": {
+        "dataFilter": {
+            "developerMetadataLookup": {
+              "metadataKey": "schema"
+            }
+        }
+      }
+    }
+  ]
+}
+
+###
+## (*) Delete developer meta data for multiple rows
+POST {{urlBase}}:batchUpdate
+User-Agent: {{agent}}
+Authorization: Bearer {{token}}
+
+{
+  "requests": [
+    {
+      "deleteDeveloperMetadata": {
+        "dataFilter": {
+            "developerMetadataLookup": {
+              "metadataKey": "schema"
+            }
+        }
+      }
+    },
+    {
+      "deleteDeveloperMetadata": {
+        "dataFilter": {
+            "developerMetadataLookup": {
+              "metadataKey": "row-3"
+            }
+        }
+      }
+    },
+    {
+      "deleteDeveloperMetadata": {
+        "dataFilter": {
+            "developerMetadataLookup": {
+              "metadataKey": "row-2"
+            }
+        }
+      }
+    },
+    {
+      "deleteDeveloperMetadata": {
+        "dataFilter": {
+            "developerMetadataLookup": {
+              "metadataKey": "row-1"
+            }
+        }
+      }
+    }
+  ]
+}
 
 
 ###
