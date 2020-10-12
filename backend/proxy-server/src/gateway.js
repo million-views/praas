@@ -171,11 +171,10 @@ function middle({ cmap = [], debug = false }) {
   //   - batch creation: loop through and delete records that fail the test
 
   // Validate row data from request against hff policies
-  // - deletes field entry if row is kosher and value should pass through
+  // - deletes field entry if row is kosher and value should not pass through
   // - return true if the row is kosher, false otherwise
   function hffCheckOne(row, hffMeta, messages) {
     for (let i = 0, imax = hffMeta.length; i < imax; i++) {
-      // We`ll be using this multiple times, so store in a short variable
       const hff = hffMeta[i];
       const reqHffValue = row.fields[hff.fieldName];
 
@@ -205,8 +204,8 @@ function middle({ cmap = [], debug = false }) {
     return true;
   }
 
-  // This feature is to catch spam bots, so don't
-  // send error if failure, send 200-OK instead
+  // This feature is to catch spam bots, so don't send a response indicating
+  // failure conditions here.., send 200-OK instead
   function hffCheck(req, res, next) {
     if (debug) {
       console.log(`hff-check: ${req.method}`);
