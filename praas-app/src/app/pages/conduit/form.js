@@ -17,7 +17,8 @@ import { addConduit, updateConduit, getConduit } from 'store/conduit';
 const conduitAccessControl = [
   { name: 'get', value: 'GET', label: 'List' },
   { name: 'post', value: 'POST', label: 'Add' },
-  { name: 'put', value: 'PUT', label: 'Update' },
+  { name: 'put', value: 'PUT', label: 'Replace' },
+  { name: 'patch', value: 'PATCH', label: 'Update' },
   { name: 'delete', value: 'DELETE', label: 'Delete' },
 ];
 
