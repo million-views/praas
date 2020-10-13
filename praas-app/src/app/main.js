@@ -18,7 +18,7 @@ import configureStore from 'store';
 import Home from './pages/home';
 import Login from './pages/login';
 import Signup from './pages/signup';
-import Conduit from './pages/conduit';
+import Conduits from './pages/conduits';
 
 // TODO:
 // - clear alert on location change
@@ -29,7 +29,7 @@ export default function App(props) {
       <Route path="/" element={<Home />} />
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<Signup />} />
-      <Route path="conduit" element={<Conduit />} />
+      <Route path="conduits" element={<Conduits />} />
     </Routes>
   );
 }

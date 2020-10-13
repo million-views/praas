@@ -29,7 +29,7 @@ function Home(props) {
     <>
       <Header />
       <main className="page">
-        <Link to="conduit">
+        <Link to="conduits">
           {/*
             TODO: make this a clickable card...
             See: https://github.com/million-views/kis.css/blob/master/src/app/pages/card.js
