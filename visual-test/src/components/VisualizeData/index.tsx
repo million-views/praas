@@ -40,10 +40,10 @@ const VisualizeData: React.FC<Props> = ({
       (data) => data.fields.validity === Validity.INVALID
     );
     setValidDataPercent(
-      Math.floor((validConduits.length / totalConduitsCount) * 100)
+      Math.round((validConduits.length / totalConduitsCount) * 100)
     );
     setInValidDataPercent(
-      Math.floor((invalidConduits.length / totalConduitsCount) * 100)
+      Math.round((invalidConduits.length / totalConduitsCount) * 100)
     );
   }, [conduitData]);
 
