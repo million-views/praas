@@ -1,12 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid, View, Heading, Text, Button } from '@adobe/react-spectrum';
 import { markValidOrInvalid } from '../../utils';
-import { ConduitBaseData, ConduitData } from '../../App';
+import {
+  ConduitData,
+  conduitNames,
+  conduitURIList,
+  Validity,
+} from '../../App';
 interface Props {
-  getConduitData: () => void;
+  getConduitData: (conduitURI: string) => void;
+  changeStep: (stepCounter: number) => void;
   conduitData: ConduitData[];
   writeToConsole: (data: any) => void;
   updateConduit: Function;
+  conduitURIList: conduitURIList;
 }
 
 const DataTable = ({
@@ -14,7 +21,11 @@ const DataTable = ({
   conduitData,
   writeToConsole,
   updateConduit,
+  changeStep,
+  conduitURIList,
 }: Props) => {
+  const [isDataValidated, setIsDataValidated] = useState(false);
+
   const updateDataForValidity = async (id: string) => {
     const validity = markValidOrInvalid();
     await updateConduit(id, {
@@ -23,21 +34,37 @@ const DataTable = ({
     writeToConsole('Updating validity of fields');
   };
 
-  useEffect(() => {
-    async function onMount() {
-      await getConduitData();
-    }
-    onMount();
-  }, []);
-
   const handleUpdateConduitData = async () => {
     for (let i = 0; i < conduitData.length; i++) {
       if (!conduitData[i].fields.validity) {
         await updateDataForValidity(conduitData[i].id);
       }
     }
-    await getConduitData();
+    await getConduitData(conduitURIList[conduitNames[1]]);
   };
+
+  useEffect(() => {
+    async function onMount() {
+      await getConduitData(conduitURIList[conduitNames[1]]);
+    }
+    onMount();
+  }, []);
+
+  const checkForConduitDataValidity = () => {
+    let isAllDataValid = true;
+    for (let i = 0; i < conduitData.length; i++) {
+      const { validity } = conduitData[i].fields;
+      if (validity !== Validity.INVALID && validity !== Validity.VALID) {
+        isAllDataValid = false;
+        break;
+      }
+    }
+    setIsDataValidated(isAllDataValid);
+  };
+
+  useEffect(() => {
+    checkForConduitDataValidity();
+  }, [conduitData]);
 
   return (
     <View>
@@ -76,7 +103,7 @@ const DataTable = ({
               </Heading>
               {conduitData.map((conduit: ConduitData) => (
                 <View borderTopWidth="thin" key={conduit.id}>
-                  <Text>{conduit.fields.name}</Text>
+                  <Text>{conduit.fields.email}</Text>
                 </View>
               ))}
             </View>
@@ -95,11 +122,21 @@ const DataTable = ({
           </View>
           <View paddingY="size-200" flex={1}>
             <Button
-              variant="cta"
+              variant="primary"
               onPress={() => handleUpdateConduitData()}
-              minWidth="size-2000"
+              minWidth="size-3000"
             >
-              Update validity
+              Fetch and update data validity
+            </Button>
+            <Button
+              variant="cta"
+              type="submit"
+              marginY="size-500"
+              maxWidth="size-2400"
+              onPress={() => changeStep(4)}
+              isDisabled={!isDataValidated}
+            >
+              Proceed to next step
             </Button>
           </View>
         </Grid>

@@ -15,6 +15,7 @@ import SubmitForm from './components/SubmitForm';
 import DataTable from './components/DataTable';
 import ConduitData from './components/ConduitData';
 import API from './api';
+import VisualizeData from './components/VisualizeData';
 
 // Action Types
 enum ActionTypes {
@@ -82,7 +83,7 @@ interface Action {
 export type ConduitBaseData = {
   name: string;
   email: string;
-  validity?: keyof typeof Validity;
+  validity?: Validity;
 };
 
 export const conduitNames = ['conduit-1', 'conduit-2', 'conduit-3'] as const;
@@ -196,7 +197,6 @@ function App() {
       }
     }
     updateTotalCount(successCount);
-    await getDataFromConduit();
     writeToConsole(
       'Created entries. Please check the spreadsheet to see if the values are populated'
     );
@@ -247,14 +247,11 @@ function App() {
     if (response) {
       updateTotalCount(1);
     }
-    await getDataFromConduit();
   };
 
-  const getDataFromConduit = async () => {
+  const getDataFromConduit = async (conduitURI: string) => {
     try {
-      const data: ConduitData[] = await API.get(
-        conduitURIList[conduitNames[1]]
-      );
+      const data: ConduitData[] = await API.get(conduitURI);
       dispatch(setConduitData(data));
     } catch (error) {
       writeToConsole('Error getting data from conduit');
@@ -311,6 +308,21 @@ function App() {
                   conduitData={conduitData}
                   writeToConsole={writeToConsole}
                   updateConduit={updateConduitData}
+                  changeStep={changeStep}
+                  conduitURIList={conduitURIList}
+                />
+              </View>
+            </>
+          )}
+          {step === 4 && (
+            <>
+              <Divider size="S" />
+              <View paddingY="size-800" paddingX="size-400">
+                <VisualizeData
+                  conduitData={conduitData}
+                  conduitURIList={conduitURIList}
+                  getConduitData={getDataFromConduit}
+                  writeToConsole={writeToConsole}
                 />
               </View>
             </>

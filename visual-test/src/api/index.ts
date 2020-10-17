@@ -37,7 +37,6 @@ const API = {
       }),
     });
     const responseJSON = await response.json();
-    console.log(responseJSON);
     return responseJSON.records;
   },
   get: async (conduitURI: string) => {
