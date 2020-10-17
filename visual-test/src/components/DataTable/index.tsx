@@ -35,12 +35,16 @@ const DataTable = ({
   };
 
   const handleUpdateConduitData = async () => {
+    // TODO: Bug with not fetching latest conduit data every time
+    await getConduitData(conduitURIList[conduitNames[1]]);
     for (let i = 0; i < conduitData.length; i++) {
       if (!conduitData[i].fields.validity) {
         await updateDataForValidity(conduitData[i].id);
       }
     }
+    writeToConsole('Completed updating data validity');
     await getConduitData(conduitURIList[conduitNames[1]]);
+    writeToConsole('Done refetching data');
   };
 
   useEffect(() => {

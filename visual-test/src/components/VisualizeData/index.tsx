@@ -20,12 +20,16 @@ const VisualizeData: React.FC<Props> = ({
   conduitData,
   conduitURIList,
   getConduitData,
+  writeToConsole,
 }) => {
   const [validDataPercent, setValidDataPercent] = useState(0);
   const [invalidDataPercent, setInValidDataPercent] = useState(0);
   const [totalConduitsCount, setTotalConduitsCount] = useState(0);
   useEffect(() => {
     async function onMount() {
+      writeToConsole(
+        `Fetching data using conduit URI ${conduitURIList[conduitNames[2]]}`
+      );
       await getConduitData(conduitURIList[conduitNames[2]]);
     }
     onMount();
