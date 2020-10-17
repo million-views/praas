@@ -22,6 +22,7 @@ enum ActionTypes {
   SET_CONDUIT_URI_LIST,
   SET_CONSOLE_INFO,
   SET_TOTAL_RECORDS_COUNT,
+  SET_CONDUIT_DATA,
 }
 
 // Actions
@@ -45,11 +46,32 @@ const setTotalRecordsCount = (payload: number) => ({
   payload,
 });
 
+const setConduitData = (payload: ConduitData[]) => ({
+  type: ActionTypes.SET_CONDUIT_DATA,
+  payload,
+});
+
+export type ConduitData = {
+  id: string;
+  fields: ConduitBaseData;
+  createdTime: string;
+};
+
+export type ConduitGetResponse = {
+  records: ConduitData[];
+};
+
+export enum Validity {
+  VALID = 'valid',
+  INVALID = 'invalid',
+}
+
 type State = {
   step: number;
   conduitURIList: conduitURIList;
   consoleInfo: string;
   totalRecordsCount: number;
+  conduitData: ConduitData[];
 };
 
 interface Action {
@@ -60,10 +82,7 @@ interface Action {
 export type ConduitBaseData = {
   name: string;
   email: string;
-};
-
-export type ConduitDataWithValidity = ConduitBaseData & {
-  valid: boolean;
+  validity?: keyof typeof Validity;
 };
 
 export const conduitNames = ['conduit-1', 'conduit-2', 'conduit-3'] as const;
@@ -103,6 +122,11 @@ const appReducer = function (state: State, action: Action): State {
         ...state,
         totalRecordsCount: state.totalRecordsCount + action.payload,
       };
+    case ActionTypes.SET_CONDUIT_DATA:
+      return {
+        ...state,
+        conduitData: action.payload,
+      };
     default:
       return state;
   }
@@ -125,6 +149,7 @@ const initialState = {
     initialConduitValues) as conduitURIList,
   consoleInfo: '',
   totalRecordsCount: 0,
+  conduitData: [],
 };
 
 const stepTitles = [
@@ -136,7 +161,13 @@ const stepTitles = [
 
 function App() {
   const [state, dispatch] = useReducer(appReducer, initialState);
-  const { step, conduitURIList, consoleInfo, totalRecordsCount } = state;
+  const {
+    step,
+    conduitURIList,
+    consoleInfo,
+    totalRecordsCount,
+    conduitData,
+  } = state;
 
   const writeToConsole = (data: any) => {
     dispatch(setConsoleInfo(JSON.stringify(data)));
@@ -152,14 +183,20 @@ function App() {
   };
 
   const fakeEmailAndPassword = async (count: number) => {
+    let successCount = 0;
     for (let i = 0; i < count; i += 1) {
       const name = faker.name.findName();
       const email = faker.internet.email();
-      await pushDataToConduit({
+      const response = await pushDataToConduit({
         name,
         email,
       });
+      if (response?.status === 200) {
+        successCount = successCount + 1;
+      }
     }
+    updateTotalCount(successCount);
+    await getDataFromConduit();
     writeToConsole(
       'Created entries. Please check the spreadsheet to see if the values are populated'
     );
@@ -180,9 +217,12 @@ function App() {
 
   const pushDataToConduit = async (data: ConduitBaseData) => {
     try {
-      await API.create(data);
-      updateTotalCount(1);
+      const response = await API.create(
+        data,
+        conduitURIList[conduitNames[0]]
+      );
       writeToConsole(`Created conduit with data: ${JSON.stringify(data)}`);
+      return response;
     } catch (error) {
       writeToConsole(
         `Error creating conduit with name: ${data.name} and email: ${data.email}`
@@ -190,10 +230,36 @@ function App() {
     }
   };
 
-  const handleFormSubmit = (data: ConduitBaseData) => {
-    pushDataToConduit(data);
+  const updateConduitData = async (
+    id: string,
+    data: { valid: keyof typeof Validity }
+  ) => {
+    try {
+      await API.update(id, data, conduitURIList[conduitNames[1]]);
+      writeToConsole(`Updated conduit with data: ${JSON.stringify(data)}`);
+    } catch (error) {
+      writeToConsole(`Updating conduit failed`);
+    }
   };
 
+  const handleFormSubmit = async (data: ConduitBaseData) => {
+    const response = await pushDataToConduit(data);
+    if (response) {
+      updateTotalCount(1);
+    }
+    await getDataFromConduit();
+  };
+
+  const getDataFromConduit = async () => {
+    try {
+      const data: ConduitData[] = await API.get(
+        conduitURIList[conduitNames[1]]
+      );
+      dispatch(setConduitData(data));
+    } catch (error) {
+      writeToConsole('Error getting data from conduit');
+    }
+  };
   return (
     <Provider theme={defaultTheme}>
       <Grid areas={['sections']} columns={['1fr', '1fr']} height="100vh">
@@ -240,7 +306,12 @@ function App() {
             <>
               <Divider size="S" />
               <View paddingY="size-800" paddingX="size-400">
-                <DataTable />
+                <DataTable
+                  getConduitData={getDataFromConduit}
+                  conduitData={conduitData}
+                  writeToConsole={writeToConsole}
+                  updateConduit={updateConduitData}
+                />
               </View>
             </>
           )}

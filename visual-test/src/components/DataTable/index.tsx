@@ -1,7 +1,44 @@
-import React from 'react';
-import { Grid, View, Heading, Text } from '@adobe/react-spectrum';
+import React, { useEffect } from 'react';
+import { Grid, View, Heading, Text, Button } from '@adobe/react-spectrum';
+import { markValidOrInvalid } from '../../utils';
+import { ConduitBaseData, ConduitData } from '../../App';
+interface Props {
+  getConduitData: () => void;
+  conduitData: ConduitData[];
+  writeToConsole: (data: any) => void;
+  updateConduit: Function;
+}
 
-const DataTable = () => {
+const DataTable = ({
+  getConduitData,
+  conduitData,
+  writeToConsole,
+  updateConduit,
+}: Props) => {
+  const updateDataForValidity = async (id: string) => {
+    const validity = markValidOrInvalid();
+    await updateConduit(id, {
+      validity,
+    });
+    writeToConsole('Updating validity of fields');
+  };
+
+  useEffect(() => {
+    async function onMount() {
+      await getConduitData();
+    }
+    onMount();
+  }, []);
+
+  const handleUpdateConduitData = async () => {
+    for (let i = 0; i < conduitData.length; i++) {
+      if (!conduitData[i].fields.validity) {
+        await updateDataForValidity(conduitData[i].id);
+      }
+    }
+    await getConduitData();
+  };
+
   return (
     <View>
       <View paddingY="size-100">
@@ -13,50 +50,60 @@ const DataTable = () => {
           which is then used to draw the chart in step 4.
         </Text>
       </View>
-      <Grid
-        areas={['data-table-name data-table-email data-table-validity']}
-        columns={['1fr', '2fr', '1fr']}
-      >
-        <View gridArea="data-table-name">
-          <View borderWidth="thin">
-            <Heading level={4} margin="size-0">
-              Name
-            </Heading>
-            <View borderTopWidth="thin">
-              <Text>Hello world 1</Text>
-            </View>
-            <View borderTopWidth="thin">
-              <Text>Hello world 1</Text>
-            </View>
-          </View>
-        </View>
-        <View gridArea="data-table-email">
-          <View borderYWidth="thin">
-            <Heading level={4} margin="size-0">
-              Email
-            </Heading>
-            <View borderTopWidth="thin">
-              <Text>Hello world 2</Text>
-            </View>
-            <View borderTopWidth="thin">
-              <Text>Hello world 2</Text>
+      {!conduitData.length ? (
+        <div>No data to display</div>
+      ) : (
+        <Grid
+          areas={['data-table-name data-table-email data-table-validity']}
+          columns={['1fr', '2fr', '1fr']}
+        >
+          <View gridArea="data-table-name">
+            <View borderWidth="thin">
+              <Heading level={4} margin="size-0">
+                Name
+              </Heading>
+              {conduitData.map((conduit: ConduitData) => (
+                <View borderTopWidth="thin" key={conduit.id}>
+                  <Text>{conduit.fields.name}</Text>
+                </View>
+              ))}
             </View>
           </View>
-        </View>
-        <View gridArea="data-table-validity">
-          <View borderWidth="thin">
-            <Heading level={4} margin="size-0">
-              Validity
-            </Heading>
-            <View borderTopWidth="thin">
-              <Text>Hello world 3</Text>
-            </View>
-            <View borderTopWidth="thin">
-              <Text>Hello world 3</Text>
+          <View gridArea="data-table-email">
+            <View borderYWidth="thin">
+              <Heading level={4} margin="size-0">
+                Email
+              </Heading>
+              {conduitData.map((conduit: ConduitData) => (
+                <View borderTopWidth="thin" key={conduit.id}>
+                  <Text>{conduit.fields.name}</Text>
+                </View>
+              ))}
             </View>
           </View>
-        </View>
-      </Grid>
+          <View gridArea="data-table-validity">
+            <View borderWidth="thin">
+              <Heading level={4} margin="size-0">
+                Validity
+              </Heading>
+              {conduitData.map((conduit: ConduitData) => (
+                <View borderTopWidth="thin" key={conduit.id}>
+                  <Text>{conduit.fields.validity}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+          <View paddingY="size-200" flex={1}>
+            <Button
+              variant="cta"
+              onPress={() => handleUpdateConduitData()}
+              minWidth="size-2000"
+            >
+              Update validity
+            </Button>
+          </View>
+        </Grid>
+      )}
     </View>
   );
 };

@@ -1,5 +1,10 @@
-const performToss = () => Boolean(Math.floor(Math.random() * 100) % 2);
+import { Validity } from '../App';
 
-export default {
-  performToss,
+const markValidOrInvalid = () => {
+  if (Boolean(Math.floor(Math.random() * 100) % 2)) {
+    return Validity.INVALID;
+  }
+  return Validity.VALID;
 };
+
+export { markValidOrInvalid };
