@@ -28,8 +28,6 @@ const DataTable = ({
   isUnvalidatedDataExisting,
   updateIsDataWithoutValidityExisting,
 }: Props) => {
-  const [isDataValidated, setIsDataValidated] = useState(false);
-
   const updateDataForValidity = async (id: string) => {
     const validity = markValidOrInvalid();
     await updateConduit(id, {
@@ -56,7 +54,6 @@ const DataTable = ({
         break;
       }
     }
-    setIsDataValidated(isAllDataValid);
   };
 
   const handleUpdateAndRefetch = async () => {
@@ -152,7 +149,7 @@ const DataTable = ({
               marginY="size-500"
               maxWidth="size-2400"
               onPress={() => changeStep(4)}
-              isDisabled={!isDataValidated}
+              isDisabled={isUnvalidatedDataExisting}
             >
               Proceed to next step
             </Button>
