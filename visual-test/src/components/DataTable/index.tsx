@@ -14,6 +14,8 @@ interface Props {
   writeToConsole: (data: any) => void;
   updateConduit: Function;
   conduitURIList: conduitURIList;
+  isUnvalidatedDataExisting: boolean;
+  updateIsDataWithoutValidityExisting: Function;
 }
 
 const DataTable = ({
@@ -23,6 +25,8 @@ const DataTable = ({
   updateConduit,
   changeStep,
   conduitURIList,
+  isUnvalidatedDataExisting,
+  updateIsDataWithoutValidityExisting,
 }: Props) => {
   const [isDataValidated, setIsDataValidated] = useState(false);
 
@@ -35,24 +39,13 @@ const DataTable = ({
   };
 
   const handleUpdateConduitData = async () => {
-    // TODO: Bug with not fetching latest conduit data every time
-    await getConduitData(conduitURIList[conduitNames[1]]);
     for (let i = 0; i < conduitData.length; i++) {
       if (!conduitData[i].fields.validity) {
         await updateDataForValidity(conduitData[i].id);
       }
     }
     writeToConsole('Completed updating data validity');
-    await getConduitData(conduitURIList[conduitNames[1]]);
-    writeToConsole('Done refetching data');
   };
-
-  useEffect(() => {
-    async function onMount() {
-      await getConduitData(conduitURIList[conduitNames[1]]);
-    }
-    onMount();
-  }, []);
 
   const checkForConduitDataValidity = () => {
     let isAllDataValid = true;
@@ -66,9 +59,30 @@ const DataTable = ({
     setIsDataValidated(isAllDataValid);
   };
 
+  const handleUpdateAndRefetch = async () => {
+    await handleUpdateConduitData();
+    updateIsDataWithoutValidityExisting(false);
+    await getConduitData(conduitURIList[conduitNames[1]]);
+    writeToConsole('Done refetching data');
+  };
+
   useEffect(() => {
     checkForConduitDataValidity();
   }, [conduitData]);
+
+  useEffect(() => {
+    async function onMount() {
+      await getConduitData(conduitURIList[conduitNames[1]]);
+    }
+    onMount();
+  }, []);
+
+  useEffect(() => {
+    async function onNewDataCreation() {
+      await getConduitData(conduitURIList[conduitNames[1]]);
+    }
+    onNewDataCreation();
+  }, [isUnvalidatedDataExisting]);
 
   return (
     <View>
@@ -127,7 +141,7 @@ const DataTable = ({
           <View paddingY="size-200" flex={1}>
             <Button
               variant="primary"
-              onPress={() => handleUpdateConduitData()}
+              onPress={handleUpdateAndRefetch}
               minWidth="size-3000"
             >
               Fetch and update data validity

@@ -24,6 +24,7 @@ enum ActionTypes {
   SET_CONSOLE_INFO,
   SET_TOTAL_RECORDS_COUNT,
   SET_CONDUIT_DATA,
+  SET_IS_UNVALIDATED_DATA_EXISTING,
 }
 
 // Actions
@@ -51,6 +52,10 @@ const setConduitData = (payload: ConduitData[]) => ({
   type: ActionTypes.SET_CONDUIT_DATA,
   payload,
 });
+const setIsUnvalidatedDataExisting = (payload: boolean) => ({
+  type: ActionTypes.SET_IS_UNVALIDATED_DATA_EXISTING,
+  payload,
+});
 
 export type ConduitData = {
   id: string;
@@ -73,6 +78,7 @@ type State = {
   consoleInfo: string;
   totalRecordsCount: number;
   conduitData: ConduitData[];
+  isUnvalidatedDataExisting: boolean;
 };
 
 interface Action {
@@ -128,6 +134,12 @@ const appReducer = function (state: State, action: Action): State {
         ...state,
         conduitData: action.payload,
       };
+
+    case ActionTypes.SET_IS_UNVALIDATED_DATA_EXISTING:
+      return {
+        ...state,
+        isUnvalidatedDataExisting: action.payload,
+      };
     default:
       return state;
   }
@@ -151,6 +163,7 @@ const initialState = {
   consoleInfo: '',
   totalRecordsCount: 0,
   conduitData: [],
+  isUnvalidatedDataExisting: false,
 };
 
 const stepTitles = [
@@ -168,6 +181,7 @@ function App() {
     consoleInfo,
     totalRecordsCount,
     conduitData,
+    isUnvalidatedDataExisting,
   } = state;
 
   const writeToConsole = (data: any) => {
@@ -183,7 +197,11 @@ function App() {
     dispatch(setTotalRecordsCount(count));
   };
 
-  const fakeEmailAndPassword = async (count: number) => {
+  const updateIsDataWithoutValidityExisting = (newDataCreated: boolean) => {
+    dispatch(setIsUnvalidatedDataExisting(newDataCreated));
+  };
+
+  const fakeDataAndPush = async (count: number) => {
     let successCount = 0;
     for (let i = 0; i < count; i += 1) {
       const name = faker.name.findName();
@@ -197,6 +215,7 @@ function App() {
       }
     }
     updateTotalCount(successCount);
+    updateIsDataWithoutValidityExisting(true);
     writeToConsole(
       'Created entries. Please check the spreadsheet to see if the values are populated'
     );
@@ -246,6 +265,7 @@ function App() {
     const response = await pushDataToConduit(data);
     if (response) {
       updateTotalCount(1);
+      updateIsDataWithoutValidityExisting(true);
     }
   };
 
@@ -290,7 +310,7 @@ function App() {
               <Divider size="S" />
               <View paddingY="size-800" paddingX="size-400">
                 <SubmitForm
-                  fakeEmailAndPassword={fakeEmailAndPassword}
+                  fakeDataAndPush={fakeDataAndPush}
                   changeStep={changeStep}
                   totalRecordsCount={totalRecordsCount}
                   submitForm={handleFormSubmit}
@@ -310,6 +330,10 @@ function App() {
                   updateConduit={updateConduitData}
                   changeStep={changeStep}
                   conduitURIList={conduitURIList}
+                  isUnvalidatedDataExisting={isUnvalidatedDataExisting}
+                  updateIsDataWithoutValidityExisting={
+                    updateIsDataWithoutValidityExisting
+                  }
                 />
               </View>
             </>

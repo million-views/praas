@@ -56,7 +56,7 @@
 }
 
 @for $i from 1 through 100 {
-  .DataChart__percentage-#{$i} {
+  .DataChart__percentage--#{$i} {
     &:after {
       $value: ($i * 1%);
       width: $value;

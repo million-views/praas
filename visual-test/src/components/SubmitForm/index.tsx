@@ -11,7 +11,7 @@ import {
 import { ConduitBaseData } from '../../App';
 
 interface Props {
-  fakeEmailAndPassword: (count: number) => void;
+  fakeDataAndPush: (count: number) => void;
   changeStep: (stepCounter: number) => void;
   totalRecordsCount: number;
   submitForm: (data: ConduitBaseData) => void;
@@ -19,7 +19,7 @@ interface Props {
 }
 
 const SubmitForm = ({
-  fakeEmailAndPassword,
+  fakeDataAndPush,
   changeStep,
   totalRecordsCount,
   writeToConsole,
@@ -95,16 +95,16 @@ const SubmitForm = ({
       <View paddingY="size-200" flex={1}>
         <Heading level={3}>Fake requests</Heading>
         <ButtonGroup>
-          <Button variant="primary" onPress={() => fakeEmailAndPassword(5)}>
+          <Button variant="primary" onPress={() => fakeDataAndPush(5)}>
             Fake 5 requests
           </Button>
-          <Button variant="primary" onPress={() => fakeEmailAndPassword(10)}>
+          <Button variant="primary" onPress={() => fakeDataAndPush(10)}>
             Fake 10 requests
           </Button>
-          <Button variant="primary" onPress={() => fakeEmailAndPassword(15)}>
+          <Button variant="primary" onPress={() => fakeDataAndPush(15)}>
             Fake 15 requests
           </Button>
-          <Button variant="primary" onPress={() => fakeEmailAndPassword(20)}>
+          <Button variant="primary" onPress={() => fakeDataAndPush(20)}>
             Fake 20 requests
           </Button>
         </ButtonGroup>
