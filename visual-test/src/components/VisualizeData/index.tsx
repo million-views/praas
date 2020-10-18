@@ -53,17 +53,25 @@ const VisualizeData: React.FC<Props> = ({
 
   return (
     <View>
-      <dl>
-        <dt>
+      <dl className="DataChart">
+        <dt className="DataChart__header">
           <Heading level={2} marginBottom="size-200">
-            Data validity
+            Data validity plot
           </Heading>
         </dt>
-        <dd className={`percentage percentage-${validDataPercent}`}>
-          <span className="text">Valid: {validDataPercent} %</span>
+        <dd
+          className={`DataChart__percentage DataChart__percentage--${validDataPercent}`}
+        >
+          <span className="DataChart__label">
+            Valid: {validDataPercent} %
+          </span>
         </dd>
-        <dd className={`percentage percentage-${invalidDataPercent}`}>
-          <span className="text">Invalid: {invalidDataPercent} %</span>
+        <dd
+          className={`DataChart__percentage DataChart__percentage--${invalidDataPercent}`}
+        >
+          <span className="DataChart__label">
+            Invalid: {invalidDataPercent} %
+          </span>
         </dd>
       </dl>
     </View>
