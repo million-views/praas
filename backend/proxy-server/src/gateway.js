@@ -163,51 +163,84 @@ function middle({ cmap = [], debug = false }) {
   // perform hidden form field validation...
   // TODO:
   // - is this needed for PUT and PATCH as well?
+  //   - answer is no, since hff is meant only for new records
   // - hmm why is this being done only on record[0]?
+  //   - this needs to be done for all records
   // - what about bulk updates and batch creation?
+  //   - bulk updates: not applicable
+  //   - batch creation: loop through and delete records that fail the test
+
+  // Validate row data from request against hff policies
+  // - deletes field entry if row is kosher and value should not pass through
+  // - return true if the row is kosher, false otherwise
+  function hffCheckOne(row, hffMeta, messages) {
+    for (let i = 0, imax = hffMeta.length; i < imax; i++) {
+      const hff = hffMeta[i];
+      const reqHffValue = row.fields[hff.fieldName];
+
+      if (hff.policy === 'drop-if-filled' && reqHffValue) {
+        messages.push(
+          `drop-if-filled: ...dropping coz ${reqHffValue} != ${hff.value}`
+        );
+        return false;
+      }
+
+      if (hff.policy === 'pass-if-match' && !(reqHffValue === hff.value)) {
+        messages.push(
+          `pass-if-match: ...dropping coz ${reqHffValue} != ${hff.value}`
+        );
+        return false;
+      }
+
+      if (!hff.include) {
+        messages.push(
+          `pass-if-match: ...erasing {${hff.fieldName}: ${reqHffValue}} 'include' is false`
+        );
+
+        delete row.fields[hff.fieldName];
+      }
+    }
+
+    return true;
+  }
+
+  // This feature is to catch spam bots, so don't send a response indicating
+  // failure conditions here.., send 200-OK instead
   function hffCheck(req, res, next) {
     if (debug) {
       console.log(`hff-check: ${req.method}`);
     }
 
     if (req.method === 'POST') {
-      const hiddenFormField = res.locals.conduit.hiddenFormField;
-      for (let i = 0, imax = hiddenFormField.length; i < imax; i++) {
-        // We`ll be using this multiple times, so store in a short variable
-        const hff = hiddenFormField[i];
-        const reqHff = req.body.records?.[0].fields[hff.fieldName];
+      const droppedRecords = [];
+      const hffMeta = res.locals.conduit.hiddenFormField;
+      const records = req.body.records ?? [req.body];
+      const single = !req.body.records;
+      const validatedRecords = [];
 
-        // This feature is to catch spam bots, so don't
-        // send error if failure, send 200-OK instead
-        if (hff.policy === 'drop-if-filled' && reqHff) {
-          if (debug) {
-            console.log(
-              'drop-if-filled: ...dropping',
-              ' coz ',
-              reqHff,
-              ' != ',
-              hff.value
-            );
+      if (hffMeta.length) {
+        for (let i = 0, imax = records.length; i < imax; i++) {
+          const record = records[i];
+          if (hffCheckOne(record, hffMeta, droppedRecords)) {
+            if (Object.keys(record.fields).length > 0) {
+              validatedRecords.push(record);
+            }
           }
+        }
+
+        if (debug) {
+          console.log('hff-check: dropped records...');
+          console.table(droppedRecords);
+        }
+
+        if (validatedRecords.length <= 0) {
           return res.sendStatus(200);
         }
 
-        if (hff?.policy === 'pass-if-match' && !(reqHff === hff.value)) {
-          if (debug) {
-            console.log(
-              'pass-if-match: ...dropping',
-              ' coz ',
-              reqHff,
-              ' != ',
-              hff.value
-            );
-          }
-
-          return res.sendStatus(200);
-        }
-
-        if (!hff.include) {
-          delete req.body.records[0].fields[hff.fieldName];
+        if (single) {
+          req.body = validatedRecords[0];
+        } else {
+          req.body.records = validatedRecords;
         }
       }
     }
