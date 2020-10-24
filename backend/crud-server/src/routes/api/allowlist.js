@@ -31,7 +31,7 @@ router.post(
       .withMessage('IP cannot be empty')
       .isIP()
       .withMessage('Invalid  IP address'),
-    body('status')
+    body('active')
       .exists()
       .withMessage('Status is required')
       .bail()
@@ -49,10 +49,10 @@ router.post(
     }
 
     const accountId = parseInt(req.payload.accountId, 10);
-    const { ip, status, description } = req.body;
+    const { ip, active, description } = req.body;
     const allowlistData = {
       ip,
-      status,
+      active,
       description,
     };
 
@@ -129,7 +129,8 @@ router.put(
 
     try {
       const updatedAllowlist = await allowlist.update(req.body);
-      res.json(updatedAllowlist.toJSON());
+      const { account, ...response } = updatedAllowlist.toJSON();
+      res.json(response);
     } catch (err) {
       console.log(err);
       const { name, errors: dberrors, fields } = err;

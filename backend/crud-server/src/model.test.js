@@ -154,7 +154,7 @@ describe('PraaS', () => {
 
     it('should generate auth JSON', async () => {
       const user = await models.User.findOne({ where: { email: fup.email } });
-      const authJSON = user.toAuthJSON();
+      const authJSON = await user.toAuthJSON();
       expect(authJSON).to.have.property('token');
 
       const jwtDecoded = jwt.verify(

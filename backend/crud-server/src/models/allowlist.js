@@ -7,7 +7,7 @@ module.exports = (db, DataTypes) => {
         notEmpty: true,
       },
     },
-    status: {
+    active: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       validate: {

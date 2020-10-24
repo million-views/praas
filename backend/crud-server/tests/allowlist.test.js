@@ -30,22 +30,23 @@ describe('Praas REST API', () => {
     // server.app.close();
   });
 
-  const secretData = {
-    alias: 'Sample Secret',
-    token: 'THISISHIGLYSECRET',
+  const allowListData = {
+    ip: '127.0.0.1',
+    active: true,
+    description: 'This is an allowed IP',
   };
 
   context('When not authenticated', () => {
-    it('should not allow to create a secret', async () => {
-      const res = await Api().post('/secrets').send(secretData);
+    it('should not allow to create an allowlist', async () => {
+      const res = await Api().post('/allowlist').send(allowListData);
       expect(res.status).to.equal(401);
       expect(res.body.errors.authorization).to.equal(
         'token not found or malformed'
       );
     });
 
-    it('should not allow to get secrets', async () => {
-      const res = await Api().get('/secrets');
+    it('should not allow to get allowlist', async () => {
+      const res = await Api().get('/allowlist');
       expect(res.status).to.equal(401);
       expect(res.body.errors.authorization).to.equal(
         'token not found or malformed'
@@ -53,7 +54,7 @@ describe('Praas REST API', () => {
     });
 
     it('should not allow to update secrets', async () => {
-      const res = await Api().put('/secrets');
+      const res = await Api().put('/allowlist');
       expect(res.status).to.equal(401);
       expect(res.body.errors.authorization).to.equal(
         'token not found or malformed'
@@ -61,7 +62,7 @@ describe('Praas REST API', () => {
     });
 
     it('should not allow to delete secrets', async () => {
-      const res = await Api().delete('/secrets');
+      const res = await Api().delete('/allowlist');
       expect(res.status).to.equal(401);
       expect(res.body.errors.authorization).to.equal(
         'token not found or malformed'
@@ -71,7 +72,7 @@ describe('Praas REST API', () => {
 
   context('When authenticated', () => {
     let jakeUser;
-    let savedSecret;
+    let savedAllowlist;
     before('login and add return token', async function () {
       await Api().post('/users').send(jake);
       const resUser = await Api().post('/users/login').send({
@@ -80,12 +81,12 @@ describe('Praas REST API', () => {
       });
       jakeUser = resUser.body;
 
-      const resSecret = await Api()
-        .post('/secrets')
+      const resAllowlist = await Api()
+        .post('/allowlist')
         .set('Authorization', `Token ${jakeUser.token}`)
-        .send(secretData);
+        .send(allowListData);
 
-      savedSecret = resSecret.body;
+      savedAllowlist = resAllowlist.body;
     });
 
     after('logout', async () => {
@@ -96,55 +97,53 @@ describe('Praas REST API', () => {
       expect(jakeUser).to.have.property('token');
     });
 
-    it('should allow the user to create a secret', async function () {
+    it('should allow the user to create an allowlist', async function () {
       const res = await Api()
-        .post('/secrets')
+        .post('/allowlist')
         .set('Authorization', `Token ${jakeUser.token}`)
         .send({
-          alias: 'Test',
-          token: 'Test',
+          ip: '127.0.0.2',
+          active: true,
+          description: 'This is another entry',
         });
 
       expect(res.status).to.equal(200);
       expect(res.body).to.have.all.keys(
         'id',
-        'alias',
+        'ip',
+        'active',
+        'description',
         'accountId',
         'createdAt',
         'updatedAt'
       );
 
-      expect(res.body.alias).to.equal('Test');
+      expect(res.body.ip).to.equal('127.0.0.2');
     });
 
-    it('should allow the user to update a secret', async function () {
+    it('should allow the user to update an allowlist', async function () {
       const res = await Api()
-        .put(`/secrets/${savedSecret.id}`)
+        .put(`/allowlist/${savedAllowlist.id}`)
         .set('Authorization', `Token ${jakeUser.token}`)
-        .send({ alias: 'Test secret', token: '1234' });
+        .send({ ip: '127.0.0.3', active: true, description: 'Test message' });
 
       expect(res.status).to.equal(200);
       expect(res.body).to.have.all.keys(
         'id',
-        'alias',
+        'ip',
+        'active',
+        'description',
         'accountId',
         'createdAt',
         'updatedAt'
       );
 
-      expect(res.body.alias).to.equal('Test secret');
+      expect(res.body.ip).to.equal('127.0.0.3');
     });
 
-    it('should allow the user to delete a secret', async function () {
-      const resw = await Api()
-        .post('/secrets')
-        .set('Authorization', `Token ${jakeUser.token}`)
-        .send(secretData);
-
-      savedSecret = resw.body;
-
+    it('should allow the user to delete an allowlist', async function () {
       const res = await Api()
-        .delete(`/secrets/${savedSecret.id}`)
+        .delete(`/allowlist/${savedAllowlist.id}`)
         .set('Authorization', `Token ${jakeUser.token}`);
       expect(res.status).to.equal(200);
       expect(res.body).to.have.all.keys('id', 'status');

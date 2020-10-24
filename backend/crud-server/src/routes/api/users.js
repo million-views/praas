@@ -12,7 +12,7 @@ router.get('/me', auth.required, async (req, res, next) => {
 
     const user = await User.findOne({ where: { id: userId } });
     if (!user) return next(new RestApiError(404, { user: 'not found' }));
-    return res.json(user.toAuthJSON());
+    return res.json(await user.toAuthJSON());
   } catch (error) {
     console.log(error);
     next(new RestApiError(500, error));
@@ -39,7 +39,7 @@ router.get(
       const userId = parseInt(req.payload.id, 10);
       const user = await User.findOne({ where: { id: userId } });
       if (!user) return next(new RestApiError(404, { user: 'not found' }));
-      return res.json({ user: user.toAuthJSON() });
+      return res.json(await user.toAuthJSON());
     } catch (error) {
       next(new RestApiError(500, error));
     }
@@ -113,7 +113,7 @@ router.post(
         return user;
       });
 
-      const userAuthJson = result.toAuthJSON();
+      const userAuthJson = await result.toAuthJSON();
       return res
         .cookie('access_token', `Bearer ${userAuthJson.token}`, {
           expires: new Date(Date.now() + 8 * 3600000),
@@ -130,6 +130,7 @@ router.post(
         return next(new RestApiError(422, errors));
       } else {
         errors.unknown = `unknown error ${name}, please contact support`;
+
         return next(new RestApiError(500, errors));
       }
     }
@@ -214,7 +215,7 @@ router.post(
       return next(new RestApiError(422, errors.array()));
     }
 
-    passport.authenticate('local', { session: false }, function (
+    passport.authenticate('local', { session: false }, async function (
       err,
       user,
       info
@@ -225,7 +226,7 @@ router.post(
       }
 
       if (user) {
-        const userAuthJson = user.toAuthJSON();
+        const userAuthJson = await user.toAuthJSON();
         return res
           .cookie('access_token', `Bearer ${userAuthJson.token}`, {
             expires: new Date(Date.now() + 8 * 3600000),

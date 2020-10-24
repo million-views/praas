@@ -10,12 +10,11 @@ chai.use(chaiHttp);
 const jake = {
   firstName: 'Jake',
   lastName: 'Jacob',
-  email: 'jake1000@jake.jake',
+  email: 'jake1001.new@jake.jake',
   password: 'jakejake',
 };
 
-const apiServer = server.app.listen(server.port);
-const Api = () => chai.request(apiServer);
+const Api = () => chai.request(server.app);
 
 describe('Praas REST API', () => {
   before(async () => {
@@ -26,7 +25,7 @@ describe('Praas REST API', () => {
 
   after(async () => {
     console.log('Shutting down app server');
-    apiServer.close();
+    // server.app.close();
   });
 
   context('Non-functional requirements', () => {
@@ -64,6 +63,7 @@ describe('Praas REST API', () => {
       expect(res.status).to.equal(200);
       expect(res.body).to.have.all.keys([
         'id',
+        'accountId',
         'firstName',
         'lastName',
         'email',
@@ -144,6 +144,7 @@ describe('Praas REST API', () => {
       expect(res.status).to.equal(200);
       expect(res.body).to.have.all.keys([
         'id',
+        'accountId',
         'firstName',
         'lastName',
         'email',

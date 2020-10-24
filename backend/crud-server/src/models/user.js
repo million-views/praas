@@ -39,10 +39,13 @@ module.exports = (db, DataTypes) => {
     return jwt.sign(payload, config.system.settings.secret);
   };
 
-  User.prototype.toAuthJSON = function () {
+  User.prototype.toAuthJSON = async function () {
     const iat = Math.floor(new Date().getTime() / 1000);
     const exp = iat + 3600; // valid for 1 hour
     // const exp = iat + 60; // valid for 60 seconds
+    if (!Array.isArray(this.accounts)) {
+      this.accounts = await this.getAccounts();
+    }
 
     const tkn = this.generateJWT(exp, iat);
     return {
