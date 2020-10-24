@@ -77,12 +77,19 @@ Account.hasMany(Conduit);
 Account.hasMany(Allowlist);
 
 Secret.hasMany(Conduit);
+Secret.belongsTo(Account);
 
+Allowlist.belongsTo(Account);
 Allowlist.belongsToMany(Conduit, { through: 'conduit_allowlist' });
+
+Conduit.belongsToMany(Allowlist, { through: 'conduit_allowlist' });
+Conduit.belongsTo(Account);
+Conduit.belongsTo(Secret);
 
 module.exports = {
   db,
   User,
+  Account,
   Login,
   Secret,
   Conduit,

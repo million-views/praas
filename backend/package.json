@@ -18,7 +18,7 @@
     "lint:fix": "npm run lint-config:fix && npm run lint-lib:fix && npm run lint-resource-server:fix && npm run lint-gateway-server:fix",
     "test-model": "mocha --exit crud-server/src/model.test.js",
     "test-model-with-coverage": "nyc --reporter=text mocha --exit crud-server/src/model.test.js",
-    "test-rest": "NODE_ENV=test mocha --exit crud-server/tests/user.test.js",
+    "test-rest": "NODE_ENV=test mocha --exit crud-server/tests/secret.test.js",
     "test-rest-with-coverage": "nyc --reporter=text mocha --exit crud-server/src/routes.test.js",
     "test-gateway": "mocha --timeout 10000 --exit proxy-server/src/server.test.js",
     "start-resource-server": "node --unhandled-rejections=strict crud-server/src/server.js",

@@ -1,6 +1,15 @@
 /* TODO: Add/move the previously existing validations */
+const { generateCuri } = require('../utils');
+const user = require('./user');
 module.exports = (db, DataTypes) => {
   const Conduit = db.define('conduit', {
+    resourceType: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
     objectPath: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -40,6 +49,11 @@ module.exports = (db, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true,
     },
+  });
+
+  Conduit.addHook('beforeValidate', 'generateCuri', (conduit) => {
+    const curi = generateCuri(Conduit);
+    conduit.curi = curi;
   });
 
   return Conduit;

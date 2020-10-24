@@ -112,7 +112,14 @@ router.post(
 
         return user;
       });
-      return res.json(result.toAuthJSON());
+
+      const userAuthJson = result.toAuthJSON();
+      return res
+        .cookie('access_token', `Bearer ${userAuthJson.token}`, {
+          expires: new Date(Date.now() + 8 * 3600000),
+          httpOnly: true,
+        })
+        .json(userAuthJson);
     } catch (err) {
       const { name, errors: dberrors, fields } = err;
       const errors = {};
@@ -218,7 +225,13 @@ router.post(
       }
 
       if (user) {
-        return res.json(user.toAuthJSON());
+        const userAuthJson = user.toAuthJSON();
+        return res
+          .cookie('access_token', `Bearer ${userAuthJson.token}`, {
+            expires: new Date(Date.now() + 8 * 3600000),
+            httpOnly: true,
+          })
+          .json(userAuthJson);
       } else {
         return next(new RestApiError(422, info));
       }

@@ -1,6 +1,6 @@
 module.exports = (db, DataTypes) => {
   const Secret = db.define('secret', {
-    name: {
+    alias: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {

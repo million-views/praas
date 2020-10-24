@@ -2,9 +2,15 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const config = require('../../../config');
 const UserModel = require('./user');
+const AccountModel = require('./account');
+const MembershipModel = require('./membership');
+const { required } = require('../routes/auth');
 
 module.exports = (db, DataTypes) => {
   const User = UserModel(db, DataTypes);
+  const Account = AccountModel(db, DataTypes);
+  const Membership = MembershipModel(db, DataTypes);
+  User.belongsToMany(Account, { through: Membership });
   const Login = db.define('login', {
     username: {
       type: DataTypes.STRING,
@@ -48,6 +54,11 @@ module.exports = (db, DataTypes) => {
       where: { username: email },
       include: {
         model: User,
+        required: true,
+        include: {
+          model: Account,
+          required: true,
+        },
       },
     });
 

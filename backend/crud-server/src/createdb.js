@@ -1,4 +1,5 @@
-const { db, User } = require('./models');
+const { db, User, Account } = require('./models');
+const { Op } = require('sequelize');
 
 const createdb = async () => {
   try {
@@ -13,7 +14,7 @@ const createdb = async () => {
 
       const loginData = {
         username: 'admin@praas.com',
-        password: 'praas',
+        password: 'praas1234',
       };
 
       const user = await User.create(userData, { transaction: t });
@@ -23,7 +24,6 @@ const createdb = async () => {
         { transaction: t }
       );
 
-      console.log('Done!');
       return true;
     });
   } catch (error) {
@@ -31,15 +31,6 @@ const createdb = async () => {
     return error;
   }
 };
-
-const dbSync = db
-  .sync({ force: true })
-  .then(() => {
-    return User.create(user);
-  })
-  .catch((err) => {
-    return err;
-  });
 
 module.exports = {
   dbSync: createdb(),

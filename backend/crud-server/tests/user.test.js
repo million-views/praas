@@ -2,10 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
 const server = require('../src/server');
-const helpers = require('../../lib/helpers');
-const conf = require('../../config').test.settings;
 const systemSettings = require('../../config').system.settings;
-const targets = require('../../config').targets.settings;
 
 const expect = chai.expect;
 chai.use(chaiHttp);
@@ -19,10 +16,6 @@ const jake = {
 
 const apiServer = server.app.listen(server.port);
 const Api = () => chai.request(apiServer);
-
-// NOTE:
-// reword/rephrase resource-error messages to fit this pattern
-const ERROR_PATTERN = /^invalid.*$|^missing.*$|not found|unsupported|cannot be blank|cannot be null/;
 
 describe('Praas REST API', () => {
   before(async () => {

@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const auth = require('../auth');
 
 // v.a:
 // we mount users at root since it supports /user
@@ -6,6 +7,9 @@ const router = require('express').Router();
 // best practice here. If it were not for the variation
 // we might as well fix it here.
 router.use('/', require('./users'));
+router.use('/', auth.required, require('./secrets'));
+router.use('/', auth.required, require('./allowlist'));
+router.use('/', auth.required, require('./conduits'));
 
 // v.a:
 // the implementation should not care about where the

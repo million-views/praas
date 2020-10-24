@@ -30,6 +30,7 @@ module.exports = (db, DataTypes) => {
     // TODO: Add account details
     const payload = {
       id: this.id,
+      accountId: this.accounts[0].id,
       email: this.email,
       exp,
       iat,
@@ -43,9 +44,10 @@ module.exports = (db, DataTypes) => {
     const exp = iat + 3600; // valid for 1 hour
     // const exp = iat + 60; // valid for 60 seconds
 
-    const tkn = this.generateJWT(exp, iat, this.email);
+    const tkn = this.generateJWT(exp, iat);
     return {
       id: this.id,
+      accountId: this.accounts[0].id,
       firstName: this.firstName,
       lastName: this.lastName,
       email: this.email,
