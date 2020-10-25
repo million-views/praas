@@ -196,10 +196,22 @@ function boundHttpRequest(options, body = null) {
   });
 }
 
+function validateEmail(emailAddr) {
+  if (
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
+      emailAddr
+    )
+  ) {
+    return true;
+  }
+  return false;
+}
+
 module.exports = {
   powerset,
   rangeset,
   freezeall,
   pickRandomlyFrom,
   boundHttpRequest,
+  validateEmail,
 };
