@@ -9,8 +9,8 @@ const { GSheets } = require('./integrations/gsheets');
 const inspect = require('util').inspect;
 
 // declare these once
-const opsNeedingBody = ['PUT', 'POST', 'PATCH']; // have records in body ?
-const opsNeedingId = ['PUT', 'PATCH']; // have id field in body ?
+const opNeedsBody = ['PUT', 'POST', 'PATCH']; // have records in body ?
+const opNeedsId = ['PUT', 'PATCH']; // have id field in body ?
 
 // array of middleware that go in the front of stack
 // NOTE:
@@ -70,7 +70,10 @@ function middle({ cmap = [], debug = false }) {
     const allowlist = conduit.allowlist;
     if (debug) {
       console.log(
-        `allowlist-check: client -> ${clientIp}, allowlist -> ${allowlist}`
+        `allowlist-check: client -> ${clientIp}, allowlist -> ${inspect(
+          allowlist,
+          { depth: 4 }
+        )}`
       );
     }
 
@@ -119,41 +122,53 @@ function middle({ cmap = [], debug = false }) {
   }
 
   function apiComplianceCheck(req, res, next) {
-    const records = req.body.records;
+    const records = req.body.records ?? [req.body];
     if (debug) {
-      console.log(`api-compliance-check: ${req.method}`, records);
-    }
-
-    if (opsNeedingBody.includes(req.method)) {
-      if (!records) {
-        return next(
-          new RestApiError(422, {
-            records: 'not present',
-          })
-        );
-      }
-
-      if (records?.[0].fields === undefined) {
-        // PUT, POST and PATCH operations need fields data in body
-        return next(
-          new RestApiError(422, {
-            fields: 'not present',
-          })
-        );
-      }
-    }
-
-    if (opsNeedingId.includes(req.method) && records?.[0].id === undefined) {
-      return next(
-        new RestApiError(422, {
-          id: 'not provided',
-        })
+      console.log(
+        `api-compliance-check: ${req.method}`,
+        records,
+        inspect(req.body, { depth: 6 })
       );
     }
 
+    if (opNeedsBody.includes(req.method) || opNeedsId.includes(req.method)) {
+      for (let i = 0, imax = records.length; i < imax; i++) {
+        // PUT, POST and PATCH operations need fields data in body
+        if (records[i]?.fields === undefined) {
+          return next(
+            new RestApiError(422, {
+              fields: `@${i} not present`,
+            })
+          );
+        }
+
+        // PUT and PATCH need id field in fields
+        if (opNeedsId.includes(req.method) && records[i]?.id === undefined) {
+          return next(
+            new RestApiError(422, {
+              id: `@${i} not provided`,
+            })
+          );
+        }
+      }
+    }
+
     // GET and DELETE don't need request body
-    // FIXME! is this the right place to do this?
-    if (!opsNeedingBody.includes(req.method)) {
+    if (opNeedsBody.includes(req.method) === false) {
+      // NOTE: bodyParser.json creates an empty object even when the client
+      // client sends no body. Delete the empty body to prevent rejections
+      // by service providers upstream. On the other hand if GET or DELETE
+      // does contain a json object with non-zero entries then it is an error
+      // per our "API" specification!
+
+      if (Object.keys(req.body).length > 0) {
+        return next(
+          new RestApiError(422, {
+            body: 'not allowed',
+          })
+        );
+      }
+
       delete req.body;
     }
 
@@ -173,39 +188,60 @@ function middle({ cmap = [], debug = false }) {
   // Validate row data from request against hff policies
   // - deletes field entry if row is kosher and value should not pass through
   // - return true if the row is kosher, false otherwise
+  //
+  // The logic is product of sums:
+  // - hffMeta is a list of conditions[{fname, condition, value, include}, ...]
+  // - let {fname, condition, value, include} be represented as `p`
+  // - this function returns the boolean `sum` of all `p` in  [p1, p2, ... pn]
+  // - If [p1, p2, p3this function returns the sum(p1,)
+  // - for each field in row, if the sum of conditional test on that field
+  //   is true then that row is valid
   function hffCheckOne(row, hffMeta, messages) {
+    const bools = [];
     for (let i = 0, imax = hffMeta.length; i < imax; i++) {
       const hff = hffMeta[i];
       const reqHffValue = row.fields[hff.fieldName];
 
       if (hff.policy === 'drop-if-filled' && reqHffValue) {
         messages.push(
-          `drop-if-filled: ...dropping coz ${reqHffValue} != ${hff.value}`
+          `✕ ${hff.fieldName}, ${hff.policy}, ${hff.value}: ${reqHffValue}`
         );
-        return false;
+        bools.push(false);
+        continue;
       }
 
+      // TODO:
+      // - feature: support regular expression instead of a simple match!
       if (hff.policy === 'pass-if-match' && !(reqHffValue === hff.value)) {
         messages.push(
-          `pass-if-match: ...dropping coz ${reqHffValue} != ${hff.value}`
+          `✕ ${hff.fieldName}, ${hff.policy}, ${hff.value}: ${reqHffValue}`
         );
-        return false;
+        bools.push(false);
+        continue;
       }
 
       if (!hff.include) {
         messages.push(
-          `pass-if-match: ...erasing {${hff.fieldName}: ${reqHffValue}} 'include' is false`
+          `✓ pass-if-match: ...erasing {${hff.fieldName}: ${reqHffValue}}`
         );
-
         delete row.fields[hff.fieldName];
       }
+
+      // if we get here then the row's fields pass the hff.policy
+      messages.push(
+        `✓ ${hff.fieldName}, ${hff.policy}, ${hff.value}: ${reqHffValue}`
+      );
+
+      bools.push(true);
     }
 
-    return true;
+    // return true if any of the condition is true
+    return bools.some((b) => b);
   }
 
   // This feature is to catch spam bots, so don't send a response indicating
   // failure conditions here.., send 200-OK instead
+  //
   function hffCheck(req, res, next) {
     if (debug) {
       console.log(`hff-check: ${req.method}`);
@@ -229,7 +265,7 @@ function middle({ cmap = [], debug = false }) {
         }
 
         if (debug) {
-          console.log('hff-check: dropped records...');
+          console.log('hff-check: boolean sum...');
           console.table(droppedRecords);
         }
 
