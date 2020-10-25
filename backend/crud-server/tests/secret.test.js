@@ -53,7 +53,7 @@ describe('Praas REST API', () => {
     });
 
     it('should not allow to update secrets', async () => {
-      const res = await Api().put('/secrets');
+      const res = await Api().put('/secrets/1').send(secretData);
       expect(res.status).to.equal(401);
       expect(res.body.errors.authorization).to.equal(
         'token not found or malformed'
@@ -61,7 +61,7 @@ describe('Praas REST API', () => {
     });
 
     it('should not allow to delete secrets', async () => {
-      const res = await Api().delete('/secrets');
+      const res = await Api().delete('/secrets/1');
       expect(res.status).to.equal(401);
       expect(res.body.errors.authorization).to.equal(
         'token not found or malformed'

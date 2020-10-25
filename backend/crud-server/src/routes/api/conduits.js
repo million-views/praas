@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { Op } = require('sequelize');
 const { body, param, validationResult } = require('express-validator');
-const { db, Account, Conduit } = require('../../models');
+const { db, Account, Conduit, Allowlist } = require('../../models');
 const conf = require('../../../../config');
 const { RestApiError } = require('../../../../lib/error');
 
@@ -118,10 +118,7 @@ router.post(
           transaction: t,
         });
 
-        // const secret = await account.getSecret
-        console.log(req.body, accessToken);
-
-        const secret = await account.getSecrets(
+        const secrets = await account.getSecrets(
           {
             where: {
               id: accessToken,
@@ -130,30 +127,45 @@ router.post(
           { transaction: t }
         );
 
-        if (secret.length) {
-          secret[0].addConduit(conduit, { transaction: t });
+        if (secrets.length) {
+          secrets[0].addConduit(conduit, { transaction: t });
         } else {
           return next(
             new RestApiError(422, { accessToken: 'Invalid access token' })
           );
         }
 
-        if (Array.isArray(allowlist) && allowlist.length) {
-          const list = await account.getAllowlists(
-            {
-              where: {
-                id: allowlist,
+        const setAllowList = async (allowlist) => {
+          if (Array.isArray(allowlist) && allowlist.length) {
+            const list = await account.getAllowlists(
+              {
+                where: {
+                  id: allowlist,
+                },
               },
-            },
-            { transaction: t }
-          );
-          await conduit.addAllowlists(list, { transaction: t });
-        }
+              { transaction: t }
+            );
+            return await conduit.addAllowlists(list, {
+              transaction: t,
+            });
+          }
+          return [];
+        };
 
-        return conduit;
+        const savedAllowList = await setAllowList(allowlist);
+
+        return { conduit, secret: secrets[0], allowlist: savedAllowList };
       });
-      return res.json(result.toJSON());
+
+      const { token, ...secret } = result.secret.toJSON();
+      const response = {
+        ...result.conduit.toJSON(),
+        accessToken: secret,
+        allowlist: result.allowlist.map((item) => item.toJSON()),
+      };
+      return res.json(response);
     } catch (err) {
+      console.log(err);
       const { name, errors: dberrors, fields } = err;
       console.log(err, err.sql);
       const errors = {};
@@ -257,6 +269,9 @@ router.put(
         include: {
           model: Conduit,
           required: true,
+          attributes: {
+            exclude: ['throttle', 'secretId'],
+          },
           where: {
             id: req.params.id,
           },
@@ -275,7 +290,7 @@ router.put(
             transaction: t,
           });
 
-          const secret = await account.getSecrets(
+          const secrets = await account.getSecrets(
             {
               where: {
                 id: accessToken,
@@ -284,38 +299,52 @@ router.put(
             { transaction: t }
           );
 
-          if (secret.length) {
-            secret[0].addConduit(updatedConduit, { transaction: t });
+          if (secrets.length) {
+            secrets[0].addConduit(updatedConduit, { transaction: t });
           } else {
             return next(
               new RestApiError(422, { accessToken: 'Invalid access token' })
             );
           }
 
-          // TODO: delete all allowlist first
-          if (Array.isArray(allowlist) && allowlist.length) {
-            const alist = await conduit.getAllowlists();
-            await conduit.removeAllowlists(alist, { transaction: t });
+          const updateAllowlist = async (allowlist) => {
+            if (Array.isArray(allowlist) && allowlist.length) {
+              const alist = await conduit.getAllowlists();
+              await conduit.removeAllowlists(alist, { transaction: t });
 
-            const list = await account.getAllowlists(
-              {
-                where: {
-                  id: allowlist,
+              const list = await account.getAllowlists(
+                {
+                  where: {
+                    id: allowlist,
+                  },
                 },
-              },
-              { transaction: t }
-            );
-            // TODO: might need to remove previous list
-            await conduit.addAllowlists(list, { transaction: t });
-          }
+                { transaction: t }
+              );
 
-          return conduit;
+              return await conduit.addAllowlists(list, {
+                transaction: t,
+              });
+            }
+            return [];
+          };
+
+          const savedAllowList = await updateAllowlist(allowlist);
+
+          return { conduit, secret: secrets[0], allowlist: savedAllowList };
         });
-        return res.json(result.toJSON());
+
+        const { token, ...secret } = result.secret.toJSON();
+        const response = {
+          ...result.conduit.toJSON(),
+          accessToken: secret,
+          allowlist: result.allowlist.map((item) => item.toJSON()),
+        };
+        return res.json(response);
       } else {
         return next(new RestApiError(422, { conduit: 'Conduit not found' }));
       }
     } catch (err) {
+      console.log(err);
       const { name, errors: dberrors, fields } = err;
       console.log(err, err.sql);
       const errors = {};

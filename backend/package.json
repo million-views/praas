@@ -16,8 +16,6 @@
     "lint-config:fix": "eslint --fix config --cache",
     "lint": "npm run lint-config && npm run lint-lib && npm run lint-resource-server && npm run lint-gateway-server",
     "lint:fix": "npm run lint-config:fix && npm run lint-lib:fix && npm run lint-resource-server:fix && npm run lint-gateway-server:fix",
-    "test-model": "mocha --exit crud-server/src/model.test.js",
-    "test-model-with-coverage": "nyc --reporter=text mocha --exit crud-server/src/model.test.js",
     "test-rest": "NODE_ENV=test mocha --exit crud-server/tests/**/*",
     "test-rest-with-coverage": "nyc --reporter=text mocha --exit crud-server/src/routes.test.js",
     "test-gateway": "mocha --timeout 10000 --exit proxy-server/src/server.test.js",
