@@ -136,10 +136,10 @@ function middle({ cmap = [], debug = false }) {
     if (opNeedsBody.includes(req.method) || opNeedsId.includes(req.method)) {
       for (let i = 0, imax = records.length; i < imax; i++) {
         // PUT, POST and PATCH operations need fields data in body
-        if (records[i]?.fields === undefined) {
+        if (records[i].fields === undefined) {
           return next(
             new RestApiError(422, {
-              fields: `@${i} not present`,
+              message: `records[${i}].fields expected`,
             })
           );
         }
@@ -147,10 +147,19 @@ function middle({ cmap = [], debug = false }) {
         // PUT and PATCH need id field in record or in the path of the url
         // but not in both!
         if (opNeedsId.includes(req.method)) {
-          if (records[i]?.id === undefined && single === false) {
+          if (records[i].id === undefined && single === false) {
             return next(
               new RestApiError(422, {
-                id: `@${i} is required`,
+                message: `records[${i}].fields.id is missing`,
+              })
+            );
+          }
+
+          if (single && records[i].id) {
+            // cannot include id in body for single requests
+            return next(
+              new RestApiError(422, {
+                message: `specify id in url path, not in fields for single object request`,
               })
             );
           }
@@ -158,16 +167,7 @@ function middle({ cmap = [], debug = false }) {
           if (single && req.path.substring(1) === '') {
             return next(
               new RestApiError(422, {
-                id: `is required in URL path to locate single record`,
-              })
-            );
-          }
-
-          if (single && records[i]?.id !== undefined) {
-            // cannot include id in body for single requests
-            return next(
-              new RestApiError(422, {
-                id: `is unexpected in a single record`,
+                message: `id in url path is required for single object request`,
               })
             );
           }
@@ -177,6 +177,28 @@ function middle({ cmap = [], debug = false }) {
 
     // GET and DELETE don't need request body
     if (opNeedsBody.includes(req.method) === false) {
+      if (req.method === 'DELETE') {
+        // console.log('~~~~~~~~~~~~~~~~', req.path, req.query);
+        // DELETE should have ?records query param or an id in url path
+        const records = req.query.records;
+        if (records && (!Array.isArray(records) || records.length < 1)) {
+          return next(
+            new RestApiError(422, {
+              message: `{records: ${records}} not well formed`,
+            })
+          );
+        }
+
+        if (!records && req.path.substring(1) === '') {
+          // NOTE: Airtable returns 400 and not 422 for this condition
+          return next(
+            new RestApiError(400, {
+              message: `must specify record to delete in url path or as query parameter`,
+            })
+          );
+        }
+      }
+
       // NOTE: bodyParser.json creates an empty object even when the client
       // client sends no body. Delete the empty body to prevent rejections
       // by service providers upstream. On the other hand if GET or DELETE
@@ -191,6 +213,7 @@ function middle({ cmap = [], debug = false }) {
         );
       }
 
+      // get rid of {} in the request
       delete req.body;
     }
 
