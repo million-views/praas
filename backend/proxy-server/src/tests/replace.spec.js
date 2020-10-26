@@ -43,12 +43,12 @@ context('use PUT to replace one or more records', function () {
       checkSuccessResponse(res, {
         multi: false,
         storein: 'replacements',
-        ref: record,
+        ref: { key: 'id', ...record },
       });
     });
   });
 
-  xit('can PUT multiple records', async function () {
+  it('can PUT multiple records', async function () {
     const requests = [
       pickRandomlyFrom(writes),
       pickRandomlyFrom(writes),
@@ -79,7 +79,7 @@ context('use PUT to replace one or more records', function () {
     checkSuccessResponse(res, {
       logit: false,
       storein: 'replacements',
-      ref: { records },
+      ref: { key: 'id', records },
     });
   });
 });

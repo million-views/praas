@@ -7,9 +7,8 @@
 //   hook.
 describe('Testing Gateway Server...', function () {
   describe('Operational features', function () {
-    require('./tests/sanity.spec');
-    require('./tests/allowlist.spec');
     require('./tests/racm.spec');
+    require('./tests/allowlist.spec');
   });
 
   describe('API features', function () {
@@ -21,13 +20,16 @@ describe('Testing Gateway Server...', function () {
       require('./tests/read.spec');
 
       // do updates ...
-      require('./tests/update.spec');
+      // require('./tests/update.spec');
 
       // do replacements ...
-      require('./tests/replace.spec');
+      // require('./tests/replace.spec');
 
       // do deletes...
       require('./tests/delete.spec');
+
+      // check final state to be as expected...
+      // require('./tests/final-state.spec');
     });
   });
 });

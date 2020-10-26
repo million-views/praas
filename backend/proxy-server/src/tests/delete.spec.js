@@ -45,7 +45,7 @@ context('use DELETE to remove one or more records', function () {
     });
   });
 
-  xit('can DELETE multiple records', async function () {
+  it('can DELETE multiple records', async function () {
     const undeleted = deletes.filter((row) => row.deleted === false);
     console.log('~~~~~~~undeleted: ', undeleted);
     const requests = [

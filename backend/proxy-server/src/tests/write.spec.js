@@ -7,29 +7,32 @@ const {
 
 context('use POST to add records...', function () {
   const skipFields = ['hiddenFormField'];
+
   it('can insert a single record', async function () {
     const record = createRecord(5, { multi: false, skipFields });
     const res = await gatewayServer()
       .post('/')
       .set('Host', dropIfFilledConduit.host)
       .send(record);
+
     checkSuccessResponse(res, {
       multi: false,
       storein: 'writes',
-      ref: record,
+      ref: { key: 'name', ...record },
     });
   });
 
   it('can insert a single record in an array', async function () {
-    const record = createRecord(7, { skipFields });
+    const records = createRecord(7, { skipFields });
     const res = await gatewayServer()
       .post('/')
       .set('Host', dropIfFilledConduit.host)
-      .send(record);
+      .send(records);
+
     checkSuccessResponse(res, {
       multi: true,
       storein: 'writes',
-      ref: record,
+      ref: { key: 'name', ...records },
     });
   });
 
@@ -51,6 +54,11 @@ context('use POST to add records...', function () {
       ],
     };
 
-    checkSuccessResponse(res, { multi: true, storein: 'writes', ref: match });
+    checkSuccessResponse(res, {
+      multi: true,
+      logit: false,
+      storein: 'writes',
+      ref: { key: 'name', ...match },
+    });
   });
 });

@@ -37,16 +37,24 @@ context('hidden form fields (hff)...', function () {
         .send(record);
 
       const match = createRecord(2, { skipFields: ['hiddenFormField'] });
-      checkSuccessResponse(res, { storein: 'writes', ref: match });
+
+      checkSuccessResponse(res, {
+        storein: 'writes',
+        ref: { key: 'name', ...match },
+      });
     });
 
     it('accepts request and includes hff value when "include" is true', async function () {
-      const record = createRecord(3);
+      const records = createRecord(3);
       const res = await gatewayServer()
         .post('/')
         .set('Host', passConduit.host)
-        .send(record);
-      checkSuccessResponse(res, { storein: 'writes', ref: record });
+        .send(records);
+
+      checkSuccessResponse(res, {
+        storein: 'writes',
+        ref: { key: 'name', ...records },
+      });
     });
   });
 
@@ -60,16 +68,21 @@ context('hidden form fields (hff)...', function () {
         .post('/')
         .set('Host', dropConduit.host)
         .send(record);
+
       expect(res.status).to.equal(200);
     });
 
     it('accepts request if hff value is empty', async function () {
-      const record = createRecord(4, { skipFields: ['hiddenFormField'] });
+      const records = createRecord(4, { skipFields: ['hiddenFormField'] });
       const res = await gatewayServer()
         .post('/')
         .set('Host', dropConduit.host)
-        .send(record);
-      checkSuccessResponse(res, { storein: 'writes', ref: record });
+        .send(records);
+
+      checkSuccessResponse(res, {
+        storein: 'writes',
+        ref: { key: 'name', ...records },
+      });
     });
 
     it('passthru only those records with non-empty hff value', async function () {
@@ -86,8 +99,12 @@ context('hidden form fields (hff)...', function () {
         .set('Host', dropConduit.host)
         .send(records);
       expect(res.status).to.equal(200);
+
       const match = { records: [r2, r4] };
-      checkSuccessResponse(res, { storein: 'writes', ref: match });
+      checkSuccessResponse(res, {
+        storein: 'writes',
+        ref: { key: 'name', ...match },
+      });
     });
   });
 });

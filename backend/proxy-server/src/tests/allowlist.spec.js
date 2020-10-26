@@ -82,10 +82,13 @@ context('allow-list...', function () {
       headers: { ...optionsBase.headers, Host: aorConduit3.host },
     };
 
-    const record = createRecord(1);
-    const postData = JSON.stringify(record);
+    const records = createRecord(1);
+    const postData = JSON.stringify(records);
 
     success = await boundHttpRequest(options3, postData);
-    checkSuccessResponse(success, { storein: 'writes', ref: record });
+    checkSuccessResponse(success, {
+      storein: 'writes',
+      ref: { key: 'name', ...records },
+    });
   });
 });

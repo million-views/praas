@@ -42,12 +42,12 @@ context('use PATCH to update one or more records', function () {
       checkSuccessResponse(res, {
         multi: false,
         storein: 'updates',
-        ref: record,
+        ref: { key: 'id', ...record },
       });
     });
   });
 
-  xit('can PATCH multiple records', async function () {
+  it('can PATCH multiple records', async function () {
     const requests = [
       pickRandomlyFrom(writes),
       pickRandomlyFrom(writes),
@@ -75,6 +75,9 @@ context('use PATCH to update one or more records', function () {
       .set('Host', passConduit.host)
       .send({ records });
 
-    checkSuccessResponse(res, { storein: 'updates', ref: { records } });
+    checkSuccessResponse(res, {
+      storein: 'updates',
+      ref: { key: 'id', records },
+    });
   });
 });

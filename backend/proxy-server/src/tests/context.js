@@ -3,8 +3,9 @@ const path = require('path');
 const inspect = require('util').inspect;
 
 const chai = require('chai');
-const chaiHttp = require('chai-http');
 const expect = chai.expect;
+
+const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 
 const gatewayHost = 'localhost';
@@ -76,6 +77,7 @@ const createRecord = (
 
 // scratch area to hold record ids of all rows that were successfully inserted
 const localStore = { writes: [], updates: [], replacements: [], deletes: [] };
+
 function recordStore(shelf) {
   if (shelf in localStore) {
     return localStore[shelf];
@@ -108,15 +110,79 @@ function storeIt(shelf, record) {
   }
 }
 
+function checkSingleRowResponse(row, expected, storein) {
+  expect(row).to.haveOwnProperty('id');
+  expect(row).to.haveOwnProperty('fields');
+
+  if (expected) {
+    expect(row.fields).to.eql(expected.fields);
+  }
+
+  storeIt(storein, { id: row.id, fields: row.fields });
+}
+
+function checkMultiRowResponse(records, ref, storein) {
+  if (!ref) {
+    records.forEach((row) => {
+      checkSingleRowResponse(row, undefined, storein);
+    });
+  } else {
+    if (ref.key === undefined || !['id', 'name'].includes(ref.key)) {
+      console.log(
+        'bad call!, "key" in ref is required or invalid',
+        inspect(ref, { depth: 6 })
+      );
+      process.exit(-2);
+    }
+
+    if (ref.records === undefined) {
+      console.log(
+        'bad call!, "records" in ref is required',
+        inspect(ref, { depth: 6 })
+      );
+      process.exit(-3);
+    }
+
+    // console.log('~~~~~~~~ ', inspect(ref, { depth: 6 }));
+    expect(records.length).to.equal(ref.records.length);
+
+    if (ref.key === 'id') {
+      records.forEach((row) => {
+        const expected = ref.records.find((item) => item.id === row.id);
+        expect(expected).to.be.an(
+          'object',
+          `when looking for ${inspect(row, { depth: 6 })} using '${ref.key}'`
+        );
+        checkSingleRowResponse(row, expected, storein);
+      });
+    }
+
+    if (ref.key === 'name') {
+      records.forEach((row) => {
+        const expected = ref.records.find(
+          (item) => item.fields.name === row.fields.name
+        );
+
+        expect(expected).to.be.an(
+          'object',
+          `when looking for ${inspect(row, { depth: 6 })} using '${ref.key}'`
+        );
+        checkSingleRowResponse(row, expected, storein);
+      });
+    }
+  }
+}
+
 // tests for things we expect in a response to POST, PATCH, PUT request
 // - set `storein` to the name of the local cache for all requests that you
 //   think should be in the `base` and later want to consult in subsequent
 //   tests. The value can be one off 'writes', 'updates', 'replacements',
 //   'deletes' or left undefined
-// - set `ref` to the record data that was submitted to confirm all fields
-//   were inserted; to keep the logic simple, make sure `ref` contains what
-//   will be transmitted by the gateway, not what was received by it - since
-//   `hff` policy may drop values.
+// - set `ref` to an object that includes record data submitted to the gatewya
+//   and the name of key to lookup an entry the the record data; o keep the
+//   logic simple, make sure `ref` data contains what will be transmitted by
+//   the gateway, not what was received by it - since `hff` policy may drop
+//   values and thus the response may not return the same.
 // - set `multi` to false if the response format is for a single record
 function checkSuccessResponse(
   res,
@@ -127,28 +193,9 @@ function checkSuccessResponse(
   expect(res.status).to.equal(200);
   if (multi) {
     expect(res.body).to.haveOwnProperty('records');
-    if (ref) {
-      expect(res.body.records.length).to.equal(ref.records.length);
-    }
-
-    res.body.records.forEach((r, i) => {
-      expect(r).to.haveOwnProperty('id');
-      expect(r).to.haveOwnProperty('fields');
-
-      if (ref) {
-        expect(r.fields).to.eql(ref.records[i].fields);
-      }
-
-      storeIt(storein, { id: r.id, fields: r.fields });
-    });
+    checkMultiRowResponse(res.body.records, ref, storein);
   } else {
-    expect(res.body).to.haveOwnProperty('id');
-    expect(res.body).to.haveOwnProperty('fields');
-    if (ref) {
-      expect(res.body.fields).to.eql(ref.fields);
-    }
-
-    storeIt(storein, { id: res.body.id, fields: res.body.fields });
+    checkSingleRowResponse(res.body, ref, storein);
   }
 }
 

@@ -27,16 +27,16 @@ const {
 // question: should the above go into their own spec files? yes?
 
 context('use GET to fetch records...', function () {
-  const ridBase = recordStore('writes');
+  const written = recordStore('writes');
 
   it(`has 10 rows in local record store to work with`, function () {
-    expect(ridBase.length).to.eq(10);
+    expect(written.length).to.eq(10);
   });
 
   const requests = [
-    pickRandomlyFrom(ridBase),
-    pickRandomlyFrom(ridBase),
-    pickRandomlyFrom(ridBase),
+    pickRandomlyFrom(written),
+    pickRandomlyFrom(written),
+    pickRandomlyFrom(written),
   ];
 
   requests.forEach((record) => {
@@ -46,15 +46,20 @@ context('use GET to fetch records...', function () {
       const res = await gatewayServer()
         .get('/' + record.id)
         .set('Host', passConduit.host);
-      checkSuccessResponse(res, { multi: false, ref: record });
+
+      checkSuccessResponse(res, {
+        multi: false,
+        ref: { key: 'id', ...record },
+      });
     });
   });
 
   it('can GET all entries', async function () {
     const res = await gatewayServer().get('/').set('Host', passConduit.host);
+
     checkSuccessResponse(res, {
       logit: false,
-      ref: { records: ridBase },
+      ref: { key: 'id', records: written },
     });
   });
 });
