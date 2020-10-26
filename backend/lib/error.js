@@ -66,6 +66,7 @@ function RestApiErrorHandler(err, req, res, next) {
   // request path is the flow origin that led to the error
   err.path = req.path;
   err.method = req.method;
+  err.query = req.query;
 
   // fail fast: unknown error types are unexpected here.
   if (!(err instanceof RestApiError)) {
