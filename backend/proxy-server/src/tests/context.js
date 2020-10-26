@@ -85,10 +85,20 @@ function recordStore(shelf) {
   process.exit(-1);
 }
 
-const logR = (res, logit) => {
+const logR = (res, logit, match) => {
   // environment variable overrides logit
   if (process.env.DUMP_RESPONSE || logit) {
-    console.log(`<~~~ `, res.statusCode, inspect(res.body, { depth: 6 }));
+    if (match) {
+      console.log(
+        `<~~~ `,
+        res.statusCode,
+        inspect(res.body, { depth: 6 }),
+        ' ~X~ ',
+        inspect(match, { depth: 6 })
+      );
+    } else {
+      console.log(`<~~~ `, res.statusCode, inspect(res.body, { depth: 6 }));
+    }
   }
 };
 
@@ -112,7 +122,7 @@ function checkSuccessResponse(
   res,
   { multi = true, storein = undefined, ref = undefined, logit = false } = {}
 ) {
-  logR(res, logit);
+  logR(res, logit, ref);
 
   expect(res.status).to.equal(200);
   if (multi) {
