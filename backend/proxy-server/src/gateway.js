@@ -123,6 +123,8 @@ function middle({ cmap = [], debug = false }) {
 
   function apiComplianceCheck(req, res, next) {
     const records = req.body.records ?? [req.body];
+    const single = !req.body.records;
+
     if (debug) {
       console.log(
         `api-compliance-check: ${req.method}`,
@@ -142,13 +144,33 @@ function middle({ cmap = [], debug = false }) {
           );
         }
 
-        // PUT and PATCH need id field in fields
-        if (opNeedsId.includes(req.method) && records[i]?.id === undefined) {
-          return next(
-            new RestApiError(422, {
-              id: `@${i} not provided`,
-            })
-          );
+        // PUT and PATCH need id field in record or in the path of the url
+        // but not in both!
+        if (opNeedsId.includes(req.method)) {
+          if (records[i]?.id === undefined && single === false) {
+            return next(
+              new RestApiError(422, {
+                id: `@${i} is required`,
+              })
+            );
+          }
+
+          if (single && req.path.substring(1) === '') {
+            return next(
+              new RestApiError(422, {
+                id: `is required in URL path to locate single record`,
+              })
+            );
+          }
+
+          if (single && records[i]?.id !== undefined) {
+            // cannot include id in body for single requests
+            return next(
+              new RestApiError(422, {
+                id: `is unexpected in a single record`,
+              })
+            );
+          }
         }
       }
     }
