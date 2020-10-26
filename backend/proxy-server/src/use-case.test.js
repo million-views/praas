@@ -33,14 +33,452 @@ const stats = {
   processes: { validCount, invalidCount },
 };
 
-const request1 = {
+const responses = {
   records: [
     {
+      id: 'rec1neIdJ0n1QxkaU',
       fields: {
-        name: 'first last',
-        email: 'first@last.com',
+        name: 'Jack L1uc',
+        email: 'jackx@last.com',
+        hiddenFormField: 'hff-5',
+        isValid: '1',
+      },
+      createdTime: '2020-10-23T11:18:07.000Z',
+    },
+    {
+      id: 'rec1u8JHDjMGXsnuc',
+      fields: {
+        name: 'Jack L7uc',
+        email: 'jack.7uc@last',
         hiddenFormField: 'hff-5',
       },
+      createdTime: '2020-10-26T11:16:35.000Z',
+    },
+    {
+      id: 'rec2jziaL7RkcFC9c',
+      fields: {
+        name: 'Jack L6uc',
+        email: 'jack.6uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-26T11:16:35.000Z',
+    },
+    {
+      id: 'rec45dZppPSvQhFjm',
+      fields: {
+        name: 'Jack L4uc',
+        email: 'jack.4uclast.com',
+        hiddenFormField: 'hff-5',
+        isValid: '0',
+      },
+      createdTime: '2020-10-25T10:31:23.000Z',
+    },
+    {
+      id: 'rec6ORplbNQbRp5Of',
+      fields: {
+        name: 'Jack L1uc',
+        email: 'jack.1uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T14:40:25.000Z',
+    },
+    {
+      id: 'rec7ArgFSxb7xYf2n',
+      fields: {
+        name: 'Jack L1uc',
+        email: 'jack.1uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-26T11:16:35.000Z',
+    },
+    {
+      id: 'rec7Rmr71UKyakyyJ',
+      fields: {
+        name: 'Jack L4uc',
+        email: 'jack.4uclast.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-26T11:16:46.000Z',
+    },
+    {
+      id: 'rec7SuOcS1dkkUGzw',
+      fields: {
+        name: 'Jack L7uc',
+        email: 'jack.7uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T10:26:49.000Z',
+    },
+    {
+      id: 'rec9N46V9oKV12PsM',
+      fields: {
+        name: 'Jack L6uc',
+        email: 'jack.6uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T10:26:49.000Z',
+    },
+    {
+      id: 'recAvAfLNDsGYw4XG',
+      fields: {
+        name: 'Jack L5uc',
+        email: 'jack.5uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T14:40:25.000Z',
+    },
+    {
+      id: 'recAvAhElHdNcDVLs',
+      fields: {
+        name: 'Jack L2uc',
+        email: 'jack$$$2uc@last.com',
+        hiddenFormField: 'hff-5',
+        isValid: '1',
+      },
+      createdTime: '2020-10-25T10:31:23.000Z',
+    },
+    {
+      id: 'recBTgKBaCZwDp0jD',
+      fields: {
+        name: 'Jack L1uc',
+        email: 'jack.1uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T14:38:23.000Z',
+    },
+    {
+      id: 'recBybSMB2bnUt128',
+      fields: {
+        name: 'Jack L2uc',
+        email: 'jack$$$2uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-26T11:16:46.000Z',
+    },
+    {
+      id: 'recCkOFZNuK8vY0Ia',
+      fields: {
+        name: 'Jack L6uc',
+        email: 'jack.6uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T14:39:16.000Z',
+    },
+    {
+      id: 'recEIMAC1H68Ac7JC',
+      fields: {
+        name: 'Jack L5uc',
+        email: 'jack.5uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T14:38:23.000Z',
+    },
+    {
+      id: 'recEQtmFodcmSILJ4',
+      fields: {
+        name: 'Jack L6uc',
+        email: 'jack.6uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T14:38:23.000Z',
+    },
+    {
+      id: 'recEqJL6hAsBXQYNO',
+      fields: {
+        name: 'Jack L2uc',
+        email: 'jack$$$2uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-26T11:16:35.000Z',
+    },
+    {
+      id: 'recHp6JdGHuQ6u4uK',
+      fields: {
+        name: 'Jack L4uc',
+        email: 'jack.4uc@last.com',
+        hiddenFormField: 'hff-5',
+        isValid: '1',
+      },
+      createdTime: '2020-10-23T11:18:07.000Z',
+    },
+    {
+      id: 'recIOdaexQHL8rQIV',
+      fields: {
+        name: 'Jack L7uc',
+        email: 'jack.7uc@last.com',
+        hiddenFormField: 'hff-5',
+        isValid: '1',
+      },
+      createdTime: '2020-10-23T11:18:07.000Z',
+    },
+    {
+      id: 'recMJ32a36xoIDxUh',
+      fields: {
+        name: 'Jack L1uc',
+        email: 'jack.1uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T10:31:23.000Z',
+    },
+    {
+      id: 'recNlER7zbURvF0Kg',
+      fields: {
+        name: 'Jack L5uc',
+        email: 'jack.5uc@last.com',
+        hiddenFormField: 'hff-5',
+        isValid: '1',
+      },
+      createdTime: '2020-10-25T10:26:49.000Z',
+    },
+    {
+      id: 'recP9h65dbWGLi3q0',
+      fields: {
+        name: 'Jack L2uc',
+        email: 'jack.2uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T10:26:49.000Z',
+    },
+    {
+      id: 'recPMjKO8drNazPnn',
+      fields: {
+        name: 'Jack L1uc',
+        email: 'jack.1uc@last.com',
+        hiddenFormField: 'hff-5',
+        isValid: '1',
+      },
+      createdTime: '2016-7-25T10:26:49.000Z',
+    },
+    {
+      id: 'recRyzmLtzVCyaQEy',
+      fields: {
+        name: 'Jack L7uc',
+        email: 'jack.7uc@last',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T10:31:23.000Z',
+    },
+    {
+      id: 'recSGeU0QTwsVCawQ',
+      fields: {
+        name: 'Jack L7uc',
+        email: 'jack.7uc@last',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2017-2-25T14:38:23.000Z',
+    },
+    {
+      id: 'recSpMVKkdrV9rLLP',
+      fields: {
+        name: 'Jack L2uc',
+        email: 'jack.2uc@last.com',
+        hiddenFormField: 'hff-5',
+        isValid: '0',
+      },
+      createdTime: '2020-10-23T11:18:07.000Z',
+    },
+    {
+      id: 'recUIVTXuiAFAGBux',
+      fields: {
+        name: 'Jack L2uc',
+        email: 'jack$$$2uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T14:40:25.000Z',
+    },
+    {
+      id: 'recXQQZnMor6cHCWg',
+      fields: {
+        name: 'Jack L6uc',
+        email: 'jackx@last.com',
+        hiddenFormField: 'hff-5',
+        isValid: '0',
+      },
+      createdTime: '2017-03-23T11:18:07.000Z',
+    },
+    {
+      id: 'recZ5iOxM4cNFxb2d',
+      fields: {
+        name: 'Jack L6uc',
+        email: 'jack.6uc@last.com',
+        hiddenFormField: 'hff-5',
+        isValid: '1',
+      },
+      createdTime: '2020-10-25T10:31:23.000Z',
+    },
+    {
+      id: 'recaSFDilLqYAkkSP',
+      fields: {
+        name: 'Jack L4uc',
+        email: 'jack',
+        hiddenFormField: 'hff-5',
+        isValid: '0',
+      },
+      createdTime: '2020-10-25T10:26:49.000Z',
+    },
+    {
+      id: 'recddYbrTLHLNPmxR',
+      fields: {
+        name: 'Jack L7uc',
+        email: 'jack.7uc@last',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T14:39:16.000Z',
+    },
+    {
+      id: 'receJg1YHczrr7z8Q',
+      fields: {
+        name: 'Jack L4uc',
+        email: 'jack.4uclast.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2018-4-25T14:39:16.000Z',
+    },
+    {
+      id: 'receMyRyTH81XLbmV',
+      fields: {
+        name: 'Jack L2uc',
+        email: 'jack$$$2uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T14:39:16.000Z',
+    },
+    {
+      id: 'recehYbRvTY2QjiCd',
+      fields: {
+        name: 'Jack L1uc',
+        email: 'jack.1uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T14:39:16.000Z',
+    },
+    {
+      id: 'receyyFh3nCzJPcdJ',
+      fields: {
+        name: 'Jack L7uc',
+        email: 'jack.7uc@last',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T14:40:25.000Z',
+    },
+    {
+      id: 'reciBE4oK8eQn7Rk4',
+      fields: {
+        name: 'Jack L4uc',
+        email: 'jack.4uclast.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-1-25T14:40:25.000Z',
+    },
+    {
+      id: 'reciO1bltpp0ZCDXS',
+      fields: {
+        name: 'Jack L6uc',
+        email: 'jack.6uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-26T11:16:46.000Z',
+    },
+    {
+      id: 'reckW7YARz1SzxdKw',
+      fields: {
+        name: 'Jack L4uc',
+        email: 'jack.4uclast.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T14:38:23.000Z',
+    },
+    {
+      id: 'recknwnfX0WzUQ9PK',
+      fields: {
+        name: 'Jack L5uc',
+        email: 'jack.5uc@last.com',
+        hiddenFormField: 'hff-5',
+        isValid: '1',
+      },
+      createdTime: '2020-10-25T10:31:23.000Z',
+    },
+    {
+      id: 'reco7AwJhqdcAbpYM',
+      fields: {
+        name: 'Jack L1uc',
+        email: 'jack.1uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2019-1-26T11:16:46.000Z',
+    },
+    {
+      id: 'recqWlekuTfzxHbth',
+      fields: {
+        name: 'Jack L5uc',
+        email: 'jack.5uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T14:39:16.000Z',
+    },
+    {
+      id: 'recrvI8BWUk7XCiew',
+      fields: {
+        name: 'Jack L4uc',
+        email: 'jack.4uclast.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-26T11:16:35.000Z',
+    },
+    {
+      id: 'recv051hDKY0O6cJD',
+      fields: {
+        name: 'Jack L7uc',
+        email: 'jack.7uc@last',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-26T11:16:46.000Z',
+    },
+    {
+      id: 'recvikRWw2VpKr7dx',
+      fields: {
+        name: 'Jack L6uc',
+        email: 'jack.6uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T14:40:25.000Z',
+    },
+    {
+      id: 'recvjcxEyT69UUNNW',
+      fields: {
+        name: 'Jack L5uc',
+        email: 'jackx@last.com',
+        hiddenFormField: 'hff-5',
+        isValid: '1',
+      },
+      createdTime: '2019-10-23T11:18:07.000Z',
+    },
+    {
+      id: 'recvlfMyYQ8bXRMsu',
+      fields: {
+        name: 'Jack L5uc',
+        email: 'jack.5uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-26T11:16:46.000Z',
+    },
+    {
+      id: 'recwobImwV0WMa3i4',
+      fields: {
+        name: 'Jack L2uc',
+        email: 'jack$$$2uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2020-10-25T14:38:23.000Z',
+    },
+    {
+      id: 'recwojk0Ma3XNSpUM',
+      fields: {
+        name: 'Jack L5uc',
+        email: 'jack.5uc@last.com',
+        hiddenFormField: 'hff-5',
+      },
+      createdTime: '2019-10-26T11:16:35.000Z',
     },
   ],
 };
@@ -220,8 +658,7 @@ describe('Registered user creates three conduits to a previously setup `contacts
   context(
     'Registered user `hands-over` `conduit-A` to a widget-designer',
     () => {
-      xit('should have write permission to create a form', function () {
-        // console.log('>> conduit A : ', conduitA.racm);
+      it('should have write permission to create a form', function () {
         expect(conduitA.racm).to.eql(['POST']);
       });
     }
@@ -229,25 +666,21 @@ describe('Registered user creates three conduits to a previously setup `contacts
   context(
     ' Registered user `publishes` a page with the embedded form ',
     () => {
-      it('Visitors provide their `first-name` and `email` | N submissions', async function () {
+      xit('Visitors provide their `first-name` and `email` | N submissions', async function () {
         const res = await proxyServer()
           .post('/')
           .set('Host', conduitA.host)
           .send(request2);
-        console.log('>>> request2 length:', request2.records.length);
-        // console.debug(res.body, res.status, res.error);
-        console.log('>>> response length:', res.body.records.length);
         expect(res.status).to.equal(200);
         stats.submissions.realSubmissionCount = res.body.records.length;
         stats.submissions.botSubmissionCount =
           request2.records.length - res.body.records.length;
       });
-      it('Bots have a field day and spam the heck out on the gateway | M submissions', async function () {
+      xit('Bots have a field day and spam the heck out on the gateway | M submissions', async function () {
         const res = await proxyServer()
           .post('/')
           .set('Host', conduitA.host)
           .send(request3);
-        // console.debug(res.body, res.status, res.error);
         expect(res.status).to.equal(200);
         if (res.body.records === undefined) {
           stats.submissions.botSubmissionCount = request3.records.length;
@@ -271,16 +704,9 @@ describe('Registered user creates three conduits to a previously setup `contacts
         const res = await proxyServer().get('/').set('Host', conduitB.host);
         expect(res.status).to.equal(200);
         expect(res.body).to.haveOwnProperty('records');
-        // console.log('>>> no of records:', res.body.records.length);
         pickArecord = res.body.records;
         pickArecord = util.pickRandomlyFrom(pickArecord);
-        // console.log('>>> You rolled dice and picked a record: ', pickArecord);
-        /* console.log(
-          '>>> email of the selected record:',
-          pickArecord.fields.email
-        ); */
         isEmailValid = util.validateEmail(pickArecord.fields.email);
-        // console.log('>>> email vaild or invalid:', isEmailValid);
         recordId = pickArecord.id;
       });
       it('EVS marks a `row` to contain a valid email or invalid email, using `conduit-B`', async function () {
@@ -339,6 +765,32 @@ describe('Registered user creates three conduits to a previously setup `contacts
           ' bots count: ',
           stats.submissions.botSubmissionCount
         );
+        const date = new Date('2019-10-26T11:16:35.000Z');
+        console.log(
+          '>>> day:',
+          date.getDate(),
+          ' month:',
+          date.getMonth() + 1,
+          ' year:',
+          date.getFullYear(),
+          ' of createdTime - ',
+          responses.records[0].createdTime
+        );
+        let i = 0,
+          // eslint-disable-next-line prefer-const
+          groups = {},
+          year,
+          day;
+        for (let item of responses.records) {
+          // console.log(item);
+          item = new Date(item.createdTime);
+          year = item.getFullYear();
+          day = item.getDate();
+          groups[year] || (groups[year] = {}); // exists OR create {}
+          groups[year][day] || (groups[year][day] = []); // exists OR create []
+          groups[year][day].push(item);
+        }
+        console.log('>>> groups:', groups);
       });
     }
   );
