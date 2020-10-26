@@ -1,0 +1,65 @@
+.DataChart {
+  display: flex;
+  background-color: white;
+  flex-direction: column;
+  position: relative;
+  padding: 20px;
+  &__header {
+    text-align: center;
+  }
+  &__percentage {
+    margin-inline-start: 0;
+    position: relative;
+    font-size: 0.8em;
+    line-height: 1;
+    text-transform: uppercase;
+    height: 40px;
+    background: repeating-linear-gradient(
+      to right,
+      #ddd,
+      #ddd 1px,
+      #fff 1px,
+      #fff 5%
+    );
+
+    &:after {
+      content: '';
+      display: block;
+      background-color: #3d9970;
+      width: 50px;
+      margin-bottom: 10px;
+      height: 90%;
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+      transition: background-color 0.3s ease;
+      cursor: pointer;
+    }
+    &:hover,
+    &:focus {
+      &:after {
+        background-color: #aaa;
+      }
+    }
+  }
+  &__label {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    height: 40px;
+    background-color: transparent;
+    position: absolute;
+    left: 0;
+    margin-left: 5px;
+    z-index: 1;
+  }
+}
+
+@for $i from 1 through 100 {
+  .DataChart__percentage--#{$i} {
+    &:after {
+      $value: ($i * 1%);
+      width: $value;
+    }
+  }
+}
