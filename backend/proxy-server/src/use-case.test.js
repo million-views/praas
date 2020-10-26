@@ -23,10 +23,13 @@ const conduitA = testConduits.conduitA;
 const conduitB = testConduits.conduitB;
 const conduitC = testConduits.conduitC;
 
-let realSubmissioncount, botSubmissionCount, validCount, invalidCount;
+const realSubmissionCount = 0,
+  botSubmissionCount = 0,
+  validCount = 0,
+  invalidCount = 0;
 
 const stats = {
-  submissions: { realSubmissioncount, botSubmissionCount },
+  submissions: { realSubmissionCount, botSubmissionCount },
   processes: { validCount, invalidCount },
 };
 
@@ -226,7 +229,7 @@ describe('Registered user creates three conduits to a previously setup `contacts
   context(
     ' Registered user `publishes` a page with the embedded form ',
     () => {
-      xit('Visitors provide their `first-name` and `email` | N submissions', async function () {
+      it('Visitors provide their `first-name` and `email` | N submissions', async function () {
         const res = await proxyServer()
           .post('/')
           .set('Host', conduitA.host)
@@ -235,11 +238,11 @@ describe('Registered user creates three conduits to a previously setup `contacts
         // console.debug(res.body, res.status, res.error);
         console.log('>>> response length:', res.body.records.length);
         expect(res.status).to.equal(200);
-        stats.submissions.realSubmissioncount = res.body.records.length;
+        stats.submissions.realSubmissionCount = res.body.records.length;
         stats.submissions.botSubmissionCount =
           request2.records.length - res.body.records.length;
       });
-      xit('Bots have a field day and spam the heck out on the gateway | M submissions', async function () {
+      it('Bots have a field day and spam the heck out on the gateway | M submissions', async function () {
         const res = await proxyServer()
           .post('/')
           .set('Host', conduitA.host)
@@ -322,6 +325,8 @@ describe('Registered user creates three conduits to a previously setup `contacts
             stats.processes.invalidCount += 1;
           }
         }
+      });
+      it('The report contains: signups, valid-email, invalid-email | by day, by week, by month', async function () {
         console.log(
           '>>>> processed - valid count: ',
           stats.processes.validCount,
@@ -330,12 +335,11 @@ describe('Registered user creates three conduits to a previously setup `contacts
         );
         console.log(
           '>>> total records : ',
-          stats.submissions.realSubmissioncount,
+          stats.submissions.realSubmissionCount,
           ' bots count: ',
           stats.submissions.botSubmissionCount
         );
       });
-      it('The report contains: signups, valid-email, invalid-email | by day, by week, by month', async function () {});
     }
   );
 });
