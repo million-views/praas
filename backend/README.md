@@ -98,3 +98,7 @@ the `npm` task command.
 
 - [Data model of resource server](crud-server/README.md)
 - [Testing gateway server](proxy-server/README.md)
+
+## Resource server API documentation
+
+Run the script `npm run api-doc`, browser will open resource-server.html page.

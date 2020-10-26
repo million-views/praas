@@ -1,0 +1,382 @@
+openapi: 3.0.0
+info:
+  title: Conduit API
+  version: '1.0'
+  description: |
+    ## Introduction
+    > If you have any questions please feel free to contact our [support team](https://m5nv.com).
+    
+    Welcome!
+
+    The `Conduit API` let you read or write to Airtable, Googlesheets, or Email inbox using a simple REST API.
+    This API assumes you have a handle to a conduit URI that maps to one of the non-traditional storage types
+    The conduit URI can be created by signing into your conduits.zyx account
+    
+    ## Quick start guide
+    This document will help guide you through how to use Conduit’s RESTful API. You’ll find that the RESTful API is pretty quick to set up.
+    
+    
+    ## Pagination
+    The server returns one page of records at a time. Each page will contain `pageSize` records, which is 10 by default.
+    If there are more records, the response will contain an `offset`. To fetch the next page of records, include `offset` in the next request's parameters.
+    Pagination will stop when you've reached the end of your table. If the `maxRecords` parameter is passed, pagination will stop once you've reached this maximum.
+    Iteration may timeout due to client inactivity or server restarts. In that case, the client will receive a 422 response with error message `LIST_RECORDS_ITERATOR_NOT_AVAILABLE`. It may then restart iteration from the beginning.
+
+    ## Sort
+    A list of sort objects that specifies how the records will be ordered. Each sort object must have a `field` key specifying the name of the field to sort on, and an optional `direction` key that is either **"asc"** or **"desc"**. The default direction is **"asc"**.
+
+  contact:
+    name: Million Views
+    url: 'https://www.m5nv.com'
+    email: hello@m5nv.com
+  x-logo:
+    url: 'https://www.m5nv.com/logo.svg'
+    altText: Million Views Logo
+  license:
+    url: 'https://github.com/million-views/praas/blob/master/LICENSE'
+    name: MIT
+servers:
+  - url: 'https://api.conduits.xyz/v1'
+tags:
+  - name: list
+    x-displayName: List records
+    description: Everything about all customer contacts
+  - name: retrive
+    x-displayName: Retrive a record
+    description: Eveything about a customer contact
+  - name: create
+    x-displayName: Create records
+    description: Create a customer contact
+  - name: update
+    x-displayName: Update records
+    description: Update a customer contact
+  - name: delete
+    x-displayName: Delete records
+    description: Delete a customer contact
+  - name: codes
+    x-displayName: RESTful response status codes
+    description: |
+      The Conduit API follows HTTP status code semantics. 
+      
+      > - 2xx codes signify success
+      > - 4xx mostly represent user error
+      > - 5xx generally correspond to a server error
+      
+      The error messages will return a JSON-encoded body that contains error and message fields. 
+      Those will provide specific error condition and human-readable message to identify what caused the error.
+  - name: success
+    x-displayName: Success code
+    description: |
+      ```
+
+      200 OK  Request completed successfully.
+      201 OK  Contact created.
+
+
+      ```
+  - name: user
+    x-displayName: User error codes
+    description: |
+      ```
+
+      400 Bad Request
+      401 Unauthorized
+      402 Payment Required
+      403 Forbidden         Contact is immutable, cannot be deleted when active.
+      404 Not Found         Contact not found.
+      413 Request Entity Too Large
+      422 Invalid Request   The request data is invalid. This includes most of the base-specific validations. You will receive a detailed error message and code pointing to the exact issue.
+
+
+      ```
+  - name: server
+    x-displayName: Server error codes
+    description: |
+      ```
+
+      500 Internal Server Error   The server encountered an unexpected condition.
+      502 Bad Gateway
+      503 Service Unavailable
+
+      ```
+x-tagGroups:
+  - name: Conduit Management
+    tags:
+      - list
+      - retrive
+      - create
+      - update
+      - delete
+  - name: Response codes
+    tags:
+      - codes
+      - success
+      - user
+      - server
+    
+
+paths:
+  /:
+    get:
+      operationId: listContacts
+      summary: Retrive all Contacts
+      description: |-
+        To list records in **contacts**, issue a **GET** request to the **contacts** endpoint.
+        
+        Returned records do not include any fields with "empty" values, e.g. `""`, `[]`, or `false`.
+      tags: 
+      - list
+      security:
+        - api_key: []
+      responses:
+        '200':
+          description: Returns list of available contacts
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ContactListResponse'
+        '400':
+          description: Contacts not found
+          $ref: '#/components/responses/Error400InvalidParams'
+        '401':
+          $ref: '#/components/responses/Error401Unauthorized'
+        '403':
+          $ref: '#/components/responses/Error403PermissionDenied'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl "https://api.conduits.xyz/v1/contacts?maxRecords=10&view=Grid%20view" \
+            -H "Authorization: Bearer YOUR_API_KEY"
+    post:
+      tags:
+        - create
+
+    patch:
+      tags:
+        - update
+
+    delete:
+      tags:
+        - delete
+
+  /contacts/{id}:
+    get:
+      operationId: getContactById
+      summary: Retrive a contact
+      description: ''
+      tags:
+        - retrive
+      parameters:
+        - $ref: '#/components/parameters/contactId'
+      security:
+        - api_key: []
+      responses:
+        '200':
+          description: Returns detail of a contact
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ContactObject'
+        '400':
+          description: Contact not found
+          $ref: '#/components/responses/Error400InvalidParams'
+        '404':
+          $ref: '#/components/responses/Error404NotFound'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl "https://api.conduits.xyz/v1/contacts/{id}" \
+            -H "Authorization: Bearer YOUR_API_KEY"
+        
+
+
+
+components:
+  parameters:
+    contactId:
+      name: id
+      in: path
+      required: true
+      description: Contact Id
+      example: 3
+      schema:
+        type: integer
+        minimum: 1
+  schemas:
+    id:
+      type: integer
+      format: int32
+    contact:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        id:
+          description: Contact Id
+          allOf:
+            - $ref: '#/components/schemas/id'
+        name:
+          type: string
+          description: Name of the customer
+          nullable: false
+        email:
+          type: string
+          description: Customer contact email address
+          nullable: false
+    ContactListResponse:
+      type: object
+      title: Contact List
+      properties:
+          count:
+            type: integer
+            description: Count of all Contacts
+          results:
+            type: array
+            description: List of Contacts
+            items: 
+              $ref: '#/components/schemas/contact'    
+          offeset:
+            type: integer
+    ContactObject:
+      type: object
+      title: Fetch a contact
+      properties:
+        fields:
+          $ref: '#/components/schemas/contact'
+        createdTime:
+          type: string
+          format: date-time
+    Error400Invalid:
+        allOf:
+            - $ref: '#/components/schemas/ErrorGeneric'
+        title: Error 400 Bad Request
+        example: 
+          title: invalid
+          detail: Invalid email
+          status: 400
+    Error401Unauthorized:
+      allOf:
+        - $ref: '#/components/schemas/ErrorGeneric'
+      title: Error 401 Unauthorized
+      example: 
+        title: not_authenticated
+        detail: Authentication credentials were not provided
+        status: 401
+    Error403PermissionDenied: 
+      allOf: 
+        - $ref: '#/components/schemas/ErrorGeneric'
+      title: Error 403 Permission Denied
+      example:
+        title: permission_denied
+        detail: You do not have permission to perform this action.
+        status: 403
+    Error404NotFound:
+      allOf:
+        - $ref: '#/components/schemas/ErrorGeneric'
+      title: Error 404 Not Found
+      example:
+        title: not_found
+        detail: Not Found
+        status: 404
+    Error413TooManyRequests:
+      allOf:
+        - $ref: '#/components/schemas/ErrorGeneric'
+      title: Error 413 Too Many Requests
+      example:
+        title: rate_limited
+        detail: The rate limit has been reached
+        status: 413
+    Error422InvalidParams: 
+        type: object
+        title: Error 422 Invalid Parameters
+        properties:
+          title:
+            type: string
+          detail:
+            type: object
+          status:
+            type: integer
+        required: 
+          - title
+          - detail
+          - status
+        example:
+          title: invalid
+          detail:
+            valid_name:
+              - 'valid name is required.'
+              - 'Ensure this value does not have special characters.'
+            length:
+              - 'valid length is required for a name.'
+              - 'Ensure that the name length is greater than 2 and less than 15.'
+          status: 422
+    Error502BadGateway:
+      allOf:
+        - $ref: '#/components/schemas/ErrorGeneric'
+      title: Error 502 Bad Gateway
+      example:
+        title: bad_gateway
+        detail: Bad Gateway
+        status: 502
+    ErrorGeneric:
+      type: "object"
+      title: Error object
+      properties:
+        title:
+          type: string
+        detail:
+          type: string
+        status:
+          type: integer
+      required:
+        - title
+        - detail
+        - status
+  responses:
+    EmptyResponse:
+      description: Empty response.
+    Error400InvalidBody:
+      description: Body payload is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400Invalid'
+    Error400InvalidParams:
+      description: Query params are invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400Invalid'
+    Error401Unauthorized:
+      description: Missing or invalid authorization.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error401Unauthorized'
+    Error403PermissionDenied:
+      description: Missing permission.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error403PermissionDenied'
+    Error404NotFound:
+      description: The specified resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error404NotFound'
+    Error502BadGateway:
+      description: Unable to contact the target gateway..
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error502BadGateway'
+  securitySchemes:
+    api_key:
+      description: >
+        For this sample, you can use the api key `special-key` to test the
+        authorization filters.
+      type: apiKey
+      name: api_key
+      in: header
