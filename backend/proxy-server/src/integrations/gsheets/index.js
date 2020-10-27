@@ -214,6 +214,21 @@ function mapRequest(method, meta, rest) {
     const single = !rest.body.records;
     const data = [];
 
+    if (records.length === 1 && single) {
+      const sid = rest.path.substring(1); // possible id in path
+      const rowId = Number.parseInt(sid);
+      if (Number.isInteger(rowId)) {
+        records[0].id = rowId;
+        memo.expectedRowCount = 'one';
+      } else {
+        throw new RestApiError(422, {
+          message: `invalid record id (${sid})`,
+        });
+      }
+    } else {
+      memo.expectedRowCount = 'many';
+    }
+
     for (let i = 0, imax = records.length; i < imax; i++) {
       const inputRow = records[i].fields;
       const inputRowId = records[i].id;
@@ -239,10 +254,6 @@ function mapRequest(method, meta, rest) {
 
     Object.assign(body, { [slot]: data });
     mappedRequest.body = body;
-    // FIXME
-    // or the test case... we need to normalize the API to use the
-    // same format regardless of the number of rows being posted
-    memo.expectedRowCount = single ? 'one' : 'many';
     mappedRequest.memo = memo;
 
     return mappedRequest;
@@ -257,6 +268,21 @@ function mapRequest(method, meta, rest) {
     const single = !rest.body.records;
     const data = [];
 
+    if (records.length === 1 && single) {
+      const sid = rest.path.substring(1); // possible id in path
+      const rowId = Number.parseInt(sid);
+      if (Number.isInteger(rowId)) {
+        records[0].id = rowId;
+        memo.expectedRowCount = 'one';
+      } else {
+        throw new RestApiError(422, {
+          message: `invalid record id (${sid})`,
+        });
+      }
+    } else {
+      memo.expectedRowCount = 'many';
+    }
+
     for (let i = 0, imax = records.length; i < imax; i++) {
       const inputRow = records[i].fields;
       const inputRowId = records[i].id;
@@ -282,10 +308,6 @@ function mapRequest(method, meta, rest) {
 
     Object.assign(body, { [slot]: data });
     mappedRequest.body = body;
-    // FIXME
-    // or the test case... we need to normalize the API to use the
-    // same format regardless of the number of rows being posted
-    memo.expectedRowCount = single ? 'one' : 'many';
     mappedRequest.memo = memo;
 
     return mappedRequest;

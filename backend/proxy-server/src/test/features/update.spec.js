@@ -76,6 +76,7 @@ context('use PATCH to update one or more records', function () {
       .send({ records });
 
     checkSuccessResponse(res, {
+      logit: true,
       storein: 'updates',
       ref: { key: 'id', records },
     });

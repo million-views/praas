@@ -77,7 +77,7 @@ context('use PUT to replace one or more records', function () {
       .send({ records });
 
     checkSuccessResponse(res, {
-      logit: false,
+      logit: true,
       storein: 'replacements',
       ref: { key: 'id', records },
     });
