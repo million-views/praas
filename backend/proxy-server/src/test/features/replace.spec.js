@@ -4,7 +4,7 @@ const {
   passConduit,
   pickRandomlyFrom,
   checkSuccessResponse, recordStore, createRecord
-} = require('./context');
+} = require('../context');
 
 context('use PUT to replace one or more records', function () {
   const writes = recordStore('writes');

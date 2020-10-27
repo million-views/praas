@@ -2,7 +2,7 @@
 const {
   expect, gatewayServer,
   dropConduit, passConduit, 
-} = require('./context');
+} = require('../context');
 
 context('access control and basic API compliance...', function () {
   it('should reject requests to inactive conduits', async function () {

@@ -7,29 +7,29 @@
 //   hook.
 describe('Testing Gateway Server...', function () {
   describe('Operational features', function () {
-    require('./tests/racm.spec');
-    require('./tests/allowlist.spec');
+    require('./test/features/racm.spec');
+    require('./test/features/allowlist.spec');
   });
 
   describe('API features', function () {
-    require('./tests/write.spec');
-    require('./tests/hidden-form-fields.spec');
+    require('./test/features/write.spec');
+    require('./test/features/hidden-form-fields.spec');
 
     after(function () {
       // verify writes so far
-      require('./tests/read.spec');
+      require('./test/features/read.spec');
 
       // do updates ...
-      // require('./tests/update.spec');
+      require('./test/features/update.spec');
 
       // do replacements ...
-      // require('./tests/replace.spec');
+      require('./test/features/replace.spec');
 
       // do deletes...
-      require('./tests/delete.spec');
+      require('./test/features/delete.spec');
 
       // check final state to be as expected...
-      // require('./tests/final-state.spec');
+      // require('./tests/features/final-state.spec');
     });
   });
 });

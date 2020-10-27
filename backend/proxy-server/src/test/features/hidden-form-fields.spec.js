@@ -3,7 +3,7 @@ const {
   expect, gatewayServer,
   dropConduit, passConduit,
   createRecord, checkSuccessResponse,
-} = require('./context');
+} = require('../context');
 
 context('hidden form fields (hff)...', function () {
   context('when hff.policy is "pass-if-match"', () => {

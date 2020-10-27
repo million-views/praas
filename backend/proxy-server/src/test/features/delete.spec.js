@@ -4,7 +4,7 @@ const {
   passConduit,
   pickRandomlyFrom,
   recordStore
-} = require('./context');
+} = require('../context');
 
 // TODO:
 // - write test cases to verify double deletes are being handled correctly
@@ -18,7 +18,7 @@ context('use DELETE to remove one or more records', function () {
   // create a statement of record for delete tests
   writes.forEach((w) => deletes.push({ deleted: false, id: w.id }));
 
-  console.log('~~~~~~~~~ deletes:', deletes);
+  // console.log('~~~~~~~~~ deletes:', deletes);
   const requests = [
     pickRandomlyFrom(deletes),
     pickRandomlyFrom(deletes),
@@ -47,7 +47,7 @@ context('use DELETE to remove one or more records', function () {
 
   it('can DELETE multiple records', async function () {
     const undeleted = deletes.filter((row) => row.deleted === false);
-    console.log('~~~~~~~undeleted: ', undeleted);
+    // console.log('~~~~~~~undeleted: ', undeleted);
     const requests = [
       pickRandomlyFrom(undeleted),
       pickRandomlyFrom(undeleted),
@@ -70,7 +70,7 @@ context('use DELETE to remove one or more records', function () {
     expect(res.status).to.equal(200);
     expect(res.body).to.haveOwnProperty('records');
     const records = res.body.records.sort((a, b) => a.id - b.id);
-    console.log('~~~~~~X', res.status, ids, refs, records);
+    // console.log('~~~~~~X', res.status, ids, refs, records);
 
     expect(records.length).to.equal(ids.length);
     for (let i = 0, imax = records.length; i < imax; i++) {

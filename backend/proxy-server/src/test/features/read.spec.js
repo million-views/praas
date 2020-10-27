@@ -4,7 +4,7 @@ const {
   passConduit,
   checkSuccessResponse, recordStore,
   pickRandomlyFrom
-} = require('./context');
+} = require('../context');
 
 // NOTE:
 // the gateway tests are "hand-crafted"... the sequence of operations is

@@ -4,7 +4,7 @@ const {
   passConduit,
   pickRandomlyFrom,
   checkSuccessResponse, recordStore, createRecord
-} = require('./context');
+} = require('../context');
 
 context('use PATCH to update one or more records', function () {
   const writes = recordStore('writes');

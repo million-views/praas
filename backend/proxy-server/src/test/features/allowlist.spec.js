@@ -5,7 +5,7 @@ const {
   createRecord, checkSuccessResponse,
   boundHttpRequest, pickRandomlyFrom,
   testAllowedIpList, testDeniedIpList
-} = require('./context');
+} = require('../context');
 
 context('allow-list...', function () {
   const optionsBase = {

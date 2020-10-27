@@ -1,8 +1,8 @@
 // prettier-ignore
 const {
-  expect,
+  // expect,
   recordStore,
-} = require('./context');
+} = require('../context');
 
 // NOTE:
 // the gateway tests are "hand-crafted"... the sequence of operations is

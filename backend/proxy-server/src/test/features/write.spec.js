@@ -3,7 +3,7 @@ const {
   gatewayServer,
   dropConduit: dropIfFilledConduit, passConduit: passOnMatchConduit,
   createRecord, checkSuccessResponse
-} = require('./context');
+} = require('../context');
 
 context('use POST to add records...', function () {
   const skipFields = ['hiddenFormField'];
