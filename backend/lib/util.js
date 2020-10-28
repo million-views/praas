@@ -155,7 +155,7 @@ function boundHttpRequest(options, body = null) {
     const clientRequest = http.request(options, (incomingMessage) => {
       // response object.
       const response = {
-        statusCode: incomingMessage.statusCode,
+        status: incomingMessage.statusCode,
         headers: incomingMessage.headers,
         body: [],
       };

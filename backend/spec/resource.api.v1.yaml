@@ -1,0 +1,479 @@
+openapi: 3.0.0
+info:
+  title: Conduits Resource Server REST API
+  version: '1.0'
+  description: |
+    Private API to manage users and their conduits used by web.app.
+    See `Conduits API` to read/write to Airtable, Google Sheets and
+    and `write` to your inbox.
+  contact:
+    name: Million Views
+    url: 'https://www.m5nv.com'
+    email: hello@m5nv.com
+  license:
+    url: 'https://github.com/million-views/praas/blob/master/LICENSE'
+    name: MIT
+servers:
+  - url: 'http://localhost:3000'
+    description: Resource server API
+paths:
+  /conduits:
+    get: 
+      operationId: allConduits
+      summary: List all conduits
+      description: Returns a list of all conduits for a valid user
+      tags: 
+      - conduit
+      responses:
+        '200':
+          description: Conduits list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/conduit'
+        '404':
+          description: Conduits not found
+
+  /conduit/{id}:
+    get:
+      operationId: oneConduit
+      summary: Fetch a conduit
+      description: Return a conduit for the valid user
+      tags:
+      - conduit
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: 
+          type: integer
+          example: 30
+
+      responses:
+        '200':
+          description: Display a conduit for a valid user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/conduit'
+        '404':
+          description: Conduit not found
+
+    put:
+      operationId: replaceConduit
+      summary: Replace an existing conduit
+      description: Replace an existing conduit by deleting the existing conduit
+      tags:
+        - conduit
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: 
+            type: number
+            example: 30     
+        - in: body
+          name: conduit
+          description: Conduit object that needs to be replaced
+          required: 
+            - suriType
+            - suriObjectKey
+            - suriApiKey
+          schema:
+            $ref: '#/components/schemas/conduit'
+      responses:
+        '200':
+          description: Conduit replaced
+        '403':
+          description: Conduit is immutable
+        '404':
+          description: Conduit not found
+        '422':
+          description: Invalid input
+
+    patch:
+      operationId: updateConduit
+      summary: Update an existing conduit
+      description: Update an existing conduit data
+      tags:
+        - conduit
+      consumes:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: 
+            type: integer
+            example: 30   
+        - in: body
+          name: conduit
+          description: Conduit object that needs to be updated
+          required: true
+          schema:
+            $ref: '#/components/schemas/conduit'
+      responses:
+        '200':
+          description: Conduit updated
+        '403':
+          description: Conduit is immutable
+        '404':
+          description: Conduit not found
+        '422':
+          description: Unsupported
+
+    delete:
+      operationId: deleteConduit
+      summary: Delete an existing conduit
+      description: Delete an existing conduit which is inactive
+      tags:
+        - conduit
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: 
+            type: integer
+            example: 30      
+      responses:
+        '200':
+          description: Conduit deleted
+        '403':
+          description: Conduit cannot delete when active
+        '404':
+          description: Conduit not found
+
+  /conduit:
+    post:
+      operationId: addConduit
+      summary: Create a conduit
+      description: Add a conduit to a valid user
+      tags: 
+        - conduit
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: conduit
+          description: Conduit object that needs to be added to the valid user
+          required: 
+            - suriType
+            - suriObjectKey
+            - suriApiKey
+          schema:
+            $ref: '#/components/schemas/conduit'
+      responses:
+        '201':
+          description: Create conduit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/conduit'
+        '422':
+          description: Invalid input
+  
+  /user:
+    get:
+      operationId: oneUser
+      summary: Fetch an user
+      description: Return a valid user
+      tags:
+        - user
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: 
+          type: integer
+          example: 11
+
+      responses:
+        '200':
+          description: Display a valid user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '404':
+          description: User not found
+      
+    put:
+      operationId: updateUser
+      summary: Update an user
+      description: Update a valid user
+      tags:
+        - user
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: 
+          type: integer
+          example: 11
+      - in: body
+        name: user
+        description: Update the user object
+        required: true
+        schema:
+          $ref: '#/components/schemas/conduit'
+      responses:
+        '200':
+          description: Update a valid user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '404':
+          description: User not found
+    
+  /user/login:
+      post:
+        operationId: authenticateUser
+        summary: User login
+        description: Validate user email address and password
+        tags:
+          - user
+        consumes:
+        - application/json
+        produces:
+          - application/json
+        parameters:
+        - name: email
+          in: path
+          required: true
+          schema: 
+            type: email
+            schema:
+              $ref: '#/components/schemas/login'
+        - name: password
+          in: path
+          required: true
+          schema:
+            type: password
+            schema:
+              $ref: '#/components/schemas/login'
+        responses:
+          '200':
+            description: User loggedin
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/login'
+          '422':
+            description: Invalid input
+        
+  
+  /users:
+    post:
+      operationId: addUser
+      summary: Create an user
+      description: Add a user
+      tags: 
+        - user
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: user
+          description: Create a new user
+          required: true
+          schema:
+            $ref: '#/components/schemas/user'
+      responses:
+        '200':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '422':
+          description: Invalid input
+
+components:
+  schemas:
+    id:
+      type: integer
+      format: int32
+    conduit:
+      type: object
+      required:
+        - suriType
+        - suriObjectKey
+        - suriApiKey
+      properties:
+        id:
+          description: Conduit Id
+          allOf:
+            - $ref: '#/components/schemas/id'
+        suriApiKey:
+          type: string
+          description: Service URI API Key
+          nullable: false
+        suriType:
+          type: string
+          description: The type of conduit
+          nullable: false
+        suriObjectKey:
+          type: string
+          description: Key to locate an object at the NTS provider
+          nullable: false
+        curi:
+          type: string
+          description: System generated conduit URI
+          nullable: false
+        allowlist:
+          type: object
+          required: 
+            - ip
+            - status
+          description: Allowed ip list
+          nullable: false
+          properties:
+            ip:
+              type: string
+            comment:
+              type: string
+            status:
+              type: string
+              default: active
+        racm:
+          type: object
+          description: Request Access Control Map
+          nullable: false
+          default: get
+          properties:
+            get:
+              type: string
+            patch:
+              type: string
+            post:
+              type: string
+            put:
+              type: string
+            delete: 
+              type: string
+        throttle:
+          type: boolean
+          description: Limit requests to 5/sec to avoid DOS attack
+          nullable: false
+          default: true
+        status:
+          type: string
+          description: active/inactive
+          nullable: false
+          default: inactive
+        description:
+          type: string
+          description: Notes about the conduit
+          nullable: true
+        hiddenFormField:
+          type: object
+          description: To avoid bot spamming or manage campaigns
+          nullable: true
+          properties:
+            fieldName:
+              type: string
+            policy:
+              type: string
+            include:
+              type: string
+            value:
+              type: string
+    
+    user:
+      type: object
+      required:
+        - firstName
+        - email
+        - password
+      properties:
+        id:
+          description: User Id
+          allOf:
+            - $ref: '#/components/schemas/id'
+        firstName:
+          type: string
+          description: User first name
+          minLength: 2
+          maxLength: 20
+          nullable: false
+          example: John
+        lastName:
+          type: string
+          description: User last name
+          minLength: 0
+          nullable: true
+          example: Smith
+        email:
+          description: User email address
+          type: string
+          format: email
+          nullable: false
+          example: john.smith@example.com
+        password:
+          description: User password
+          type: string
+          format: password
+          minLength: 4
+          nullable: false
+          example: testpa$$
+
+    login:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          description: User email address
+          type: string
+          format: email
+          nullable: false
+          example: john.smith@example.com
+        password:
+          description: User password
+          type: string
+          format: password
+          minLength: 4
+          nullable: false
+          example: testpa$$
+
+tags:
+  - name: conduit
+    description: API containing conduit data
+  - name: user
+    description: Conduit user
+  - name: conduit_model
+    x-displayName: The Conduit Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/conduit" />
+  - name: user_model
+    x-displayName: The User Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/user" />
+
+x-tagGroups:
+  - name: Conduit Management
+    tags:
+      - conduit
+  - name: User Management
+    tags:
+      - user
+  - name: Models
+    tags:
+      - conduit_model
+      - user_model

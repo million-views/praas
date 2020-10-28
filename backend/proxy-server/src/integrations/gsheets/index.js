@@ -1,5 +1,3 @@
-const { memory } = require('console');
-const { measureMemory } = require('vm');
 const afetch = require('../../../../lib/afetch');
 const { RestApiError } = require('../../../../lib/error');
 const { freezeall, rangeset } = require('../../../../lib/util');
@@ -178,7 +176,8 @@ function mapRequest(method, meta, rest) {
     const mappedRequest = { ...meta.api[method]?.mapsTo };
     const body = { ...meta.api[method]?.bodyTemplate };
     const cellDefault = ''; // <- default to this for unspecified fields
-    const records = rest.body.records;
+    const records = rest.body.records ?? [rest.body];
+    const single = !rest.body.records;
     const values = [];
 
     for (let i = 0, imax = records.length; i < imax; i++) {
@@ -200,7 +199,7 @@ function mapRequest(method, meta, rest) {
     // FIXME
     // or the test case... we need to normalize the API to use the
     // same format regardless of the number of rows being posted
-    memo.expectedRowCount = 'many'; // records.length > 1 ? 'many' : 'one';
+    memo.expectedRowCount = single ? 'one' : 'many';
     mappedRequest.memo = memo;
 
     return mappedRequest;
@@ -211,8 +210,24 @@ function mapRequest(method, meta, rest) {
     const mappedRequest = { ...meta.api[method]?.mapsTo };
     const body = { ...meta.api[method]?.bodyTemplate };
 
-    const records = rest.body.records;
+    const records = rest.body.records ?? [rest.body];
+    const single = !rest.body.records;
     const data = [];
+
+    if (records.length === 1 && single) {
+      const sid = rest.path.substring(1); // possible id in path
+      const rowId = Number.parseInt(sid);
+      if (Number.isInteger(rowId)) {
+        records[0].id = rowId;
+        memo.expectedRowCount = 'one';
+      } else {
+        throw new RestApiError(422, {
+          message: `invalid record id (${sid})`,
+        });
+      }
+    } else {
+      memo.expectedRowCount = 'many';
+    }
 
     for (let i = 0, imax = records.length; i < imax; i++) {
       const inputRow = records[i].fields;
@@ -239,10 +254,6 @@ function mapRequest(method, meta, rest) {
 
     Object.assign(body, { [slot]: data });
     mappedRequest.body = body;
-    // FIXME
-    // or the test case... we need to normalize the API to use the
-    // same format regardless of the number of rows being posted
-    memo.expectedRowCount = 'many'; // records.length > 1 ? 'many' : 'one';
     mappedRequest.memo = memo;
 
     return mappedRequest;
@@ -253,8 +264,24 @@ function mapRequest(method, meta, rest) {
     const mappedRequest = { ...meta.api[method]?.mapsTo };
     const body = { ...meta.api[method]?.bodyTemplate };
 
-    const records = rest.body.records;
+    const records = rest.body.records ?? [rest.body];
+    const single = !rest.body.records;
     const data = [];
+
+    if (records.length === 1 && single) {
+      const sid = rest.path.substring(1); // possible id in path
+      const rowId = Number.parseInt(sid);
+      if (Number.isInteger(rowId)) {
+        records[0].id = rowId;
+        memo.expectedRowCount = 'one';
+      } else {
+        throw new RestApiError(422, {
+          message: `invalid record id (${sid})`,
+        });
+      }
+    } else {
+      memo.expectedRowCount = 'many';
+    }
 
     for (let i = 0, imax = records.length; i < imax; i++) {
       const inputRow = records[i].fields;
@@ -281,10 +308,6 @@ function mapRequest(method, meta, rest) {
 
     Object.assign(body, { [slot]: data });
     mappedRequest.body = body;
-    // FIXME
-    // or the test case... we need to normalize the API to use the
-    // same format regardless of the number of rows being posted
-    memo.expectedRowCount = 'many'; // records.length > 1 ? 'many' : 'one';
     mappedRequest.memo = memo;
 
     return mappedRequest;
@@ -550,6 +573,8 @@ function GSheets({ debug = false }) {
     }
   }
 
+  // FIXME:
+  // this function will break if the sheet name includes a number!!!!
   function translateRange(range) {
     // known formats:
     // - Contacts!A3:C3",
@@ -558,17 +583,19 @@ function GSheets({ debug = false }) {
     // - A3:C
     // - A3
     // - Contacts!A3
-    return range.match(/\d+/g);
+    const matched = range.match(/\d+/g).map((i) => Number(i));
+    // console.log('range: ', range, ', matched: ', matched);
+    return matched;
   }
 
   function omap({ memo, status, data }) {
     const {
       expectedRowCount,
       fields,
-      table,
-      tableId,
       method,
-      lastColumn,
+      // table,
+      // tableId,
+      // lastColumn,
     } = memo;
 
     const mappedResponse = {};
@@ -643,7 +670,7 @@ function GSheets({ debug = false }) {
     } else if (method === 'PATCH' || method === 'PUT') {
       // NOTE:
       // - this is completely hard coded to how the current design
-      //   of the ingress API is. And subject to change. Atm this consider
+      //   of the ingress API is. And subject to change. Atm consider
       //   this as poc.
       const rows = data.responses ?? [];
       const records = [];

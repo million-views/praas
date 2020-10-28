@@ -17,7 +17,10 @@
   "extends": ["standard", "prettier"],
   "overrides": [
     {
-      "files": "*.test.js",
+      "files": [
+        "*.test.js",
+        "*.spec.js"
+      ],
       "rules": {
         "no-unused-expressions": "off"
       }
