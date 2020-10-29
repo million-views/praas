@@ -18,6 +18,7 @@ const {
   testAllowedIpList,
   testDeniedIpList,
 } = require('../../../lib/helpers');
+const { formatWithCursor } = require('prettier');
 
 // Test Data
 const testConduits = JSON.parse(
@@ -112,13 +113,29 @@ function storeIt(shelf, record) {
 
 function checkSingleRowResponse(row, expected, storein) {
   expect(row).to.haveOwnProperty('id');
-  expect(row).to.haveOwnProperty('fields');
+  expect(row).to.have.any.keys('deleted', 'fields');
+  // expect(row).to.haveOwnProperty('fields').or.to.haveOwnProperty('deleted');
 
   if (expected) {
-    expect(row.fields).to.eql(expected.fields);
+    // console.log('~~~~~~~~', row, expected);
+
+    // eslint-disable-next-line no-prototype-builtins
+    if (expected.hasOwnProperty('deleted')) {
+      // console.log('$$$$$$$$$$$');
+      delete expected.key;
+      expect(row).to.deep.eql(expected);
+    }
+
+    // eslint-disable-next-line no-prototype-builtins
+    if (expected.hasOwnProperty('fields')) {
+      // console.log('%%%%%%%%');
+      expect(row.fields).to.deep.eql(expected.fields);
+    }
   }
 
-  storeIt(storein, { id: row.id, fields: row.fields });
+  // TODO: fix gateway to not return 'createdTime'
+  delete row.createdTime;
+  storeIt(storein, row);
 }
 
 function checkMultiRowResponse(records, ref, storein) {
@@ -143,7 +160,6 @@ function checkMultiRowResponse(records, ref, storein) {
       process.exit(-3);
     }
 
-    // console.log('~~~~~~~~ ', inspect(ref, { depth: 6 }));
     expect(records.length).to.equal(ref.records.length);
 
     if (ref.key === 'id') {
@@ -199,11 +215,19 @@ function checkSuccessResponse(
   }
 }
 
+function checkErrorResponse(
+  res,
+  { ref = undefined, logit = false, expectedStatus = 422 } = {}
+) {
+  logR(res, logit, ref);
+  expect(res.status).to.equal(expectedStatus);
+}
+
 // prettier-ignore
 module.exports = {
   dropConduit, passConduit,
   aorConduit1,  aorConduit2, aorConduit3,
-  createRecord, logR, checkSuccessResponse, recordStore,
+  createRecord, logR, checkSuccessResponse, checkErrorResponse, recordStore,
   expect, gatewayServer, gatewayHost, gatewayPort,
   boundHttpRequest, pickRandomlyFrom,
   testAllowedIpList, testDeniedIpList

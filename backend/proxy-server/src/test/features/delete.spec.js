@@ -1,85 +1,196 @@
-// prettier-ignore
-const {
-  expect, gatewayServer,
-  passConduit,
-  pickRandomlyFrom,
-  recordStore
-} = require('../context');
+const { expect, recordStore } = require('../context');
+const { run_test_plan } = require('../fixture');
+/*
+NOTE:
 
-// TODO:
-// - write test cases to verify double deletes are being handled correctly
+Proper management of deletion is the single biggest feature of
+the gateway. This test suite should be handled with care; it is
+designed to catch errors in the gateway's implementation of the
+logic to support a database centric view of a spreadsheet.
 
-// NOTE: proper management of deletion is the single biggest feature of
-// the gateway. So this test suite will expand as we make progress.
-context('use DELETE to remove one or more records', function () {
-  const writes = recordStore('writes');
-  const deletes = recordStore('deletes');
-
+In particula ensure the following tests are covered either in
+combination or i
+┌─────────┬──────────────┬──────────────┬──────────────┬──────────┐
+│ (index) │      0       │      1       │      2       │    3     │
+├─────────┼──────────────┼──────────────┼──────────────┼──────────┤
+│    0    │  'deleted'   │              │              │          │
+│    1    │ 'undeleted'  │              │              │          │
+│    2    │  'deleted'   │ 'undeleted'  │              │          │
+│    3    │ 'duplicates' │              │              │          │
+│    4    │  'deleted'   │ 'duplicates' │              │          │
+│    5    │ 'undeleted'  │ 'duplicates' │              │          │
+│    6    │  'deleted'   │ 'undeleted'  │ 'duplicates' │          │
+│    7    │   'unique'   │              │              │          │
+│    8    │  'deleted'   │   'unique'   │              │          │
+│    9    │ 'undeleted'  │   'unique'   │              │          │
+│   10    │  'deleted'   │ 'undeleted'  │   'unique'   │          │
+│   11    │ 'duplicates' │   'unique'   │              │          │
+│   12    │  'deleted'   │ 'duplicates' │   'unique'   │          │
+│   13    │ 'undeleted'  │ 'duplicates' │   'unique'   │          │
+│   14    │  'deleted'   │ 'undeleted'  │ 'duplicates' │ 'unique' │
+└─────────┴──────────────┴──────────────┴──────────────┴──────────┘
+*/
+context('delete (DELETE) one or more records...', function () {
+  const written = recordStore('writes');
   // create a statement of record for delete tests
-  writes.forEach((w) => deletes.push({ deleted: false, id: w.id }));
+  const deletes = [0, 1, 2, 3, 4, 5].map((v) => ({
+    deleted: true,
+    id: written[v].id,
+  }));
 
-  // console.log('~~~~~~~~~ deletes:', deletes);
-  const requests = [
-    pickRandomlyFrom(deletes),
-    pickRandomlyFrom(deletes),
-    pickRandomlyFrom(deletes),
+  [6, 7, 8, 9].forEach((v) => {
+    deletes.push({ deleted: false, id: written[v].id });
+  });
+
+  // test plan validates `delete` functionality using previously written
+  // row data as the basis. The following tests are included in the plan:
+  //
+  // - ordinal 0 through 1 individually                     | expect 200
+  // - ordinal 2 using query param                          | expect 200
+  // - ordinal 3 through 5 using query param                | expect 200
+  // - ordinal 6 without id in path for single              | expect 422
+  // - ordinal 7 without id in query param for multi        | expect 422
+  // - ordinal 8 and 8  (duplicates) in query param         | expect 422
+  // - ordinal 8, 8, 9 (mix of duplicates) in query param   | expect 422
+  // - ordinal 0 through 1 double delete with id path       | expect 404
+  // - ordinal 2  double delete using query param           | expect 404
+  // - ordinal 3 through 5 double delete using query param  | expect 404
+  // - ordinal (0, 1, 2) double delete + (6, 7) undeleted   | expect 404
+  // - ordinal (3, 4, 5) double delete + (8, 8) duplicates  | expect 404
+  // - ordinal (6, 7) undeleted + (0, 1, 2) double delete   | expect 404
+  // - ordinal (8, 8) duplicates + (3, 4, 5) double delete  | expect 422
+  // - ordinal (4, 5, 5, 6) deleted, duplicates, undeleted  | expect 404
+
+  //
+  // final state: records at ordinal (6, 7, 8, 9) should remain
+  //
+  // NOTE: the ordinal numbers are the indices in `writes` local store
+
+  // Test plan data for DELETE is a bit different from the POST/PUT/PATCH:
+  // - skipFields and template fields are not required; in fact they should
+  //   not be set since the `fixture` determines the data needs to be
+  //   formated for a delete request based on their absence.
+  // - set includeId to always true for all DELETE tests
+  // - the shape of the test data is {id: <id>, deleted: <true|false}
+  // - test plan runner extracts the id and sets it either in the path
+  //   or in {records: <>} query parameter, not in the body depending
+  //   the value of `multi` in the test plan data.
+  //
+  // NOTE: more refactoring is needed to handle exceptional test cases.
+  // currently, we are massaging the test data knowing how the test plan
+  // runner works internally.
+
+  const plan = [
+    {
+      tests: 'allow single record delete using id in path',
+      includeId: true,
+      multi: false,
+      data: [deletes[0], deletes[1]],
+      expectedStatus: 200,
+    },
+    {
+      tests: 'allow single record delete using query param',
+      includeId: true,
+      multi: true,
+      data: [deletes[2]],
+      expectedStatus: 200,
+    },
+    {
+      tests: 'allow multi record delete using query param',
+      includeId: true,
+      multi: true,
+      data: [deletes[3], deletes[4], deletes[5]],
+      expectedStatus: 200,
+    },
+    {
+      tests: 'reject single record delete (id missing in path)',
+      includeId: true,
+      multi: false,
+      // data: [written[6]],
+      data: [{ deleted: true, id: '' }],
+      expectedStatus: 400,
+    },
+    {
+      tests: 'reject multi record delete (id missing in param)',
+      includeId: true,
+      multi: true,
+      // data: [written[7]],
+      data: [],
+      expectedStatus: 400,
+    },
+    {
+      tests: 'reject multi record delete with duplicates',
+      includeId: true,
+      multi: true,
+      data: [written[8], written[8]],
+      expectedStatus: 422,
+    },
+    {
+      tests: 'reject multi record delete with duplicates and unique ids',
+      includeId: true,
+      multi: true,
+      data: [written[8], written[8], written[9]],
+      expectedStatus: 422,
+    },
+    {
+      tests: 'reject single double delete using id in path',
+      includeId: true,
+      multi: false,
+      data: [deletes[0], deletes[1]],
+      expectedStatus: 404,
+    },
+    {
+      tests: 'reject single double delete using id in query param',
+      includeId: true,
+      multi: true,
+      data: [deletes[2]],
+      expectedStatus: 404,
+    },
+    {
+      tests: 'reject multi double delete using id in query param',
+      includeId: true,
+      multi: true,
+      data: [deletes[3], deletes[4], deletes[5]],
+      expectedStatus: 404,
+    },
+    {
+      tests: 'reject deletion of deleted mixed with undeleted ids',
+      includeId: true,
+      multi: true,
+      data: [deletes[0], deletes[1], deletes[2], deletes[6], deletes[7]],
+      expectedStatus: 404,
+    },
+    {
+      tests: 'reject deletion of deleted mixed with duplicate ids',
+      includeId: true,
+      multi: true,
+      data: [deletes[3], deletes[4], deletes[5], deletes[8], deletes[8]],
+      expectedStatus: 404,
+    },
+    {
+      tests: 'reject deletion of undeleted mixed with deleted ids',
+      includeId: true,
+      multi: true,
+      data: [deletes[6], deletes[7], deletes[0], deletes[1], deletes[2]],
+      expectedStatus: 404,
+    },
+    {
+      tests: 'reject deletion of deleted, duplicates, undeleted all mixed up',
+      includeId: true,
+      multi: true,
+      data: [deletes[4], deletes[5], deletes[5], deletes[6]],
+      expectedStatus: 404,
+    },
   ];
 
-  it(`has 10 rows in local record store to work with`, function () {
-    expect(writes.length).to.eq(10);
+  it('has 10 rows in local record store to work with', function () {
+    expect(written.length).to.eq(10);
   });
 
-  requests.forEach((row) => {
-    it(`can DELETE a single record with ID: ${row.id}`, async function () {
-      const res = await gatewayServer()
-        .delete('/' + row.id)
-        .set('Host', passConduit.host);
+  run_test_plan('DELETE', plan);
 
-      expect(row.deleted).to.equal(false);
-      expect(res.status).to.equal(200);
-      expect(res.body.deleted).to.equal(true);
-      expect(res.body.id).to.equal(row.id);
-
-      // mark the row as deleted in our local cache
-      row.deleted = true;
-    });
-  });
-
-  it('can DELETE multiple records', async function () {
-    const undeleted = deletes.filter((row) => row.deleted === false);
-    // console.log('~~~~~~~undeleted: ', undeleted);
-    const requests = [
-      pickRandomlyFrom(undeleted),
-      pickRandomlyFrom(undeleted),
-      pickRandomlyFrom(undeleted),
-      pickRandomlyFrom(undeleted),
-    ].sort((a, b) => a.id - b.id);
-
-    // prettier-ignore
-    const ids = [], refs = [];
-    requests.forEach((row) => {
-      ids.push(row.id);
-      refs.push(row); // to mark as deleted on success
-    });
-
-    const res = await gatewayServer()
-      .delete('/')
-      .set('Host', passConduit.host)
-      .query({ records: ids });
-
-    expect(res.status).to.equal(200);
-    expect(res.body).to.haveOwnProperty('records');
-    const records = res.body.records.sort((a, b) => a.id - b.id);
-    // console.log('~~~~~~X', res.status, ids, refs, records);
-
-    expect(records.length).to.equal(ids.length);
-    for (let i = 0, imax = records.length; i < imax; i++) {
-      expect(records[i].deleted).to.equal(true);
-      expect(records[i].id).to.equal(ids[i]);
-      if (refs[i].deleted) {
-        console.warn('double delete error condition detected', refs[i]);
-      }
-      refs[i].deleted = true;
-    }
+  it('verify final state', function () {
+    const deleted = recordStore('deletes');
+    expect(deleted.length).to.eq(6);
   });
 });

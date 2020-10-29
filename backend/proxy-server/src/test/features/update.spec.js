@@ -1,84 +1,107 @@
-// prettier-ignore
-const {
-  expect, gatewayServer,
-  passConduit,
-  pickRandomlyFrom,
-  checkSuccessResponse, recordStore, createRecord
-} = require('../context');
+const { expect, recordStore } = require('../context');
+const { run_test_plan } = require('../fixture');
 
-context('use PATCH to update one or more records', function () {
-  const writes = recordStore('writes');
+context('update (PATCH) one or more records...', function () {
+  const written = recordStore('writes');
+  // test plan validates `update` functionality using previously written
+  // row data as the basis. The following tests are included in the plan:
+  //
+  // - ordinal 0 through 1 individually                     | expect 200
+  // - ordinal 2 wrapped in an array                        | expect 200
+  // - ordinal 3 through 5 wrapped in an array              | expect 200
+  // - ordinal 6 without record id in path for single       | expect 422
+  // - ordinal 7 without record id in body for multi        | expect 422
+  // - ordinal 8 with record id in path and body for single | expect 422
+  // - ordinal 9 and 9  (duplicates) wrapped in an array    | expect 422
+  // - ordinal 8, 8, 9 (mix of duplicates) in an array      | expect 422
+  //
+  // final state: records at ordinal (6, 7, 8, 9) should be left untouched
+  //
+  // NOTE: the ordinal numbers are the indices in `writes` local store
 
-  it(`has 10 rows in local record store to work with`, function () {
-    expect(writes.length).to.eq(10);
-  });
-
-  const requests = [
-    pickRandomlyFrom(writes),
-    pickRandomlyFrom(writes),
-    pickRandomlyFrom(writes),
+  const plan = [
+    {
+      tests: 'allow well formed single record individually',
+      includeId: false, // do *not* include id in record
+      multi: false,
+      data: [written[0], written[1]],
+      skipFields: ['name', 'email'],
+      template: { hs: '-updated' },
+      expectedStatus: 200,
+    },
+    {
+      tests: 'allow well formed single record in an array',
+      includeId: true, // include id in record
+      multi: true,
+      data: [written[2]],
+      skipFields: ['name', 'email'],
+      template: { hs: '-updated-array-of-one' },
+      expectedStatus: 200,
+    },
+    {
+      tests: 'allow well formed records in an array',
+      includeId: true, // include id in records
+      multi: true,
+      data: [written[3], written[4], written[5]],
+      skipFields: ['name'],
+      template: { es: 'updated.com', hs: '<- look to the left' },
+      expectedStatus: 200,
+    },
+    {
+      tests: 'reject malformed single record request (id missing in path)',
+      includeId: false, // do *not* include id in record
+      multi: false,
+      data: [written[6]],
+      skipFields: ['name', 'email'],
+      template: { hs: ', update got through? you found a bug!!' },
+      expectedStatus: 422,
+    },
+    {
+      tests: 'reject malformed multi record request (id missing in body)',
+      includeId: false, // do *not* include id in record
+      multi: true,
+      data: [written[7]],
+      skipFields: ['name', 'email'],
+      template: { hs: ', update got through? you found a bug!!' },
+      expectedStatus: 422,
+    },
+    {
+      tests: 'reject malformed single record request (id in path and body)',
+      includeId: true, // include id in record
+      multi: false,
+      data: [written[8]],
+      skipFields: ['name', 'email'],
+      template: { hs: ', update got through? you found a bug!!' },
+      expectedStatus: 422,
+    },
+    {
+      tests: 'reject malformed request with duplicates',
+      includeId: true, // include id in record
+      multi: true,
+      data: [written[9], written[9]],
+      skipFields: ['name', 'email'],
+      template: { hs: ', update got through? you found a bug!!' },
+      expectedStatus: 422,
+    },
+    {
+      tests: 'reject malformed request with duplicates and unique rows',
+      includeId: true, // include id in record
+      multi: true,
+      data: [written[8], written[8], written[9]],
+      skipFields: ['name', 'email'],
+      template: { hs: ', update got through? you found a bug!!' },
+      expectedStatus: 422,
+    },
   ];
 
-  requests.forEach((previous) => {
-    // hack to get old `test data id`
-    const [lid] = previous.fields.name.match(/\d+/g);
-    let record = createRecord(lid, {
-      multi: false,
-      skipFields: ['name', 'email'],
-      template: { hs: '-patched' },
-    });
-    record = {
-      fields: { ...previous.fields, ...record.fields },
-    };
-
-    it(`can PATCH a single record with ID: ${previous.id}`, async function () {
-      const res = await gatewayServer()
-        .patch('/' + previous.id)
-        .set('Host', passConduit.host)
-        .send(record);
-
-      // add id to record to match the expected response
-      record.id = previous.id;
-      checkSuccessResponse(res, {
-        multi: false,
-        storein: 'updates',
-        ref: { key: 'id', ...record },
-      });
-    });
+  it('has 10 rows in local record store to work with', function () {
+    expect(written.length).to.eq(10);
   });
 
-  it('can PATCH multiple records', async function () {
-    const requests = [
-      pickRandomlyFrom(writes),
-      pickRandomlyFrom(writes),
-      pickRandomlyFrom(writes),
-      pickRandomlyFrom(writes),
-    ];
-    const records = [];
-    requests.forEach((previous) => {
-      // hack to get old `test data id`
-      const [lid] = previous.fields.name.match(/\d+/g);
-      let record = createRecord(lid, {
-        multi: false,
-        skipFields: ['name', 'hiddenFormField'],
-        template: { es: 'patched.com' },
-      });
-      record = {
-        id: previous.id,
-        fields: { ...previous.fields, ...record.fields },
-      };
-      records.push(record);
-    });
+  run_test_plan('PATCH', plan);
 
-    const res = await gatewayServer()
-      .patch('/')
-      .set('Host', passConduit.host)
-      .send({ records });
-
-    checkSuccessResponse(res, {
-      logit: true,
-      storein: 'updates',
-      ref: { key: 'id', records },
-    });
+  it('verify final state', function () {
+    const replaced = recordStore('updates');
+    expect(replaced.length).to.eq(6);
   });
 });
