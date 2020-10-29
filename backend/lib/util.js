@@ -203,3 +203,13 @@ module.exports = {
   pickRandomlyFrom,
   boundHttpRequest,
 };
+
+if (require.main === module) {
+  const combinations = powerset([
+    'deleted',
+    'undeleted',
+    'duplicates',
+    'unique',
+  ]);
+  console.table(combinations);
+}
