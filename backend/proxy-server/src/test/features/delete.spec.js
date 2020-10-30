@@ -67,10 +67,9 @@ context('delete (DELETE) one or more records...', function () {
   // NOTE: the ordinal numbers are the indices in `writes` local store
 
   // Test plan data for DELETE is a bit different from the POST/PUT/PATCH:
-  // - skipFields and template fields are not required; in fact they should
-  //   not be set since the `fixture` determines the data needs to be
-  //   formated for a delete request based on their absence.
-  // - set includeId to always true for all DELETE tests
+  // - skipFields, template, includeId fields are not required; in fact they
+  //   should not be set since the `fixture` determines the data needs to be
+  //   formated for a delete request based on their presence or absence.
   // - the shape of the test data is {id: <id>, deleted: <true|false}
   // - test plan runner extracts the id and sets it either in the path
   //   or in {records: <>} query parameter, not in the body depending
@@ -83,28 +82,24 @@ context('delete (DELETE) one or more records...', function () {
   const plan = [
     {
       tests: 'allow single record delete using id in path',
-      includeId: true,
       multi: false,
       data: [deletes[0], deletes[1]],
       expectedStatus: 200,
     },
     {
       tests: 'allow single record delete using query param',
-      includeId: true,
       multi: true,
       data: [deletes[2]],
       expectedStatus: 200,
     },
     {
       tests: 'allow multi record delete using query param',
-      includeId: true,
       multi: true,
       data: [deletes[3], deletes[4], deletes[5]],
       expectedStatus: 200,
     },
     {
       tests: 'reject single record delete (id missing in path)',
-      includeId: true,
       multi: false,
       // data: [written[6]],
       data: [{ deleted: true, id: '' }],
@@ -112,7 +107,6 @@ context('delete (DELETE) one or more records...', function () {
     },
     {
       tests: 'reject multi record delete (id missing in param)',
-      includeId: true,
       multi: true,
       // data: [written[7]],
       data: [],
@@ -120,63 +114,54 @@ context('delete (DELETE) one or more records...', function () {
     },
     {
       tests: 'reject multi record delete with duplicates',
-      includeId: true,
       multi: true,
       data: [written[8], written[8]],
       expectedStatus: 422,
     },
     {
       tests: 'reject multi record delete with duplicates and unique ids',
-      includeId: true,
       multi: true,
       data: [written[8], written[8], written[9]],
       expectedStatus: 422,
     },
     {
       tests: 'reject single double delete using id in path',
-      includeId: true,
       multi: false,
       data: [deletes[0], deletes[1]],
       expectedStatus: 404,
     },
     {
       tests: 'reject single double delete using id in query param',
-      includeId: true,
       multi: true,
       data: [deletes[2]],
       expectedStatus: 404,
     },
     {
       tests: 'reject multi double delete using id in query param',
-      includeId: true,
       multi: true,
       data: [deletes[3], deletes[4], deletes[5]],
       expectedStatus: 404,
     },
     {
       tests: 'reject deletion of deleted mixed with undeleted ids',
-      includeId: true,
       multi: true,
       data: [deletes[0], deletes[1], deletes[2], deletes[6], deletes[7]],
       expectedStatus: 404,
     },
     {
       tests: 'reject deletion of deleted mixed with duplicate ids',
-      includeId: true,
       multi: true,
       data: [deletes[3], deletes[4], deletes[5], deletes[8], deletes[8]],
       expectedStatus: 404,
     },
     {
       tests: 'reject deletion of undeleted mixed with deleted ids',
-      includeId: true,
       multi: true,
       data: [deletes[6], deletes[7], deletes[0], deletes[1], deletes[2]],
       expectedStatus: 404,
     },
     {
       tests: 'reject deletion of deleted, duplicates, undeleted all mixed up',
-      includeId: true,
       multi: true,
       data: [deletes[4], deletes[5], deletes[5], deletes[6]],
       expectedStatus: 404,

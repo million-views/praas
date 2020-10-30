@@ -8,12 +8,16 @@ const {
 
 // const util = require('util');
 
-function new_record_from(previous, skipFields, template, includeId = false) {
+function new_record_from(previous, options) {
+  const { skipFields, template, includeId, method } = options;
   const [lid] = previous.fields.name.match(/\d+/g);
   let record = createRecord(lid, { multi: false, skipFields, template });
-  record = {
-    fields: { ...previous.fields, ...record.fields },
-  };
+
+  if (method === 'PATCH') {
+    record = {
+      fields: { ...previous.fields, ...record.fields },
+    };
+  }
 
   // set IncludeId to true to induce errors
   if (includeId) {
@@ -23,19 +27,11 @@ function new_record_from(previous, skipFields, template, includeId = false) {
   return record;
 }
 
-function prepare_single_rows(data, skipFields, template, includeId = false) {
-  // hack for DELETE:
-  // - assumes skipFields and template will be undefined
-  // - AND includeId is true
-  // - under such condtions, the data is already in the correct format
-  //
-  // A better design would be to pass in the method for which the data is
-  // is being prepared... revisit to pack parameters into a struct.
-  //
-  // Alternatively just don't call this method for DELETE since it's a noop
-  // and the caller knows the method in its context.
+function prepare_single_rows(data, options) {
+  const { method } = options;
 
-  if (!(skipFields || template) && includeId) {
+  // DELETE test data is already in a compliant format
+  if (method === 'DELETE') {
     return data;
   }
 
@@ -43,7 +39,7 @@ function prepare_single_rows(data, skipFields, template, includeId = false) {
 
   for (let i = 0, imax = data.length; i < imax; i++) {
     const previous = data[i];
-    const record = new_record_from(previous, skipFields, template, includeId);
+    const record = new_record_from(previous, options);
     // include id outside of the record as well for test annotation
     requests.push({ id: previous.id, record });
   }
@@ -51,19 +47,11 @@ function prepare_single_rows(data, skipFields, template, includeId = false) {
   return requests;
 }
 
-function prepare_multi_row(data, skipFields, template, includeId = true) {
-  // hack for DELETE:
-  // - assumes skipFields and template will be undefined
-  // - AND includeId is true
-  // - under such condtions, the data is already in the correct format
-  //
-  // A better design would be to pass in the method for which the data is
-  // is being prepared... revisit to pack parameters into a struct.
-  //
-  // Alternatively just don't call this method for DELETE since it's a noop
-  // and the caller knows the method in its context.
+function prepare_multi_row(data, options) {
+  const { method } = options;
 
-  if (!(skipFields || template) && includeId) {
+  // DELETE test data is already in a compliant format
+  if (method === 'DELETE') {
     // wrap the array to normalize with rest of the code
     return { records: data };
   }
@@ -71,7 +59,7 @@ function prepare_multi_row(data, skipFields, template, includeId = true) {
   const records = [];
   for (let i = 0, imax = data.length; i < imax; i++) {
     const previous = data[i];
-    const record = new_record_from(previous, skipFields, template, includeId);
+    const record = new_record_from(previous, options);
     records.push(record);
   }
 
@@ -191,23 +179,16 @@ async function submit_multi_row_request(method, req, expectedStatus) {
 
 function run_test_plan(method, plan) {
   plan.forEach(async (item) => {
-    const {
-      tests,
-      includeId,
-      multi,
-      data,
-      skipFields,
-      template,
-      expectedStatus,
-    } = item;
+    const { tests, multi, data, expectedStatus, ...options } = item;
+    options.method = method;
 
     if (multi) {
-      const req = prepare_multi_row(data, skipFields, template, includeId);
+      const req = prepare_multi_row(data, options);
       it(tests, async function () {
         await submit_multi_row_request(method, req, expectedStatus);
       });
     } else {
-      const reqs = prepare_single_rows(data, skipFields, template, includeId);
+      const reqs = prepare_single_rows(data, options);
       reqs.forEach((req) => {
         it(`${tests} (id ${req.id})`, async function () {
           await submit_single_row_request(method, req, expectedStatus);

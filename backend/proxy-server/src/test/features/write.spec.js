@@ -23,6 +23,7 @@ context('use POST to add records...', function () {
   });
 
   it('can insert a single record in an array', async function () {
+    // skip fields so that get through the gateway
     const records = createRecord(7, { skipFields });
     const res = await gatewayServer()
       .post('/')

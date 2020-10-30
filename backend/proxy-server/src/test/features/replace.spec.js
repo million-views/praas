@@ -1,17 +1,6 @@
 const { expect, recordStore } = require('../context');
 const { run_test_plan } = require('../fixture');
 
-// FIXME:
-// - A PUT request is `supposed` to perform a destructive update
-//   and clear all unspecified cell values.
-// - the text fixture has a bug and it looks like the tests are
-//   passing because these tests are effectively the same as PATCH
-// - debug the logic of `new_record_from` function and verify that
-//   we are indeed skipping fields sent to the server. If so then
-//   Airtable is not doing what it claims it does - whcih is to
-//   clear the fields....
-//
-// Bottom line - do *not* take the results of this test suite at face value
 context('replace (PUT) one or more records...', function () {
   const written = recordStore('writes');
   // test plan validates `replace` functionality using previously written
@@ -24,7 +13,7 @@ context('replace (PUT) one or more records...', function () {
   // - ordinal 7 without record id in body for multi        | expect 422
   // - ordinal 8 with record id in path and body for single | expect 422
   // - ordinal 9 and 9  (duplicates) wrapped in an array    | expect 422
-  // - ordinal 8, 8, 9 (mix of duplicates) in an array     | expect 422
+  // - ordinal 8, 8, 9 (mix of duplicates) in an array      | expect 422
   //
   // final state: records at ordinal (6, 7, 8, 9) should be left untouched
   //

@@ -19,11 +19,11 @@ describe('Testing Gateway Server...', function () {
       // verify writes so far
       require('./test/features/read.spec');
 
-      // do updates ...
-      require('./test/features/update.spec');
-
-      // do replacements ...
+      // do replacements (destructive updates)...
       require('./test/features/replace.spec');
+
+      // do updates ... (non-destructive updates)
+      require('./test/features/update.spec');
 
       // do deletes...
       require('./test/features/delete.spec');
