@@ -18,7 +18,6 @@ const {
   testAllowedIpList,
   testDeniedIpList,
 } = require('../../../lib/helpers');
-const { formatWithCursor } = require('prettier');
 
 // Test Data
 const testConduits = JSON.parse(

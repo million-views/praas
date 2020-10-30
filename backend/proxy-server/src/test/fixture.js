@@ -9,7 +9,7 @@ const {
 // const util = require('util');
 
 function new_record_from(previous, options) {
-  const { skipFields, template, includeId, method } = options;
+  const { skipFields, template, multi, method, expectedStatus } = options;
   const [lid] = previous.fields.name.match(/\d+/g);
   let record = createRecord(lid, { multi: false, skipFields, template });
 
@@ -19,9 +19,14 @@ function new_record_from(previous, options) {
     };
   }
 
-  // set IncludeId to true to induce errors
-  if (includeId) {
-    record.id = previous.id;
+  if (expectedStatus === 200) {
+    if (multi) {
+      record.id = previous.id;
+    }
+  } else if (expectedStatus === 422) {
+    if (!multi) {
+      record.id = previous.id;
+    }
   }
 
   return record;
@@ -117,7 +122,7 @@ async function submit_single_row_request(method, req, expectedStatus) {
         ref: { key: 'id', ...req.record },
       });
     } else {
-      // induce error
+      // induce error by skipping req id
       res = await Api[method]('/')
         .set('Host', passConduit.host)
         .send(req.record);
@@ -177,12 +182,23 @@ async function submit_multi_row_request(method, req, expectedStatus) {
   }
 }
 
-function run_test_plan(method, plan) {
+// Run a set of tests of type `type using test data and description
+// available in `plan`. The test data in in `plan` is assumed to be
+// of the same `type` which can either be 'single-row' or 'multi-row'
+//
+// NOTE: I have no excuses other than to move fast to introduce magic
+// constants such as 'single-row' or 'multi-row'. It's good 'first-task'
+// for anyone who wants to refactor with just one caveat: do not make
+// this into a Java bloatware of classes and types; that just beats the
+// purpose of using JS in the first place.
+function run_test_plan(method, plan, type) {
   plan.forEach(async (item) => {
-    const { tests, multi, data, expectedStatus, ...options } = item;
+    const { tests, data, expectedStatus, ...options } = item;
     options.method = method;
+    options.expectedStatus = expectedStatus;
+    options.multi = type !== 'single-row';
 
-    if (multi) {
+    if (options.multi) {
       const req = prepare_multi_row(data, options);
       it(tests, async function () {
         await submit_multi_row_request(method, req, expectedStatus);

@@ -19,20 +19,35 @@ context('replace (PUT) one or more records...', function () {
   //
   // NOTE: the ordinal numbers are the indices in `writes` local store
 
-  const plan = [
+  // single row API operations (multi: false | type: 'single-row')
+  const plan1 = [
     {
       tests: 'allow well formed single record individually',
-      includeId: false, // do *not* include id in record
-      multi: false,
       data: [written[0], written[1]],
       skipFields: ['name', 'email'],
       template: { hs: '-replaced' },
       expectedStatus: 200,
     },
     {
+      tests: 'reject malformed single record request (id missing in path)',
+      data: [written[6]],
+      skipFields: ['name', 'email'],
+      template: { hs: ', replace got through? you found a bug!!' },
+      expectedStatus: 422,
+    },
+    {
+      tests: 'reject malformed single record request (id in path and body)',
+      data: [written[8]],
+      skipFields: ['name', 'email'],
+      template: { hs: ', replace got through? you found a bug!!' },
+      expectedStatus: 422,
+    },
+  ];
+
+  // multi row API operations (multi: true | type: 'multi-row')
+  const plan2 = [
+    {
       tests: 'allow well formed single record in an array',
-      includeId: true, // include id in record
-      multi: true,
       data: [written[2]],
       skipFields: ['name', 'email'],
       template: { hs: '-replaced-array-of-one' },
@@ -40,44 +55,20 @@ context('replace (PUT) one or more records...', function () {
     },
     {
       tests: 'allow well formed records in an array',
-      includeId: true, // include id in records
-      multi: true,
       data: [written[3], written[4], written[5]],
       skipFields: ['name'],
       template: { es: 'replaced.com', hs: '<- look to the left' },
       expectedStatus: 200,
     },
     {
-      tests: 'reject malformed single record request (id missing in path)',
-      includeId: false, // do *not* include id in record
-      multi: false,
-      data: [written[6]],
-      skipFields: ['name', 'email'],
-      template: { hs: ', replace got through? you found a bug!!' },
-      expectedStatus: 422,
-    },
-    {
       tests: 'reject malformed multi record request (id missing in body)',
-      includeId: false, // do *not* include id in record
-      multi: true,
       data: [written[7]],
       skipFields: ['name', 'email'],
       template: { hs: ', replace got through? you found a bug!!' },
       expectedStatus: 422,
     },
     {
-      tests: 'reject malformed single record request (id in path and body)',
-      includeId: true, // include id in record
-      multi: false,
-      data: [written[8]],
-      skipFields: ['name', 'email'],
-      template: { hs: ', replace got through? you found a bug!!' },
-      expectedStatus: 422,
-    },
-    {
       tests: 'reject malformed request with duplicates',
-      includeId: true, // include id in record
-      multi: true,
       data: [written[9], written[9]],
       skipFields: ['name', 'email'],
       template: { hs: ', replace got through? you found a bug!!' },
@@ -85,8 +76,6 @@ context('replace (PUT) one or more records...', function () {
     },
     {
       tests: 'reject malformed request with duplicates and unique rows',
-      includeId: true, // include id in record
-      multi: true,
       data: [written[8], written[8], written[9]],
       skipFields: ['name', 'email'],
       template: { hs: ', replace got through? you found a bug!!' },
@@ -98,7 +87,8 @@ context('replace (PUT) one or more records...', function () {
     expect(written.length).to.eq(10);
   });
 
-  run_test_plan('PUT', plan);
+  run_test_plan('PUT', plan1, 'single-row');
+  run_test_plan('PUT', plan2, 'multi-row');
 
   it('verify final state', function () {
     const replaced = recordStore('replacements');

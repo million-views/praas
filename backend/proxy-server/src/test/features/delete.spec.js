@@ -67,7 +67,7 @@ context('delete (DELETE) one or more records...', function () {
   // NOTE: the ordinal numbers are the indices in `writes` local store
 
   // Test plan data for DELETE is a bit different from the POST/PUT/PATCH:
-  // - skipFields, template, includeId fields are not required; in fact they
+  // - skipFields, template fields are not required; in fact they
   //   should not be set since the `fixture` determines the data needs to be
   //   formated for a delete request based on their presence or absence.
   // - the shape of the test data is {id: <id>, deleted: <true|false}
@@ -79,90 +79,81 @@ context('delete (DELETE) one or more records...', function () {
   // currently, we are massaging the test data knowing how the test plan
   // runner works internally.
 
-  const plan = [
+  // single row API operations (multi: false | type: 'single-row')
+  const plan1 = [
     {
       tests: 'allow single record delete using id in path',
-      multi: false,
       data: [deletes[0], deletes[1]],
       expectedStatus: 200,
     },
     {
-      tests: 'allow single record delete using query param',
-      multi: true,
-      data: [deletes[2]],
-      expectedStatus: 200,
-    },
-    {
-      tests: 'allow multi record delete using query param',
-      multi: true,
-      data: [deletes[3], deletes[4], deletes[5]],
-      expectedStatus: 200,
-    },
-    {
       tests: 'reject single record delete (id missing in path)',
-      multi: false,
       // data: [written[6]],
       data: [{ deleted: true, id: '' }],
       expectedStatus: 400,
     },
     {
+      tests: 'reject single double delete using id in path',
+      data: [deletes[0], deletes[1]],
+      expectedStatus: 404,
+    },
+  ];
+
+  // multi row API operations (multi: true | type: 'multi-row')
+  const plan2 = [
+    {
+      tests: 'allow single record delete using query param',
+      data: [deletes[2]],
+      expectedStatus: 200,
+    },
+    {
+      tests: 'allow multi record delete using query param',
+      data: [deletes[3], deletes[4], deletes[5]],
+      expectedStatus: 200,
+    },
+    {
       tests: 'reject multi record delete (id missing in param)',
-      multi: true,
       // data: [written[7]],
       data: [],
       expectedStatus: 400,
     },
     {
       tests: 'reject multi record delete with duplicates',
-      multi: true,
       data: [written[8], written[8]],
       expectedStatus: 422,
     },
     {
       tests: 'reject multi record delete with duplicates and unique ids',
-      multi: true,
       data: [written[8], written[8], written[9]],
       expectedStatus: 422,
     },
     {
-      tests: 'reject single double delete using id in path',
-      multi: false,
-      data: [deletes[0], deletes[1]],
-      expectedStatus: 404,
-    },
-    {
       tests: 'reject single double delete using id in query param',
-      multi: true,
       data: [deletes[2]],
       expectedStatus: 404,
     },
     {
       tests: 'reject multi double delete using id in query param',
-      multi: true,
       data: [deletes[3], deletes[4], deletes[5]],
       expectedStatus: 404,
     },
     {
       tests: 'reject deletion of deleted mixed with undeleted ids',
-      multi: true,
       data: [deletes[0], deletes[1], deletes[2], deletes[6], deletes[7]],
       expectedStatus: 404,
     },
     {
       tests: 'reject deletion of deleted mixed with duplicate ids',
-      multi: true,
       data: [deletes[3], deletes[4], deletes[5], deletes[8], deletes[8]],
       expectedStatus: 404,
     },
     {
       tests: 'reject deletion of undeleted mixed with deleted ids',
-      multi: true,
       data: [deletes[6], deletes[7], deletes[0], deletes[1], deletes[2]],
       expectedStatus: 404,
     },
     {
       tests: 'reject deletion of deleted, duplicates, undeleted all mixed up',
-      multi: true,
       data: [deletes[4], deletes[5], deletes[5], deletes[6]],
       expectedStatus: 404,
     },
@@ -172,7 +163,8 @@ context('delete (DELETE) one or more records...', function () {
     expect(written.length).to.eq(10);
   });
 
-  run_test_plan('DELETE', plan);
+  run_test_plan('DELETE', plan1, 'single-row');
+  run_test_plan('DELETE', plan2, 'multi-row');
 
   it('verify final state', function () {
     const deleted = recordStore('deletes');
