@@ -130,7 +130,15 @@ describe('Praas REST API', () => {
       expect(jakeUser).to.have.property('token');
     });
 
-    it('should allow the user to create an allowlist', async function () {
+    it('should get all conduits', async () => {
+      const res = await Api()
+        .get('/conduits')
+        .set('Authorization', `Token ${jakeUser.token}`);
+
+      expect(res.status).to.equal(200);
+    });
+
+    it('should allow the user to create a conduit', async function () {
       const res = await Api()
         .post('/conduits')
         .set('Authorization', `Token ${jakeUser.token}`)
