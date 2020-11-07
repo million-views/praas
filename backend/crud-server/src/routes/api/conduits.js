@@ -1,25 +1,20 @@
 const router = require('express').Router();
-const { Op } = require('sequelize');
 const { body, param } = require('express-validator');
-const { db, Account, Conduit, Allowlist } = require('../../models');
 const conf = require('../../../../config');
-const { RestApiError } = require('../../../../lib/error');
+const ConduitController = require('../../controllers/conduit');
 
-const conduitController = require('../../controllers/conduit');
-
-const racmOptions = ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'];
 router.get(
   '/conduits',
-  conduitController.validate,
-  conduitController.authorize,
-  conduitController.getAll
+  ConduitController.validate,
+  ConduitController.authorize,
+  ConduitController.getAll
 );
 
 router.get(
   '/conduits/:id',
-  conduitController.validate,
-  conduitController.authorize,
-  conduitController.getById
+  ConduitController.validate,
+  ConduitController.authorize,
+  ConduitController.getById
 );
 
 // Registration
@@ -67,10 +62,10 @@ router.post(
       .exists()
       .withMessage('Description is required'),
   ],
-  conduitController.validate,
-  conduitController.authorize,
-  conduitController.validateRACM,
-  conduitController.create
+  ConduitController.validate,
+  ConduitController.authorize,
+  ConduitController.validateRACM,
+  ConduitController.create
 );
 
 router.put(
@@ -122,10 +117,10 @@ router.put(
       .exists()
       .withMessage('Description is required'),
   ],
-  conduitController.validate,
-  conduitController.authorize,
-  conduitController.validateRACM,
-  conduitController.update
+  ConduitController.validate,
+  ConduitController.authorize,
+  ConduitController.validateRACM,
+  ConduitController.update
 );
 
 // Delete Allowlist
@@ -138,9 +133,9 @@ router.delete(
       .bail()
       .toInt(10),
   ],
-  conduitController.validate,
-  conduitController.authorize,
-  conduitController.delete
+  ConduitController.validate,
+  ConduitController.authorize,
+  ConduitController.delete
 );
 
 module.exports = router;

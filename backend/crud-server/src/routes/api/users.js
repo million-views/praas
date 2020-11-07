@@ -1,23 +1,10 @@
 const router = require('express').Router();
-const { body, param, validationResult } = require('express-validator');
-const db = require('../../models').db;
-const User = require('../../models').User;
+const { body, param } = require('express-validator');
 const auth = require('../auth');
-const passport = require('passport');
-const { RestApiError } = require('../../../../lib/error');
+const UserController = require('../../controllers/user');
+const AuthenticationController = require('../../controllers/authentication');
 
-router.get('/me', auth.required, async (req, res, next) => {
-  try {
-    const userId = parseInt(req.payload.id, 10);
-
-    const user = await User.findOne({ where: { id: userId } });
-    if (!user) return next(new RestApiError(404, { user: 'not found' }));
-    return res.json(await user.toAuthJSON());
-  } catch (error) {
-    console.log(error);
-    next(new RestApiError(500, error));
-  }
-});
+router.get('/me', auth.required, UserController.getOwn);
 
 router.get(
   '/users/:id',
@@ -29,21 +16,8 @@ router.get(
       .bail()
       .toInt(10),
   ],
-  async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return next(new RestApiError(422, errors.array()));
-    }
-
-    try {
-      const userId = parseInt(req.payload.id, 10);
-      const user = await User.findOne({ where: { id: userId } });
-      if (!user) return next(new RestApiError(404, { user: 'not found' }));
-      return res.json(await user.toAuthJSON());
-    } catch (error) {
-      next(new RestApiError(500, error));
-    }
-  }
+  UserController.validate,
+  UserController.getById
 );
 
 // Registration
@@ -77,64 +51,8 @@ router.post(
       .isLength({ min: 8 })
       .withMessage('Password should be atleast 8 characters long'),
   ],
-  async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return next(new RestApiError(422, errors.array()));
-    }
-
-    const { firstName, lastName, email, password } = req.body;
-    const userData = {
-      firstName,
-      lastName,
-      email,
-    };
-
-    const loginData = {
-      username: email,
-      password,
-    };
-
-    try {
-      /**
-       * https://sequelize.org/master/manual/creating-with-associations.html
-       * Preferable way, but does not confirm to a single transaction */
-
-      const result = await db.transaction(async (t) => {
-        const user = await User.create(userData, { transaction: t });
-
-        await user.createLogin(loginData, { transaction: t });
-
-        await user.createAccount(
-          { name: 'Personal Account', plan: 'basic' },
-          { transaction: t }
-        );
-
-        return user;
-      });
-
-      const userAuthJson = await result.toAuthJSON();
-      return res
-        .cookie('access_token', `Bearer ${userAuthJson.token}`, {
-          expires: new Date(Date.now() + 8 * 3600000),
-          httpOnly: true,
-        })
-        .json(userAuthJson);
-    } catch (err) {
-      const { name, errors: dberrors, fields } = err;
-      const errors = {};
-      if (name === 'SequelizeUniqueConstraintError') {
-        for (let i = 0; i < fields.length; i++) {
-          errors[fields[i]] = dberrors[i].message;
-        }
-        return next(new RestApiError(422, errors));
-      } else {
-        errors.unknown = `unknown error ${name}, please contact support`;
-
-        return next(new RestApiError(500, errors));
-      }
-    }
-  }
+  UserController.validate,
+  UserController.create
 );
 
 // Update User
@@ -163,34 +81,8 @@ router.put(
       .isEmail()
       .withMessage('Invalid email address'),
   ],
-  async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return next(new RestApiError(422, errors.array()));
-    }
-
-    const user = await User.findByPk(req.params.id);
-
-    if (!user) {
-      return next(new RestApiError(404, { user: 'not found' }));
-    }
-
-    try {
-      const updatedUser = await user.update(req.body);
-      res.json(updatedUser.toJSON());
-    } catch ({ name, errors: dberrors, fields }) {
-      const errors = {};
-      if (name === 'SequelizeUniqueConstraintError') {
-        for (let i = 0; i < fields.length; i++) {
-          errors[fields[i]] = dberrors[i].message;
-        }
-        return next(new RestApiError(422, errors));
-      } else {
-        errors.unknown = `unknown error ${name}, please contact support`;
-        return next(new RestApiError(500, errors));
-      }
-    }
-  }
+  UserController.validate,
+  UserController.update
 );
 
 // Authentication
@@ -209,35 +101,8 @@ router.post(
     .bail()
     .isLength({ min: 8 })
     .withMessage('Password should be atleast 8 characters long'),
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return next(new RestApiError(422, errors.array()));
-    }
-
-    passport.authenticate('local', { session: false }, async function (
-      err,
-      user,
-      info
-    ) {
-      if (err) {
-        console.log('err: ', err);
-        return next(new RestApiError(500, err));
-      }
-
-      if (user) {
-        const userAuthJson = await user.toAuthJSON();
-        return res
-          .cookie('access_token', `Bearer ${userAuthJson.token}`, {
-            expires: new Date(Date.now() + 8 * 3600000),
-            httpOnly: true,
-          })
-          .json(userAuthJson);
-      } else {
-        return next(new RestApiError(422, info));
-      }
-    })(req, res, next);
-  }
+  AuthenticationController.validate,
+  AuthenticationController.login
 );
 
 /**

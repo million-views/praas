@@ -1,6 +1,6 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const Login = require('./models').Login;
+const AuthenticationController = require('./controllers/authentication');
 
 passport.use(
   new LocalStrategy(
@@ -11,7 +11,10 @@ passport.use(
     async function (username, password, done) {
       let error = null;
       try {
-        const login = await Login.exists(username, password);
+        const login = await AuthenticationController.exists(
+          username,
+          password
+        );
         if (login && login.user) {
           return done(null, login.user);
         } else if (login && !login.user) {

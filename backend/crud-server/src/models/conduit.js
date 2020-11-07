@@ -1,6 +1,6 @@
 /* TODO: Add/move the previously existing validations */
 const { generateCuri } = require('../utils');
-const user = require('./user');
+
 module.exports = (db, DataTypes) => {
   const Conduit = db.define('conduit', {
     resourceType: {

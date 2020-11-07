@@ -1,5 +1,5 @@
-const { db, Account, Conduit, Allowlist } = require('../models');
 const { validationResult } = require('express-validator');
+const { db, Account, Conduit, Allowlist } = require('../models');
 const { RestApiError } = require('../../../lib/error');
 
 const racmOptions = ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'];
