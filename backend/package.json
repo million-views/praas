@@ -23,12 +23,7 @@
     "test-gateway": "mocha --timeout 10000 --exit proxy-server/src/server.test.js",
     "start-resource-server": "node --unhandled-rejections=strict crud-server/src/server.js",
     "start-gateway-server": "node --unhandled-rejections=strict proxy-server/src/server.js",
-    "createdb": "node crud-server/src/createdb.js",
-    "resource-server-api-doc": "redoc-cli bundle spec/resource.api.v1.yaml --output api-docs/resource.html",
-    "generic-api-doc": "redoc-cli bundle spec/generic.api.v1.yaml --options.theme.colors.primary.main=purple --output api-docs/conduit.html",
-    "api-doc-reload": "live-server --watch=api-docs/ --open=api-docs/",
-    "api-doc-watch": "watch \"npm run resource-server-api-doc && npm run generic-api-doc\" ./spec",
-    "api-doc": "concurrently \"npm run api-doc-reload\" \"npm run api-doc-watch\""
+    "createdb": "node crud-server/src/createdb.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -66,7 +61,6 @@
     "mocha": "^8.1.3",
     "nyc": "^15.1.0",
     "prettier": "^2.1.2",
-    "redoc-cli": "^0.9.12",
     "watch": "^1.0.2"
   },
   "engines": {
