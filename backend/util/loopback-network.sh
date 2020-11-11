@@ -43,6 +43,9 @@ function set_command {
 	elif command -v '/sbin/ifconfig' > /dev/null; then
 		command=ifconfig
 		command_path=$( command -v /sbin/ifconfig )
+	elif command -v netsh > /dev/null; then
+		command=netsh
+		command_path=$( command -v netsh )
 	else
 		echo 'no compatible command found to parse network interfaces'
 	fi
@@ -87,6 +90,13 @@ function fetch_loopback_interface {
 			awk -F : '$2 ~ "flags*" { print $1 }' | \
 			sed -e 's/ //g'
 		)
+	elif [ "${command}" == "netsh" ]; then
+		interface=$( \
+			${command_path} interface ipv4 show interfaces | \
+			grep -i 'loopback pseudo' | \
+			tr -s ' ' | \
+			cut -d' ' -f6-
+		)
 	else
 		echo 'function called without command to be run'
 		exit 1
@@ -101,6 +111,10 @@ function action {
 	elif [ "${command}" == "ifconfig" ]; then
 		for ip in ${ip_list[@]}; do
 			sudo ${command_path} ${interface} ${action} ${ip}
+		done
+	elif [ "${command}" == "netsh" ]; then
+		for ip in ${ip_list[@]}; do
+			sudo ${command_path} interface ipv4 ${action} address \"${interface}\" ${ip}
 		done
 	else
 		echo 'function called without command to be run'
