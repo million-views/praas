@@ -200,17 +200,56 @@ describe('PraaS', () => {
         description: 'test conduit with drop-if-filled HFF policy',
         curi: await helpers.makeCuri('td'),
         racm: ['POST'],
+        // TODO:
+        // - fix the validation rules or the design to improve the DX
+        //   for "drop-if-filled".
+        // - for starters, I think we should rename it to be "drop-if-match"
+        //   to be in sync with "pass-if-match" policy
+        // - figure out if there's a better way to get the "include" behaviour
+        //   without having to specify it. How about "include-if-match"?
+        // - Proposal:
+        //   - drop-on-match:
+        //     if request field value matches then drop the request
+        //   - pass-on-match:
+        //     if request field value matches then accept the request but
+        //     exclude the request's field value
+        //   - include-on-match:
+        //     if request field value matches then accept the request and
+        //     include the request's field value
+        //   - ...
         hiddenFormField: [
           {
             fieldName: 'hiddenFormField',
             policy: 'drop-if-filled',
-            include: false,
-            value: 'hff-2',
+            include: false, // <- do not care
+            value: 'hff-1-blah', // <- do not care
+          },
+          {
+            fieldName: 'hiddenFormField',
+            policy: 'drop-if-filled',
+            include: true, // <- do not care
+            value: 'hff-2-bleep', // <- do not care
+          },
+          {
+            fieldName: 'hiddenFormField',
+            policy: 'drop-if-filled',
+            include: false, // <- do not care
+            value: 'hff-3-whatever', // <- do not care
+          },
+          {
+            fieldName: 'hiddenFormField',
+            policy: 'drop-if-filled',
+            include: true, // <- do not care
+            value: 'hff-4-whenever', // do not care
           },
         ],
       });
       curis.dropConduit = { host: proxyDropConduit.curi };
 
+      // FIX ME!
+      // - We need a regexp matcher
+      // - We need to include one more hidden field to ensure that
+      //   multiple hidden fields are handled correctly
       const proxyPassConduit = await models.Conduit.create({
         ...proxyBaseConduit,
         description: 'test conduit with pass-if-match HFF policy',
@@ -221,27 +260,41 @@ describe('PraaS', () => {
             fieldName: 'hiddenFormField',
             policy: 'pass-if-match',
             include: true,
+            value: 'hff-1',
+          },
+          {
+            fieldName: 'hiddenFormField',
+            policy: 'pass-if-match',
+            include: false,
+            value: 'hff-2',
+          },
+          {
+            fieldName: 'hiddenFormField',
+            policy: 'pass-if-match',
+            include: true,
             value: 'hff-3',
           },
-        ],
-      });
-      curis.passConduit = { host: proxyPassConduit.curi };
-
-      const proxyNoIncludeConduit = await models.Conduit.create({
-        ...proxyBaseConduit,
-        description: 'test conduit with HFF include = false',
-        curi: await helpers.makeCuri('td'),
-        racm: ['POST'],
-        hiddenFormField: [
           {
             fieldName: 'hiddenFormField',
             policy: 'pass-if-match',
             include: false,
             value: 'hff-4',
           },
+          {
+            fieldName: 'hiddenFormField',
+            policy: 'pass-if-match',
+            include: true,
+            value: 'hff-9',
+          },
+          {
+            fieldName: 'hiddenFormField',
+            policy: 'pass-if-match',
+            include: false,
+            value: 'hff-10',
+          },
         ],
       });
-      curis.noIncludeConduit = { host: proxyNoIncludeConduit.curi };
+      curis.passConduit = { host: proxyPassConduit.curi };
 
       // loopback-network needs to be setup to test allow-list feature
       // aor => accept or reject | based on client ip address

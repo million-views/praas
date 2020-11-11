@@ -155,7 +155,7 @@ function boundHttpRequest(options, body = null) {
     const clientRequest = http.request(options, (incomingMessage) => {
       // response object.
       const response = {
-        statusCode: incomingMessage.statusCode,
+        status: incomingMessage.statusCode,
         headers: incomingMessage.headers,
         body: [],
       };
@@ -257,3 +257,13 @@ module.exports = {
   validateEmail,
   groupByTimePeriod,
 };
+
+if (require.main === module) {
+  const combinations = powerset([
+    'deleted',
+    'undeleted',
+    'duplicates',
+    'unique',
+  ]);
+  console.table(combinations);
+}
