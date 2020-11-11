@@ -21,7 +21,7 @@
     "test-rest": "mocha --exit crud-server/src/routes.test.js",
     "test-rest-with-coverage": "nyc --reporter=text mocha --exit crud-server/src/routes.test.js",
     "test-gateway": "mocha --timeout 10000 --exit proxy-server/src/server.test.js",
-    "test-gateway-usecase": "mocha --exit proxy-server/src/use-case.test.js",
+    "test-gateway-usecase": "mocha --timeout 10000 --exit proxy-server/src/use-case.test.js",
     "start-resource-server": "node --unhandled-rejections=strict crud-server/src/server.js",
     "start-gateway-server": "node --unhandled-rejections=strict proxy-server/src/server.js",
     "createdb": "node crud-server/src/createdb.js"
