@@ -268,7 +268,7 @@ describe('Registered user creates three conduits to a previously setup `contacts
         };
 
         const updateConduit = async (recordId, isValid) => {
-          console.log('Updating ...');
+          // console.log('Updating ...');
           // should PATCH entries for email validation(partial update)
           const req = {
             records: [
@@ -290,7 +290,7 @@ describe('Registered user creates three conduits to a previously setup `contacts
 
         const validateRecords = (recordsToValidate) => {
           recordsToValidate.map(async (val) => {
-            console.log('Validating ...');
+            // console.log('Validating ...');
             isEmailValid = util.validateEmail(val.fields.email);
             recordId = val.id;
             const isValid = isEmailValid ? 'valid' : 'invalid';
@@ -306,14 +306,7 @@ describe('Registered user creates three conduits to a previously setup `contacts
         expect(res1.status).to.equal(200);
         expect(res1.body).to.haveOwnProperty('records');
         console.log('Validated and Updated records in sheet');
-
-        // NOTE - to check the valididty of all records in spreadsheet takes longer time
-        // need to fix time or the logis for checking the validity of all records in spreadsheet
-        /* for (let i = 0; i < res1.body.records.length; i++) {
-          expect(res1.body.records[i].fields.validity).not.to.be.undefined;
-        } */
       });
-      xit('EVS marks a `row` to contain a valid email or invalid email, using `conduit-B`', async function () {});
     }
   );
   context(
@@ -371,54 +364,11 @@ describe('Registered user creates three conduits to a previously setup `contacts
 
         // Group by time period - By 'seconds' | 'day' | 'week' | 'month' | 'year'
         // -----------------------------------------------------------------------
-        const groupByTimePeriod = function (obj, createdtimestamp, period) {
-          const objPeriod = {};
-          const oneDay = 24 * 60 * 60 * 1000; // hours * minutes * seconds * milliseconds
-          for (let i = 0; i < obj.length; i++) {
-            const timestamp = obj[i][createdtimestamp];
-            let d = new Date(timestamp);
-            // pretend this can group by second, day, week, month but for now we just
-            // use the seconds for grouping
-            if (period === 'seconds') {
-              d = d.getSeconds();
-            } else if (period === 'day') {
-              // console.log('>>>findDate:', d.getDate());
-              d = Math.floor(d.getTime() / oneDay);
-            } else if (period === 'week') {
-              d = Math.floor(d.getTime() / (oneDay * 7));
-            } else if (period === 'month') {
-              // console.log('>>>findMonth:', d.getMonth() + 1);
-              d = (d.getFullYear() - 1970) * 12 + d.getMonth();
-            } else if (period === 'year') {
-              d = d.getFullYear();
-            } else {
-              console.log(
-                'groupByTimePeriod: You have to set a period! seconds | day | week | month | year'
-              );
-            }
-            // define object key and check for validity
-            objPeriod[d] = objPeriod[d] || { valid: 0, invalid: 0, unverified: 0 };
-            const stats = objPeriod[d];
-            if (obj[i].fields.validity === 'valid') {
-              stats.valid += 1;
-            } else if (obj[i].fields.validity === 'invalid') {
-              stats.invalid += 1;
-            } else if (obj[i].fields.validity === undefined) {
-              stats.unverified += 1;
-            }
-          }
-          return objPeriod;
-        };
-
-        // let objPeriodDay = groupByTimePeriod(rec, 'createdTime', 'day');
-        // let objPeriodWeek = groupByTimePeriod(rec, 'createdTime', 'week');
-        // let objPeriodMonth = groupByTimePeriod(rec, 'createdTime', 'month');
-        /* const objPeriodYear = groupByTimePeriod(
+        const objPeriodSeconds = util.groupByTimePeriod(
           res.body.records,
           'createdTime',
-          'year'
-        ); */
-        const objPeriodSeconds = groupByTimePeriod(res.body.records, 'createdTime', 'seconds');
+          'seconds'
+        );
         // eslint-disable-next-line no-unused-vars
         report = objPeriodSeconds;
       });
@@ -426,9 +376,10 @@ describe('Registered user creates three conduits to a previously setup `contacts
         console.log(
           'Number of Sign Ups: ',
           stats.submissions.realSubmissionCount,
-          'Number of spamming by bots: ',
+          ', Number of Spamming by Bots: ',
           stats.submissions.botSubmissionCount
         );
+        console.log('\n');
         const totalSubmitedRecords =
           stats.submissions.realSubmissionCount +
           stats.submissions.botSubmissionCount;
@@ -442,6 +393,8 @@ describe('Registered user creates three conduits to a previously setup `contacts
         console.log('email is valid - ', stats.processes.validCount);
         console.log('email is invalid - ', stats.processes.invalidCount);
         console.log('email is unverified - ', stats.processes.unverified);
+        console.log('\n');
+
         expect(stats.submissions.realSubmissionCount).eql(
           stats.processes.validCount +
             stats.processes.invalidCount +
@@ -458,7 +411,8 @@ describe('Registered user creates three conduits to a previously setup `contacts
         // the report is available only for Group by Seconds
         // Need to enhance this report for day | week | month | year
 
-        console.log('Report by Seconds:', report);
+        console.log('Report by Seconds:');
+        console.log(JSON.stringify(report));
       });
     }
   );
