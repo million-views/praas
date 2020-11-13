@@ -60,7 +60,8 @@ We created this project for our own internal experiments. Once completed and sta
 
 # Development
 
-You can find further on each section below
+You can find further on each section below  
+
 [Frontend](praas-app/README.md)  
 
 [Backend](backend/README.md)  
