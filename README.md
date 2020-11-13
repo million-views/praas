@@ -58,10 +58,13 @@ We created this project for our own internal experiments. Once completed and sta
 - IP Address AllowList
 - Hidden Form Field
 
-# Examples
+# Development
 
-You can find the examples [here](examples/widget-gallery/index.html)
-
+You can find further on each section [here](examples/widget-gallery/index.html)
+[Frontend](praas-app/README.md)
+[Backend](backend/README.md)
+[Widgets](examples/widget-gallery/README.md)
+[Illustrative Visual Test](visual-test/README.md)
 # Contribution
 
 We are still in the design stage. When the project gets to a point where it is actually functional, we'll be happy to receive your pull request. Until then stay tuned!
