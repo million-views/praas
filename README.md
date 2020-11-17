@@ -62,12 +62,9 @@ We created this project for our own internal experiments. Once completed and sta
 
 Follow the links below to get started
 
-- [Frontend](praas-app/README.md)  
-
 - [Backend](backend/README.md)  
-
+- [Frontend](praas-app/README.md)  
 - [Widgets](examples/widget-gallery/README.md)  
-
 - [Illustrative Visual Test](visual-test/README.md)  
 
 
