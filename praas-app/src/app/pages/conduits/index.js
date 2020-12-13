@@ -21,6 +21,9 @@ function Conduit(props) {
     cid: undefined
   });
 
+  // eslint-disable-next-line no-unused-vars
+  const [sort, setSort] = useState();
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -32,17 +35,24 @@ function Conduit(props) {
     && (mode === 'list' || mode === 'initial') && reason !== 'cancel'
     );
 
+    // const sortBy = 'description:asc';
+    const sortBy = sort ? `description:${sort}` : '';
     if (fetch) {
-      dispatch(listConduits());
+      dispatch(listConduits(sortBy));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, user.loggedIn, dispatch]);
+  }, [state, sort, user.loggedIn, dispatch]);
 
   // mode: list|edit|add; reason: cancel|form|refresh; cid: id|undefined
   const viewChanger = (mode, reason, cid, caller) => {
     // view changer called
     setState({ mode, reason, cid, lastSetBy: caller });
     logit('vc', state);
+  };
+
+  const sortView = (sortOrder) => {
+    console.log('>>>> index:', sortOrder);
+    setSort(sortOrder);
   };
 
   // render cycle
@@ -54,7 +64,7 @@ function Conduit(props) {
 
   let view = null;
   if (state.mode.match(/list|initial/)) {
-    view = <ConduitList changeView={viewChanger} />;
+    view = <ConduitList changeView={viewChanger} sortView={sortView} />;
   } else if (state.mode === 'add') {
     view = <CreateConduitForm changeView={viewChanger} />;
   } else if (state.mode === 'edit') {

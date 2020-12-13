@@ -70,6 +70,7 @@ const List = (props) => {
   const clist = useSelector(state => state.conduit.list);
 
   const handleViewChange = () => props.changeView('add', 'form', undefined, 'components/list');
+  const handleSortOrder = (sortOrder) => props.sortView(sortOrder);
 
   const createModal = (conduit) => {
     if (conduit.status === 'inactive') {
@@ -119,6 +120,12 @@ const List = (props) => {
         onClick={handleViewChange}>
         Add conduit
       </button>
+      <button
+        onClick={() => handleSortOrder('Asc')}>List Asc
+      </button>
+      <button
+        onClick={() => handleSortOrder('Desc')}>List Desc
+      </button>
       <table>
         <thead>
           <tr>
@@ -138,6 +145,10 @@ const List = (props) => {
 
 List.propTypes = {
   changeView: PropTypes.func.isRequired,
+};
+
+List.propTypes = {
+  sortView: PropTypes.func.isRequired,
 };
 
 export { List };

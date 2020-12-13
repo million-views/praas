@@ -138,8 +138,9 @@ const praas = {
         body: JSON.stringify(data)
       });
     },
-    list() {
-      return afetch('/conduits', {
+    list(sortBy) {
+      const sq = `?sort=${sortBy}`;
+      return afetch(`/conduits${sq}`, {
         method: 'GET',
       });
     },

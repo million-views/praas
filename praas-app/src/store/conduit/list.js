@@ -16,10 +16,10 @@ export const listConduitFailure = (error) => ({
 });
 
 // Async action creators
-export const listConduits = () => {
+export const listConduits = (sortBy) => {
   return (dispatch) => {
     dispatch({ type: LIST_CONDUIT_REQUEST });
-    PraasAPI.conduit.list().then(
+    PraasAPI.conduit.list(sortBy).then(
       (payload) => {
         // console.log('listConduits, success: ', payload.conduits.length);
         dispatch(listConduitSuccess(payload));
