@@ -196,12 +196,66 @@ function boundHttpRequest(options, body = null) {
   });
 }
 
+function validateEmail(emailAddr) {
+  if (
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
+      emailAddr
+    )
+  ) {
+    return true;
+  }
+  return false;
+}
+
+// Group by time period - By 'seconds' | 'day' | 'week' | 'month' | 'year'
+// -----------------------------------------------------------------------
+function groupByTimePeriod(obj, createdtimestamp, period) {
+  const objPeriod = {};
+  const oneDay = 24 * 60 * 60 * 1000; // hours * minutes * seconds * milliseconds
+  for (let i = 0; i < obj.length; i++) {
+    const timestamp = obj[i][createdtimestamp];
+    let d = new Date(timestamp);
+    // pretend this can group by second, day, week, month but for now we just
+    // use the seconds for grouping
+    if (period === 'seconds') {
+      d = d.getSeconds();
+    } else if (period === 'day') {
+      // console.log('>>>findDate:', d.getDate());
+      d = Math.floor(d.getTime() / oneDay);
+    } else if (period === 'week') {
+      d = Math.floor(d.getTime() / (oneDay * 7));
+    } else if (period === 'month') {
+      // console.log('>>>findMonth:', d.getMonth() + 1);
+      d = (d.getFullYear() - 1970) * 12 + d.getMonth();
+    } else if (period === 'year') {
+      d = d.getFullYear();
+    } else {
+      console.log(
+        'groupByTimePeriod: You have to set a period! seconds | day | week | month | year'
+      );
+    }
+    // define object key and check for validity
+    objPeriod[d] = objPeriod[d] || { valid: 0, invalid: 0, unverified: 0 };
+    const stats = objPeriod[d];
+    if (obj[i].fields.validity === 'valid') {
+      stats.valid += 1;
+    } else if (obj[i].fields.validity === 'invalid') {
+      stats.invalid += 1;
+    } else if (obj[i].fields.validity === undefined) {
+      stats.unverified += 1;
+    }
+  }
+  return objPeriod;
+}
+
 module.exports = {
   powerset,
   rangeset,
   freezeall,
   pickRandomlyFrom,
   boundHttpRequest,
+  validateEmail,
+  groupByTimePeriod,
 };
 
 if (require.main === module) {

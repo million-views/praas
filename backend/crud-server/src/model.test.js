@@ -362,6 +362,47 @@ describe('PraaS', () => {
         allowlist: proxyAorConduit3.allowlist,
       };
 
+      const proxyUseCaseConduitA = await models.Conduit.create({
+        ...proxyBaseConduit,
+        description: 'test conduitA has write-only permission',
+        curi: await helpers.makeCuri('td'),
+        racm: ['POST'],
+        hiddenFormField: [
+          {
+            fieldName: 'hiddenFormField',
+            policy: 'pass-if-match',
+            include: true,
+            value: 'hff-5',
+          },
+        ],
+      });
+      curis.conduitA = {
+        host: proxyUseCaseConduitA.curi,
+        racm: proxyUseCaseConduitA.racm,
+      };
+
+      const proxyUseCaseConduitB = await models.Conduit.create({
+        ...proxyBaseConduit,
+        description: 'test conduitB has get and patch permission',
+        curi: await helpers.makeCuri('td'),
+        racm: ['GET', 'PATCH'],
+      });
+      curis.conduitB = {
+        host: proxyUseCaseConduitB.curi,
+        racm: proxyUseCaseConduitB.racm,
+      };
+
+      const proxyUseCaseConduitC = await models.Conduit.create({
+        ...proxyBaseConduit,
+        description: 'test conduitA has read only permission',
+        curi: await helpers.makeCuri('td'),
+        racm: ['GET'],
+      });
+      curis.conduitC = {
+        host: proxyUseCaseConduitC.curi,
+        racm: proxyUseCaseConduitC.racm,
+      };
+
       fs.writeFileSync(
         path.resolve('.test-data-curi.json'),
         JSON.stringify(curis, null, 2)

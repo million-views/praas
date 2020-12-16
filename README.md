@@ -58,6 +58,7 @@ We created this project for our own internal experiments. Once completed and sta
 - IP Address AllowList
 - Hidden Form Field
 
+
 # Development/Setup
 Follow this link to a quick start guide for developers
 - [Setup](doc/setup-guide.md)
@@ -67,6 +68,7 @@ Follow the links below for a further in depth explanation following the setup gu
 - [Backend](backend/README.md)  
 - [Frontend](praas-app/README.md)  
 - [Widgets](examples/widget-gallery/README.md)  
+
 - [Illustrative Visual Test](visual-test/README.md)  
 
 
