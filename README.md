@@ -58,14 +58,15 @@ We created this project for our own internal experiments. Once completed and sta
 - IP Address AllowList
 - Hidden Form Field
 
-# Development
 
-Follow the links below to get started
+# Development/Setup
+Follow this link to a quick start guide for developers
+- [Setup](doc/setup-guide.md)
 
-- [Frontend](praas-app/README.md)  
+Follow the links below for a further in depth explanation following the setup guide
 
 - [Backend](backend/README.md)  
-
+- [Frontend](praas-app/README.md)  
 - [Widgets](examples/widget-gallery/README.md)  
 
 - [Illustrative Visual Test](visual-test/README.md)  
